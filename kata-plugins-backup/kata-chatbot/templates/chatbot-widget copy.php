@@ -85,7 +85,7 @@ if (!$enabled) {
                 <?php if ($show_chat_tab) : ?>
                 <button class="kata-tab-btn <?php echo ($default_tab === 'chat') ? 'active' : ''; ?>" data-tab="chat">
                     <svg viewBox="0 0 24 24" width="16" height="16">
-                        <path fill="#4A90E2" d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                        <path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
                     </svg>
                     <span><?php _e('Chat AI', 'kata-chatbot'); ?></span>
                 </button>
@@ -124,124 +124,90 @@ if (!$enabled) {
         <?php if ($show_chat_tab) : ?>
         <!-- AI Chat Tab -->
         <div id="kata-tab-chat" class="kata-tab-content <?php echo ($default_tab === 'chat') ? 'active' : ''; ?>">
-            <!-- Contact Header (giống style các tab khác) -->
-            <div class="kata-contact-header">
-                <div class="kata-contact-icon">
-                    <svg viewBox="0 0 24 24" width="32" height="32">
-                        <path fill="#4A90E2" d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                    </svg>
+            <!-- Chat Header -->
+            <div class="kata-chat-header">
+                <div class="kata-header-info">
+                    <div class="kata-avatar">
+                        <img src="<?php echo esc_url(get_option('kata_chatbot_avatar', plugins_url('assets/images/chatbot-avatar.png', dirname(__FILE__)))); ?>" 
+                             alt="Kata AI" />
+                    </div>
+                    <div class="kata-header-text">
+                        <h4><?php echo esc_html(get_option('kata_chatbot_name', __('Kata AI', 'kata-chatbot'))); ?></h4>
+                        <span class="kata-status-text"><?php echo $offline_mode ? __('Offline', 'kata-chatbot') : __('Trực tuyến', 'kata-chatbot'); ?></span>
+                    </div>
                 </div>
-                <div class="kata-contact-title">
-                    <h3><?php echo esc_html(get_option('kata_chatbot_name', __('Chat với AI Assistant', 'kata-chatbot'))); ?></h3>
-                    <p><?php echo $offline_mode ? __('Hiện đang offline - không thể chat', 'kata-chatbot') : __('Trợ lý AI 24/7 - Sẵn sàng hỗ trợ bạn', 'kata-chatbot'); ?></p>
+                
+                <div class="kata-header-actions">
+                    <button id="kata-minimize-btn" class="kata-action-btn" title="<?php _e('Thu nhỏ', 'kata-chatbot'); ?>">
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <path fill="currentColor" d="M19 13H5v-2h14v2z"/>
+                        </svg>
+                    </button>
+                    <button id="kata-close-btn" class="kata-action-btn" title="<?php _e('Đóng', 'kata-chatbot'); ?>">
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
             
-            <?php if ($offline_mode) : ?>
-            <!-- Offline Mode Display -->
-            <div class="kata-branch-list">
-                <div class="kata-no-contact">
-                    <div style="font-size: 48px; margin-bottom: 16px;">🤖</div>
-                    <h4 style="margin: 0 0 8px 0; color: #666;"><?php _e('AI Assistant đang offline', 'kata-chatbot'); ?></h4>
-                    <p style="margin: 0; color: #888;"><?php echo esc_html($offline_message); ?></p>
-                    <div style="margin-top: 20px;">
-                        <p style="font-size: 12px; color: #999; margin: 0;">
-                            <?php _e('Vui lòng sử dụng các kênh liên hệ khác hoặc thử lại sau.', 'kata-chatbot'); ?>
-                        </p>
+            <!-- Chat Messages -->
+            <div id="kata-chat-messages" class="kata-chat-messages">
+                <!-- Welcome Message -->
+                <div class="kata-message kata-bot-message">
+                    <div class="kata-message-avatar">
+                        <img src="<?php echo esc_url(get_option('kata_chatbot_avatar', plugins_url('assets/images/chatbot-avatar.png', dirname(__FILE__)))); ?>" 
+                             alt="Kata AI" />
                     </div>
-                </div>
-            </div>
-            <?php else : ?>
-            <!-- Chat Interface -->
-            <div class="kata-chat-interface">
-                <!-- Chat Messages -->
-                <div id="kata-chat-messages" class="kata-chat-messages">
-                    <!-- Welcome Message -->
-                    <div class="kata-message kata-bot-message">
-                        <div class="kata-message-avatar">
-                            <img src="<?php echo esc_url(get_option('kata_chatbot_avatar', plugins_url('assets/images/chatbot-avatar.png', dirname(__FILE__)))); ?>" 
-                                 alt="Kata AI" />
+                    <div class="kata-message-content">
+                        <div class="kata-message-bubble">
+                            <?php echo wp_kses_post($offline_mode ? $offline_message : $welcome_message); ?>
                         </div>
-                        <div class="kata-message-content">
-                            <div class="kata-message-bubble">
-                                <?php echo wp_kses_post($welcome_message); ?>
-                            </div>
-                            <div class="kata-message-time">
-                                <?php echo current_time('H:i'); ?>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Quick Actions (giống suggested actions nhưng style như contact buttons) -->
-                    <div class="kata-quick-actions">
-                        <div class="kata-quick-action-item">
-                            <button class="kata-contact-btn kata-suggestion-btn" 
-                                    data-message="<?php _e('Tôi muốn tìm hiểu về các khóa học thẩm mỹ', 'kata-chatbot'); ?>"
-                                    style="background: #4A90E2; color: white;">
-                                <svg viewBox="0 0 24 24" width="16" height="16">
-                                    <path fill="currentColor" d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM17 12H7V10H17V12ZM17 9H7V7H17V9ZM17 15H7V13H17V15Z"/>
-                                </svg>
-                                <?php _e('Khóa học', 'kata-chatbot'); ?>
-                            </button>
-                        </div>
-                        <div class="kata-quick-action-item">
-                            <button class="kata-contact-btn kata-suggestion-btn" 
-                                    data-message="<?php _e('Tôi cần tư vấn về lộ trình học phù hợp', 'kata-chatbot'); ?>"
-                                    style="background: #28a745; color: white;">
-                                <svg viewBox="0 0 24 24" width="16" height="16">
-                                    <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"/>
-                                </svg>
-                                <?php _e('Tư vấn', 'kata-chatbot'); ?>
-                            </button>
-                        </div>
-                        <div class="kata-quick-action-item">
-                            <button class="kata-contact-btn kata-suggestion-btn" 
-                                    data-message="<?php _e('Học phí và khuyến mãi hiện tại như thế nào?', 'kata-chatbot'); ?>"
-                                    style="background: #ffc107; color: #333;">
-                                <svg viewBox="0 0 24 24" width="16" height="16">
-                                    <path fill="currentColor" d="M11.8 10.9C11.8 10.9 11.8 10.9 11.8 10.9C11.7 10.9 11.7 10.9 11.7 10.9C11.7 10.9 11.7 10.9 11.7 10.9C11.6 10.9 11.6 10.9 11.6 10.9H11.6H11.5C11.5 10.9 11.5 10.9 11.5 10.9C11.4 10.9 11.4 10.9 11.4 10.9C11.4 10.9 11.4 10.9 11.4 10.9H11.3C11.3 10.9 11.3 10.9 11.3 10.9C11.2 10.9 11.2 10.9 11.2 10.9H11.1H11C11 10.9 11 10.9 11 10.9C10.9 10.9 10.9 10.9 10.9 10.9C10.9 10.9 10.9 10.9 10.9 10.9H10.8C10.8 10.9 10.8 10.9 10.8 10.9C10.7 10.9 10.7 10.9 10.7 10.9C10.7 10.9 10.7 10.9 10.7 10.9H10.6C10.6 10.9 10.6 10.9 10.6 10.9C10.5 10.9 10.5 10.9 10.5 10.9H10.4H10.3C10.3 10.9 10.3 10.9 10.3 10.9C10.2 10.9 10.2 10.9 10.2 10.9C10.2 10.9 10.2 10.9 10.2 10.9H10.1C10.1 10.9 10.1 10.9 10.1 10.9C10 10.9 10 10.9 10 10.9H9.9H9.8C9.8 10.9 9.8 10.9 9.8 10.9C9.7 10.9 9.7 10.9 9.7 10.9C9.7 10.9 9.7 10.9 9.7 10.9H9.6C9.6 10.9 9.6 10.9 9.6 10.9C9.5 10.9 9.5 10.9 9.5 10.9H9.4H9.3C9.3 10.9 9.3 10.9 9.3 10.9C9.2 10.9 9.2 10.9 9.2 10.9C9.2 10.9 9.2 10.9 9.2 10.9H9.1C9.1 10.9 9.1 10.9 9.1 10.9C9 10.9 9 10.9 9 10.9H8.9H8.8C8.8 10.9 8.8 10.9 8.8 10.9C8.7 10.9 8.7 10.9 8.7 10.9C8.7 10.9 8.7 10.9 8.7 10.9H8.6C8.6 10.9 8.6 10.9 8.6 10.9C8.5 10.9 8.5 10.9 8.5 10.9H8.4H8.3C8.3 10.9 8.3 10.9 8.3 10.9C8.2 10.9 8.2 10.9 8.2 10.9C8.2 10.9 8.2 10.9 8.2 10.9H8.1C8.1 10.9 8.1 10.9 8.1 10.9C8 10.9 8 10.9 8 10.9H7.9H7.8C7.8 10.9 7.8 10.9 7.8 10.9C7.7 10.9 7.7 10.9 7.7 10.9C7.7 10.9 7.7 10.9 7.7 10.9H7.6C7.6 10.9 7.6 10.9 7.6 10.9C7.5 10.9 7.5 10.9 7.5 10.9H7.4H7.3C7.3 10.9 7.3 10.9 7.3 10.9C7.2 10.9 7.2 10.9 7.2 10.9C7.2 10.9 7.2 10.9 7.2 10.9H7.1C7.1 10.9 7.1 10.9 7.1 10.9C7 10.9 7 10.9 7 10.9H6.9H6.8C6.8 10.9 6.8 10.9 6.8 10.9C6.7 10.9 6.7 10.9 6.7 10.9C6.7 10.9 6.7 10.9 6.7 10.9H6.6C6.6 10.9 6.6 10.9 6.6 10.9C6.5 10.9 6.5 10.9 6.5 10.9H6.4H6.3C6.3 10.9 6.3 10.9 6.3 10.9C6.2 10.9 6.2 10.9 6.2 10.9C6.2 10.9 6.2 10.9 6.2 10.9H6.1C6.1 10.9 6.1 10.9 6.1 10.9C6 10.9 6 10.9 6 10.9H5.9H5.8C5.8 10.9 5.8 10.9 5.8 10.9C5.7 10.9 5.7 10.9 5.7 10.9C5.7 10.9 5.7 10.9 5.7 10.9H5.6C5.6 10.9 5.6 10.9 5.6 10.9C5.5 10.9 5.5 10.9 5.5 10.9H5.4H5.3C5.3 10.9 5.3 10.9 5.3 10.9C5.2 10.9 5.2 10.9 5.2 10.9C5.2 10.9 5.2 10.9 5.2 10.9H5.1C5.1 10.9 5.1 10.9 5.1 10.9C5 10.9 5 10.9 5 10.9H4.9H4.8C4.8 10.9 4.8 10.9 4.8 10.9C4.7 10.9 4.7 10.9 4.7 10.9C4.7 10.9 4.7 10.9 4.7 10.9H4.6C4.6 10.9 4.6 10.9 4.6 10.9C4.5 10.9 4.5 10.9 4.5 10.9H4.4H4.3C4.3 10.9 4.3 10.9 4.3 10.9C4.2 10.9 4.2 10.9 4.2 10.9C4.2 10.9 4.2 10.9 4.2 10.9H4.1C4.1 10.9 4.1 10.9 4.1 10.9C4 10.9 4 10.9 4 10.9H3.9H3.8C3.8 10.9 3.8 10.9 3.8 10.9C3.7 10.9 3.7 10.9 3.7 10.9C3.7 10.9 3.7 10.9 3.7 10.9H3.6C3.6 10.9 3.6 10.9 3.6 10.9C3.5 10.9 3.5 10.9 3.5 10.9H3.4H3.3C3.3 10.9 3.3 10.9 3.3 10.9C3.2 10.9 3.2 10.9 3.2 10.9C3.2 10.9 3.2 10.9 3.2 10.9H3.1C3.1 10.9 3.1 10.9 3.1 10.9C3 10.9 3 10.9 3 10.9H2.9H2.8C2.8 10.9 2.8 10.9 2.8 10.9C2.7 10.9 2.7 10.9 2.7 10.9C2.7 10.9 2.7 10.9 2.7 10.9H2.6C2.6 10.9 2.6 10.9 2.6 10.9C2.5 10.9 2.5 10.9 2.5 10.9H2.4H2.3C2.3 10.9 2.3 10.9 2.3 10.9C2.2 10.9 2.2 10.9 2.2 10.9C2.2 10.9 2.2 10.9 2.2 10.9H2.1C2.1 10.9 2.1 10.9 2.1 10.9C2 10.9 2 10.9 2 10.9H1.9H1.8C1.8 10.9 1.8 10.9 1.8 10.9C1.7 10.9 1.7 10.9 1.7 10.9C1.7 10.9 1.7 10.9 1.7 10.9H1.6C1.6 10.9 1.6 10.9 1.6 10.9C1.5 10.9 1.5 10.9 1.5 10.9H1.4H1.3C1.3 10.9 1.3 10.9 1.3 10.9C1.2 10.9 1.2 10.9 1.2 10.9C1.2 10.9 1.2 10.9 1.2 10.9H1.1C1.1 10.9 1.1 10.9 1.1 10.9C1 10.9 1 10.9 1 10.9H0.9H0.8C0.8 10.9 0.8 10.9 0.8 10.9C0.7 10.9 0.7 10.9 0.7 10.9C0.7 10.9 0.7 10.9 0.7 10.9H0.6C0.6 10.9 0.6 10.9 0.6 10.9C0.5 10.9 0.5 10.9 0.5 10.9H0.4H0.3C0.3 10.9 0.3 10.9 0.3 10.9C0.2 10.9 0.2 10.9 0.2 10.9C0.2 10.9 0.2 10.9 0.2 10.9H0.1C0.1 10.9 0.1 10.9 0.1 10.9C0 10.9 0 10.9 0 10.9H-0.1H-0.2C-0.2 10.9 -0.2 10.9 -0.2 10.9C-0.3 10.9 -0.3 10.9 -0.3 10.9C-0.3 10.9 -0.3 10.9 -0.3 10.9H-0.4C-0.4 10.9 -0.4 10.9 -0.4 10.9C-0.5 10.9 -0.5 10.9 -0.5 10.9H-0.6H-0.7C-0.7 10.9 -0.7 10.9 -0.7 10.9C-0.8 10.9 -0.8 10.9 -0.8 10.9C-0.8 10.9 -0.8 10.9 -0.8 10.9H-0.9C-0.9 10.9 -0.9 10.9 -0.9 10.9C-1 10.9 -1 10.9 -1 10.9H-1.1H-1.2C-1.2 10.9 -1.2 10.9 -1.2 10.9C-1.3 10.9 -1.3 10.9 -1.3 10.9C-1.3 10.9 -1.3 10.9 -1.3 10.9H-1.4C-1.4 10.9 -1.4 10.9 -1.4 10.9C-1.5 10.9 -1.5 10.9 -1.5 10.9H-1.6H-1.7C-1.7 10.9 -1.7 10.9 -1.7 10.9C-1.8 10.9 -1.8 10.9 -1.8 10.9C-1.8 10.9 -1.8 10.9 -1.8 10.9H-1.9C-1.9 10.9 -1.9 10.9 -1.9 10.9C-2 10.9 -2 10.9 -2 10.9H-2.1H-2.2C-2.2 10.9 -2.2 10.9 -2.2 10.9M12 2L13.09 8.26L22 9L17 14L18.18 23L12 19.5L5.82 23L7 14L2 9L10.91 8.26L12 2Z"/>
-                                </svg>
-                                <?php _e('Học phí', 'kata-chatbot'); ?>
-                            </button>
-                        </div>
-                        <div class="kata-quick-action-item">
-                            <button class="kata-contact-btn kata-suggestion-btn" 
-                                    data-message="<?php _e('Tôi muốn đăng ký tham quan cơ sở', 'kata-chatbot'); ?>"
-                                    style="background: #e83e8c; color: white;">
-                                <svg viewBox="0 0 24 24" width="16" height="16">
-                                    <path fill="currentColor" d="M12 2L13.09 8.26L22 9L17 14L18.18 23L12 19.5L5.82 23L7 14L2 9L10.91 8.26L12 2Z"/>
-                                </svg>
-                                <?php _e('Tham quan', 'kata-chatbot'); ?>
-                            </button>
+                        <div class="kata-message-time">
+                            <?php echo current_time('H:i'); ?>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Chat Input -->
-                <div class="kata-chat-input">
-                    <div class="kata-input-group">
-                        <textarea id="kata-message-input" 
-                                  placeholder="<?php _e('Nhập câu hỏi của bạn...', 'kata-chatbot'); ?>" 
-                                  rows="1"></textarea>
-                        <button id="kata-send-btn" class="kata-send-btn" title="<?php _e('Gửi', 'kata-chatbot'); ?>">
-                            <svg viewBox="0 0 24 24" width="20" height="20">
-                                <path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z"/>
-                            </svg>
-                        </button>
+                <?php if (!$offline_mode) : ?>
+                <!-- Suggested Actions -->
+                <div class="kata-suggested-actions">
+                    <button class="kata-suggestion-btn" data-message="<?php _e('Tôi muốn tìm hiểu về dịch vụ', 'kata-chatbot'); ?>">
+                        <?php _e('Dịch vụ', 'kata-chatbot'); ?>
+                    </button>
+                    <button class="kata-suggestion-btn" data-message="<?php _e('Làm sao để liên hệ tư vấn?', 'kata-chatbot'); ?>">
+                        <?php _e('Tư vấn', 'kata-chatbot'); ?>
+                    </button>
+                    <button class="kata-suggestion-btn" data-message="<?php _e('Báo giá dịch vụ như thế nào?', 'kata-chatbot'); ?>">
+                        <?php _e('Báo giá', 'kata-chatbot'); ?>
+                    </button>
+                </div>
+                <?php endif; ?>
+            </div>
+            
+            <!-- Chat Input -->
+            <div class="kata-chat-input" <?php echo $offline_mode ? 'style="display: none;"' : ''; ?>>
+                <div class="kata-input-group">
+                    <textarea id="kata-message-input" 
+                              placeholder="<?php _e('Nhập tin nhắn...', 'kata-chatbot'); ?>" 
+                              rows="1"></textarea>
+                    <button id="kata-send-btn" class="kata-send-btn" title="<?php _e('Gửi', 'kata-chatbot'); ?>">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Typing Indicator -->
+                <div id="kata-typing-indicator" class="kata-typing-indicator" style="display: none;">
+                    <div class="kata-typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
                     </div>
-                    
-                    <!-- Typing Indicator -->
-                    <div id="kata-typing-indicator" class="kata-typing-indicator" style="display: none;">
-                        <div class="kata-typing-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </div>
-                        <span class="kata-typing-text"><?php _e('AI đang suy nghĩ...', 'kata-chatbot'); ?></span>
-                    </div>
+                    <span class="kata-typing-text"><?php _e('Đang trả lời...', 'kata-chatbot'); ?></span>
                 </div>
             </div>
-            <?php endif; ?>
         </div>
         <?php endif; ?>
 
@@ -616,227 +582,20 @@ if (!$enabled) {
     height: 400px;
 }
 
-/* Chat Interface */
-.kata-chat-interface {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    flex: 1;
+#kata-tab-chat .kata-chat-header {
+    flex-shrink: 0;
 }
 
 #kata-tab-chat .kata-chat-messages {
     flex: 1;
     overflow-y: auto;
     padding: 15px;
-    background: #f8f9fa;
-    border-bottom: 1px solid #e0e0e0;
 }
 
 #kata-tab-chat .kata-chat-input {
     flex-shrink: 0;
     padding: 15px;
-    background: white;
-}
-
-/* Quick Actions Styling */
-.kata-quick-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 16px 0;
-    padding: 0 8px;
-}
-
-.kata-quick-action-item .kata-contact-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 12px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.kata-quick-action-item .kata-contact-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.kata-quick-action-item .kata-contact-btn svg {
-    margin-right: 6px;
-}
-
-/* Chat Message Styling */
-.kata-message {
-    display: flex;
-    margin-bottom: 16px;
-    animation: slideIn 0.3s ease;
-}
-
-.kata-bot-message {
-    justify-content: flex-start;
-}
-
-.kata-user-message {
-    justify-content: flex-end;
-}
-
-.kata-message-avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-right: 8px;
-    flex-shrink: 0;
-}
-
-.kata-message-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.kata-message-content {
-    max-width: 80%;
-}
-
-.kata-message-bubble {
-    background: white;
-    padding: 12px 16px;
-    border-radius: 18px;
-    margin-bottom: 4px;
-    word-wrap: break-word;
-    line-height: 1.4;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.kata-user-message .kata-message-bubble {
-    background: #4A90E2;
-    color: white;
-    border-bottom-right-radius: 6px;
-}
-
-.kata-bot-message .kata-message-bubble {
-    border-bottom-left-radius: 6px;
-}
-
-.kata-message-time {
-    font-size: 11px;
-    color: #666;
-    text-align: right;
-    padding: 0 4px;
-}
-
-.kata-user-message .kata-message-time {
-    text-align: right;
-}
-
-.kata-bot-message .kata-message-time {
-    text-align: left;
-}
-
-/* Input Group Styling */
-.kata-input-group {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    background: #f8f9fa;
-    border-radius: 20px;
-    padding: 8px 12px;
-    border: 1px solid #e0e0e0;
-}
-
-#kata-message-input {
-    flex: 1;
-    border: none;
-    background: transparent;
-    outline: none;
-    resize: none;
-    font-family: inherit;
-    font-size: 14px;
-    line-height: 1.4;
-    max-height: 80px;
-    min-height: 20px;
-}
-
-.kata-send-btn {
-    background: #4A90E2;
-    border: none;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: white;
-    flex-shrink: 0;
-}
-
-.kata-send-btn:hover {
-    background: #357ABD;
-    transform: scale(1.05);
-}
-
-.kata-send-btn:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Typing Indicator */
-.kata-typing-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 8px;
-    font-size: 12px;
-    color: #666;
-}
-
-.kata-typing-dots {
-    display: flex;
-    gap: 4px;
-}
-
-.kata-typing-dots span {
-    width: 6px;
-    height: 6px;
-    background: #4A90E2;
-    border-radius: 50%;
-    animation: typingDots 1.4s infinite ease-in-out;
-}
-
-.kata-typing-dots span:nth-child(1) {
-    animation-delay: -0.32s;
-}
-
-.kata-typing-dots span:nth-child(2) {
-    animation-delay: -0.16s;
-}
-
-@keyframes typingDots {
-    0%, 80%, 100% {
-        opacity: 0.3;
-        transform: scale(0.8);
-    }
-    40% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    border-top: 1px solid #e0e0e0;
 }
 
 /* Responsive Design */
@@ -857,35 +616,6 @@ if (!$enabled) {
     .kata-contact-btn {
         text-align: center;
         justify-content: center;
-    }
-    
-    /* Quick Actions Mobile Layout */
-    .kata-quick-actions {
-        grid-template-columns: 1fr;
-        gap: 8px;
-        margin: 12px 0;
-        padding: 0 4px;
-    }
-    
-    .kata-quick-action-item .kata-contact-btn {
-        padding: 10px 8px;
-        font-size: 12px;
-    }
-    
-    .kata-chat-window {
-        width: calc(100vw - 20px);
-        height: calc(100vh - 100px);
-        bottom: 80px;
-        right: 10px;
-        left: 10px;
-    }
-    
-    #kata-tab-chat .kata-chat-messages {
-        padding: 10px;
-    }
-    
-    #kata-tab-chat .kata-chat-input {
-        padding: 10px;
     }
 }
 
@@ -1376,69 +1106,28 @@ jQuery(document).ready(function($) {
     text-align: left;
 }
 
-/* Quick Actions and Suggestion Buttons */
-.kata-quick-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 16px 0;
-    padding: 0 8px;
-}
-
-.kata-quick-action-item .kata-contact-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 12px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.kata-quick-action-item .kata-contact-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    text-decoration: none;
-}
-
-.kata-quick-action-item .kata-contact-btn svg {
-    margin-right: 6px;
-    flex-shrink: 0;
-}
-
-/* Legacy suggestion buttons for compatibility */
-.kata-suggestion-btn {
-    background: #f8f9fa;
-    border: 1px solid #4A90E2;
-    color: #4A90E2;
-    padding: 8px 12px;
-    border-radius: 16px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: 500;
-}
-
-.kata-suggestion-btn:hover {
-    background: #4A90E2;
-    color: white;
-    transform: translateY(-1px);
-}
-
-/* Suggested Actions (for dynamic suggestions) */
+/* Suggested Actions */
 .kata-suggested-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
     margin: 16px 0;
-    padding: 0 8px;
+}
+
+.kata-suggestion-btn {
+    background: var(--kata-secondary);
+    border: 1px solid var(--kata-primary);
+    color: var(--kata-primary);
+    padding: 8px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.kata-suggestion-btn:hover {
+    background: var(--kata-primary);
+    color: white;
 }
 
 /* Typing Indicator */
@@ -1771,6 +1460,16 @@ jQuery(document).ready(function($) {
     .kata-position-bottom-center {
         left: 20px;
         transform: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .kata-chat-window {
+        width: calc(100vw - 20px);
+        height: calc(100vh - 100px);
+        bottom: 80px;
+        right: 10px;
+        left: 10px;
     }
 }
 </style>

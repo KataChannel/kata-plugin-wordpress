@@ -35,6 +35,8 @@ class KataChatbot_Admin {
         add_action('admin_menu', array($this, 'add_admin_menu'));
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         add_action('admin_init', array($this, 'register_settings'));
+        add_action('admin_init', array($this, 'handle_settings_save'));
+        add_action('admin_notices', array($this, 'admin_notices'));
         
         // AJAX handlers for admin
         add_action('wp_ajax_kata_chatbot_save_quick_settings', array($this, 'save_quick_settings'));
@@ -42,6 +44,33 @@ class KataChatbot_Admin {
         add_action('wp_ajax_kata_chatbot_get_conversation_details', array($this, 'get_conversation_details'));
         add_action('wp_ajax_kata_chatbot_delete_conversation', array($this, 'delete_conversation'));
         add_action('wp_ajax_kata_chatbot_export_data', array($this, 'export_data'));
+    }
+    
+    /**
+     * Admin notices
+     */
+    public function admin_notices() {
+        // Only show on our plugin pages
+        $screen = get_current_screen();
+        if (!$screen || strpos($screen->id, 'kata-chatbot') === false) {
+            return;
+        }
+        
+        // Check for settings updated
+        if (isset($_GET['settings-updated']) && $_GET['settings-updated'] == 'true') {
+            echo '<div class="notice notice-success is-dismissible">
+                    <p><strong>✅ Cài đặt Kata Chatbot đã được lưu thành công!</strong></p>
+                    <p>Các thay đổi về hiển thị tab đã được áp dụng cho widget chatbot.</p>
+                  </div>';
+        }
+        
+        // Check for errors
+        if (isset($_GET['kata-error'])) {
+            $error_message = urldecode($_GET['kata-error']);
+            echo '<div class="notice notice-error is-dismissible">
+                    <p><strong>❌ Lỗi:</strong> ' . esc_html($error_message) . '</p>
+                  </div>';
+        }
     }
     
     /**
@@ -165,31 +194,134 @@ class KataChatbot_Admin {
      * Register plugin settings
      */
     public function register_settings() {
-        // General settings
-        register_setting('kata_chatbot_general', 'kata_chatbot_enabled');
-        register_setting('kata_chatbot_general', 'kata_chatbot_name');
-        register_setting('kata_chatbot_general', 'kata_chatbot_welcome_message');
-        register_setting('kata_chatbot_general', 'kata_chatbot_offline_message');
+        // Main settings group for the form
+        register_setting('kata_chatbot_settings', 'kata_chatbot_options', array(
+            'sanitize_callback' => array($this, 'sanitize_options'),
+            'show_in_rest' => false,
+            'default' => array(
+                'enabled' => 1,
+                'title' => 'Kata Support',
+                'welcome_message' => 'Xin chào! Tôi có thể giúp gì cho bạn? 😊',
+                'ai_provider' => 'google_ai_studio',
+                'api_key' => '',
+                'ai_model' => 'gemini-1.5-flash',
+                'position' => 'bottom-right',
+                'primary_color' => '#007cba',
+                'avatar' => '',
+                'show_chat_tab' => 1,
+                'show_facebook_tab' => 1,
+                'show_zalo_tab' => 1,
+                'show_hotline_tab' => 1,
+                'default_tab' => 'chat',
+                'max_messages' => 50,
+                'session_timeout' => 30,
+                'enable_analytics' => 1,
+                'debug_mode' => 0
+            )
+        ));
         
-        // API settings
-        register_setting('kata_chatbot_api', 'kata_chatbot_google_api_key');
-        register_setting('kata_chatbot_api', 'kata_chatbot_ai_model');
-        register_setting('kata_chatbot_api', 'kata_chatbot_max_tokens');
-        register_setting('kata_chatbot_api', 'kata_chatbot_temperature');
-        
-        // Widget settings
-        register_setting('kata_chatbot_widget', 'kata_chatbot_position');
-        register_setting('kata_chatbot_widget', 'kata_chatbot_theme');
-        register_setting('kata_chatbot_widget', 'kata_chatbot_sound_enabled');
-        register_setting('kata_chatbot_widget', 'kata_chatbot_avatar');
-        
-        // Advanced settings
-        register_setting('kata_chatbot_advanced', 'kata_chatbot_max_message_length');
-        register_setting('kata_chatbot_advanced', 'kata_chatbot_context_memory');
-        register_setting('kata_chatbot_advanced', 'kata_chatbot_rate_limit');
-        register_setting('kata_chatbot_advanced', 'kata_chatbot_debug_mode');
+        // Legacy individual settings for backward compatibility
+        register_setting('kata_chatbot_settings', 'kata_chatbot_enabled');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_name');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_welcome_message');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_offline_message');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_google_api_key');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_ai_model');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_max_tokens');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_temperature');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_position');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_theme');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_sound_enabled');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_avatar');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_max_message_length');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_context_memory');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_rate_limit');
+        register_setting('kata_chatbot_settings', 'kata_chatbot_debug_mode');
     }
     
+    /**
+     * Sanitize options
+     */
+    public function sanitize_options($options) {
+        $sanitized = array();
+        
+        if (!is_array($options)) {
+            return $sanitized;
+        }
+        
+        // Boolean options
+        $boolean_options = array(
+            'enabled',
+            'show_chat_tab',
+            'show_facebook_tab', 
+            'show_zalo_tab',
+            'show_hotline_tab',
+            'enable_analytics',
+            'debug_mode'
+        );
+        
+        foreach ($boolean_options as $option) {
+            $sanitized[$option] = isset($options[$option]) ? 1 : 0;
+        }
+        
+        // Text options
+        $text_options = array(
+            'title' => 'sanitize_text_field',
+            'welcome_message' => 'sanitize_textarea_field',
+            'ai_provider' => 'sanitize_text_field',
+            'ai_model' => 'sanitize_text_field',
+            'position' => 'sanitize_text_field',
+            'primary_color' => 'sanitize_hex_color',
+            'avatar' => 'esc_url_raw',
+            'default_tab' => 'sanitize_text_field'
+        );
+        
+        foreach ($text_options as $option => $sanitize_func) {
+            if (isset($options[$option])) {
+                $sanitized[$option] = call_user_func($sanitize_func, $options[$option]);
+            }
+        }
+        
+        // API key (special handling)
+        if (isset($options['api_key'])) {
+            $sanitized['api_key'] = sanitize_text_field($options['api_key']);
+        }
+        
+        // Numeric options
+        $numeric_options = array('max_messages', 'session_timeout');
+        foreach ($numeric_options as $option) {
+            if (isset($options[$option])) {
+                $sanitized[$option] = absint($options[$option]);
+            }
+        }
+        
+        // Validate default_tab is one of the enabled tabs
+        if (isset($sanitized['default_tab'])) {
+            $enabled_tabs = array();
+            if ($sanitized['show_chat_tab']) $enabled_tabs[] = 'chat';
+            if ($sanitized['show_facebook_tab']) $enabled_tabs[] = 'facebook';
+            if ($sanitized['show_zalo_tab']) $enabled_tabs[] = 'zalo';
+            if ($sanitized['show_hotline_tab']) $enabled_tabs[] = 'hotline';
+            
+            if (!in_array($sanitized['default_tab'], $enabled_tabs)) {
+                $sanitized['default_tab'] = !empty($enabled_tabs) ? $enabled_tabs[0] : 'chat';
+            }
+        }
+        
+        // Ensure at least one tab is enabled
+        $has_enabled_tab = $sanitized['show_chat_tab'] || 
+                          $sanitized['show_facebook_tab'] || 
+                          $sanitized['show_zalo_tab'] || 
+                          $sanitized['show_hotline_tab'];
+        
+        if (!$has_enabled_tab) {
+            $sanitized['show_chat_tab'] = 1;
+            $sanitized['default_tab'] = 'chat';
+        }
+        
+        return $sanitized;
+    }
+
     /**
      * Display dashboard page
      */
@@ -485,6 +617,56 @@ class KataChatbot_Admin {
     /**
      * Get admin page URL
      */
+    /**
+     * Handle settings save
+     */
+    public function handle_settings_save() {
+        // Check if this is our settings save request
+        if (!isset($_POST['kata_chatbot_nonce']) || !wp_verify_nonce($_POST['kata_chatbot_nonce'], 'kata_chatbot_save_settings')) {
+            return;
+        }
+        
+        // Check user capabilities
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+        
+        // Sanitize and save settings
+        $settings = array(
+            'enabled' => isset($_POST['enabled']) ? '1' : '0',
+            'position' => sanitize_text_field($_POST['position'] ?? 'bottom-right'),
+            'title' => sanitize_text_field($_POST['title'] ?? 'Kata Chatbot'),
+            'welcome_message' => sanitize_textarea_field($_POST['welcome_message'] ?? __('Xin chào! Tôi có thể giúp gì cho bạn? 😊', 'kata-chatbot')),
+            'tabs' => isset($_POST['tabs']) ? array_map('sanitize_text_field', $_POST['tabs']) : array(),
+            'tab_visibility' => isset($_POST['tab_visibility']) ? array_map('sanitize_text_field', $_POST['tab_visibility']) : array(),
+            'zalo_number' => sanitize_text_field($_POST['zalo_number'] ?? ''),
+            'hotline_number' => sanitize_text_field($_POST['hotline_number'] ?? ''),
+            'facebook_page_id' => sanitize_text_field($_POST['facebook_page_id'] ?? ''),
+            'ai_assistant_enabled' => isset($_POST['ai_assistant_enabled']) ? '1' : '0',
+            'ai_model' => sanitize_text_field($_POST['ai_model'] ?? 'gpt-3.5-turbo'),
+            'ai_api_key' => sanitize_text_field($_POST['ai_api_key'] ?? ''),
+            'ai_temperature' => floatval($_POST['ai_temperature'] ?? 0.7),
+            'ai_max_tokens' => intval($_POST['ai_max_tokens'] ?? 150),
+            'offline_mode' => isset($_POST['offline_mode']) ? '1' : '0',
+            'offline_message' => sanitize_textarea_field($_POST['offline_message'] ?? __('Chatbot hiện đang offline. Vui lòng thử lại sau.', 'kata-chatbot')),
+        );
+        
+        // Update options
+        update_option('kata_chatbot_settings', $settings);
+        
+        // Get the current tab
+        $current_tab = sanitize_text_field($_GET['tab'] ?? 'general');
+        
+        // Redirect with success message and preserve tab
+        $redirect_url = $this->get_admin_url('kata-chatbot', array(
+            'tab' => $current_tab,
+            'updated' => '1'
+        ));
+        
+        wp_redirect($redirect_url);
+        exit;
+    }
+
     public function get_admin_url($page = 'kata-chatbot', $params = array()) {
         $url = admin_url('admin.php?page=' . $page);
         

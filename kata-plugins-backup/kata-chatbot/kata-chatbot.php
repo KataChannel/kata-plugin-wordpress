@@ -733,7 +733,23 @@ class KataChatbot {
      * Render chatbot widget
      */
     public function render_chatbot_widget() {
-        if (!get_option('kata_chatbot_enabled', true)) {
+        // Check if chatbot is enabled - try new settings first, fallback to old
+        $new_settings = get_option('kata_chatbot_settings', array());
+        $old_options = get_option('kata_chatbot_options', array());
+        
+        // Use new settings if available, otherwise fallback to old
+        if (!empty($new_settings)) {
+            $enabled = isset($new_settings['enabled']) ? $new_settings['enabled'] : 1;
+        } else {
+            $enabled = isset($old_options['enabled']) ? $old_options['enabled'] : 1;
+        }
+        
+        if (!$enabled) {
+            return;
+        }
+        
+        // Don't show in admin area
+        if (is_admin()) {
             return;
         }
         

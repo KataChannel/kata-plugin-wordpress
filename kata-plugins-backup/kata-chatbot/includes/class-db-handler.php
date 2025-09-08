@@ -243,6 +243,35 @@ class KataChatbot_DB_Handler {
             $date_from
         ));
         
+        // Active users (unique IPs in the period)
+        $stats['active_users'] = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(DISTINCT user_ip) FROM $conversations_table 
+             WHERE started_at >= %s",
+            $date_from
+        ));
+        
+        // Average rating
+        $avg_rating = $wpdb->get_var($wpdb->prepare(
+            "SELECT AVG(rating) FROM $messages_table m
+             INNER JOIN $conversations_table c ON m.conversation_id = c.id
+             WHERE m.rating > 0 AND c.started_at >= %s",
+            $date_from
+        ));
+        $stats['avg_rating'] = $avg_rating ? round((float) $avg_rating, 2) : 0;
+        
+        // Satisfaction rate (percentage of ratings >= 4 out of 5)
+        $satisfaction_rate = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) * 100.0 / NULLIF((SELECT COUNT(*) FROM $messages_table m2 
+             INNER JOIN $conversations_table c2 ON m2.conversation_id = c2.id 
+             WHERE m2.rating > 0 AND c2.started_at >= %s), 0)
+             FROM $messages_table m
+             INNER JOIN $conversations_table c ON m.conversation_id = c.id
+             WHERE m.rating >= 4 AND c.started_at >= %s",
+            $date_from,
+            $date_from
+        ));
+        $stats['satisfaction_rate'] = $satisfaction_rate ? round((float) $satisfaction_rate, 1) : 0;
+        
         // Daily conversation counts
         $stats['daily_conversations'] = $wpdb->get_results($wpdb->prepare(
             "SELECT DATE(started_at) as date, COUNT(*) as count
@@ -354,7 +383,12 @@ class KataChatbot_DB_Handler {
         // Get conversations with message counts
         $query = "SELECT c.*, 
                          COUNT(m.id) as message_count,
-                         MAX(m.created_at) as last_message_at
+                         MAX(m.created_at) as last_message_at,
+                         (SELECT m2.message_text 
+                          FROM $messages_table m2 
+                          WHERE m2.conversation_id = c.id 
+                          ORDER BY m2.created_at DESC 
+                          LIMIT 1) as last_message
                   FROM $conversations_table c
                   LEFT JOIN $messages_table m ON c.id = m.conversation_id
                   WHERE $where_clause
@@ -596,5 +630,216 @@ class KataChatbot_DB_Handler {
             }
         }
         return $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    }
+    
+    /**
+     * Get conversations for admin
+     */
+    public function get_admin_conversations($limit = 20, $offset = 0) {
+        global $wpdb;
+        
+        $conversations_table = $wpdb->prefix . 'kata_chatbot_conversations';
+        
+        $results = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM $conversations_table 
+                 ORDER BY last_activity DESC 
+                 LIMIT %d OFFSET %d",
+                $limit,
+                $offset
+            )
+        );
+        
+        return $results ? $results : array();
+    }
+    
+    /**
+     * Get total conversations count
+     */
+    public function get_total_conversations() {
+        global $wpdb;
+        
+        $conversations_table = $wpdb->prefix . 'kata_chatbot_conversations';
+        
+        return (int) $wpdb->get_var("SELECT COUNT(*) FROM $conversations_table");
+    }
+    
+    /**
+     * Get knowledge base items
+     */
+    public function get_knowledge_base_items($category = '', $status = 'active') {
+        global $wpdb;
+        
+        $knowledge_table = $wpdb->prefix . 'kata_chatbot_knowledge';
+        
+        $where_clauses = array();
+        $where_values = array();
+        
+        if (!empty($status)) {
+            $where_clauses[] = 'status = %s';
+            $where_values[] = $status;
+        }
+        
+        if (!empty($category)) {
+            $where_clauses[] = 'category = %s';
+            $where_values[] = $category;
+        }
+        
+        $where_sql = !empty($where_clauses) ? 'WHERE ' . implode(' AND ', $where_clauses) : '';
+        
+        $sql = "SELECT * FROM $knowledge_table $where_sql ORDER BY priority DESC, created_at DESC";
+        
+        if (!empty($where_values)) {
+            $results = $wpdb->get_results($wpdb->prepare($sql, $where_values));
+        } else {
+            $results = $wpdb->get_results($sql);
+        }
+        
+        return $results ? $results : array();
+    }
+    
+    /**
+     * Get analytics data
+     */
+    public function get_analytics_data($days = 30) {
+        global $wpdb;
+        
+        $conversations_table = $wpdb->prefix . 'kata_chatbot_conversations';
+        $messages_table = $wpdb->prefix . 'kata_chatbot_messages';
+        
+        $date_from = date('Y-m-d', strtotime("-$days days"));
+        
+        // Get daily conversation counts
+        $daily_conversations = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT DATE(started_at) as date, COUNT(*) as count 
+                 FROM $conversations_table 
+                 WHERE DATE(started_at) >= %s 
+                 GROUP BY DATE(started_at) 
+                 ORDER BY date ASC",
+                $date_from
+            )
+        );
+        
+        // Get daily message counts
+        $daily_messages = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT DATE(created_at) as date, COUNT(*) as count 
+                 FROM $messages_table 
+                 WHERE DATE(created_at) >= %s 
+                 GROUP BY DATE(created_at) 
+                 ORDER BY date ASC",
+                $date_from
+            )
+        );
+        
+        return array(
+            'daily_conversations' => $daily_conversations,
+            'daily_messages' => $daily_messages
+        );
+    }
+    
+    /**
+     * Save knowledge base item
+     */
+    public function save_knowledge_item($data) {
+        global $wpdb;
+        
+        $knowledge_table = $wpdb->prefix . 'kata_chatbot_knowledge';
+        
+        $item_data = array(
+            'category' => sanitize_text_field($data['category']),
+            'question' => sanitize_textarea_field($data['question']),
+            'answer' => wp_kses_post($data['answer']),
+            'keywords' => sanitize_text_field($data['keywords']),
+            'priority' => intval($data['priority']),
+            'status' => sanitize_text_field($data['status'])
+        );
+        
+        $format = array('%s', '%s', '%s', '%s', '%d', '%s');
+        
+        if (isset($data['id']) && $data['id'] > 0) {
+            // Update existing item
+            $result = $wpdb->update(
+                $knowledge_table,
+                $item_data,
+                array('id' => intval($data['id'])),
+                $format,
+                array('%d')
+            );
+            
+            return $result !== false ? intval($data['id']) : false;
+        } else {
+            // Create new item
+            $result = $wpdb->insert($knowledge_table, $item_data, $format);
+            
+            return $result ? $wpdb->insert_id : false;
+        }
+    }
+    
+    /**
+     * Delete knowledge base item
+     */
+    public function delete_knowledge_item($id) {
+        global $wpdb;
+        
+        $knowledge_table = $wpdb->prefix . 'kata_chatbot_knowledge';
+        
+        return $wpdb->delete(
+            $knowledge_table,
+            array('id' => intval($id)),
+            array('%d')
+        );
+    }
+    
+    /**
+     * Search knowledge base
+     */
+    public function search_knowledge($query) {
+        global $wpdb;
+        
+        $knowledge_table = $wpdb->prefix . 'kata_chatbot_knowledge';
+        
+        $search_terms = explode(' ', sanitize_text_field($query));
+        $where_clauses = array();
+        $where_values = array();
+        
+        foreach ($search_terms as $term) {
+            if (strlen($term) > 2) {
+                $where_clauses[] = '(question LIKE %s OR answer LIKE %s OR keywords LIKE %s)';
+                $like_term = '%' . $wpdb->esc_like($term) . '%';
+                $where_values[] = $like_term;
+                $where_values[] = $like_term;
+                $where_values[] = $like_term;
+            }
+        }
+        
+        if (empty($where_clauses)) {
+            return array();
+        }
+        
+        $where_sql = 'WHERE status = "active" AND (' . implode(' AND ', $where_clauses) . ')';
+        
+        $sql = "SELECT * FROM $knowledge_table $where_sql ORDER BY priority DESC LIMIT 10";
+        
+        $results = $wpdb->get_results($wpdb->prepare($sql, $where_values));
+        
+        return $results ? $results : array();
+    }
+    
+    /**
+     * Add knowledge base item (compatibility method)
+     */
+    public function add_knowledge_item($question, $answer, $category = 'general', $keywords = '', $priority = 1) {
+        $data = array(
+            'category' => $category,
+            'question' => $question,
+            'answer' => $answer,
+            'keywords' => $keywords,
+            'priority' => $priority,
+            'status' => 'active'
+        );
+        
+        return $this->save_knowledge_item($data);
     }
 }

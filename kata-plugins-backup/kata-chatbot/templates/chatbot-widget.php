@@ -18,6 +18,10 @@ $welcome_message = get_option('kata_chatbot_welcome_message', __('Xin chào! Tô
 $offline_message = get_option('kata_chatbot_offline_message', __('Chatbot hiện đang offline. Vui lòng thử lại sau.', 'kata-chatbot'));
 $enabled = get_option('kata_chatbot_enabled', true);
 
+// Get branches for contact options
+$branch_handler = new KataChatbot_Branch_Handler();
+$branches = $branch_handler->get_all_branches(true); // Get only active branches
+
 if (!$enabled) {
     return;
 }
@@ -44,81 +48,643 @@ if (!$enabled) {
         <!-- Status Indicator -->
         <div class="kata-status-indicator kata-status-online"></div>
     </div>
-    
+
     <!-- Chat Window -->
     <div id="kata-chat-window" class="kata-chat-window">
-        <!-- Chat Header -->
-        <div class="kata-chat-header">
-            <div class="kata-header-info">
-                <div class="kata-avatar">
-                    <img src="<?php echo esc_url(get_option('kata_chatbot_avatar', plugins_url('assets/images/chatbot-avatar.png', dirname(__FILE__)))); ?>" 
-                         alt="Kata AI" />
-                </div>
-                <div class="kata-header-text">
-                    <h4><?php echo esc_html(get_option('kata_chatbot_name', __('Kata AI', 'kata-chatbot'))); ?></h4>
-                    <span class="kata-status-text"><?php _e('Trực tuyến', 'kata-chatbot'); ?></span>
-                </div>
-            </div>
-            
-            <div class="kata-header-actions">
-                <button id="kata-minimize-btn" class="kata-action-btn" title="<?php _e('Thu nhỏ', 'kata-chatbot'); ?>">
+        <!-- Chat Tabs -->
+        <div class="kata-chat-tabs">
+            <div class="kata-tab-nav">
+                <button class="kata-tab-btn active" data-tab="chat">
                     <svg viewBox="0 0 24 24" width="16" height="16">
-                        <path fill="currentColor" d="M19 13H5v-2h14v2z"/>
+                        <path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
                     </svg>
+                    <span><?php _e('Chat AI', 'kata-chatbot'); ?></span>
                 </button>
-                <button id="kata-close-btn" class="kata-action-btn" title="<?php _e('Đóng', 'kata-chatbot'); ?>">
+                <button class="kata-tab-btn" data-tab="facebook">
                     <svg viewBox="0 0 24 24" width="16" height="16">
-                        <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        <path fill="currentColor" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
                     </svg>
+                    <span><?php _e('Facebook', 'kata-chatbot'); ?></span>
+                </button>
+                <button class="kata-tab-btn" data-tab="zalo">
+                    <svg viewBox="0 0 24 24" width="16" height="16">
+                        <path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.243 13.243a1 1 0 01-.707.293H8.464a1 1 0 01-.707-1.707L11.293 10.293a1 1 0 011.414 0l3.536 3.536a1 1 0 010 1.414z"/>
+                    </svg>
+                    <span><?php _e('Zalo', 'kata-chatbot'); ?></span>
+                </button>
+                <button class="kata-tab-btn" data-tab="hotline">
+                    <svg viewBox="0 0 24 24" width="16" height="16">
+                        <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                    </svg>
+                    <span><?php _e('Hotline', 'kata-chatbot'); ?></span>
                 </button>
             </div>
         </div>
-        
-        <!-- Chat Messages -->
-        <div id="kata-chat-messages" class="kata-chat-messages">
-            <!-- Welcome Message -->
-            <div class="kata-message kata-bot-message">
-                <div class="kata-message-avatar">
-                    <img src="<?php echo esc_url(get_option('kata_chatbot_avatar', plugins_url('assets/images/chatbot-avatar.png', dirname(__FILE__)))); ?>" 
-                         alt="Kata AI" />
+
+        <!-- AI Chat Tab -->
+        <div id="kata-tab-chat" class="kata-tab-content active">
+            <!-- Chat Header -->
+            <div class="kata-chat-header">
+                <div class="kata-header-info">
+                    <div class="kata-avatar">
+                        <img src="<?php echo esc_url(get_option('kata_chatbot_avatar', plugins_url('assets/images/chatbot-avatar.png', dirname(__FILE__)))); ?>" 
+                             alt="Kata AI" />
+                    </div>
+                    <div class="kata-header-text">
+                        <h4><?php echo esc_html(get_option('kata_chatbot_name', __('Kata AI', 'kata-chatbot'))); ?></h4>
+                        <span class="kata-status-text"><?php _e('Trực tuyến', 'kata-chatbot'); ?></span>
+                    </div>
                 </div>
-                <div class="kata-message-content">
-                    <div class="kata-message-bubble">
-                        <?php echo wp_kses_post($welcome_message); ?>
-                    </div>
-                    <div class="kata-message-time">
-                        <?php echo current_time('H:i'); ?>
-                    </div>
+                
+                <div class="kata-header-actions">
+                    <button id="kata-minimize-btn" class="kata-action-btn" title="<?php _e('Thu nhỏ', 'kata-chatbot'); ?>">
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <path fill="currentColor" d="M19 13H5v-2h14v2z"/>
+                        </svg>
+                    </button>
+                    <button id="kata-close-btn" class="kata-action-btn" title="<?php _e('Đóng', 'kata-chatbot'); ?>">
+                        <svg viewBox="0 0 24 24" width="16" height="16">
+                            <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    </button>
                 </div>
             </div>
             
-            <!-- Suggested Actions -->
-            <div class="kata-suggested-actions">
-                <button class="kata-suggestion-btn" data-message="<?php _e('Tôi muốn tìm hiểu về dịch vụ', 'kata-chatbot'); ?>">
-                    <?php _e('Dịch vụ', 'kata-chatbot'); ?>
-                </button>
-                <button class="kata-suggestion-btn" data-message="<?php _e('Làm sao để liên hệ tư vấn?', 'kata-chatbot'); ?>">
-                    <?php _e('Liên hệ', 'kata-chatbot'); ?>
-                </button>
-                <button class="kata-suggestion-btn" data-message="<?php _e('Báo giá dự án website', 'kata-chatbot'); ?>">
-                    <?php _e('Báo giá', 'kata-chatbot'); ?>
-                </button>
+            <!-- Chat Messages -->
+            <div id="kata-chat-messages" class="kata-chat-messages">
+                <!-- Welcome Message -->
+                <div class="kata-message kata-bot-message">
+                    <div class="kata-message-avatar">
+                        <img src="<?php echo esc_url(get_option('kata_chatbot_avatar', plugins_url('assets/images/chatbot-avatar.png', dirname(__FILE__)))); ?>" 
+                             alt="Kata AI" />
+                    </div>
+                    <div class="kata-message-content">
+                        <div class="kata-message-bubble">
+                            <?php echo wp_kses_post($welcome_message); ?>
+                        </div>
+                        <div class="kata-message-time">
+                            <?php echo current_time('H:i'); ?>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Suggested Actions -->
+                <div class="kata-suggested-actions">
+                    <button class="kata-suggestion-btn" data-message="<?php _e('Tôi muốn tìm hiểu về dịch vụ', 'kata-chatbot'); ?>">
+                        <?php _e('Dịch vụ', 'kata-chatbot'); ?>
+                    </button>
+                    <button class="kata-suggestion-btn" data-message="<?php _e('Làm sao để liên hệ tư vấn?', 'kata-chatbot'); ?>">
+                        <?php _e('Tư vấn', 'kata-chatbot'); ?>
+                    </button>
+                    <button class="kata-suggestion-btn" data-message="<?php _e('Báo giá dịch vụ như thế nào?', 'kata-chatbot'); ?>">
+                        <?php _e('Báo giá', 'kata-chatbot'); ?>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Chat Input -->
+            <div class="kata-chat-input">
+                <div class="kata-input-group">
+                    <textarea id="kata-message-input" 
+                              placeholder="<?php _e('Nhập tin nhắn...', 'kata-chatbot'); ?>" 
+                              rows="1"></textarea>
+                    <button id="kata-send-btn" class="kata-send-btn" title="<?php _e('Gửi', 'kata-chatbot'); ?>">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Typing Indicator -->
+                <div id="kata-typing-indicator" class="kata-typing-indicator" style="display: none;">
+                    <div class="kata-typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <span class="kata-typing-text"><?php _e('Đang trả lời...', 'kata-chatbot'); ?></span>
+                </div>
             </div>
         </div>
-        
-        <!-- Typing Indicator -->
-        <div id="kata-typing-indicator" class="kata-typing-indicator" style="display: none;">
-            <div class="kata-message kata-bot-message">
-                <div class="kata-message-avatar">
-                    <img src="<?php echo esc_url(get_option('kata_chatbot_avatar', plugins_url('assets/images/chatbot-avatar.png', dirname(__FILE__)))); ?>" 
-                         alt="Kata AI" />
+
+        <!-- Facebook Tab -->
+        <div id="kata-tab-facebook" class="kata-tab-content">
+            <div class="kata-contact-header">
+                <div class="kata-contact-icon">
+                    <svg viewBox="0 0 24 24" width="32" height="32">
+                        <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
                 </div>
-                <div class="kata-message-content">
-                    <div class="kata-typing-bubble">
-                        <div class="kata-typing-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
+                <div class="kata-contact-title">
+                    <h3><?php _e('Liên hệ qua Facebook', 'kata-chatbot'); ?></h3>
+                    <p><?php _e('Chọn chi nhánh để chat qua Messenger', 'kata-chatbot'); ?></p>
+                </div>
+            </div>
+            
+            <div class="kata-branch-list">
+                <?php if (!empty($branches)) : ?>
+                    <?php foreach ($branches as $branch) : ?>
+                        <?php if (!empty($branch->facebook_url)) : ?>
+                            <div class="kata-branch-item">
+                                <div class="kata-branch-info">
+                                    <h4><?php echo esc_html($branch->name); ?></h4>
+                                    <p class="kata-branch-address"><?php echo esc_html($branch->address); ?></p>
+                                    <?php if (!empty($branch->working_hours)) : ?>
+                                        <p class="kata-working-hours">
+                                            <span class="kata-icon">⏰</span>
+                                            <?php echo esc_html($branch->working_hours); ?>
+                                        </p>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="kata-branch-actions">
+                                    <a href="<?php echo esc_url($branch->facebook_url); ?>" 
+                                       target="_blank" 
+                                       class="kata-contact-btn kata-facebook-btn">
+                                        <svg viewBox="0 0 24 24" width="16" height="16">
+                                            <path fill="currentColor" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                        </svg>
+                                        <?php _e('Chat Messenger', 'kata-chatbot'); ?>
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <div class="kata-no-contact">
+                        <p><?php _e('Hiện tại chưa có thông tin Facebook được cấu hình.', 'kata-chatbot'); ?></p>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Zalo Tab -->
+        <div id="kata-tab-zalo" class="kata-tab-content">
+            <div class="kata-contact-header">
+                <div class="kata-contact-icon">
+                    <svg viewBox="0 0 24 24" width="32" height="32">
+                        <path fill="#0068FF" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.243 13.243a1 1 0 01-.707.293H8.464a1 1 0 01-.707-1.707L11.293 10.293a1 1 0 011.414 0l3.536 3.536a1 1 0 010 1.414z"/>
+                    </svg>
+                </div>
+                <div class="kata-contact-title">
+                    <h3><?php _e('Liên hệ qua Zalo', 'kata-chatbot'); ?></h3>
+                    <p><?php _e('Chọn chi nhánh để chat qua Zalo', 'kata-chatbot'); ?></p>
+                </div>
+            </div>
+            
+            <div class="kata-branch-list">
+                <?php if (!empty($branches)) : ?>
+                    <?php foreach ($branches as $branch) : ?>
+                        <?php if (!empty($branch->zalo_url)) : ?>
+                            <div class="kata-branch-item">
+                                <div class="kata-branch-info">
+                                    <h4><?php echo esc_html($branch->name); ?></h4>
+                                    <p class="kata-branch-address"><?php echo esc_html($branch->address); ?></p>
+                                    <?php if (!empty($branch->working_hours)) : ?>
+                                        <p class="kata-working-hours">
+                                            <span class="kata-icon">⏰</span>
+                                            <?php echo esc_html($branch->working_hours); ?>
+                                        </p>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="kata-branch-actions">
+                                    <a href="<?php echo esc_url($branch->zalo_url); ?>" 
+                                       target="_blank" 
+                                       class="kata-contact-btn kata-zalo-btn">
+                                        <svg viewBox="0 0 24 24" width="16" height="16">
+                                            <path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.243 13.243a1 1 0 01-.707.293H8.464a1 1 0 01-.707-1.707L11.293 10.293a1 1 0 011.414 0l3.536 3.536a1 1 0 010 1.414z"/>
+                                        </svg>
+                                        <?php _e('Chat Zalo', 'kata-chatbot'); ?>
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <div class="kata-no-contact">
+                        <p><?php _e('Hiện tại chưa có thông tin Zalo được cấu hình.', 'kata-chatbot'); ?></p>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+
+        <!-- Hotline Tab -->
+        <div id="kata-tab-hotline" class="kata-tab-content">
+            <div class="kata-contact-header">
+                <div class="kata-contact-icon">
+                    <svg viewBox="0 0 24 24" width="32" height="32">
+                        <path fill="#00C851" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                    </svg>
+                </div>
+                <div class="kata-contact-title">
+                    <h3><?php _e('Gọi điện thoại', 'kata-chatbot'); ?></h3>
+                    <p><?php _e('Chọn chi nhánh để gọi điện trực tiếp', 'kata-chatbot'); ?></p>
+                </div>
+            </div>
+            
+            <div class="kata-branch-list">
+                <?php if (!empty($branches)) : ?>
+                    <?php foreach ($branches as $branch) : ?>
+                        <div class="kata-branch-item">
+                            <div class="kata-branch-info">
+                                <h4><?php echo esc_html($branch->name); ?></h4>
+                                <p class="kata-branch-address"><?php echo esc_html($branch->address); ?></p>
+                                <?php if (!empty($branch->working_hours)) : ?>
+                                    <p class="kata-working-hours">
+                                        <span class="kata-icon">⏰</span>
+                                        <?php echo esc_html($branch->working_hours); ?>
+                                    </p>
+                                <?php endif; ?>
+                            </div>
+                            <div class="kata-branch-actions">
+                                <?php if (!empty($branch->hotline)) : ?>
+                                    <a href="tel:<?php echo esc_attr($branch->hotline); ?>" 
+                                       class="kata-contact-btn kata-hotline-btn">
+                                        <svg viewBox="0 0 24 24" width="16" height="16">
+                                            <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                        </svg>
+                                        <?php echo esc_html($branch->hotline); ?>
+                                    </a>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($branch->phone) && $branch->phone !== $branch->hotline) : ?>
+                                    <a href="tel:<?php echo esc_attr($branch->phone); ?>" 
+                                       class="kata-contact-btn kata-phone-btn">
+                                        <svg viewBox="0 0 24 24" width="16" height="16">
+                                            <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                                        </svg>
+                                        <?php echo esc_html($branch->phone); ?>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else : ?>
+                    <div class="kata-no-contact">
+                        <p><?php _e('Hiện tại chưa có thông tin hotline được cấu hình.', 'kata-chatbot'); ?></p>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Tab Navigation */
+.kata-chat-tabs {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.kata-tab-nav {
+    display: flex;
+    background: #f8f9fa;
+}
+
+.kata-tab-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    font-size: 11px;
+    color: #666;
+}
+
+.kata-tab-btn:hover {
+    background: #e9ecef;
+    color: #333;
+}
+
+.kata-tab-btn.active {
+    color: #0073aa;
+    border-bottom-color: #0073aa;
+    background: #fff;
+}
+
+.kata-tab-btn svg {
+    margin-bottom: 2px;
+}
+
+/* Tab Content */
+.kata-tab-content {
+    display: none;
+    height: 400px;
+    overflow-y: auto;
+}
+
+.kata-tab-content.active {
+    display: block;
+}
+
+/* Contact Headers */
+.kata-contact-header {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f8f9fa;
+}
+
+.kata-contact-icon {
+    margin-right: 12px;
+}
+
+.kata-contact-title h3 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.kata-contact-title p {
+    margin: 0;
+    font-size: 12px;
+    color: #666;
+}
+
+/* Branch List */
+.kata-branch-list {
+    padding: 15px;
+}
+
+.kata-branch-item {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.kata-branch-info h4 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.kata-branch-address {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.kata-working-hours {
+    margin: 0 0 12px 0;
+    font-size: 11px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.kata-icon {
+    font-size: 10px;
+}
+
+/* Contact Buttons */
+.kata-branch-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.kata-contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.kata-facebook-btn {
+    background: #1877F2;
+    color: white;
+}
+
+.kata-facebook-btn:hover {
+    background: #166fe5;
+    color: white;
+    text-decoration: none;
+}
+
+.kata-zalo-btn {
+    background: #0068FF;
+    color: white;
+}
+
+.kata-zalo-btn:hover {
+    background: #0056d6;
+    color: white;
+    text-decoration: none;
+}
+
+.kata-hotline-btn {
+    background: #00C851;
+    color: white;
+}
+
+.kata-hotline-btn:hover {
+    background: #00a843;
+    color: white;
+    text-decoration: none;
+}
+
+.kata-phone-btn {
+    background: #17a2b8;
+    color: white;
+}
+
+.kata-phone-btn:hover {
+    background: #138496;
+    color: white;
+    text-decoration: none;
+}
+
+/* No Contact Message */
+.kata-no-contact {
+    text-align: center;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.kata-no-contact p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Chat specific styles for tab content */
+#kata-tab-chat {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+}
+
+#kata-tab-chat .kata-chat-header {
+    flex-shrink: 0;
+}
+
+#kata-tab-chat .kata-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+}
+
+#kata-tab-chat .kata-chat-input {
+    flex-shrink: 0;
+    padding: 15px;
+    border-top: 1px solid #e0e0e0;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .kata-tab-btn {
+        font-size: 10px;
+        padding: 10px 6px;
+    }
+    
+    .kata-tab-btn span {
+        display: none;
+    }
+    
+    .kata-branch-actions {
+        flex-direction: column;
+    }
+    
+    .kata-contact-btn {
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+/* Animation for tabs */
+.kata-tab-content {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Badge styles for tab notifications */
+.kata-tab-btn {
+    position: relative;
+}
+
+.kata-tab-btn .kata-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+</style>
+
+<script type="text/javascript">
+jQuery(document).ready(function($) {
+    // Tab switching functionality
+    $('.kata-tab-btn').on('click', function() {
+        var tab = $(this).data('tab');
+        
+        // Remove active class from all tabs and contents
+        $('.kata-tab-btn').removeClass('active');
+        $('.kata-tab-content').removeClass('active');
+        
+        // Add active class to clicked tab and its content
+        $(this).addClass('active');
+        $('#kata-tab-' + tab).addClass('active');
+        
+        // Track tab switching for analytics
+        if (typeof kataTracking !== 'undefined') {
+            kataTracking.trackEvent('tab_switch', tab);
+        }
+    });
+    
+    // Contact button tracking
+    $('.kata-contact-btn').on('click', function() {
+        var type = 'unknown';
+        var branchName = $(this).closest('.kata-branch-item').find('h4').text();
+        
+        if ($(this).hasClass('kata-facebook-btn')) {
+            type = 'facebook';
+        } else if ($(this).hasClass('kata-zalo-btn')) {
+            type = 'zalo';
+        } else if ($(this).hasClass('kata-hotline-btn')) {
+            type = 'hotline';
+        } else if ($(this).hasClass('kata-phone-btn')) {
+            type = 'phone';
+        }
+        
+        // Track contact interaction
+        if (typeof kataTracking !== 'undefined') {
+            kataTracking.trackEvent('contact_click', type, branchName);
+        }
+        
+        // Add visual feedback
+        $(this).addClass('clicked');
+        setTimeout(function() {
+            $('.kata-contact-btn').removeClass('clicked');
+        }, 300);
+    });
+    
+    // Auto-switch to appropriate tab based on device
+    function autoSwitchTab() {
+        var isMobile = window.innerWidth <= 768;
+        var userAgent = navigator.userAgent.toLowerCase();
+        
+        // Auto-suggest Zalo on mobile in Vietnam
+        if (isMobile && (userAgent.includes('mobile') || userAgent.includes('android'))) {
+            // Don't auto-switch, let user choose
+            return;
+        }
+    }
+    
+    // Initialize
+    autoSwitchTab();
+    $(window).on('resize', autoSwitchTab);
+    
+    // Add notification badges if there are active contacts
+    function updateTabBadges() {
+        var facebookCount = $('#kata-tab-facebook .kata-branch-item').length;
+        var zaloCount = $('#kata-tab-zalo .kata-branch-item').length;
+        var hotlineCount = $('#kata-tab-hotline .kata-branch-item').length;
+        
+        // Add badges to tabs with available contacts
+        if (facebookCount > 0) {
+            $('.kata-tab-btn[data-tab="facebook"]').append('<span class="kata-badge">' + facebookCount + '</span>');
+        }
+        if (zaloCount > 0) {
+            $('.kata-tab-btn[data-tab="zalo"]').append('<span class="kata-badge">' + zaloCount + '</span>');
+        }
+        if (hotlineCount > 0) {
+            $('.kata-tab-btn[data-tab="hotline"]').append('<span class="kata-badge">' + hotlineCount + '</span>');
+        }
+    }
+    
+    updateTabBadges();
+});
+</script>
                         </div>
                     </div>
                 </div>

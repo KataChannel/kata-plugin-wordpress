@@ -57,6 +57,11 @@ class KataChatbot {
     private $chat_handler;
     
     /**
+     * Branch handler instance
+     */
+    private $branch_handler;
+    
+    /**
      * Admin handler instance
      */
     private $admin;
@@ -111,9 +116,6 @@ class KataChatbot {
         // Add chatbot to frontend
         add_action('wp_footer', array($this, 'render_chatbot_widget'));
         
-        // Admin menu
-        add_action('admin_menu', array($this, 'add_admin_menu'));
-        
         // REST API endpoints
         add_action('rest_api_init', array($this, 'register_rest_routes'));
     }
@@ -133,6 +135,9 @@ class KataChatbot {
      * Plugin activation
      */
     public function activate() {
+        // Load dependencies first
+        $this->load_dependencies();
+        
         // Create database tables
         $this->create_tables();
         
@@ -208,16 +213,24 @@ class KataChatbot {
                 ai_response longtext,
                 ai_model varchar(100),
                 response_time decimal(10,3),
+                rating tinyint(1) DEFAULT NULL,
                 created_at datetime DEFAULT CURRENT_TIMESTAMP,
                 metadata json,
                 PRIMARY KEY (id),
                 KEY conversation_id (conversation_id),
                 KEY sender_type (sender_type),
                 KEY created_at (created_at),
+                KEY rating (rating),
                 FOREIGN KEY (conversation_id) REFERENCES $conversations_table(id) ON DELETE CASCADE
             ) $charset_collate;";
             
             dbDelta($sql);
+        } else {
+            // Add rating column if it doesn't exist
+            $columns = $wpdb->get_results("SHOW COLUMNS FROM $messages_table LIKE 'rating'");
+            if (empty($columns)) {
+                $wpdb->query("ALTER TABLE $messages_table ADD COLUMN rating tinyint(1) DEFAULT NULL AFTER response_time");
+            }
         }
         
         // Analytics table
@@ -263,13 +276,21 @@ class KataChatbot {
             dbDelta($sql);
         }
         
+        // Create branches table using branch handler
+        if (class_exists('KataChatbot_Branch_Handler')) {
+            $branch_handler_temp = new KataChatbot_Branch_Handler();
+            $branch_handler_temp->create_branches_table();
+        }
+        
         // Log table creation results for debugging
         if (defined('WP_DEBUG') && WP_DEBUG) {
+            $branches_table = $wpdb->prefix . 'kata_chatbot_branches';
             $tables_created = array(
                 'conversations' => $wpdb->get_var("SHOW TABLES LIKE '$conversations_table'") == $conversations_table,
                 'messages' => $wpdb->get_var("SHOW TABLES LIKE '$messages_table'") == $messages_table,
                 'analytics' => $wpdb->get_var("SHOW TABLES LIKE '$analytics_table'") == $analytics_table,
-                'knowledge' => $wpdb->get_var("SHOW TABLES LIKE '$knowledge_table'") == $knowledge_table
+                'knowledge' => $wpdb->get_var("SHOW TABLES LIKE '$knowledge_table'") == $knowledge_table,
+                'branches' => $wpdb->get_var("SHOW TABLES LIKE '$branches_table'") == $branches_table
             );
             error_log('Kata Chatbot Tables: ' . wp_json_encode($tables_created));
         }
@@ -361,6 +382,7 @@ class KataChatbot {
         $this->ai_handler = new KataChatbot_AI_Handler();
         $this->db_handler = new KataChatbot_DB_Handler();
         $this->chat_handler = new KataChatbot_Chat_Handler();
+        $this->branch_handler = new KataChatbot_Branch_Handler();
         
         // Initialize admin if in admin area
         if (is_admin()) {
@@ -376,6 +398,7 @@ class KataChatbot {
             'includes/class-ai-handler.php',
             'includes/class-db-handler.php',
             'includes/class-chat-handler.php',
+            'includes/class-branch-handler.php',
         );
         
         if (is_admin()) {
@@ -739,90 +762,7 @@ class KataChatbot {
         
         return false;
     }
-    
-    /**
-     * Add admin menu
-     */
-    public function add_admin_menu() {
-        add_menu_page(
-            __('Kata Chatbot', 'kata-chatbot'),
-            __('Chatbot', 'kata-chatbot'),
-            'manage_options',
-            'kata-chatbot',
-            array($this, 'admin_dashboard_page'),
-            'dashicons-format-chat',
-            25
-        );
-        
-        add_submenu_page(
-            'kata-chatbot',
-            __('Dashboard', 'kata-chatbot'),
-            __('Dashboard', 'kata-chatbot'),
-            'manage_options',
-            'kata-chatbot',
-            array($this, 'admin_dashboard_page')
-        );
-        
-        add_submenu_page(
-            'kata-chatbot',
-            __('Conversations', 'kata-chatbot'),
-            __('Conversations', 'kata-chatbot'),
-            'manage_options',
-            'kata-chatbot-conversations',
-            array($this, 'admin_conversations_page')
-        );
-        
-        add_submenu_page(
-            'kata-chatbot',
-            __('Knowledge Base', 'kata-chatbot'),
-            __('Knowledge Base', 'kata-chatbot'),
-            'manage_options',
-            'kata-chatbot-knowledge',
-            array($this, 'admin_knowledge_page')
-        );
-        
-        add_submenu_page(
-            'kata-chatbot',
-            __('Settings', 'kata-chatbot'),
-            __('Settings', 'kata-chatbot'),
-            'manage_options',
-            'kata-chatbot-settings',
-            array($this, 'admin_settings_page')
-        );
-    }
-    
-    /**
-     * Admin dashboard page
-     */
-    public function admin_dashboard_page() {
-        echo '<div class="wrap"><h1>' . __('Chatbot Dashboard', 'kata-chatbot') . '</h1>';
-        echo '<p>' . __('Dashboard đang được phát triển...', 'kata-chatbot') . '</p></div>';
-    }
-    
-    /**
-     * Admin conversations page
-     */
-    public function admin_conversations_page() {
-        echo '<div class="wrap"><h1>' . __('Conversations', 'kata-chatbot') . '</h1>';
-        echo '<p>' . __('Quản lý cuộc hội thoại đang được phát triển...', 'kata-chatbot') . '</p></div>';
-    }
-    
-    /**
-     * Admin knowledge page
-     */
-    public function admin_knowledge_page() {
-        echo '<div class="wrap"><h1>' . __('Knowledge Base', 'kata-chatbot') . '</h1>';
-        echo '<p>' . __('Quản lý kiến thức đang được phát triển...', 'kata-chatbot') . '</p></div>';
-    }
-    
-    /**
-     * Admin settings page
-     */
-    public function admin_settings_page() {
-        echo '<div class="wrap"><h1>' . __('Chatbot Settings', 'kata-chatbot') . '</h1>';
-        echo '<p>' . __('Cài đặt đang được phát triển...', 'kata-chatbot') . '</p></div>';
-    }
-    
+
     /**
      * Register REST API routes
      */

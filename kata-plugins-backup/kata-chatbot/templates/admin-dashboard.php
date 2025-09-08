@@ -19,7 +19,7 @@ $recent_conversations = $conversations_data['conversations'];
 ?>
 
 <div class="wrap kata-chatbot-admin">
-    <h1><?php _e('Kata Chatbot Dashboard', 'kata-chatbot'); ?></h1>
+    <h1><?php _e('Tổng quan Kata Chatbot', 'kata-chatbot'); ?></h1>
     
     <!-- Statistics Cards -->
     <div class="kata-stats-grid">
@@ -42,7 +42,7 @@ $recent_conversations = $conversations_data['conversations'];
         <div class="kata-stat-card">
             <div class="kata-stat-icon">👥</div>
             <div class="kata-stat-content">
-                <h3><?php echo esc_html(number_format_i18n($stats['active_users'])); ?></h3>
+                <h3><?php echo esc_html(number_format_i18n(isset($stats['active_users']) ? $stats['active_users'] : 0)); ?></h3>
                 <p><?php _e('Người dùng hoạt động', 'kata-chatbot'); ?></p>
             </div>
         </div>
@@ -50,7 +50,7 @@ $recent_conversations = $conversations_data['conversations'];
         <div class="kata-stat-card">
             <div class="kata-stat-icon">⭐</div>
             <div class="kata-stat-content">
-                <h3><?php echo $stats['avg_rating'] ? esc_html(number_format($stats['avg_rating'], 1)) : 'N/A'; ?></h3>
+                <h3><?php echo (isset($stats['avg_rating']) && $stats['avg_rating']) ? esc_html(number_format($stats['avg_rating'], 1)) : 'N/A'; ?></h3>
                 <p><?php _e('Đánh giá trung bình', 'kata-chatbot'); ?></p>
             </div>
         </div>
@@ -98,7 +98,7 @@ $recent_conversations = $conversations_data['conversations'];
                                     </div>
                                     
                                     <div class="kata-conversation-preview">
-                                        <?php echo wp_trim_words($conversation->last_message, 15); ?>
+                                        <?php echo isset($conversation->last_message) ? wp_trim_words($conversation->last_message, 15) : __('Không có tin nhắn', 'kata-chatbot'); ?>
                                     </div>
                                     
                                     <div class="kata-conversation-meta">
@@ -213,7 +213,7 @@ $recent_conversations = $conversations_data['conversations'];
                     <div class="kata-metric-item">
                         <span class="kata-metric-label"><?php _e('Độ hài lòng:', 'kata-chatbot'); ?></span>
                         <span class="kata-metric-value">
-                            <?php echo $stats['satisfaction_rate'] ? number_format($stats['satisfaction_rate'], 1) . '%' : 'N/A'; ?>
+                            <?php echo isset($stats['satisfaction_rate']) && $stats['satisfaction_rate'] ? number_format($stats['satisfaction_rate'], 1) . '%' : 'N/A'; ?>
                         </span>
                     </div>
                     

@@ -62,8 +62,8 @@ class KataChatbot_Admin {
         // Dashboard submenu
         add_submenu_page(
             'kata-chatbot',
-            __('Dashboard', 'kata-chatbot'),
-            __('Dashboard', 'kata-chatbot'),
+            __('Tổng quan', 'kata-chatbot'),
+            __('Tổng quan', 'kata-chatbot'),
             'manage_options',
             'kata-chatbot',
             array($this, 'display_dashboard_page')
@@ -72,8 +72,8 @@ class KataChatbot_Admin {
         // Conversations submenu
         add_submenu_page(
             'kata-chatbot',
-            __('Conversations', 'kata-chatbot'),
-            __('Conversations', 'kata-chatbot'),
+            __('Cuộc trò chuyện', 'kata-chatbot'),
+            __('Cuộc trò chuyện', 'kata-chatbot'),
             'manage_options',
             'kata-chatbot-conversations',
             array($this, 'display_conversations_page')
@@ -82,8 +82,8 @@ class KataChatbot_Admin {
         // Analytics submenu
         add_submenu_page(
             'kata-chatbot',
-            __('Analytics', 'kata-chatbot'),
-            __('Analytics', 'kata-chatbot'),
+            __('Thống kê', 'kata-chatbot'),
+            __('Thống kê', 'kata-chatbot'),
             'manage_options',
             'kata-chatbot-analytics',
             array($this, 'display_analytics_page')
@@ -92,18 +92,28 @@ class KataChatbot_Admin {
         // Knowledge Base submenu
         add_submenu_page(
             'kata-chatbot',
-            __('Knowledge Base', 'kata-chatbot'),
-            __('Knowledge Base', 'kata-chatbot'),
+            __('Cơ sở tri thức', 'kata-chatbot'),
+            __('Cơ sở tri thức', 'kata-chatbot'),
             'manage_options',
             'kata-chatbot-knowledge',
             array($this, 'display_knowledge_page')
         );
         
+        // Branches submenu
+        add_submenu_page(
+            'kata-chatbot',
+            __('Quản lý chi nhánh', 'kata-chatbot'),
+            __('Chi nhánh', 'kata-chatbot'),
+            'manage_options',
+            'kata-chatbot-branches',
+            array($this, 'display_branches_page')
+        );
+        
         // Settings submenu
         add_submenu_page(
             'kata-chatbot',
-            __('Settings', 'kata-chatbot'),
-            __('Settings', 'kata-chatbot'),
+            __('Cài đặt', 'kata-chatbot'),
+            __('Cài đặt', 'kata-chatbot'),
             'manage_options',
             'kata-chatbot-settings',
             array($this, 'display_settings_page')
@@ -141,12 +151,12 @@ class KataChatbot_Admin {
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('kata_chatbot_admin'),
             'strings' => array(
-                'confirm_delete' => __('Are you sure you want to delete this conversation?', 'kata-chatbot'),
-                'deleting' => __('Deleting...', 'kata-chatbot'),
-                'deleted' => __('Deleted successfully', 'kata-chatbot'),
-                'error' => __('An error occurred', 'kata-chatbot'),
-                'saving' => __('Saving...', 'kata-chatbot'),
-                'saved' => __('Settings saved', 'kata-chatbot')
+                'confirm_delete' => __('Bạn có chắc chắn muốn xóa cuộc trò chuyện này?', 'kata-chatbot'),
+                'deleting' => __('Đang xóa...', 'kata-chatbot'),
+                'deleted' => __('Đã xóa thành công', 'kata-chatbot'),
+                'error' => __('Có lỗi xảy ra', 'kata-chatbot'),
+                'saving' => __('Đang lưu...', 'kata-chatbot'),
+                'saved' => __('Đã lưu cài đặt', 'kata-chatbot')
             )
         ));
     }
@@ -184,6 +194,21 @@ class KataChatbot_Admin {
      * Display dashboard page
      */
     public function display_dashboard_page() {
+        // Get dashboard statistics
+        $stats = $this->db_handler->get_dashboard_stats();
+        
+        // Get recent conversations
+        $recent_conversations = $this->db_handler->get_admin_conversations(5, 0);
+        
+        // Get analytics data for charts
+        $analytics_data = $this->db_handler->get_analytics_data(30);
+        
+        // Get knowledge base stats
+        $knowledge_stats = array(
+            'total_items' => count($this->db_handler->get_knowledge_base_items()),
+            'active_items' => count($this->db_handler->get_knowledge_base_items('', 'active'))
+        );
+        
         include KATA_CHATBOT_PLUGIN_PATH . 'templates/admin-dashboard.php';
     }
     
@@ -249,7 +274,7 @@ class KataChatbot_Admin {
             if ($question && $answer) {
                 $result = $this->db_handler->add_knowledge_item($question, $answer, $category);
                 if ($result) {
-                    add_settings_error('kata_chatbot_knowledge', 'success', __('Knowledge item added successfully', 'kata-chatbot'), 'success');
+                    add_settings_error('kata_chatbot_knowledge', 'success', __('Đã thêm mục tri thức thành công', 'kata-chatbot'), 'success');
                 } else {
                     add_settings_error('kata_chatbot_knowledge', 'error', __('Failed to add knowledge item', 'kata-chatbot'), 'error');
                 }
@@ -468,6 +493,14 @@ class KataChatbot_Admin {
         }
         
         return $url;
+    }
+    
+    /**
+     * Display branches management page
+     */
+    public function display_branches_page() {
+        // Include the branches page template
+        include KATA_CHATBOT_PLUGIN_PATH . 'templates/admin-branches.php';
     }
     
     /**

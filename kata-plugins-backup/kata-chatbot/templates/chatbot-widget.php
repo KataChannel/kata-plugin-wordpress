@@ -456,13 +456,25 @@ if (!$enabled) {
 
 /* Tab Content */
 .kata-tab-content {
-    display: none;
+    display: none !important;
     height: 400px;
     overflow-y: auto;
+    animation: fadeIn 0.3s ease-in-out;
 }
 
 .kata-tab-content.active {
-    display: block;
+    display: block !important;
+}
+
+/* Chat tab specific - use flex when active */
+#kata-tab-chat.active {
+    display: flex !important;
+    flex-direction: column;
+}
+
+/* Force hide when not active */
+#kata-tab-chat:not(.active) {
+    display: none !important;
 }
 
 /* Contact Headers */
@@ -607,13 +619,6 @@ if (!$enabled) {
 .kata-no-contact p {
     margin: 0;
     font-size: 14px;
-}
-
-/* Chat specific styles for tab content */
-#kata-tab-chat {
-    display: flex;
-    flex-direction: column;
-    height: 400px;
 }
 
 /* Chat Interface */
@@ -889,11 +894,6 @@ if (!$enabled) {
     }
 }
 
-/* Animation for tabs */
-.kata-tab-content {
-    animation: fadeIn 0.3s ease-in-out;
-}
-
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -931,15 +931,43 @@ jQuery(document).ready(function($) {
         $('.kata-tab-btn').removeClass('active');
         $('.kata-tab-content').removeClass('active');
         
+        // Force hide all tab contents first
+        $('.kata-tab-content').css('display', 'none');
+        
         // Add active class to clicked tab and its content
         $(this).addClass('active');
         $('#kata-tab-' + tab).addClass('active');
+        
+        // Force show the selected tab with proper display type
+        if (tab === 'chat') {
+            $('#kata-tab-chat').css('display', 'flex');
+        } else {
+            $('#kata-tab-' + tab).css('display', 'block');
+        }
         
         // Track tab switching for analytics
         if (typeof kataTracking !== 'undefined') {
             kataTracking.trackEvent('tab_switch', tab);
         }
     });
+    
+    // Initialize default tab
+    var defaultTab = '<?php echo esc_js($default_tab); ?>';
+    
+    // Force initial state
+    $('.kata-tab-content').removeClass('active').css('display', 'none');
+    $('.kata-tab-btn').removeClass('active');
+    
+    // Set default tab
+    $('#kata-tab-' + defaultTab).addClass('active');
+    $('.kata-tab-btn[data-tab="' + defaultTab + '"]').addClass('active');
+    
+    // Show default tab with proper display
+    if (defaultTab === 'chat') {
+        $('#kata-tab-chat').css('display', 'flex');
+    } else {
+        $('#kata-tab-' + defaultTab).css('display', 'block');
+    }
     
     // Contact button tracking
     $('.kata-contact-btn').on('click', function() {

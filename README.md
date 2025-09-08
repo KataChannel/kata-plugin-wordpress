@@ -1,0 +1,1 @@
+# kata-plugin-wordpress

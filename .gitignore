@@ -1,0 +1,119 @@
+# =================================================================
+# KATA PLUGIN WORDPRESS REPOSITORY - ONLY kata-plugins-backup FOLDER
+# =================================================================
+
+# Ignore EVERYTHING by default
+/*
+
+# ONLY ALLOW kata-plugins-backup folder
+!/kata-plugins-backup/
+
+# Allow .gitignore itself
+!.gitignore
+
+# Allow README.md if exists
+!README.md
+
+# =================================================================
+# Additional ignores within kata-plugins-backup (if needed)
+# =================================================================
+
+# Temporary files within plugins
+kata-plugins-backup/**/*.tmp
+kata-plugins-backup/**/*.log
+kata-plugins-backup/**/.DS_Store
+kata-plugins-backup/**/Thumbs.db
+
+# Node modules within plugins
+kata-plugins-backup/**/node_modules/
+
+# IDE files within plugins  
+kata-plugins-backup/**/.vscode/
+kata-plugins-backup/**/.idea/
+
+# =================================================================
+# WordPress Files - COMPLETELY IGNORED
+# =================================================================
+
+# WordPress Core Files
+wp-admin/
+wp-includes/
+wp-config.php
+wp-settings.php
+wp-load.php
+wp-blog-header.php
+wp-cron.php
+wp-links-opml.php
+wp-mail.php
+wp-signup.php
+wp-trackback.php
+xmlrpc.php
+wp-login.php
+wp-comments-post.php
+wp-activate.php
+index.php
+license.txt
+readme.html
+
+# WordPress Content (except kata-plugins-backup)
+wp-content/
+
+# WordPress Database & Backups
+*.sql
+*.db
+tazaspac_wp_timona_*.sql
+timona_*.zip
+
+# WordPress Cache & Logs
+*.log
+debug.log
+
+# WordPress Config Backups
+wp-config.php.backup
+
+# =================================================================
+# System & Development Files
+# =================================================================
+
+# Temporary files
+*.tmp
+*.swp
+*~
+.DS_Store
+Thumbs.db
+.ftpquota
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# htaccess files
+.htaccess*
+
+# Error logs
+error_log
+
+# Test files
+test*.php
+*test*.php
+
+# Development scripts
+fix*.sh
+setup*.sh
+autogit.sh
+
+# Documentation files (project specific)
+*.md
+!README.md
+
+# Other project files
+cgi-bin/
+.well-known/
+phpinfo.php
+dmca-validation.html

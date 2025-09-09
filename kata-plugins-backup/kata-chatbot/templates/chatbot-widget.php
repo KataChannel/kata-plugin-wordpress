@@ -139,7 +139,7 @@ if (!$enabled) {
         <!-- AI Chat Tab -->
         <div id="kata-tab-chat" class="kata-tab-content <?php echo ($default_tab === 'chat') ? 'active' : ''; ?>">
             <!-- Contact Header (giống style các tab khác) -->
-            <div class="kata-contact-header">
+            <!-- <div class="kata-contact-header">
                 <div class="kata-contact-icon">
                     <svg viewBox="0 0 24 24" width="32" height="32">
                         <path fill="#4A90E2" d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
@@ -149,7 +149,7 @@ if (!$enabled) {
                     <h3><?php echo esc_html(get_option('kata_chatbot_name', __('Chat với AI Assistant', 'kata-chatbot'))); ?></h3>
                     <p><?php echo $offline_mode ? __('Hiện đang offline - không thể chat', 'kata-chatbot') : __('Trợ lý AI 24/7 - Sẵn sàng hỗ trợ bạn', 'kata-chatbot'); ?></p>
                 </div>
-            </div>
+            </div> -->
             
             <?php if ($offline_mode) : ?>
             <!-- Offline Mode Display -->
@@ -185,63 +185,25 @@ if (!$enabled) {
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Quick Actions (giống suggested actions nhưng style như contact buttons) -->
-                    <div class="kata-quick-actions">
-                        <div class="kata-quick-action-item">
-                            <button class="kata-contact-btn kata-suggestion-btn" 
-                                    data-message="<?php _e('Tôi muốn tìm hiểu về các khóa học thẩm mỹ', 'kata-chatbot'); ?>"
-                                    style="background: #4A90E2; color: white;">
-                                <svg viewBox="0 0 24 24" width="16" height="16">
-                                    <path fill="currentColor" d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3ZM19 19H5V5H19V19ZM17 12H7V10H17V12ZM17 9H7V7H17V9ZM17 15H7V13H17V15Z"/>
-                                </svg>
-                                <?php _e('Khóa học', 'kata-chatbot'); ?>
-                            </button>
-                        </div>
-                        <div class="kata-quick-action-item">
-                            <button class="kata-contact-btn kata-suggestion-btn" 
-                                    data-message="<?php _e('Tôi cần tư vấn về lộ trình học phù hợp', 'kata-chatbot'); ?>"
-                                    style="background: #28a745; color: white;">
-                                <svg viewBox="0 0 24 24" width="16" height="16">
-                                    <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12S6.48 22 12 22 22 17.52 22 12 17.52 2 12 2ZM13 17H11V15H13V17ZM13 13H11V7H13V13Z"/>
-                                </svg>
-                                <?php _e('Tư vấn', 'kata-chatbot'); ?>
-                            </button>
-                        </div>
-                        <div class="kata-quick-action-item">
-                            <button class="kata-contact-btn kata-suggestion-btn" 
-                                    data-message="<?php _e('Học phí và khuyến mãi hiện tại như thế nào?', 'kata-chatbot'); ?>"
-                                    style="background: #ffc107; color: #333;">
-                                <svg viewBox="0 0 24 24" width="16" height="16">
-                                    <path fill="currentColor" d="M12 2L13.09 8.26L22 9L17 14L18.18 23L12 19.5L5.82 23L7 14L2 9L10.91 8.26L12 2Z"/>
-                                </svg>
-                                <?php _e('Học phí', 'kata-chatbot'); ?>
-                            </button>
-                        </div>
-                        <div class="kata-quick-action-item">
-                            <button class="kata-contact-btn kata-suggestion-btn" 
-                                    data-message="<?php _e('Tôi muốn đăng ký tham quan cơ sở', 'kata-chatbot'); ?>"
-                                    style="background: #e83e8c; color: white;">
-                                <svg viewBox="0 0 24 24" width="16" height="16">
-                                    <path fill="currentColor" d="M12 2L13.09 8.26L22 9L17 14L18.18 23L12 19.5L5.82 23L7 14L2 9L10.91 8.26L12 2Z"/>
-                                </svg>
-                                <?php _e('Tham quan', 'kata-chatbot'); ?>
-                            </button>
-                        </div>
-                    </div>
                 </div>
-                
+                    
                 <!-- Chat Input -->
                 <div class="kata-chat-input">
                     <div class="kata-input-group">
                         <textarea id="kata-message-input" 
                                   placeholder="<?php _e('Nhập câu hỏi của bạn...', 'kata-chatbot'); ?>" 
-                                  rows="1"></textarea>
-                        <button id="kata-send-btn" class="kata-send-btn" title="<?php _e('Gửi', 'kata-chatbot'); ?>">
+                                  rows="1"
+                                  maxlength="1000"></textarea>
+                        <button id="kata-send-btn" class="kata-send-btn" title="<?php _e('Gửi', 'kata-chatbot'); ?>" disabled>
                             <svg viewBox="0 0 24 24" width="20" height="20">
                                 <path fill="currentColor" d="M2,21L23,12L2,3V10L17,12L2,14V21Z"/>
                             </svg>
                         </button>
+                    </div>
+                    
+                    <!-- Character Counter -->
+                    <div class="kata-char-counter">
+                        <span id="kata-char-count">0</span>/<span id="kata-char-limit">1000</span>
                     </div>
                     
                     <!-- Typing Indicator -->
@@ -251,9 +213,10 @@ if (!$enabled) {
                             <span></span>
                             <span></span>
                         </div>
-                        <span class="kata-typing-text"><?php _e('AI đang suy nghĩ...', 'kata-chatbot'); ?></span>
+                        <span class="kata-typing-text"><?php _e('Đang suy nghĩ...', 'kata-chatbot'); ?></span>
                     </div>
                 </div>
+
             </div>
             <?php endif; ?>
         </div>
@@ -657,35 +620,6 @@ if (!$enabled) {
     background: white;
 }
 
-/* Quick Actions Styling */
-.kata-quick-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 16px 0;
-    padding: 0 8px;
-}
-
-.kata-quick-action-item .kata-contact-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 12px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.kata-quick-action-item .kata-contact-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.kata-quick-action-item .kata-contact-btn svg {
-    margin-right: 6px;
-}
-
 /* Chat Message Styling */
 .kata-message {
     display: flex;
@@ -878,19 +812,6 @@ if (!$enabled) {
         justify-content: center;
     }
     
-    /* Quick Actions Mobile Layout */
-    .kata-quick-actions {
-        grid-template-columns: 1fr;
-        gap: 8px;
-        margin: 12px 0;
-        padding: 0 4px;
-    }
-    
-    .kata-quick-action-item .kata-contact-btn {
-        padding: 10px 8px;
-        font-size: 12px;
-    }
-    
     .kata-chat-window {
         width: calc(100vw - 20px);
         height: calc(100vh - 100px);
@@ -955,8 +876,24 @@ jQuery(document).ready(function($) {
         // Force show the selected tab with proper display type
         if (tab === 'chat') {
             $('#kata-tab-chat').css('display', 'flex');
+            
+            // Focus chat input after tab switch with delay
+            setTimeout(function() {
+                var messageInput = document.getElementById('kata-message-input');
+                if (messageInput && window.KataChatbot) {
+                    messageInput.focus();
+                    // Trigger input event to update UI state
+                    messageInput.dispatchEvent(new Event('input'));
+                }
+            }, 100);
+            
         } else {
             $('#kata-tab-' + tab).css('display', 'block');
+        }
+        
+        // Update current tab for other functions
+        if (window.KataChatbot) {
+            window.KataChatbot.currentTab = tab;
         }
         
         // Track tab switching for analytics
@@ -1327,62 +1264,6 @@ jQuery(document).ready(function($) {
     text-align: left;
 }
 
-/* Quick Actions and Suggestion Buttons */
-.kata-quick-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin: 16px 0;
-    padding: 0 8px;
-}
-
-.kata-quick-action-item .kata-contact-btn {
-    width: 100%;
-    justify-content: center;
-    padding: 12px 8px;
-    font-size: 11px;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    border: none;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.kata-quick-action-item .kata-contact-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    text-decoration: none;
-}
-
-.kata-quick-action-item .kata-contact-btn svg {
-    margin-right: 6px;
-    flex-shrink: 0;
-}
-
-/* Legacy suggestion buttons for compatibility */
-.kata-suggestion-btn {
-    background: #f8f9fa;
-    border: 1px solid #4A90E2;
-    color: #4A90E2;
-    padding: 8px 12px;
-    border-radius: 16px;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-weight: 500;
-}
-
-.kata-suggestion-btn:hover {
-    background: #4A90E2;
-    color: white;
-    transform: translateY(-1px);
-}
-
 /* Suggested Actions (for dynamic suggestions) */
 .kata-suggested-actions {
     display: flex;
@@ -1449,16 +1330,17 @@ jQuery(document).ready(function($) {
     padding: 15px;
 }
 
-.kata-input-wrapper {
+.kata-input-group {
     display: flex;
     align-items: flex-end;
     gap: 8px;
     background: #f8f9fa;
     border-radius: 20px;
     padding: 8px 12px;
+    border: 1px solid #e0e0e0;
 }
 
-.kata-message-textarea {
+#kata-message-input {
     flex: 1;
     border: none;
     background: none;
@@ -1469,30 +1351,15 @@ jQuery(document).ready(function($) {
     line-height: 1.4;
     min-height: 20px;
     max-height: 80px;
+    padding: 6px 0;
 }
 
-.kata-input-actions {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-
-.kata-input-btn {
-    background: none;
-    border: none;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-
-.kata-input-btn:hover {
-    background: rgba(0,0,0,0.05);
+#kata-message-input::placeholder {
+    color: #999;
 }
 
 .kata-send-btn {
-    background: var(--kata-primary);
+    background: #4A90E2;
     color: white;
     border: none;
     width: 32px;
@@ -1502,16 +1369,82 @@ jQuery(document).ready(function($) {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
 .kata-send-btn:hover {
-    background: var(--kata-primary-dark);
+    background: #357abd;
+    transform: scale(1.05);
 }
 
 .kata-send-btn:disabled {
     background: #ccc;
     cursor: not-allowed;
+    transform: none;
+}
+
+.kata-send-btn:active {
+    transform: scale(0.95);
+}
+
+/* Typing Indicator */
+.kata-typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    color: #666;
+    font-size: 12px;
+}
+
+.kata-typing-dots {
+    display: flex;
+    gap: 2px;
+}
+
+.kata-typing-dots span {
+    width: 4px;
+    height: 4px;
+    background: #999;
+    border-radius: 50%;
+    animation: kataTyping 1.4s infinite ease-in-out;
+}
+
+.kata-typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.kata-typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes kataTyping {
+    0%, 60%, 100% {
+        opacity: 0.3;
+        transform: scale(0.8);
+    }
+    30% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Character Counter */
+.kata-char-counter {
+    padding: 4px 12px;
+    font-size: 11px;
+    color: #999;
+    text-align: right;
+    transition: color 0.2s ease;
+}
+
+.kata-char-counter.warning {
+    color: #ff9800;
+}
+
+.kata-char-counter.danger {
+    color: #f44336;
 }
 
 /* Chat Footer */
@@ -1633,12 +1566,58 @@ document.addEventListener('DOMContentLoaded', function() {
         var offlineMode = <?php echo $offline_mode ? 'true' : 'false'; ?>;
         var offlineMessage = '<?php echo esc_js($offline_message); ?>';
         
-        // Initialize
+        // Initialize chatbot UI
         this.init = function() {
             bindEvents();
             initializeSession();
             checkOnlineStatus();
+            initializeChatInput();
+            loadChatHistory();
         };
+        
+        // Initialize chat input state
+        function initializeChatInput() {
+            updateCharacterCounter();
+            updateSendButtonState();
+            autoResizeTextarea();
+        }
+        
+        // Load chat history from session storage
+        function loadChatHistory() {
+            if (sessionId) {
+                try {
+                    var savedHistory = sessionStorage.getItem('kata_chat_history_' + sessionId);
+                    if (savedHistory) {
+                        var history = JSON.parse(savedHistory);
+                        history.forEach(function(msg) {
+                            if (msg.type && msg.text) {
+                                addMessage(msg.type, msg.text);
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.log('Could not load chat history:', e);
+                }
+            }
+        }
+        
+        // Save chat history to session storage
+        function saveChatHistory() {
+            if (sessionId && messageHistory.length > 0) {
+                try {
+                    var historyToSave = messageHistory.map(function(msg) {
+                        return {
+                            type: msg.type,
+                            text: msg.text,
+                            time: msg.time
+                        };
+                    });
+                    sessionStorage.setItem('kata_chat_history_' + sessionId, JSON.stringify(historyToSave));
+                } catch (e) {
+                    console.log('Could not save chat history:', e);
+                }
+            }
+        }
         
         // Bind events
         function bindEvents() {
@@ -1649,19 +1628,16 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Send message
             document.getElementById('kata-send-btn').addEventListener('click', sendMessage);
-            document.getElementById('kata-message-input').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
-                }
-            });
             
-            // Auto-resize textarea
-            document.getElementById('kata-message-input').addEventListener('input', autoResizeTextarea);
+            // Input events
+            var messageInput = document.getElementById('kata-message-input');
+            messageInput.addEventListener('keypress', handleInputKeypress);
+            messageInput.addEventListener('input', handleInputChange);
+            messageInput.addEventListener('paste', handleInputPaste);
             
             // Suggestion buttons
             document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('kata-suggestion-btn')) {
+                if (e.target.classList.contains('kata-suggested-action') || e.target.closest('.kata-suggested-action')) {
                     var message = e.target.getAttribute('data-message');
                     sendUserMessage(message);
                 }
@@ -1730,9 +1706,25 @@ document.addEventListener('DOMContentLoaded', function() {
             var input = document.getElementById('kata-message-input');
             var message = input.value.trim();
             
-            if (!message) return;
+            // Validate message
+            if (!message || message.length === 0) {
+                input.focus();
+                return;
+            }
             
-            // Clear input
+            if (message.length > 1000) {
+                addMessage('bot', '<?php _e('Tin nhắn quá dài. Vui lòng nhập tối đa 1000 ký tự.', 'kata-chatbot'); ?>');
+                return;
+            }
+            
+            // Disable send button temporarily
+            var sendBtn = document.getElementById('kata-send-btn');
+            sendBtn.disabled = true;
+            
+            // Clear input and reset UI
+            input.value = '';
+            updateCharacterCounter();
+            updateSendButtonState();
             input.value = '';
             autoResizeTextarea();
             
@@ -1757,6 +1749,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Send to backend
         function sendToBackend(message) {
+            var startTime = Date.now();
+            
             fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
                 method: 'POST',
                 headers: {
@@ -1769,38 +1763,65 @@ document.addEventListener('DOMContentLoaded', function() {
                     nonce: '<?php echo wp_create_nonce('kata_chatbot_nonce'); ?>'
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.status);
+                }
+                return response.json();
+            })
             .then(data => {
+                var responseTime = Date.now() - startTime;
                 hideTypingIndicator();
                 
+                // Re-enable send button
+                var sendBtn = document.getElementById('kata-send-btn');
+                sendBtn.disabled = false;
+                updateSendButtonState();
+                
                 if (data.success) {
-                    // Add bot response
-                    addMessage('bot', data.data.message);
+                    // Add bot response with typing animation
+                    setTimeout(function() {
+                        addMessage('bot', data.data.message || data.data);
+                        
+                        // Play notification sound
+                        if (soundEnabled) {
+                            playNotificationSound();
+                        }
+                        
+                        // Show notification if chat is closed
+                        if (!isOpen) {
+                            showNotificationBadge();
+                        }
+                        
+                        // Show new suggestions
+                        if (data.data.suggestions && data.data.suggestions.length > 0) {
+                            setTimeout(function() {
+                                showSuggestedActions(data.data.suggestions);
+                            }, 500);
+                        }
+                    }, 200);
                     
-                    // Play notification sound
-                    if (soundEnabled) {
-                        playNotificationSound();
-                    }
-                    
-                    // Show notification if chat is closed
-                    if (!isOpen) {
-                        showNotificationBadge();
-                    }
-                    
-                    // Show new suggestions
-                    showSuggestedActions(data.data.suggestions || []);
                 } else {
-                    addMessage('bot', '<?php _e('Xin lỗi, có lỗi xảy ra. Vui lòng thử lại.', 'kata-chatbot'); ?>');
+                    var errorMsg = data.data && data.data.message ? data.data.message : '<?php _e('Xin lỗi, có lỗi xảy ra. Vui lòng thử lại.', 'kata-chatbot'); ?>';
+                    addMessage('bot', errorMsg);
                 }
             })
             .catch(error => {
                 console.error('Chat error:', error);
                 hideTypingIndicator();
-                addMessage('bot', '<?php _e('Không thể kết nối. Vui lòng kiểm tra internet và thử lại.', 'kata-chatbot'); ?>');
+                
+                // Re-enable send button
+                var sendBtn = document.getElementById('kata-send-btn');
+                sendBtn.disabled = false;
+                updateSendButtonState();
+                
+                // Show user-friendly error message
+                var errorMessage = '<?php _e('Không thể kết nối đến server. Vui lòng kiểm tra kết nối internet và thử lại.', 'kata-chatbot'); ?>';
+                addMessage('bot', errorMessage);
             });
         }
         
-        // Add message to chat
+        // Add message to chat with enhanced features
         function addMessage(type, text) {
             var messagesContainer = document.getElementById('kata-chat-messages');
             var messageEl = document.createElement('div');
@@ -1810,30 +1831,147 @@ document.addEventListener('DOMContentLoaded', function() {
             var timeStr = now.getHours().toString().padStart(2, '0') + ':' + 
                          now.getMinutes().toString().padStart(2, '0');
             
+            // Format text to handle line breaks and basic formatting
+            var formattedText = formatMessageText(text);
+            
             if (type === 'bot') {
                 messageEl.innerHTML = `
                     <div class="kata-message-avatar">
                         <img src="<?php echo esc_url(get_option('kata_chatbot_avatar', plugins_url('assets/images/chatbot-avatar.png', dirname(__FILE__)))); ?>" alt="Kata AI" />
                     </div>
                     <div class="kata-message-content">
-                        <div class="kata-message-bubble">${text}</div>
+                        <div class="kata-message-bubble">${formattedText}</div>
                         <div class="kata-message-time">${timeStr}</div>
                     </div>
                 `;
             } else {
                 messageEl.innerHTML = `
                     <div class="kata-message-content">
-                        <div class="kata-message-bubble">${text}</div>
+                        <div class="kata-message-bubble">${formattedText}</div>
                         <div class="kata-message-time">${timeStr}</div>
                     </div>
                 `;
             }
+            
+            // Add fade-in animation
+            messageEl.style.opacity = '0';
+            messageEl.style.transform = 'translateY(10px)';
+            messagesContainer.appendChild(messageEl);
+            
+            // Trigger animation
+            setTimeout(function() {
+                messageEl.style.transition = 'all 0.3s ease';
+                messageEl.style.opacity = '1';
+                messageEl.style.transform = 'translateY(0)';
+            }, 10);
+            
+            // Store in history
+            messageHistory.push({
+                type: type, 
+                text: text, 
+                time: now,
+                element: messageEl
+            });
+            
+            // Save to session storage
+            saveChatHistory();
+            
+            // Auto-scroll to bottom
+            scrollToBottom();
+            
+            // Limit message history (keep last 50 messages)
+            if (messageHistory.length > 50) {
+                var oldMessage = messageHistory.shift();
+                if (oldMessage.element && oldMessage.element.parentNode) {
+                    oldMessage.element.remove();
+                }
+                saveChatHistory(); // Update saved history
+            }
+        }
+        
+        // Format message text
+        function formatMessageText(text) {
+            // Escape HTML to prevent XSS
+            var div = document.createElement('div');
+            div.textContent = text;
+            var escapedText = div.innerHTML;
+            
+            // Convert line breaks to <br>
+            escapedText = escapedText.replace(/\n/g, '<br>');
+            
+            // Make URLs clickable (simple regex)
+            escapedText = escapedText.replace(
+                /(https?:\/\/[^\s<>"]+)/gi,
+                '<a href="$1" target="_blank" rel="noopener">$1</a>'
+            );
+            
+            return escapedText;
+        }
             
             messagesContainer.appendChild(messageEl);
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
             
             // Store in history
             messageHistory.push({type: type, text: text, time: now});
+        }
+        
+        // Input handling functions
+        function handleInputKeypress(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        function handleInputChange() {
+            updateCharacterCounter();
+            updateSendButtonState();
+            autoResizeTextarea();
+        }
+        
+        function handleInputPaste() {
+            setTimeout(function() {
+                updateCharacterCounter();
+                updateSendButtonState();
+                autoResizeTextarea();
+            }, 10);
+        }
+        
+        // Update character counter
+        function updateCharacterCounter() {
+            var input = document.getElementById('kata-message-input');
+            var charCount = document.getElementById('kata-char-count');
+            var counter = document.querySelector('.kata-char-counter');
+            var currentLength = input.value.length;
+            var maxLength = 1000;
+            
+            charCount.textContent = currentLength;
+            
+            // Update counter styling based on character count
+            counter.classList.remove('warning', 'danger');
+            if (currentLength > maxLength * 0.9) {
+                counter.classList.add('danger');
+            } else if (currentLength > maxLength * 0.8) {
+                counter.classList.add('warning');
+            }
+        }
+        
+        // Update send button state
+        function updateSendButtonState() {
+            var input = document.getElementById('kata-message-input');
+            var sendBtn = document.getElementById('kata-send-btn');
+            var hasText = input.value.trim().length > 0;
+            var isWithinLimit = input.value.length <= 1000;
+            
+            sendBtn.disabled = !hasText || !isWithinLimit || offlineMode;
+            
+            if (hasText && isWithinLimit && !offlineMode) {
+                sendBtn.style.opacity = '1';
+                sendBtn.style.cursor = 'pointer';
+            } else {
+                sendBtn.style.opacity = '0.5';
+                sendBtn.style.cursor = 'not-allowed';
+            }
         }
         
         // Show/hide typing indicator
@@ -1874,7 +2012,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             suggestions.forEach(function(suggestion) {
                 var btn = document.createElement('button');
-                btn.className = 'kata-suggestion-btn';
+                btn.className = 'kata-suggested-action';
                 btn.setAttribute('data-message', suggestion);
                 btn.textContent = suggestion;
                 suggestionsEl.appendChild(btn);

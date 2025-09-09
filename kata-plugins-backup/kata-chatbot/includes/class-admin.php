@@ -627,10 +627,17 @@ class KataChatbot_Admin {
             return;
         }
         
+        // Check if we are on the correct admin page
+        if (!isset($_GET['page']) || !in_array($_GET['page'], array('kata-chatbot-settings', 'kata-chatbot'))) {
+            return;
+        }
+        
         // Check user capabilities
         if (!current_user_can('manage_options')) {
             return;
         }
+        // Debug logging
+        error_log("Kata Chatbot: Settings save attempt - Page: " . ($_GET['page'] ?? 'none') . ", POST keys: " . implode(', ', array_keys($_POST)));
         
         // Sanitize and save settings
         $settings = array(
@@ -639,7 +646,6 @@ class KataChatbot_Admin {
             'title' => sanitize_text_field($_POST['title'] ?? 'Kata Chatbot'),
             'welcome_message' => sanitize_textarea_field($_POST['welcome_message'] ?? __('Xin chào! Tôi có thể giúp gì cho bạn? 😊', 'kata-chatbot')),
             'tabs' => isset($_POST['tabs']) ? array_map('sanitize_text_field', $_POST['tabs']) : array(),
-            'tab_visibility' => isset($_POST['tab_visibility']) ? array_map('sanitize_text_field', $_POST['tab_visibility']) : array(),
             'zalo_number' => sanitize_text_field($_POST['zalo_number'] ?? ''),
             'hotline_number' => sanitize_text_field($_POST['hotline_number'] ?? ''),
             'facebook_page_id' => sanitize_text_field($_POST['facebook_page_id'] ?? ''),
@@ -650,7 +656,42 @@ class KataChatbot_Admin {
             'ai_max_tokens' => intval($_POST['ai_max_tokens'] ?? 150),
             'offline_mode' => isset($_POST['offline_mode']) ? '1' : '0',
             'offline_message' => sanitize_textarea_field($_POST['offline_message'] ?? __('Chatbot hiện đang offline. Vui lòng thử lại sau.', 'kata-chatbot')),
+            'auto_open_delay' => intval($_POST['auto_open_delay'] ?? 0),
+            'show_on_mobile' => isset($_POST['show_on_mobile']) ? '1' : '0',
+            'enable_sound' => isset($_POST['enable_sound']) ? '1' : '0',
         );
+        
+        // Process tab visibility individually to handle unchecked tabs
+        $available_tabs = array('chat-ai', 'facebook', 'zalo', 'hotline', 'default');
+        $tab_visibility = array();
+        
+        foreach ($available_tabs as $tab) {
+            $tab_visibility[$tab] = isset($_POST['tab_visibility'][$tab]) && $_POST['tab_visibility'][$tab] == '1' ? '1' : '0';
+        }
+        
+        // Special logic: Default tab visibility follows chat-ai tab
+        // If chat-ai is visible, default should also be visible
+        if ($tab_visibility['chat-ai'] == '1') {
+            $tab_visibility['default'] = '1';
+        }
+        
+        $settings['tab_visibility'] = $tab_visibility;
+        
+        // Process default tab setting with validation
+        $default_tab = sanitize_text_field($_POST['default_tab'] ?? 'chat-ai');
+        
+        // Validate that the selected default tab is actually enabled
+        if (!isset($tab_visibility[$default_tab]) || $tab_visibility[$default_tab] != '1') {
+            // Find first enabled tab as fallback
+            foreach ($available_tabs as $tab) {
+                if ($tab_visibility[$tab] == '1') {
+                    $default_tab = $tab;
+                    break;
+                }
+            }
+        }
+        
+        $settings['default_tab'] = $default_tab;
         
         // Update options
         update_option('kata_chatbot_settings', $settings);
@@ -659,8 +700,8 @@ class KataChatbot_Admin {
         $current_tab = sanitize_text_field($_GET['tab'] ?? 'general');
         
         // Redirect with success message and preserve tab
-        $redirect_url = $this->get_admin_url('kata-chatbot', array(
-            'tab' => $current_tab,
+        $page_slug = $_GET['page'] ?? 'kata-chatbot-settings';
+        $redirect_url = $this->get_admin_url($page_slug, array(
             'updated' => '1'
         ));
         

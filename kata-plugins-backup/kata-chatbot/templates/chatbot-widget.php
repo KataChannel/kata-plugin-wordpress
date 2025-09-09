@@ -44,7 +44,17 @@ if (!empty($new_settings)) {
 
 $theme = get_option('kata_chatbot_theme', 'blue');
 $welcome_message = get_option('kata_chatbot_welcome_message', __('Xin chào! Tôi có thể giúp gì cho bạn? 😊', 'kata-chatbot'));
-$default_tab = isset($options['default_tab']) ? $options['default_tab'] : 'chat';
+
+// Map new admin setting names to widget tab names
+$admin_default_tab = isset($options['default_tab']) ? $options['default_tab'] : 'chat-ai';
+$tab_mapping = array(
+    'chat-ai' => 'chat',
+    'default' => 'chat', // Default tab also maps to chat
+    'facebook' => 'facebook',
+    'zalo' => 'zalo',
+    'hotline' => 'hotline'
+);
+$default_tab = isset($tab_mapping[$admin_default_tab]) ? $tab_mapping[$admin_default_tab] : 'chat';
 
 // Get branches for contact options
 $branch_handler = new KataChatbot_Branch_Handler();
@@ -91,7 +101,7 @@ if (!$enabled) {
                     <svg viewBox="0 0 24 24" width="16" height="16">
                         <path fill="#4A90E2" d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
                     </svg>
-                    <span><?php _e('Chat AI', 'kata-chatbot'); ?></span>
+                    <span><?php _e('Hỗ Trợ', 'kata-chatbot'); ?></span>
                 </button>
                 <?php endif; ?>
                 
@@ -145,7 +155,7 @@ if (!$enabled) {
             <!-- Offline Mode Display -->
             <div class="kata-branch-list">
                 <div class="kata-no-contact">
-                    <div style="font-size: 48px; margin-bottom: 16px;">🤖</div>
+                    <div style="font-size: 48px; margin-bottom: 16px;">⏰</div>
                     <h4 style="margin: 0 0 8px 0; color: #666;"><?php _e('AI Assistant đang offline', 'kata-chatbot'); ?></h4>
                     <p style="margin: 0; color: #888;"><?php echo esc_html($offline_message); ?></p>
                     <div style="margin-top: 20px;">
@@ -203,7 +213,7 @@ if (!$enabled) {
                                     data-message="<?php _e('Học phí và khuyến mãi hiện tại như thế nào?', 'kata-chatbot'); ?>"
                                     style="background: #ffc107; color: #333;">
                                 <svg viewBox="0 0 24 24" width="16" height="16">
-                                    <path fill="currentColor" d="M11.8 10.9C11.8 10.9 11.8 10.9 11.8 10.9C11.7 10.9 11.7 10.9 11.7 10.9C11.7 10.9 11.7 10.9 11.7 10.9C11.6 10.9 11.6 10.9 11.6 10.9H11.6H11.5C11.5 10.9 11.5 10.9 11.5 10.9C11.4 10.9 11.4 10.9 11.4 10.9C11.4 10.9 11.4 10.9 11.4 10.9H11.3C11.3 10.9 11.3 10.9 11.3 10.9C11.2 10.9 11.2 10.9 11.2 10.9H11.1H11C11 10.9 11 10.9 11 10.9C10.9 10.9 10.9 10.9 10.9 10.9C10.9 10.9 10.9 10.9 10.9 10.9H10.8C10.8 10.9 10.8 10.9 10.8 10.9C10.7 10.9 10.7 10.9 10.7 10.9C10.7 10.9 10.7 10.9 10.7 10.9H10.6C10.6 10.9 10.6 10.9 10.6 10.9C10.5 10.9 10.5 10.9 10.5 10.9H10.4H10.3C10.3 10.9 10.3 10.9 10.3 10.9C10.2 10.9 10.2 10.9 10.2 10.9C10.2 10.9 10.2 10.9 10.2 10.9H10.1C10.1 10.9 10.1 10.9 10.1 10.9C10 10.9 10 10.9 10 10.9H9.9H9.8C9.8 10.9 9.8 10.9 9.8 10.9C9.7 10.9 9.7 10.9 9.7 10.9C9.7 10.9 9.7 10.9 9.7 10.9H9.6C9.6 10.9 9.6 10.9 9.6 10.9C9.5 10.9 9.5 10.9 9.5 10.9H9.4H9.3C9.3 10.9 9.3 10.9 9.3 10.9C9.2 10.9 9.2 10.9 9.2 10.9C9.2 10.9 9.2 10.9 9.2 10.9H9.1C9.1 10.9 9.1 10.9 9.1 10.9C9 10.9 9 10.9 9 10.9H8.9H8.8C8.8 10.9 8.8 10.9 8.8 10.9C8.7 10.9 8.7 10.9 8.7 10.9C8.7 10.9 8.7 10.9 8.7 10.9H8.6C8.6 10.9 8.6 10.9 8.6 10.9C8.5 10.9 8.5 10.9 8.5 10.9H8.4H8.3C8.3 10.9 8.3 10.9 8.3 10.9C8.2 10.9 8.2 10.9 8.2 10.9C8.2 10.9 8.2 10.9 8.2 10.9H8.1C8.1 10.9 8.1 10.9 8.1 10.9C8 10.9 8 10.9 8 10.9H7.9H7.8C7.8 10.9 7.8 10.9 7.8 10.9C7.7 10.9 7.7 10.9 7.7 10.9C7.7 10.9 7.7 10.9 7.7 10.9H7.6C7.6 10.9 7.6 10.9 7.6 10.9C7.5 10.9 7.5 10.9 7.5 10.9H7.4H7.3C7.3 10.9 7.3 10.9 7.3 10.9C7.2 10.9 7.2 10.9 7.2 10.9C7.2 10.9 7.2 10.9 7.2 10.9H7.1C7.1 10.9 7.1 10.9 7.1 10.9C7 10.9 7 10.9 7 10.9H6.9H6.8C6.8 10.9 6.8 10.9 6.8 10.9C6.7 10.9 6.7 10.9 6.7 10.9C6.7 10.9 6.7 10.9 6.7 10.9H6.6C6.6 10.9 6.6 10.9 6.6 10.9C6.5 10.9 6.5 10.9 6.5 10.9H6.4H6.3C6.3 10.9 6.3 10.9 6.3 10.9C6.2 10.9 6.2 10.9 6.2 10.9C6.2 10.9 6.2 10.9 6.2 10.9H6.1C6.1 10.9 6.1 10.9 6.1 10.9C6 10.9 6 10.9 6 10.9H5.9H5.8C5.8 10.9 5.8 10.9 5.8 10.9C5.7 10.9 5.7 10.9 5.7 10.9C5.7 10.9 5.7 10.9 5.7 10.9H5.6C5.6 10.9 5.6 10.9 5.6 10.9C5.5 10.9 5.5 10.9 5.5 10.9H5.4H5.3C5.3 10.9 5.3 10.9 5.3 10.9C5.2 10.9 5.2 10.9 5.2 10.9C5.2 10.9 5.2 10.9 5.2 10.9H5.1C5.1 10.9 5.1 10.9 5.1 10.9C5 10.9 5 10.9 5 10.9H4.9H4.8C4.8 10.9 4.8 10.9 4.8 10.9C4.7 10.9 4.7 10.9 4.7 10.9C4.7 10.9 4.7 10.9 4.7 10.9H4.6C4.6 10.9 4.6 10.9 4.6 10.9C4.5 10.9 4.5 10.9 4.5 10.9H4.4H4.3C4.3 10.9 4.3 10.9 4.3 10.9C4.2 10.9 4.2 10.9 4.2 10.9C4.2 10.9 4.2 10.9 4.2 10.9H4.1C4.1 10.9 4.1 10.9 4.1 10.9C4 10.9 4 10.9 4 10.9H3.9H3.8C3.8 10.9 3.8 10.9 3.8 10.9C3.7 10.9 3.7 10.9 3.7 10.9C3.7 10.9 3.7 10.9 3.7 10.9H3.6C3.6 10.9 3.6 10.9 3.6 10.9C3.5 10.9 3.5 10.9 3.5 10.9H3.4H3.3C3.3 10.9 3.3 10.9 3.3 10.9C3.2 10.9 3.2 10.9 3.2 10.9C3.2 10.9 3.2 10.9 3.2 10.9H3.1C3.1 10.9 3.1 10.9 3.1 10.9C3 10.9 3 10.9 3 10.9H2.9H2.8C2.8 10.9 2.8 10.9 2.8 10.9C2.7 10.9 2.7 10.9 2.7 10.9C2.7 10.9 2.7 10.9 2.7 10.9H2.6C2.6 10.9 2.6 10.9 2.6 10.9C2.5 10.9 2.5 10.9 2.5 10.9H2.4H2.3C2.3 10.9 2.3 10.9 2.3 10.9C2.2 10.9 2.2 10.9 2.2 10.9C2.2 10.9 2.2 10.9 2.2 10.9H2.1C2.1 10.9 2.1 10.9 2.1 10.9C2 10.9 2 10.9 2 10.9H1.9H1.8C1.8 10.9 1.8 10.9 1.8 10.9C1.7 10.9 1.7 10.9 1.7 10.9C1.7 10.9 1.7 10.9 1.7 10.9H1.6C1.6 10.9 1.6 10.9 1.6 10.9C1.5 10.9 1.5 10.9 1.5 10.9H1.4H1.3C1.3 10.9 1.3 10.9 1.3 10.9C1.2 10.9 1.2 10.9 1.2 10.9C1.2 10.9 1.2 10.9 1.2 10.9H1.1C1.1 10.9 1.1 10.9 1.1 10.9C1 10.9 1 10.9 1 10.9H0.9H0.8C0.8 10.9 0.8 10.9 0.8 10.9C0.7 10.9 0.7 10.9 0.7 10.9C0.7 10.9 0.7 10.9 0.7 10.9H0.6C0.6 10.9 0.6 10.9 0.6 10.9C0.5 10.9 0.5 10.9 0.5 10.9H0.4H0.3C0.3 10.9 0.3 10.9 0.3 10.9C0.2 10.9 0.2 10.9 0.2 10.9C0.2 10.9 0.2 10.9 0.2 10.9H0.1C0.1 10.9 0.1 10.9 0.1 10.9C0 10.9 0 10.9 0 10.9H-0.1H-0.2C-0.2 10.9 -0.2 10.9 -0.2 10.9C-0.3 10.9 -0.3 10.9 -0.3 10.9C-0.3 10.9 -0.3 10.9 -0.3 10.9H-0.4C-0.4 10.9 -0.4 10.9 -0.4 10.9C-0.5 10.9 -0.5 10.9 -0.5 10.9H-0.6H-0.7C-0.7 10.9 -0.7 10.9 -0.7 10.9C-0.8 10.9 -0.8 10.9 -0.8 10.9C-0.8 10.9 -0.8 10.9 -0.8 10.9H-0.9C-0.9 10.9 -0.9 10.9 -0.9 10.9C-1 10.9 -1 10.9 -1 10.9H-1.1H-1.2C-1.2 10.9 -1.2 10.9 -1.2 10.9C-1.3 10.9 -1.3 10.9 -1.3 10.9C-1.3 10.9 -1.3 10.9 -1.3 10.9H-1.4C-1.4 10.9 -1.4 10.9 -1.4 10.9C-1.5 10.9 -1.5 10.9 -1.5 10.9H-1.6H-1.7C-1.7 10.9 -1.7 10.9 -1.7 10.9C-1.8 10.9 -1.8 10.9 -1.8 10.9C-1.8 10.9 -1.8 10.9 -1.8 10.9H-1.9C-1.9 10.9 -1.9 10.9 -1.9 10.9C-2 10.9 -2 10.9 -2 10.9H-2.1H-2.2C-2.2 10.9 -2.2 10.9 -2.2 10.9M12 2L13.09 8.26L22 9L17 14L18.18 23L12 19.5L5.82 23L7 14L2 9L10.91 8.26L12 2Z"/>
+                                    <path fill="currentColor" d="M12 2L13.09 8.26L22 9L17 14L18.18 23L12 19.5L5.82 23L7 14L2 9L10.91 8.26L12 2Z"/>
                                 </svg>
                                 <?php _e('Học phí', 'kata-chatbot'); ?>
                             </button>
@@ -1037,57 +1047,6 @@ jQuery(document).ready(function($) {
     updateTabBadges();
 });
 </script>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Chat Input -->
-        <div class="kata-chat-input">
-            <div class="kata-input-wrapper">
-                <textarea id="kata-message-input" 
-                         class="kata-message-textarea"
-                         placeholder="<?php _e('Nhập tin nhắn của bạn...', 'kata-chatbot'); ?>"
-                         rows="1"
-                         maxlength="<?php echo esc_attr(get_option('kata_chatbot_max_message_length', 1000)); ?>"></textarea>
-                
-                <div class="kata-input-actions">
-                    <button id="kata-emoji-btn" class="kata-input-btn" title="<?php _e('Biểu tượng cảm xúc', 'kata-chatbot'); ?>">
-                        😊
-                    </button>
-                    
-                    <button id="kata-send-btn" class="kata-send-btn" title="<?php _e('Gửi tin nhắn', 'kata-chatbot'); ?>">
-                        <svg viewBox="0 0 24 24" width="20" height="20">
-                            <path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Character Counter -->
-            <div class="kata-char-counter">
-                <span id="kata-char-count">0</span>/<span id="kata-char-limit"><?php echo esc_html(get_option('kata_chatbot_max_message_length', 1000)); ?></span>
-            </div>
-        </div>
-        
-        <!-- Emoji Picker -->
-        <div id="kata-emoji-picker" class="kata-emoji-picker" style="display: none;">
-            <div class="kata-emoji-grid">
-                <span class="kata-emoji-item">😊</span>
-                <span class="kata-emoji-item">😂</span>
-                <span class="kata-emoji-item">🤔</span>
-                <span class="kata-emoji-item">👍</span>
-                <span class="kata-emoji-item">👎</span>
-                <span class="kata-emoji-item">❤️</span>
-                <span class="kata-emoji-item">🎉</span>
-                <span class="kata-emoji-item">🔥</span>
-                <span class="kata-emoji-item">💡</span>
-                <span class="kata-emoji-item">💼</span>
-                <span class="kata-emoji-item">🚀</span>
-                <span class="kata-emoji-item">⭐</span>
-            </div>
-        </div>
         
         <!-- Chat Footer -->
         <div class="kata-chat-footer">
@@ -1096,49 +1055,9 @@ jQuery(document).ready(function($) {
             </div>
             
             <div class="kata-footer-actions">
-                <button id="kata-feedback-btn" class="kata-footer-btn" title="<?php _e('Đánh giá', 'kata-chatbot'); ?>">
-                    ⭐
-                </button>
                 <button id="kata-sound-toggle" class="kata-footer-btn" title="<?php _e('Bật/tắt âm thanh', 'kata-chatbot'); ?>">
                     🔊
                 </button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Feedback Modal -->
-    <div id="kata-feedback-modal" class="kata-modal" style="display: none;">
-        <div class="kata-modal-content">
-            <div class="kata-modal-header">
-                <h3><?php _e('Đánh giá trải nghiệm', 'kata-chatbot'); ?></h3>
-                <button class="kata-modal-close">&times;</button>
-            </div>
-            
-            <div class="kata-modal-body">
-                <div class="kata-rating-section">
-                    <p><?php _e('Bạn có hài lòng với cuộc hội thoại?', 'kata-chatbot'); ?></p>
-                    <div class="kata-rating-stars">
-                        <span class="kata-star" data-rating="1">⭐</span>
-                        <span class="kata-star" data-rating="2">⭐</span>
-                        <span class="kata-star" data-rating="3">⭐</span>
-                        <span class="kata-star" data-rating="4">⭐</span>
-                        <span class="kata-star" data-rating="5">⭐</span>
-                    </div>
-                </div>
-                
-                <div class="kata-feedback-section">
-                    <label for="kata-feedback-text"><?php _e('Góp ý (tùy chọn):', 'kata-chatbot'); ?></label>
-                    <textarea id="kata-feedback-text" rows="3" placeholder="<?php _e('Chia sẻ trải nghiệm của bạn...', 'kata-chatbot'); ?>"></textarea>
-                </div>
-                
-                <div class="kata-modal-actions">
-                    <button type="button" class="kata-btn kata-btn-secondary" id="kata-feedback-skip">
-                        <?php _e('Bỏ qua', 'kata-chatbot'); ?>
-                    </button>
-                    <button type="button" class="kata-btn kata-btn-primary" id="kata-feedback-submit">
-                        <?php _e('Gửi đánh giá', 'kata-chatbot'); ?>
-                    </button>
-                </div>
             </div>
         </div>
     </div>
@@ -1595,42 +1514,6 @@ jQuery(document).ready(function($) {
     cursor: not-allowed;
 }
 
-.kata-char-counter {
-    text-align: right;
-    font-size: 11px;
-    color: #666;
-    margin-top: 4px;
-}
-
-/* Emoji Picker */
-.kata-emoji-picker {
-    background: white;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.kata-emoji-grid {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 8px;
-}
-
-.kata-emoji-item {
-    font-size: 18px;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    text-align: center;
-    transition: background 0.2s;
-}
-
-.kata-emoji-item:hover {
-    background: #f0f0f0;
-}
-
 /* Chat Footer */
 .kata-chat-footer {
     border-top: 1px solid #eee;
@@ -1719,77 +1602,6 @@ jQuery(document).ready(function($) {
     margin-bottom: 20px;
 }
 
-.kata-rating-stars {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 12px;
-}
-
-.kata-star {
-    font-size: 24px;
-    cursor: pointer;
-    opacity: 0.3;
-    transition: opacity 0.2s;
-}
-
-.kata-star:hover,
-.kata-star.active {
-    opacity: 1;
-}
-
-.kata-feedback-section {
-    margin-bottom: 20px;
-}
-
-.kata-feedback-section label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 500;
-}
-
-.kata-feedback-section textarea {
-    width: 100%;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-family: inherit;
-    resize: vertical;
-}
-
-.kata-modal-actions {
-    display: flex;
-    gap: 12px;
-    justify-content: flex-end;
-}
-
-.kata-btn {
-    padding: 8px 16px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
-}
-
-.kata-btn-secondary {
-    background: #f1f1f1;
-    color: #666;
-}
-
-.kata-btn-secondary:hover {
-    background: #e1e1e1;
-}
-
-.kata-btn-primary {
-    background: var(--kata-primary);
-    color: white;
-}
-
-.kata-btn-primary:hover {
-    background: var(--kata-primary-dark);
-}
-
 /* Responsive */
 @media (max-width: 768px) {
     .kata-chat-window {
@@ -1847,45 +1659,12 @@ document.addEventListener('DOMContentLoaded', function() {
             // Auto-resize textarea
             document.getElementById('kata-message-input').addEventListener('input', autoResizeTextarea);
             
-            // Character counter
-            document.getElementById('kata-message-input').addEventListener('input', updateCharCounter);
-            
-            // Emoji picker
-            document.getElementById('kata-emoji-btn').addEventListener('click', toggleEmojiPicker);
-            document.addEventListener('click', function(e) {
-                if (!e.target.closest('#kata-emoji-picker') && !e.target.closest('#kata-emoji-btn')) {
-                    hideEmojiPicker();
-                }
-            });
-            
-            // Emoji selection
-            document.querySelectorAll('.kata-emoji-item').forEach(function(emoji) {
-                emoji.addEventListener('click', function() {
-                    insertEmoji(this.textContent);
-                });
-            });
-            
             // Suggestion buttons
             document.addEventListener('click', function(e) {
                 if (e.target.classList.contains('kata-suggestion-btn')) {
                     var message = e.target.getAttribute('data-message');
                     sendUserMessage(message);
                 }
-            });
-            
-            // Feedback
-            document.getElementById('kata-feedback-btn').addEventListener('click', showFeedbackModal);
-            document.querySelectorAll('.kata-modal-close, #kata-feedback-skip').forEach(function(btn) {
-                btn.addEventListener('click', hideFeedbackModal);
-            });
-            document.getElementById('kata-feedback-submit').addEventListener('click', submitFeedback);
-            
-            // Star rating
-            document.querySelectorAll('.kata-star').forEach(function(star) {
-                star.addEventListener('click', function() {
-                    var rating = parseInt(this.getAttribute('data-rating'));
-                    updateStarRating(rating);
-                });
             });
             
             // Sound toggle
@@ -1956,8 +1735,6 @@ document.addEventListener('DOMContentLoaded', function() {
             // Clear input
             input.value = '';
             autoResizeTextarea();
-            updateCharCounter();
-            hideEmojiPicker();
             
             // Send user message
             sendUserMessage(message);
@@ -2082,48 +1859,6 @@ document.addEventListener('DOMContentLoaded', function() {
             textarea.style.height = Math.min(textarea.scrollHeight, 80) + 'px';
         }
         
-        // Update character counter
-        function updateCharCounter() {
-            var input = document.getElementById('kata-message-input');
-            var count = input.value.length;
-            var limit = parseInt(document.getElementById('kata-char-limit').textContent);
-            
-            document.getElementById('kata-char-count').textContent = count;
-            
-            if (count > limit * 0.8) {
-                document.getElementById('kata-char-count').style.color = count >= limit ? '#d63638' : '#dba617';
-            } else {
-                document.getElementById('kata-char-count').style.color = '#666';
-            }
-            
-            // Disable send button if over limit
-            document.getElementById('kata-send-btn').disabled = count >= limit;
-        }
-        
-        // Emoji picker
-        function toggleEmojiPicker() {
-            var picker = document.getElementById('kata-emoji-picker');
-            picker.style.display = picker.style.display === 'none' ? 'block' : 'none';
-        }
-        
-        function hideEmojiPicker() {
-            document.getElementById('kata-emoji-picker').style.display = 'none';
-        }
-        
-        function insertEmoji(emoji) {
-            var input = document.getElementById('kata-message-input');
-            var start = input.selectionStart;
-            var end = input.selectionEnd;
-            var text = input.value;
-            
-            input.value = text.substring(0, start) + emoji + text.substring(end);
-            input.selectionStart = input.selectionEnd = start + emoji.length;
-            input.focus();
-            
-            updateCharCounter();
-            hideEmojiPicker();
-        }
-        
         // Suggested actions
         function showSuggestedActions(suggestions) {
             if (!suggestions || suggestions.length === 0) return;
@@ -2205,62 +1940,6 @@ document.addEventListener('DOMContentLoaded', function() {
             
             // Save preference
             localStorage.setItem('kata_chatbot_sound', soundEnabled);
-        }
-        
-        // Feedback modal
-        function showFeedbackModal() {
-            document.getElementById('kata-feedback-modal').style.display = 'flex';
-        }
-        
-        function hideFeedbackModal() {
-            document.getElementById('kata-feedback-modal').style.display = 'none';
-            resetFeedbackForm();
-        }
-        
-        function resetFeedbackForm() {
-            document.querySelectorAll('.kata-star').forEach(function(star) {
-                star.classList.remove('active');
-            });
-            document.getElementById('kata-feedback-text').value = '';
-        }
-        
-        function updateStarRating(rating) {
-            document.querySelectorAll('.kata-star').forEach(function(star, index) {
-                if (index < rating) {
-                    star.classList.add('active');
-                } else {
-                    star.classList.remove('active');
-                }
-            });
-        }
-        
-        function submitFeedback() {
-            var rating = document.querySelectorAll('.kata-star.active').length;
-            var feedback = document.getElementById('kata-feedback-text').value;
-            
-            fetch('<?php echo admin_url('admin-ajax.php'); ?>', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({
-                    action: 'kata_chatbot_submit_feedback',
-                    session_id: sessionId,
-                    rating: rating,
-                    feedback: feedback,
-                    nonce: '<?php echo wp_create_nonce('kata_chatbot_nonce'); ?>'
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                hideFeedbackModal();
-                if (data.success) {
-                    addMessage('bot', '<?php _e('Cảm ơn bạn đã đánh giá! Phản hồi của bạn rất quan trọng với chúng tôi. 😊', 'kata-chatbot'); ?>');
-                }
-            })
-            .catch(error => {
-                console.error('Feedback error:', error);
-            });
         }
         
         // Check online status

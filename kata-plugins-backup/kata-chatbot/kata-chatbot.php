@@ -106,8 +106,6 @@ class KataChatbot {
         add_action('wp_ajax_nopriv_kata_chatbot_send_message', array($this, 'ajax_send_message'));
         add_action('wp_ajax_kata_chatbot_rate_message', array($this, 'ajax_rate_message'));
         add_action('wp_ajax_nopriv_kata_chatbot_rate_message', array($this, 'ajax_rate_message'));
-        add_action('wp_ajax_kata_chatbot_submit_feedback', array($this, 'ajax_submit_feedback'));
-        add_action('wp_ajax_nopriv_kata_chatbot_submit_feedback', array($this, 'ajax_submit_feedback'));
         add_action('wp_ajax_kata_chatbot_get_conversations', array($this, 'ajax_get_conversations'));
         add_action('wp_ajax_kata_chatbot_delete_conversation', array($this, 'ajax_delete_conversation'));
         add_action('wp_ajax_kata_chatbot_get_history', array($this, 'ajax_get_history'));
@@ -699,49 +697,6 @@ class KataChatbot {
         }
     }
     
-    /**
-     * AJAX handler for submitting feedback
-     */
-    public function ajax_submit_feedback() {
-        check_ajax_referer('kata_chatbot_nonce', 'nonce');
-        
-        $session_id = sanitize_text_field($_POST['session_id'] ?? '');
-        $rating = sanitize_text_field($_POST['rating'] ?? '');
-        $feedback = sanitize_textarea_field($_POST['feedback'] ?? '');
-        
-        if (empty($session_id) || !in_array($rating, ['positive', 'negative'])) {
-            wp_send_json_error(__('Dữ liệu feedback không hợp lệ.', 'kata-chatbot'));
-        }
-        
-        try {
-            // Save feedback to analytics or conversations table
-            global $wpdb;
-            $conversations_table = $wpdb->prefix . 'kata_chatbot_conversations';
-            
-            $metadata = array(
-                'feedback_rating' => $rating,
-                'feedback_text' => $feedback,
-                'feedback_at' => current_time('mysql')
-            );
-            
-            $updated = $wpdb->update(
-                $conversations_table,
-                array('metadata' => json_encode($metadata)),
-                array('session_id' => $session_id),
-                array('%s'),
-                array('%s')
-            );
-            
-            if ($updated !== false) {
-                wp_send_json_success(__('Cảm ơn bạn đã gửi phản hồi!', 'kata-chatbot'));
-            } else {
-                wp_send_json_error(__('Không thể lưu phản hồi.', 'kata-chatbot'));
-            }
-        } catch (Exception $e) {
-            error_log('Kata Chatbot Feedback Error: ' . $e->getMessage());
-            wp_send_json_error(__('Lỗi khi lưu phản hồi.', 'kata-chatbot'));
-        }
-    }
     
     /**
      * Check rate limiting

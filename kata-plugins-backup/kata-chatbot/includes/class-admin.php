@@ -36,6 +36,7 @@ class KataChatbot_Admin {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_init', array($this, 'handle_settings_save'));
+        add_action('admin_init', array($this, 'handle_repair_branches'));
         add_action('admin_notices', array($this, 'admin_notices'));
         
         // AJAX handlers for admin
@@ -662,6 +663,36 @@ class KataChatbot_Admin {
             'tab' => $current_tab,
             'updated' => '1'
         ));
+        
+        wp_redirect($redirect_url);
+        exit;
+    }
+    
+    /**
+     * Handle repair branches action
+     */
+    public function handle_repair_branches() {
+        // Check if this is a repair branches request
+        if (!isset($_GET['kata_repair_branches']) || !current_user_can('manage_options')) {
+            return;
+        }
+        
+        // Verify nonce
+        if (!isset($_GET['_wpnonce']) || !wp_verify_nonce($_GET['_wpnonce'], 'kata_repair_branches')) {
+            return;
+        }
+        
+        // Load branch handler
+        if (!class_exists('KataChatbot_Branch_Handler')) {
+            require_once KATA_CHATBOT_PLUGIN_PATH . 'includes/class-branch-handler.php';
+        }
+        
+        $branch_handler = new KataChatbot_Branch_Handler();
+        $result = $branch_handler->check_and_repair_table();
+        
+        // Redirect with result
+        $redirect_url = remove_query_arg(array('kata_repair_branches', '_wpnonce'));
+        $redirect_url = add_query_arg('repair_result', $result ? 'success' : 'failed', $redirect_url);
         
         wp_redirect($redirect_url);
         exit;

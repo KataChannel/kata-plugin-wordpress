@@ -277,9 +277,15 @@ class KataChatbot {
         }
         
         // Create branches table using branch handler
+        // Load dependencies first to ensure classes are available
+        $this->load_dependencies();
+        
         if (class_exists('KataChatbot_Branch_Handler')) {
             $branch_handler_temp = new KataChatbot_Branch_Handler();
             $branch_handler_temp->create_branches_table();
+        } else {
+            // Fallback: create table directly if class not available
+            $this->create_branches_table_fallback();
         }
         
         // Log table creation results for debugging
@@ -367,6 +373,63 @@ class KataChatbot {
                 $knowledge_table,
                 $data,
                 array('%s', '%s', '%s', '%s')
+            );
+        }
+    }
+    
+    /**
+     * Create branches table fallback (when class not available)
+     */
+    private function create_branches_table_fallback() {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'kata_chatbot_branches';
+        $charset_collate = $wpdb->get_charset_collate();
+        
+        $sql = "CREATE TABLE IF NOT EXISTS $table_name (
+            id int(11) NOT NULL AUTO_INCREMENT,
+            name varchar(255) NOT NULL,
+            address text,
+            phone varchar(50),
+            email varchar(100),
+            facebook_url varchar(255),
+            facebook_page_id varchar(100),
+            zalo_url varchar(255),
+            zalo_oa_id varchar(100),
+            hotline varchar(50),
+            working_hours text,
+            description text,
+            is_active tinyint(1) DEFAULT 1,
+            display_order int(11) DEFAULT 0,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id)
+        ) $charset_collate;";
+        
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
+        
+        // Create default branch if none exists
+        $count = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+        if ($count == 0) {
+            $wpdb->insert(
+                $table_name,
+                array(
+                    'name' => 'Chi nhánh chính',
+                    'address' => 'Địa chỉ chi nhánh chính',
+                    'phone' => '0123456789',
+                    'email' => 'contact@example.com',
+                    'facebook_url' => '',
+                    'facebook_page_id' => '',
+                    'zalo_url' => '',
+                    'zalo_oa_id' => '',
+                    'hotline' => '0987654321',
+                    'working_hours' => 'Thứ 2 - Thứ 6: 8:00 - 17:30',
+                    'description' => 'Chi nhánh chính của công ty',
+                    'is_active' => 1,
+                    'display_order' => 1
+                ),
+                array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d')
             );
         }
     }

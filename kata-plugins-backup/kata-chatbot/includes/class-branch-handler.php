@@ -53,7 +53,7 @@ class KataChatbot_Branch_Handler {
         
         $charset_collate = $wpdb->get_charset_collate();
         
-        $sql = "CREATE TABLE $table_name (
+        $sql = "CREATE TABLE IF NOT EXISTS $table_name (
             id int(11) NOT NULL AUTO_INCREMENT,
             name varchar(255) NOT NULL,
             address text,
@@ -74,10 +74,37 @@ class KataChatbot_Branch_Handler {
         ) $charset_collate;";
         
         require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
         
-        // Create default branch if none exists
-        $this->create_default_branch();
+        // Execute table creation with error handling
+        $result = dbDelta($sql);
+        
+        // Log the result for debugging
+        if (defined('WP_DEBUG') && WP_DEBUG) {
+            error_log('Kata Chatbot Branch Table Creation Result: ' . wp_json_encode($result));
+            if ($wpdb->last_error) {
+                error_log('Kata Chatbot Branch Table Error: ' . $wpdb->last_error);
+            }
+        }
+        
+        // Verify table was created
+        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name;
+        if (!$table_exists) {
+            // Log error and try alternative approach
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('Kata Chatbot: Branch table creation failed, attempting manual creation');
+            }
+            
+            // Try direct query as fallback
+            $direct_result = $wpdb->query($sql);
+            if ($direct_result === false && defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('Kata Chatbot: Direct branch table creation also failed: ' . $wpdb->last_error);
+            }
+        }
+        
+        // Create default branch if table exists and is empty
+        if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
+            $this->create_default_branch();
+        }
     }
     
     /**
@@ -88,31 +115,114 @@ class KataChatbot_Branch_Handler {
         
         $table_name = $wpdb->prefix . 'kata_chatbot_branches';
         
-        $count = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
-        
-        if ($count == 0) {
-            $wpdb->insert(
-                $table_name,
-                array(
-                    'name' => 'Chi nhánh chính',
-                    'address' => 'Địa chỉ chi nhánh chính',
-                    'phone' => '0123456789',
-                    'email' => 'contact@example.com',
-                    'hotline' => '1900123456',
-                    'working_hours' => '8:00 - 17:00 (Thứ 2 - Thứ 6)',
-                    'description' => 'Chi nhánh chính của công ty',
-                    'is_active' => 1,
-                    'display_order' => 1
-                ),
-                array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d')
-            );
+        // Check if table exists first
+        if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('Kata Chatbot: Cannot create default branch - table does not exist');
+            }
+            return false;
         }
+        
+        try {
+            $count = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+            
+            if ($count == 0) {
+                $result = $wpdb->insert(
+                    $table_name,
+                    array(
+                        'name' => 'Chi nhánh chính',
+                        'address' => 'Địa chỉ chi nhánh chính',
+                        'phone' => '0123456789',
+                        'email' => 'contact@example.com',
+                        'facebook_url' => '',
+                        'facebook_page_id' => '',
+                        'zalo_url' => '',
+                        'zalo_oa_id' => '',
+                        'hotline' => '0987654321',
+                        'working_hours' => 'Thứ 2 - Thứ 6: 8:00 - 17:30',
+                        'description' => 'Chi nhánh chính của công ty',
+                        'is_active' => 1,
+                        'display_order' => 1
+                    ),
+                    array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d', '%d')
+                );
+                
+                if ($result === false && defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log('Kata Chatbot: Failed to insert default branch: ' . $wpdb->last_error);
+                    return false;
+                }
+                
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log('Kata Chatbot: Default branch created successfully');
+                }
+                return true;
+            }
+        } catch (Exception $e) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('Kata Chatbot: Exception in create_default_branch: ' . $e->getMessage());
+            }
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Check and repair branch table if needed
+     */
+    public function check_and_repair_table() {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'kata_chatbot_branches';
+        
+        // Check if table exists
+        $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name;
+        
+        if (!$table_exists) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('Kata Chatbot: Branch table missing, attempting to recreate');
+            }
+            
+            // Try to recreate table
+            $this->create_branches_table();
+            
+            // Verify creation
+            $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name;
+            
+            if (!$table_exists) {
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log('Kata Chatbot: Failed to recreate branch table');
+                }
+                return false;
+            }
+        }
+        
+        // Check if table has data
+        try {
+            $count = $wpdb->get_var("SELECT COUNT(*) FROM $table_name");
+            if ($count == 0) {
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    error_log('Kata Chatbot: Branch table empty, creating default branch');
+                }
+                $this->create_default_branch();
+            }
+        } catch (Exception $e) {
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                error_log('Kata Chatbot: Error checking branch table: ' . $e->getMessage());
+            }
+            return false;
+        }
+        
+        return true;
     }
     
     /**
      * Get all branches
      */
     public function get_all_branches($active_only = false) {
+        // Ensure table exists and has data
+        $this->check_and_repair_table();
+        
         global $wpdb;
         
         $table_name = $wpdb->prefix . 'kata_chatbot_branches';

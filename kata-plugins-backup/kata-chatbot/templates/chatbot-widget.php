@@ -48,6 +48,10 @@ $default_tab = isset($options['default_tab']) ? $options['default_tab'] : 'chat'
 
 // Get branches for contact options
 $branch_handler = new KataChatbot_Branch_Handler();
+
+// Ensure branch table exists and has data
+$branch_handler->check_and_repair_table();
+
 $branches = $branch_handler->get_all_branches(true); // Get only active branches
 
 if (!$enabled) {

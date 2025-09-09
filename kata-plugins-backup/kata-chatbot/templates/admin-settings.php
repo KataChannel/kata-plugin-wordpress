@@ -35,6 +35,15 @@ if (!empty($new_settings)) {
         echo '<div class="notice notice-success is-dismissible"><p>' . __('Cài đặt đã được lưu thành công!', 'kata-chatbot') . '</p></div>';
     }
     
+    // Show repair branches result
+    if (isset($_GET['repair_result'])) {
+        if ($_GET['repair_result'] == 'success') {
+            echo '<div class="notice notice-success is-dismissible"><p>' . __('Chi nhánh đã được sửa chữa thành công!', 'kata-chatbot') . '</p></div>';
+        } else {
+            echo '<div class="notice notice-error is-dismissible"><p>' . __('Không thể sửa chữa chi nhánh. Vui lòng kiểm tra log lỗi.', 'kata-chatbot') . '</p></div>';
+        }
+    }
+    
     settings_errors(); 
     ?>
     
@@ -351,6 +360,22 @@ if (!empty($new_settings)) {
         
         <?php submit_button(__('Lưu thay đổi', 'kata-chatbot')); ?>
     </form>
+    
+    <!-- Debug Tools -->
+    <div class="kata-debug-tools" style="margin-top: 20px; padding: 20px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 4px;">
+        <h3><?php _e('Công cụ Debug & Sửa chữa', 'kata-chatbot'); ?></h3>
+        <p><?php _e('Sử dụng các công cụ này khi gặp vấn đề với plugin.', 'kata-chatbot'); ?></p>
+        
+        <a href="<?php echo wp_nonce_url(add_query_arg('kata_repair_branches', '1'), 'kata_repair_branches'); ?>" 
+           class="button button-secondary" 
+           onclick="return confirm('<?php _e('Bạn có chắc muốn sửa chữa bảng chi nhánh?', 'kata-chatbot'); ?>')">
+            <?php _e('🔧 Sửa chữa Chi nhánh', 'kata-chatbot'); ?>
+        </a>
+        
+        <p class="description" style="margin-top: 10px;">
+            <?php _e('Kiểm tra và tạo lại bảng chi nhánh nếu bị thiếu hoặc lỗi. Sử dụng khi triển khai lên server và không tạo được chi nhánh.', 'kata-chatbot'); ?>
+        </p>
+    </div>
 </div>
 
 <style>

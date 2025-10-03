@@ -1,0 +1,1421 @@
+/**
+ * Kata SEO Tools - Frontend Styles
+ * 
+ * @package Kata_SEO_Tools
+ * @since 1.0.0
+ */
+
+/* ===================================
+   1. GENERAL STYLES
+   =================================== */
+
+.kata-seo-tools {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Schema & SEO (Hidden from display) */
+.kata-schema-wrapper,
+script[type="application/ld+json"] {
+    display: none !important;
+}
+
+/* ===================================
+   2. SOCIAL SHARE
+   =================================== */
+
+.kata-social-share {
+    margin: 30px 0;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.kata-social-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kata-social-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.kata-social-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.kata-social-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+}
+
+.kata-social-btn svg {
+    flex-shrink: 0;
+}
+
+/* Social Share Styles */
+.kata-social-circle .kata-social-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    padding: 0;
+    justify-content: center;
+}
+
+.kata-social-circle .kata-social-label {
+    display: none;
+}
+
+.kata-social-square .kata-social-btn {
+    border-radius: 4px;
+}
+
+.kata-social-minimal .kata-social-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+}
+
+/* Platform Colors */
+.kata-social-facebook:hover { background: #1877f2; color: white; border-color: #1877f2; }
+.kata-social-twitter:hover { background: #1da1f2; color: white; border-color: #1da1f2; }
+.kata-social-linkedin:hover { background: #0077b5; color: white; border-color: #0077b5; }
+.kata-social-pinterest:hover { background: #e60023; color: white; border-color: #e60023; }
+.kata-social-telegram:hover { background: #0088cc; color: white; border-color: #0088cc; }
+.kata-social-whatsapp:hover { background: #25d366; color: white; border-color: #25d366; }
+.kata-social-tiktok:hover { background: #000; color: white; border-color: #000; }
+
+/* ===================================
+   3. QUOTE
+   =================================== */
+
+.kata-quote {
+    margin: 40px 0;
+    padding: 35px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.kata-quote-modern {
+    border-left: 5px solid #4A90E2;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    padding-left: 35px;
+    border-radius: 0 8px 8px 0;
+}
+
+.kata-quote-minimal {
+    background: transparent;
+    border-bottom: 3px solid #4A90E2;
+    padding: 25px 0;
+}
+
+.kata-quote-card {
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.kata-quote-icon {
+    font-size: 72px;
+    color: #4A90E2;
+    line-height: 0.8;
+    margin-bottom: 15px;
+    font-family: Georgia, serif;
+    opacity: 0.3;
+}
+
+.kata-quote-content {
+    font-size: 20px;
+    line-height: 1.7;
+    font-style: italic;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    font-weight: 400;
+}
+
+.kata-quote-author {
+    font-size: 16px;
+    font-weight: 600;
+    color: #6c757d;
+    margin-top: 15px;
+    font-style: normal;
+}
+
+.kata-quote-hashtags {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.kata-hashtag {
+    display: inline-block;
+    padding: 6px 16px;
+    background: #4A90E2;
+    color: white;
+    border-radius: 25px;
+    font-size: 13px;
+    text-decoration: none;
+    transition: all 0.25s ease;
+    font-weight: 500;
+}
+
+.kata-hashtag:hover {
+    background: #357abd;
+    transform: scale(1.05) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.kata-quote-share {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.kata-quote-share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.kata-quote-share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.kata-share-twitter:hover { background: #1da1f2; color: white; border-color: #1da1f2; }
+.kata-share-facebook:hover { background: #1877f2; color: white; border-color: #1877f2; }
+.kata-share-copy:hover { background: #6c757d; color: white; border-color: #6c757d; }
+
+/* ===================================
+   4. QUIZ
+   =================================== */
+
+.kata-quiz {
+    margin: 40px 0;
+    padding: 35px;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+.quiz-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.quiz-title {
+    font-size: 26px;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.quiz-info {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    color: #6c757d;
+    align-items: center;
+}
+
+.quiz-questions {
+    margin-bottom: 30px;
+}
+
+.quiz-question {
+    margin-bottom: 30px;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #4A90E2;
+}
+
+.question-number {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #4A90E2;
+    color: white;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.question-text {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: #2c3e50;
+    line-height: 1.5;
+}
+
+.question-image {
+    margin: 15px 0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.question-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.quiz-option {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+.quiz-option:hover {
+    border-color: #4A90E2;
+    background: #f0f7ff;
+    transform: translateX(5px);
+}
+
+.quiz-option input[type="radio"] {
+    margin-right: 12px;
+    cursor: pointer;
+    width: 20px;
+    height: 20px;
+}
+
+.quiz-option.correct {
+    border-color: #28a745;
+    background: #d4edda;
+}
+
+.quiz-option.incorrect {
+    border-color: #dc3545;
+    background: #f8d7da;
+}
+
+.option-indicator {
+    margin-left: auto;
+    font-size: 20px;
+}
+
+.quiz-option.correct .option-indicator::after {
+    content: "✓";
+    color: #28a745;
+}
+
+.quiz-option.incorrect .option-indicator::after {
+    content: "✗";
+    color: #dc3545;
+}
+
+.question-explanation {
+    margin-top: 15px;
+    padding: 15px;
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.quiz-actions {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.quiz-submit-btn,
+.quiz-reset-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.quiz-submit-btn:hover {
+    background: #357abd;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+}
+
+.quiz-reset-btn {
+    background: #6c757d;
+}
+
+.quiz-reset-btn:hover {
+    background: #5a6268;
+}
+
+.quiz-submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.quiz-result {
+    margin-top: 30px;
+    padding: 30px;
+    background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%);
+    border: 2px solid #28a745;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.result-icon {
+    font-size: 64px;
+    margin-bottom: 15px;
+}
+
+.quiz-score {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2e7d32;
+    margin-bottom: 15px;
+}
+
+.quiz-message {
+    font-size: 18px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.quiz-progress {
+    margin-top: 20px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #4A90E2, #357abd);
+    transition: width 0.5s ease;
+}
+
+.progress-text {
+    font-size: 13px;
+    color: #6c757d;
+    text-align: right;
+}
+
+/* ===================================
+   5. POLL
+   =================================== */
+
+.kata-poll {
+    margin: 40px 0;
+    padding: 30px;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+.poll-header {
+    margin-bottom: 25px;
+}
+
+.poll-question {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #2c3e50;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.poll-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.poll-option {
+    position: relative;
+}
+
+.poll-option-label {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.poll-option-label:hover {
+    border-color: #4A90E2;
+    background: #f0f7ff;
+}
+
+.poll-option input[type="radio"],
+.poll-option input[type="checkbox"] {
+    margin-right: 12px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.poll-option input:disabled {
+    cursor: not-allowed;
+}
+
+.option-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-right: 12px;
+}
+
+.poll-result-bar {
+    margin-top: 10px;
+    position: relative;
+    height: 36px;
+    background: #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.poll-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4A90E2, #357abd);
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    position: relative;
+}
+
+.poll-stats {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.poll-percentage {
+    color: #2c3e50;
+}
+
+.poll-votes {
+    color: #6c757d;
+}
+
+.poll-actions {
+    margin-top: 25px;
+}
+
+.poll-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 28px;
+    background: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.poll-submit-btn:hover {
+    background: #357abd;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+}
+
+.poll-submit-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.poll-voted-message {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px;
+    background: #d4edda;
+    border: 1px solid #28a745;
+    border-radius: 8px;
+    color: #155724;
+    font-weight: 500;
+}
+
+.poll-total {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #dee2e6;
+    font-size: 14px;
+    color: #6c757d;
+    text-align: center;
+}
+
+/* ===================================
+   6. RATING
+   =================================== */
+
+.kata-rating-wrapper {
+    margin: 40px 0;
+    padding: 30px;
+    background: #f8f9fa;
+    border-radius: 12px;
+}
+
+.kata-rating-display {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.kata-rating-stars {
+    display: flex;
+    gap: 5px;
+}
+
+.kata-rating-star {
+    position: relative;
+    width: 32px;
+    height: 32px;
+}
+
+.kata-rating-star svg {
+    width: 100%;
+    height: 100%;
+}
+
+.star-empty {
+    fill: #e0e0e0;
+}
+
+.star-filled {
+    fill: #ffc107;
+    opacity: 0;
+}
+
+.kata-rating-star.filled .star-filled {
+    opacity: 1;
+}
+
+.kata-rating-star.half-filled .star-filled {
+    opacity: 0.5;
+}
+
+.kata-rating-info {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.kata-rating-average {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.kata-rating-count {
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.kata-rating-input {
+    margin-top: 25px;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+    border: 2px solid #e0e0e0;
+}
+
+.rating-prompt {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.kata-rating-stars-input {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.kata-rating-star-btn {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #e0e0e0;
+}
+
+.kata-rating-star-btn:hover,
+.kata-rating-star-btn.selected {
+    color: #ffc107;
+    transform: scale(1.15);
+}
+
+.kata-rating-review {
+    margin-top: 20px;
+}
+
+.rating-review-text {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: vertical;
+    transition: border-color 0.3s ease;
+}
+
+.rating-review-text:focus {
+    outline: none;
+    border-color: #4A90E2;
+}
+
+.kata-rating-submit-btn {
+    margin-top: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.kata-rating-submit-btn:hover {
+    background: #357abd;
+    transform: translateY(-2px);
+}
+
+.kata-rating-login-required {
+    padding: 15px;
+    background: #fff3cd;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.kata-rating-login-required a {
+    color: #4A90E2;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.kata-rating-breakdown {
+    margin-top: 30px;
+    padding: 25px;
+    background: white;
+    border-radius: 10px;
+}
+
+.kata-rating-breakdown h4 {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+.rating-breakdown-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.breakdown-stars {
+    min-width: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #ffc107;
+}
+
+.breakdown-bar {
+    flex: 1;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.breakdown-fill {
+    height: 100%;
+    background: #ffc107;
+    transition: width 0.5s ease;
+}
+
+.breakdown-count {
+    min-width: 40px;
+    text-align: right;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+/* ===================================
+   7. FAQ
+   =================================== */
+
+.kata-faq {
+    margin: 40px 0;
+}
+
+.kata-faq-accordion .kata-faq-item {
+    margin-bottom: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.kata-faq-accordion .kata-faq-item:hover {
+    border-color: #4A90E2;
+}
+
+.kata-faq-question {
+    padding: 18px 20px;
+    background: #f8f9fa;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    user-select: none;
+}
+
+.kata-faq-accordion .kata-faq-question:hover {
+    background: #e9ecef;
+}
+
+.kata-faq-item.active .kata-faq-question {
+    background: #4A90E2;
+    color: white;
+}
+
+.faq-icon {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.kata-faq-item.active .icon-chevron {
+    transform: rotate(180deg);
+}
+
+.kata-faq-item .icon-plus {
+    display: block;
+}
+
+.kata-faq-item .icon-minus {
+    display: none;
+}
+
+.kata-faq-item.active .icon-plus {
+    display: none;
+}
+
+.kata-faq-item.active .icon-minus {
+    display: block;
+}
+
+.kata-faq-answer {
+    padding: 20px;
+    background: white;
+    display: none;
+    line-height: 1.7;
+    color: #495057;
+}
+
+.kata-faq-item.active .kata-faq-answer {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+/* FAQ List Style */
+.kata-faq-list .kata-faq-item {
+    margin-bottom: 30px;
+    padding: 25px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+}
+
+.kata-faq-list .kata-faq-question {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #2c3e50;
+    background: none;
+    cursor: default;
+    padding: 0;
+}
+
+.kata-faq-list .kata-faq-answer {
+    display: block;
+    padding: 0;
+    color: #6c757d;
+}
+
+/* ===================================
+   8. CTA (Call-to-Action)
+   =================================== */
+
+.kata-cta {
+    margin: 40px 0;
+    padding: 40px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.kata-cta-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-align: center;
+}
+
+.kata-cta-banner {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 35px;
+}
+
+.kata-cta-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+
+.kata-cta-align-left { text-align: left; }
+.kata-cta-align-center { text-align: center; }
+.kata-cta-align-right { text-align: right; }
+
+.kata-cta-icon {
+    margin-bottom: 20px;
+}
+
+.kata-cta-icon svg {
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
+}
+
+.kata-cta-title {
+    font-size: 28px;
+    margin-bottom: 15px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.kata-cta-content {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+    opacity: 0.95;
+}
+
+.kata-cta-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 35px;
+    background: white;
+    color: #667eea;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.kata-cta-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.kata-cta-button-primary {
+    background: #4A90E2;
+    color: white;
+}
+
+.kata-cta-button-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.kata-cta-button-success {
+    background: #28a745;
+    color: white;
+}
+
+.kata-cta-button-warning {
+    background: #ffc107;
+    color: #212529;
+}
+
+/* ===================================
+   9. FORM
+   =================================== */
+
+.kata-form-wrapper {
+    margin: 40px 0;
+    padding: 35px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+.kata-form-title {
+    font-size: 24px;
+    margin-bottom: 25px;
+    color: #2c3e50;
+    font-weight: 700;
+}
+
+.kata-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.kata-form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.kata-form-field label {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #495057;
+}
+
+.kata-form-field .required {
+    color: #dc3545;
+    margin-left: 4px;
+}
+
+.kata-form-field input[type="text"],
+.kata-form-field input[type="email"],
+.kata-form-field input[type="tel"],
+.kata-form-field input[type="url"],
+.kata-form-field textarea,
+.kata-form-field select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.kata-form-field input:focus,
+.kata-form-field textarea:focus,
+.kata-form-field select:focus {
+    outline: none;
+    border-color: #4A90E2;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.kata-form-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.kata-form-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.kata-form-option:hover {
+    background: #e9ecef;
+}
+
+.kata-form-option input {
+    cursor: pointer;
+}
+
+.kata-field-description {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.kata-form-actions {
+    margin-top: 25px;
+}
+
+.kata-form-submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 32px;
+    background: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.kata-form-submit-btn:hover {
+    background: #357abd;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+}
+
+.kata-form-message {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.kata-form-message.success {
+    background: #d4edda;
+    border: 1px solid #28a745;
+    color: #155724;
+}
+
+.kata-form-message.error {
+    background: #f8d7da;
+    border: 1px solid #dc3545;
+    color: #721c24;
+}
+
+/* ===================================
+   10. WHEEL (Lucky Wheel)
+   =================================== */
+
+.kata-wheel-wrapper {
+    margin: 40px 0;
+    padding: 40px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    text-align: center;
+    color: white;
+}
+
+.kata-wheel-container {
+    position: relative;
+    max-width: 450px;
+    margin: 0 auto;
+}
+
+.wheel-pointer {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+}
+
+.kata-wheel-canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 50%;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+
+.kata-wheel-spin-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: white;
+    color: #667eea;
+    border: 5px solid #ffc107;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.kata-wheel-spin-btn:hover:not(:disabled) {
+    transform: translate(-50%, -50%) scale(1.1);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+.kata-wheel-spin-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.kata-wheel-spins-left {
+    margin-top: 30px;
+    font-size: 16px;
+    padding: 12px 20px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 25px;
+    backdrop-filter: blur(10px);
+}
+
+.kata-wheel-result {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.wheel-result-content {
+    background: white;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 500px;
+    animation: bounceIn 0.5s;
+}
+
+.result-icon {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+.result-title {
+    font-size: 28px;
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.result-prize {
+    font-size: 20px;
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 30px;
+}
+
+.kata-wheel-close-btn {
+    padding: 12px 30px;
+    background: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* ===================================
+   11. ANIMATIONS
+   =================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ===================================
+   12. RESPONSIVE
+   =================================== */
+
+@media (max-width: 768px) {
+    .kata-social-share,
+    .kata-quote,
+    .kata-quiz,
+    .kata-poll,
+    .kata-rating-wrapper,
+    .kata-cta,
+    .kata-form-wrapper,
+    .kata-wheel-wrapper {
+        padding: 20px;
+        margin: 25px 0;
+    }
+    
+    .kata-social-buttons {
+        justify-content: center;
+    }
+    
+    .quiz-question,
+    .poll-option {
+        padding: 15px;
+    }
+    
+    .kata-cta-banner {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .kata-cta-title {
+        font-size: 22px;
+    }
+    
+    .kata-wheel-canvas {
+        width: 300px !important;
+        height: 300px !important;
+    }
+    
+    .kata-wheel-spin-btn {
+        width: 80px;
+        height: 80px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .quiz-title {
+        font-size: 20px;
+    }
+    
+    .question-text {
+        font-size: 16px;
+    }
+    
+    .kata-rating-average {
+        font-size: 22px;
+    }
+    
+    .kata-cta-title {
+        font-size: 20px;
+    }
+}
+
+/* ===================================
+   13. PRINT STYLES
+   =================================== */
+
+@media print {
+    .kata-social-share,
+    .quiz-actions,
+    .poll-actions,
+    .kata-rating-input,
+    .kata-cta-button,
+    .kata-form-actions,
+    .kata-wheel-spin-btn {
+        display: none !important;
+    }
+}

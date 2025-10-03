@@ -18,9 +18,11 @@ if (!defined('ABSPATH')) {
 
 // Define constants
 define('KATA_SEO_VERSION', '1.0.0');
+define('KATA_SEO_TOOLS_VERSION', '1.0.0');
 define('KATA_SEO_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('KATA_SEO_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('KATA_SEO_PLUGIN_FILE', __FILE__);
+define('KATA_SEO_TOOLS_FILE', __FILE__);
 
 /**
  * Main Plugin Class
@@ -268,7 +270,15 @@ class Kata_SEO_Tools {
         require_once KATA_SEO_PLUGIN_DIR . 'includes/class-faq-handler.php';
         require_once KATA_SEO_PLUGIN_DIR . 'includes/class-cta-handler.php';
         require_once KATA_SEO_PLUGIN_DIR . 'includes/class-form-handler.php';
-        require_once KATA_SEO_PLUGIN_DIR . 'includes/class-admin.php';
+        
+        // Widgets
+        require_once KATA_SEO_PLUGIN_DIR . 'includes/widgets/class-social-share-widget.php';
+        require_once KATA_SEO_PLUGIN_DIR . 'includes/widgets/class-rating-widget.php';
+        require_once KATA_SEO_PLUGIN_DIR . 'includes/widgets/class-cta-widget.php';
+        
+        // Activation/Deactivation hooks
+        require_once KATA_SEO_PLUGIN_DIR . 'includes/activation.php';
+        require_once KATA_SEO_PLUGIN_DIR . 'includes/deactivation.php';
     }
     
     /**
@@ -633,21 +643,21 @@ class Kata_SEO_Tools {
      * Render admin page
      */
     public function render_admin_page() {
-        include KATA_SEO_PLUGIN_DIR . 'templates/admin/dashboard.php';
+        include KATA_SEO_PLUGIN_DIR . 'templates/admin-dashboard.php';
     }
     
     /**
      * Render settings page
      */
     public function render_settings_page() {
-        include KATA_SEO_PLUGIN_DIR . 'templates/admin/settings.php';
+        include KATA_SEO_PLUGIN_DIR . 'templates/admin-settings.php';
     }
     
     /**
      * Render analytics page
      */
     public function render_analytics_page() {
-        include KATA_SEO_PLUGIN_DIR . 'templates/admin/analytics.php';
+        include KATA_SEO_PLUGIN_DIR . 'templates/admin-analytics.php';
     }
     
     /**

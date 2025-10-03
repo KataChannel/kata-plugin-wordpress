@@ -52,10 +52,6 @@ class Kata_SEO_Tools {
      * Initialize hooks
      */
     private function init_hooks() {
-        // Activation/Deactivation hooks
-        register_activation_hook(KATA_SEO_PLUGIN_FILE, array($this, 'activate'));
-        register_deactivation_hook(KATA_SEO_PLUGIN_FILE, array($this, 'deactivate'));
-        
         // Load plugin textdomain
         add_action('plugins_loaded', array($this, 'load_textdomain'));
         
@@ -93,25 +89,9 @@ class Kata_SEO_Tools {
     }
     
     /**
-     * Plugin activation
-     */
-    public function activate() {
-        $this->create_database_tables();
-        $this->set_default_options();
-        flush_rewrite_rules();
-    }
-    
-    /**
-     * Plugin deactivation
-     */
-    public function deactivate() {
-        flush_rewrite_rules();
-    }
-    
-    /**
      * Create database tables
      */
-    private function create_database_tables() {
+    public function create_database_tables() {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
         
@@ -229,7 +209,7 @@ class Kata_SEO_Tools {
     /**
      * Set default options
      */
-    private function set_default_options() {
+    public function set_default_options() {
         $defaults = array(
             'kata_seo_schema_enabled' => 1,
             'kata_seo_social_share_enabled' => 1,

@@ -84,34 +84,34 @@ switch ($time_filter) {
         
         <div class="kata-stat-card">
             <h3>Quiz Submissions</h3>
-            <p class="stat-number"><?php echo number_format($quiz_total); ?></p>
-            <p class="stat-meta">Avg Score: <?php echo number_format($quiz_avg_score, 1); ?>%</p>
+            <p class="stat-number"><?php echo number_format($quiz_total ?? 0); ?></p>
+            <p class="stat-meta">Avg Score: <?php echo number_format($quiz_avg_score ?? 0, 1); ?>%</p>
         </div>
         
-        <div class="kata-stat-card">
+                <div class="kata-stat-card">
             <h3>Poll Votes</h3>
-            <p class="stat-number"><?php echo number_format($poll_total); ?></p>
+            <p class="stat-number"><?php echo number_format($poll_total ?? 0); ?></p>
         </div>
         
         <div class="kata-stat-card">
             <h3>Ratings</h3>
-            <p class="stat-number"><?php echo number_format($rating_total); ?></p>
-            <p class="stat-meta">Avg: <?php echo number_format($rating_avg, 1); ?> ⭐</p>
+            <p class="stat-number"><?php echo number_format($rating_total ?? 0); ?></p>
+            <p class="stat-meta">Avg: <?php echo number_format($rating_avg ?? 0, 1); ?> ⭐</p>
         </div>
         
         <div class="kata-stat-card">
             <h3>Form Submissions</h3>
-            <p class="stat-number"><?php echo number_format($form_total); ?></p>
+            <p class="stat-number"><?php echo number_format($form_total ?? 0); ?></p>
         </div>
         
         <div class="kata-stat-card">
             <h3>Wheel Spins</h3>
-            <p class="stat-number"><?php echo number_format($wheel_total); ?></p>
+            <p class="stat-number"><?php echo number_format($wheel_total ?? 0); ?></p>
         </div>
         
         <div class="kata-stat-card">
             <h3>Social Shares</h3>
-            <p class="stat-number"><?php echo number_format($share_total); ?></p>
+            <p class="stat-number"><?php echo number_format($share_total ?? 0); ?></p>
         </div>
     </div>
 
@@ -168,9 +168,9 @@ switch ($time_filter) {
                     ?>
                         <tr>
                             <td><strong><?php echo esc_html($quiz->quiz_id); ?></strong></td>
-                            <td><?php echo number_format($quiz->submissions); ?></td>
-                            <td><?php echo number_format($quiz->avg_score, 1); ?>%</td>
-                            <td><?php echo number_format($quiz->pass_rate, 1); ?>%</td>
+                            <td><?php echo number_format($quiz->submissions ?? 0); ?></td>
+                            <td><?php echo number_format($quiz->avg_score ?? 0, 1); ?>%</td>
+                            <td><?php echo number_format($quiz->pass_rate ?? 0, 1); ?>%</td>
                         </tr>
                     <?php
                         endforeach;
@@ -248,7 +248,7 @@ switch ($time_filter) {
                         <tr>
                             <td><strong><?php echo esc_html($form->form_id); ?></strong></td>
                             <td><?php echo esc_html(get_the_title($form->post_id)); ?></td>
-                            <td><?php echo number_format($form->submissions); ?></td>
+                            <td><?php echo number_format($form->submissions ?? 0); ?></td>
                             <td><?php echo esc_html(human_time_diff(strtotime($form->latest), current_time('timestamp'))); ?> ago</td>
                             <td>
                                 <a href="#" class="button button-small">Export CSV</a>

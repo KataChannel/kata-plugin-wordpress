@@ -33,8 +33,8 @@ $wheel_count = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}kata_seo_whee
 $share_count = $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}kata_seo_social_shares");
 
 // Recent activity
-$recent_quiz = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}kata_seo_quiz_results ORDER BY submitted_at DESC LIMIT 5");
-$recent_forms = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}kata_seo_form_submissions ORDER BY submitted_at DESC LIMIT 5");
+$recent_quiz = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}kata_seo_quiz_results ORDER BY created_at DESC LIMIT 5");
+$recent_forms = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}kata_seo_form_submissions ORDER BY created_at DESC LIMIT 5");
 ?>
 
 <div class="wrap kata-seo-dashboard">
@@ -49,7 +49,7 @@ $recent_forms = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}kata_seo_form_s
             <div class="stat-content">
                 <h3><?php echo esc_html($quiz_count); ?></h3>
                 <p>Quiz Submissions</p>
-                <span class="stat-meta">Avg Score: <?php echo esc_html(number_format($quiz_avg, 1)); ?>%</span>
+                <span class="stat-meta">Avg Score: <?php echo esc_html(number_format($quiz_avg ?? 0, 1)); ?>%</span>
             </div>
         </div>
 
@@ -71,7 +71,7 @@ $recent_forms = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}kata_seo_form_s
             <div class="stat-content">
                 <h3><?php echo esc_html($rating_count); ?></h3>
                 <p>Ratings Received</p>
-                <span class="stat-meta">Avg: <?php echo esc_html(number_format($rating_avg, 1)); ?> ⭐</span>
+                <span class="stat-meta">Avg: <?php echo esc_html(number_format($rating_avg ?? 0, 1)); ?> ⭐</span>
             </div>
         </div>
 
@@ -151,7 +151,7 @@ $recent_forms = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}kata_seo_form_s
                                     ?>
                                 </td>
                                 <td><strong><?php echo esc_html($quiz->score); ?>%</strong></td>
-                                <td><?php echo esc_html(human_time_diff(strtotime($quiz->submitted_at), current_time('timestamp'))); ?> ago</td>
+                                <td><?php echo esc_html(human_time_diff(strtotime($quiz->created_at), current_time('timestamp'))); ?> ago</td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else : ?>
@@ -184,7 +184,7 @@ $recent_forms = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}kata_seo_form_s
                                 <td>#<?php echo esc_html($form->form_id); ?></td>
                                 <td><?php echo esc_html($data['name'] ?? 'N/A'); ?></td>
                                 <td><?php echo esc_html($data['email'] ?? 'N/A'); ?></td>
-                                <td><?php echo esc_html(human_time_diff(strtotime($form->submitted_at), current_time('timestamp'))); ?> ago</td>
+                                <td><?php echo esc_html(human_time_diff(strtotime($form->created_at), current_time('timestamp'))); ?> ago</td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else : ?>

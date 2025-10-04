@@ -189,9 +189,8 @@ class Kata_SEO_Form_Handler {
             'form_data' => wp_json_encode($form_data),
             'user_id' => get_current_user_id() ?: null,
             'ip_address' => $this->get_client_ip(),
-            'user_agent' => substr($_SERVER['HTTP_USER_AGENT'], 0, 255),
-            'submitted_at' => current_time('mysql')
-        ), array('%d', '%s', '%s', '%d', '%s', '%s', '%s'));
+            'user_agent' => substr($_SERVER['HTTP_USER_AGENT'], 0, 255)
+        ), array('%d', '%s', '%s', '%d', '%s', '%s'));
         
         if (!$result) {
             return array('error' => 'Failed to save form submission');
@@ -249,7 +248,7 @@ class Kata_SEO_Form_Handler {
         $table = $wpdb->prefix . 'kata_seo_form_submissions';
         
         $submissions = $wpdb->get_results($wpdb->prepare(
-            "SELECT * FROM $table WHERE form_id = %s ORDER BY submitted_at DESC LIMIT %d",
+            "SELECT * FROM $table WHERE form_id = %s ORDER BY created_at DESC LIMIT %d",
             $form_id, $limit
         ), ARRAY_A);
         
@@ -277,18 +276,18 @@ class Kata_SEO_Form_Handler {
                 $form_id
             )),
             'submissions_today' => $wpdb->get_var($wpdb->prepare(
-                "SELECT COUNT(*) FROM $table WHERE form_id = %s AND DATE(submitted_at) = CURDATE()",
+                "SELECT COUNT(*) FROM $table WHERE form_id = %s AND DATE(created_at) = CURDATE()",
                 $form_id
             )),
             'submissions_this_week' => $wpdb->get_var($wpdb->prepare(
-                "SELECT COUNT(*) FROM $table WHERE form_id = %s AND YEARWEEK(submitted_at) = YEARWEEK(NOW())",
+                "SELECT COUNT(*) FROM $table WHERE form_id = %s AND YEARWEEK(created_at) = YEARWEEK(NOW())",
                 $form_id
             )),
             'submissions_by_date' => $wpdb->get_results($wpdb->prepare(
-                "SELECT DATE(submitted_at) as date, COUNT(*) as count 
+                "SELECT DATE(created_at) as date, COUNT(*) as count 
                  FROM $table 
                  WHERE form_id = %s 
-                 GROUP BY DATE(submitted_at) 
+                 GROUP BY DATE(created_at) 
                  ORDER BY date DESC 
                  LIMIT 30",
                 $form_id
@@ -340,7 +339,7 @@ class Kata_SEO_Form_Handler {
         $csv = implode(',', $fields) . "\n";
         
         foreach ($submissions as $submission) {
-            $row = array($submission['id'], $submission['submitted_at']);
+            $row = array($submission['id'], $submission['created_at']);
             foreach ($submission['form_data'] as $value) {
                 if (is_array($value)) {
                     $value = implode('|', $value);

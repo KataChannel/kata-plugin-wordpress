@@ -93,6 +93,10 @@ class Kata_SEO_Tools {
         add_action('wp_enqueue_scripts', array($this, 'enqueue_scripts'));
         add_action('admin_enqueue_scripts', array($this, 'admin_enqueue_scripts'));
         
+        // Add TinyMCE editor buttons
+        add_filter('mce_buttons', array($this, 'register_tinymce_button'));
+        add_filter('mce_external_plugins', array($this, 'register_tinymce_plugin'));
+        
         // Add meta boxes
         add_action('add_meta_boxes', array($this, 'add_meta_boxes'));
         add_action('save_post', array($this, 'save_post_meta'), 10, 2);
@@ -324,6 +328,10 @@ class Kata_SEO_Tools {
             wp_enqueue_style('kata-seo-admin', KATA_SEO_PLUGIN_URL . 'assets/css/admin.css', array(), KATA_SEO_VERSION);
             wp_enqueue_script('kata-seo-admin', KATA_SEO_PLUGIN_URL . 'assets/js/admin.js', array('jquery', 'jquery-ui-sortable'), KATA_SEO_VERSION, true);
             
+            // Enqueue editor buttons for quick insert
+            wp_enqueue_style('kata-seo-editor-buttons', KATA_SEO_PLUGIN_URL . 'assets/css/editor-buttons.css', array(), KATA_SEO_VERSION);
+            wp_enqueue_script('kata-seo-editor-buttons', KATA_SEO_PLUGIN_URL . 'assets/js/editor-buttons.js', array('jquery'), KATA_SEO_VERSION, true);
+            
             wp_localize_script('kata-seo-admin', 'kataSEOAdmin', array(
                 'nonce' => wp_create_nonce('kata_seo_admin_nonce'),
                 'ajax_url' => admin_url('admin-ajax.php')
@@ -348,6 +356,22 @@ class Kata_SEO_Tools {
                 'ajax_url' => admin_url('admin-ajax.php')
             ));
         }
+    }
+    
+    /**
+     * Register TinyMCE button
+     */
+    public function register_tinymce_button($buttons) {
+        array_push($buttons, 'kata_seo_insert');
+        return $buttons;
+    }
+    
+    /**
+     * Register TinyMCE plugin
+     */
+    public function register_tinymce_plugin($plugins) {
+        $plugins['kata_seo_buttons'] = KATA_SEO_PLUGIN_URL . 'assets/js/editor-buttons.js';
+        return $plugins;
     }
     
     /**

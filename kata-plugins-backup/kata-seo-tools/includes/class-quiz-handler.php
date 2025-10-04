@@ -30,15 +30,11 @@ class Kata_SEO_Quiz_Handler {
             'pass_score' => 70
         ), $atts);
         
-        if (empty($atts['questions'])) {
-            return '<div class="kata-quiz-error">No quiz data provided.</div>';
-        }
+        // Try to load quiz data from multiple sources
+        $questions = $this->get_quiz_data($atts);
         
-        // Decode base64 encoded questions
-        $questions = json_decode(base64_decode($atts['questions']), true);
-        
-        if (!$questions || !isset($questions['questions'])) {
-            return '<div class="kata-quiz-error">Invalid quiz data format.</div>';
+        if (!$questions || !isset($questions['questions']) || empty($questions['questions'])) {
+            return $this->render_error_message($atts);
         }
         
         $post_id = get_the_ID();
@@ -48,9 +44,7 @@ class Kata_SEO_Quiz_Handler {
         <div class="kata-quiz kata-quiz-<?php echo esc_attr($atts['style']); ?>" 
              data-quiz-id="<?php echo esc_attr($atts['id']); ?>"
              data-post-id="<?php echo esc_attr($post_id); ?>"
-             data-pass-score="<?php echo esc_attr($atts['pass_score']); ?>">
-            
-            <div class="quiz-header">
+             data-pass-score="<?php echo esc_attr($atts['pass_score']); ?>">\n            <div class="quiz-header">
                 <h3 class="quiz-title"><?php echo esc_html($atts['title']); ?></h3>
                 <div class="quiz-info">
                     <span class="quiz-question-count">
@@ -227,6 +221,196 @@ class Kata_SEO_Quiz_Handler {
     }
     
     /**
+     * Get quiz data from multiple sources
+     * 
+     * @param array $atts Shortcode attributes
+     * @return array|false Quiz data or false
+     */
+    private function get_quiz_data($atts) {
+        // Method 1: Simple numeric mode - generate sample quiz
+        if (isset($atts['questions']) && is_numeric($atts['questions'])) {
+            return $this->get_sample_quiz_data($atts);
+        }
+        
+        // Method 2: Base64 encoded JSON (advanced mode)
+        if (!empty($atts['questions']) && strpos($atts['questions'], '{') === false) {
+            $decoded = json_decode(base64_decode($atts['questions']), true);
+            if ($decoded && isset($decoded['questions'])) {
+                return $decoded;
+            }
+        }
+        
+        // Method 3: Load from database by quiz ID
+        if (!empty($atts['id']) && strpos($atts['id'], 'quiz-') !== 0) {
+            global $wpdb;
+            $table = $wpdb->prefix . 'kata_seo_quiz_data';
+            $quiz_data = $wpdb->get_var($wpdb->prepare(
+                "SELECT quiz_data FROM $table WHERE quiz_id = %s LIMIT 1",
+                $atts['id']
+            ));
+            
+            if ($quiz_data) {
+                $decoded = json_decode($quiz_data, true);
+                if ($decoded && isset($decoded['questions'])) {
+                    return $decoded;
+                }
+            }
+        }
+        
+        // Method 4: Load from post meta
+        $post_id = get_the_ID();
+        if ($post_id) {
+            $quiz_meta = get_post_meta($post_id, '_kata_quiz_data', true);
+            if ($quiz_meta && is_array($quiz_meta) && isset($quiz_meta['questions'])) {
+                return $quiz_meta;
+            }
+        }
+        
+        // Fallback: Generate default sample quiz
+        return $this->get_sample_quiz_data($atts);
+    }
+    
+    /**
+     * Generate sample quiz data for demo
+     * 
+     * @param array $atts Shortcode attributes  
+     * @return array Sample quiz data
+     */
+    private function get_sample_quiz_data($atts) {
+        $num_questions = isset($atts['questions']) && is_numeric($atts['questions']) 
+            ? intval($atts['questions']) 
+            : 3;
+        
+        // Sample SEO quiz questions
+        $sample_questions = array(
+            array(
+                'question' => 'SEO là viết tắt của từ gì?',
+                'options' => array(
+                    'Search Engine Optimization',
+                    'Social Engine Optimization',
+                    'Site Engine Optimization',
+                    'System Engine Optimization'
+                ),
+                'correct' => 0,
+                'explanation' => 'SEO là Search Engine Optimization - Tối ưu hóa công cụ tìm kiếm'
+            ),
+            array(
+                'question' => 'Yếu tố nào quan trọng nhất cho On-Page SEO?',
+                'options' => array(
+                    'Backlinks',
+                    'Content chất lượng',
+                    'Social signals',
+                    'Domain age'
+                ),
+                'correct' => 1,
+                'explanation' => 'Content chất lượng là yếu tố quan trọng nhất cho On-Page SEO'
+            ),
+            array(
+                'question' => 'Meta description có ảnh hưởng trực tiếp đến ranking không?',
+                'options' => array(
+                    'Có, rất quan trọng',
+                    'Không, chỉ ảnh hưởng CTR',
+                    'Có, nhưng ít',
+                    'Không biết'
+                ),
+                'correct' => 1,
+                'explanation' => 'Meta description không ảnh hưởng trực tiếp đến ranking nhưng cải thiện CTR'
+            ),
+            array(
+                'question' => 'Title tag nên dài bao nhiêu ký tự?',
+                'options' => array(
+                    '30-40 ký tự',
+                    '50-60 ký tự',
+                    '70-80 ký tự',
+                    '100+ ký tự'
+                ),
+                'correct' => 1,
+                'explanation' => 'Title tag lý tưởng nên dài 50-60 ký tự để hiển thị đầy đủ trên Google'
+            ),
+            array(
+                'question' => 'Backlink là gì?',
+                'options' => array(
+                    'Link nội bộ trong website',
+                    'Link từ website khác trỏ về website của bạn',
+                    'Link trong footer',
+                    'Link trong menu'
+                ),
+                'correct' => 1,
+                'explanation' => 'Backlink là link từ website khác trỏ về website của bạn, rất quan trọng cho SEO'
+            ),
+            array(
+                'question' => 'Canonical tag dùng để làm gì?',
+                'options' => array(
+                    'Tăng ranking',
+                    'Ngăn duplicate content',
+                    'Tăng tốc trang',
+                    'Tạo sitemap'
+                ),
+                'correct' => 1,
+                'explanation' => 'Canonical tag giúp ngăn chặn vấn đề duplicate content'
+            ),
+            array(
+                'question' => 'Alt text của hình ảnh quan trọng vì lý do gì?',
+                'options' => array(
+                    'Giúp hình ảnh load nhanh hơn',
+                    'Giúp Google hiểu nội dung hình ảnh',
+                    'Tăng kích thước hình',
+                    'Không quan trọng'
+                ),
+                'correct' => 1,
+                'explanation' => 'Alt text giúp Google hiểu nội dung hình ảnh và tối ưu cho SEO hình ảnh'
+            ),
+            array(
+                'question' => 'Schema markup giúp gì cho SEO?',
+                'options' => array(
+                    'Tăng tốc website',
+                    'Giúp Google hiểu nội dung tốt hơn',
+                    'Giảm bounce rate',
+                    'Tăng backlinks'
+                ),
+                'correct' => 1,
+                'explanation' => 'Schema markup giúp Google hiểu cấu trúc và nội dung website tốt hơn'
+            )
+        );
+        
+        // Select random questions
+        shuffle($sample_questions);
+        $selected = array_slice($sample_questions, 0, min($num_questions, count($sample_questions)));
+        
+        return array(
+            'questions' => $selected,
+            'time_limit' => 0
+        );
+    }
+    
+    /**
+     * Render error message with helpful instructions
+     * 
+     * @param array $atts Shortcode attributes
+     * @return string HTML error message
+     */
+    private function render_error_message($atts) {
+        ob_start();
+        ?>
+        <div class="kata-quiz-error" style="padding: 20px; background: #fff3cd; border-left: 4px solid #ffc107; border-radius: 4px; margin: 20px 0;">
+            <h4 style="margin-top: 0; color: #856404;">⚠️ Quiz chưa có dữ liệu</h4>
+            <p><strong>Cách sử dụng quiz:</strong></p>
+            <ol>
+                <li><strong>Option 1:</strong> Để hiển thị sample quiz, chỉ cần dùng:
+                    <code>[kata_quiz title="Tên quiz" questions="5"]</code>
+                </li>
+                <li><strong>Option 2:</strong> Tạo quiz trong Dashboard > KATA SEO > Quizzes, sau đó dùng:
+                    <code>[kata_quiz id="your-quiz-id"]</code>
+                </li>
+                <li><strong>Option 3:</strong> Thêm quiz data vào post meta <code>_kata_quiz_data</code></li>
+            </ol>
+            <p style="margin-bottom: 0;"><em>Quiz hiện tại: <?php echo esc_html($atts['title']); ?></em></p>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+    
+    /**
      * Get score message based on percentage
      * 
      * @param float $percentage Score percentage
@@ -244,7 +428,7 @@ class Kata_SEO_Quiz_Handler {
         } elseif ($percentage >= 50) {
             return '📚 Cần cố gắng thêm! Hãy ôn lại nhé!';
         } else {
-            return '💪 Đừng nản lòng! Thử lại một lần nữa!';
+            return '💪 Hãy học thêm! Bạn làm được mà!';
         }
     }
     

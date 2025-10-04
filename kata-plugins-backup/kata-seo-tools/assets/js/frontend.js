@@ -8,6 +8,13 @@
 (function($) {
     'use strict';
     
+    // Get localized data (set by wp_localize_script in PHP)
+    var kata_seo_data = window.kataSEO || {
+        ajax_url: '/wp-admin/admin-ajax.php',
+        nonce: '',
+        post_id: 0
+    };
+    
     /**
      * Main Kata SEO object
      */
@@ -16,8 +23,9 @@
         /**
          * AJAX URL and nonce
          */
-        ajax_url: kata_seo_ajax.ajax_url || '/wp-admin/admin-ajax.php',
-        nonce: kata_seo_ajax.nonce || '',
+        ajax_url: kata_seo_data.ajax_url || '/wp-admin/admin-ajax.php',
+        nonce: kata_seo_data.nonce || '',
+        post_id: kata_seo_data.post_id || 0,
         
         /**
          * Initialize all components

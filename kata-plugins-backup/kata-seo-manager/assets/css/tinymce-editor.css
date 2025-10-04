@@ -227,6 +227,33 @@
     overflow: visible !important;
 }
 
+/* Fix TinyMCE Editor Area Padding Issue */
+.mce-edit-area.mce-container.mce-panel.mce-stack-layout-item {
+    padding-top: 0 !important;
+}
+
+.mce-edit-area {
+    padding-top: 0 !important;
+}
+
+/* Additional TinyMCE container fixes */
+.mce-container.mce-panel.mce-stack-layout-item.mce-edit-area {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Ensure iframe content area is properly positioned */
+.mce-edit-area iframe {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Fix for specific TinyMCE layout classes */
+.mce-stack-layout-item.mce-edit-area,
+div[class*="mce-edit-area"] {
+    padding-top: 0 !important;
+}
+
 .mce-toolbar {
     position: relative !important;
     visibility: visible !important;

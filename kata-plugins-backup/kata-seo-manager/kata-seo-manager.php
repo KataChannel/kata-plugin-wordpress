@@ -66,6 +66,7 @@ class KATA_SEO_Manager {
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-editor-integration.php';
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-admin-settings.php';
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-statistics.php';
+        require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-quiz-manager.php';
         
         // Base schema class (must be loaded first)
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/schemas/class-base-schema.php';
@@ -300,6 +301,15 @@ class KATA_SEO_Manager {
         
         add_submenu_page(
             'kata-seo-manager',
+            __('Phân tích Quiz', 'kata-seo-manager'),
+            __('Phân tích Quiz', 'kata-seo-manager'),
+            'manage_options',
+            'kata-seo-quiz-analytics',
+            array($this, 'admin_quiz_analytics_page')
+        );
+        
+        add_submenu_page(
+            'kata-seo-manager',
             __('Cài đặt', 'kata-seo-manager'),
             __('Cài đặt', 'kata-seo-manager'),
             'manage_options',
@@ -327,6 +337,13 @@ class KATA_SEO_Manager {
      */
     public function admin_statistics_page() {
         include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/statistics.php';
+    }
+    
+    /**
+     * Quiz analytics page
+     */
+    public function admin_quiz_analytics_page() {
+        include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/quiz-analytics.php';
     }
     
     /**

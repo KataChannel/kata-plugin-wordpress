@@ -1,0 +1,343 @@
+/**
+ * Admin CSS
+ * 
+ * @package KATA_SEO_Manager
+ */
+
+/* General */
+.kata-seo-manager {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+/* Dashboard */
+.kata-seo-dashboard {
+    background: #f0f0f1;
+}
+
+/* Schema Meta Box */
+.kata-schema-meta-box {
+    background: #fff;
+}
+
+.kata-schema-list {
+    margin-bottom: 15px;
+}
+
+.kata-schema-item {
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f9f9f9;
+    transition: box-shadow 0.3s;
+}
+
+.kata-schema-item:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.schema-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.schema-header strong {
+    font-size: 14px;
+    color: #1d2327;
+}
+
+.schema-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.schema-status.active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.schema-status.inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.schema-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.schema-actions .button-link {
+    color: #2271b1;
+    text-decoration: none;
+}
+
+.schema-actions .button-link:hover {
+    color: #135e96;
+    text-decoration: underline;
+}
+
+.schema-preview {
+    background: #fff;
+    padding: 10px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    overflow-x: auto;
+    border: 1px solid #ddd;
+}
+
+/* Form Fields */
+.kata-field {
+    margin-bottom: 15px;
+}
+
+.kata-field-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.kata-field-label .required {
+    color: #dc3232;
+}
+
+.kata-field-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #8c8f94;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.kata-field-input:focus {
+    border-color: #2271b1;
+    outline: none;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+.kata-field-description {
+    margin-top: 5px;
+    font-size: 13px;
+    color: #646970;
+}
+
+/* Repeater Field */
+.kata-repeater-items {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    background: #f9f9f9;
+}
+
+.kata-repeater-item {
+    background: white;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    position: relative;
+}
+
+.kata-repeater-remove {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #dc3232;
+    cursor: pointer;
+}
+
+.kata-repeater-add {
+    margin-top: 10px;
+}
+
+/* Buttons */
+.kata-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.kata-button-primary {
+    background: #2271b1;
+    color: white;
+}
+
+.kata-button-primary:hover {
+    background: #135e96;
+}
+
+.kata-button-secondary {
+    background: #f0f0f1;
+    color: #2c3338;
+}
+
+.kata-button-secondary:hover {
+    background: #dcdcde;
+}
+
+.kata-button-danger {
+    background: #dc3232;
+    color: white;
+}
+
+.kata-button-danger:hover {
+    background: #a02222;
+}
+
+/* Stats */
+.kata-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.kata-stat-box {
+    background: white;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+}
+
+.kata-stat-value {
+    font-size: 36px;
+    font-weight: bold;
+    color: #2271b1;
+    line-height: 1;
+}
+
+.kata-stat-label {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #646970;
+}
+
+/* Tables */
+.kata-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid #c3c4c7;
+}
+
+.kata-table th,
+.kata-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.kata-table th {
+    background: #f6f7f7;
+    font-weight: 600;
+}
+
+.kata-table tr:hover {
+    background: #f6f7f7;
+}
+
+/* Tooltips */
+.kata-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.kata-tooltip .kata-tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #1d2327;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 13px;
+}
+
+.kata-tooltip:hover .kata-tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Alerts */
+.kata-alert {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
+.kata-alert-success {
+    background: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.kata-alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3232;
+}
+
+.kata-alert-warning {
+    background: #fff3cd;
+    color: #856404;
+    border-left: 4px solid #ffc107;
+}
+
+.kata-alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+/* Loading */
+.kata-loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
+    border-top-color: #2271b1;
+    animation: kata-spin 1s linear infinite;
+}
+
+@keyframes kata-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .kata-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .kata-modal-content {
+        width: 95%;
+        max-height: 95vh;
+    }
+}

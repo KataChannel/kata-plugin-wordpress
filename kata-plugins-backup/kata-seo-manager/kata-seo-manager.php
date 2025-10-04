@@ -257,6 +257,14 @@ class KATA_SEO_Manager {
             KATA_SEO_MANAGER_VERSION
         );
         
+        // Enqueue TinyMCE editor styles
+        wp_enqueue_style(
+            'kata-seo-manager-tinymce',
+            KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/tinymce-editor.css',
+            array(),
+            KATA_SEO_MANAGER_VERSION
+        );
+        
         wp_enqueue_script(
             'kata-seo-manager-admin',
             KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/admin.js',
@@ -523,14 +531,156 @@ class KATA_SEO_Manager {
         add_shortcode('kata_organization', array($this, 'render_organization'));
         add_shortcode('kata_localbusiness', array($this, 'render_localbusiness'));
         add_shortcode('kata_jobposting', array($this, 'render_jobposting'));
+        // Additional schema shortcodes
+        add_shortcode('kata_review', array($this, 'render_review'));
+        add_shortcode('kata_movie', array($this, 'render_movie'));
+        add_shortcode('kata_course', array($this, 'render_course'));
+        add_shortcode('kata_software', array($this, 'render_software'));
+        add_shortcode('kata_book', array($this, 'render_book'));
+        add_shortcode('kata_webpage', array($this, 'render_webpage'));
     }
     
     /**
      * Render shortcodes (examples)
      */
     public function render_article($atts) {
-        // Will be implemented in individual schema classes
-        return '';
+        $atts = shortcode_atts(array(
+            'title' => '',
+            'description' => '',
+            'author' => '',
+            'date_published' => '',
+            'date_modified' => '',
+            'image' => '',
+            'url' => '',
+            'type' => 'Article', // Article, NewsArticle, BlogPosting
+            'category' => '',
+            'tags' => '',
+            'word_count' => '',
+            'reading_time' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_article');
+        
+        if (empty($atts['title'])) {
+            return '<div class="kata-article-error">Tiêu đề bài viết không được để trống.</div>';
+        }
+        
+        // Use current post data if not provided
+        global $post;
+        if (empty($atts['author']) && $post) {
+            $atts['author'] = get_the_author_meta('display_name', $post->post_author);
+        }
+        if (empty($atts['date_published']) && $post) {
+            $atts['date_published'] = get_the_date('c', $post);
+        }
+        if (empty($atts['date_modified']) && $post) {
+            $atts['date_modified'] = get_the_modified_date('c', $post);
+        }
+        if (empty($atts['url']) && $post) {
+            $atts['url'] = get_permalink($post);
+        }
+        if (empty($atts['image']) && $post) {
+            $thumbnail_id = get_post_thumbnail_id($post);
+            if ($thumbnail_id) {
+                $atts['image'] = wp_get_attachment_url($thumbnail_id);
+            }
+        }
+        
+        $article_id = 'kata-article-' . uniqid();
+        
+        // Generate schema
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => $atts['type'],
+            'headline' => $atts['title'],
+            'name' => $atts['title']
+        );
+        
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['author'])) {
+            $schema['author'] = array(
+                '@type' => 'Person',
+                'name' => $atts['author']
+            );
+        }
+        if (!empty($atts['date_published'])) {
+            $schema['datePublished'] = $atts['date_published'];
+        }
+        if (!empty($atts['date_modified'])) {
+            $schema['dateModified'] = $atts['date_modified'];
+        }
+        if (!empty($atts['url'])) {
+            $schema['url'] = $atts['url'];
+        }
+        if (!empty($atts['image'])) {
+            $schema['image'] = array(
+                '@type' => 'ImageObject',
+                'url' => $atts['image']
+            );
+        }
+        if (!empty($atts['word_count'])) {
+            $schema['wordCount'] = intval($atts['word_count']);
+        }
+        
+        // Add categories and tags
+        if (!empty($atts['category'])) {
+            $categories = array_map('trim', explode(',', $atts['category']));
+            $schema['articleSection'] = $categories;
+        }
+        if (!empty($atts['tags'])) {
+            $tags = array_map('trim', explode(',', $atts['tags']));
+            $schema['keywords'] = implode(', ', $tags);
+        }
+        
+        // Add publisher (website info)
+        $schema['publisher'] = array(
+            '@type' => 'Organization',
+            'name' => get_bloginfo('name'),
+            'url' => home_url()
+        );
+        
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<article id="' . $article_id . '" class="kata-article-container">';
+            $output .= '<header class="kata-article-header">';
+            $output .= '<h1 class="kata-article-title">' . esc_html($atts['title']) . '</h1>';
+            
+            if (!empty($atts['description'])) {
+                $output .= '<p class="kata-article-description">' . esc_html($atts['description']) . '</p>';
+            }
+            
+            $output .= '<div class="kata-article-meta">';
+            if (!empty($atts['author'])) {
+                $output .= '<span class="kata-article-author">Tác giả: ' . esc_html($atts['author']) . '</span>';
+            }
+            if (!empty($atts['date_published'])) {
+                $output .= '<span class="kata-article-date">Ngày đăng: ' . date('d/m/Y', strtotime($atts['date_published'])) . '</span>';
+            }
+            if (!empty($atts['reading_time'])) {
+                $output .= '<span class="kata-article-reading-time">Thời gian đọc: ' . esc_html($atts['reading_time']) . '</span>';
+            }
+            $output .= '</div>';
+            
+            $output .= '</header>';
+            
+            if (!empty($atts['image'])) {
+                $output .= '<div class="kata-article-image">';
+                $output .= '<img src="' . esc_url($atts['image']) . '" alt="' . esc_attr($atts['title']) . '" />';
+                $output .= '</div>';
+            }
+            
+            $output .= '</article>';
+        }
+        
+        // Add JSON-LD Schema
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+        
+        return $output;
     }
     
     public function render_breadcrumb($atts) {
@@ -780,20 +930,1053 @@ class KATA_SEO_Manager {
         </script>';
     }
     
-    public function render_howto($atts) {
-        return '';
+    public function render_howto($atts, $content = null) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'description' => '',
+            'image' => '',
+            'video' => '',
+            'total_time' => '',
+            'prep_time' => '',
+            'perform_time' => '',
+            'yield' => '',
+            'cost' => '',
+            'currency' => 'VND',
+            'difficulty' => '',
+            'category' => '',
+            'keywords' => '',
+            'tools' => '',
+            'materials' => '',
+            'steps' => '',
+            'author' => '',
+            'date_published' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_howto');
+        
+        if (empty($atts['name'])) {
+            return '<div class="kata-howto-error">Tên hướng dẫn không được để trống.</div>';
+        }
+        
+        $howto_id = 'kata-howto-' . uniqid();
+        
+        // Generate schema
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'HowTo',
+            'name' => $atts['name']
+        );
+        
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['image'])) {
+            $schema['image'] = array(
+                '@type' => 'ImageObject',
+                'url' => $atts['image']
+            );
+        }
+        if (!empty($atts['video'])) {
+            $schema['video'] = array(
+                '@type' => 'VideoObject',
+                'contentUrl' => $atts['video']
+            );
+        }
+        
+        // Time durations
+        if (!empty($atts['total_time'])) {
+            $schema['totalTime'] = 'PT' . $atts['total_time'];
+        }
+        if (!empty($atts['prep_time'])) {
+            $schema['prepTime'] = 'PT' . $atts['prep_time'];
+        }
+        if (!empty($atts['perform_time'])) {
+            $schema['performTime'] = 'PT' . $atts['perform_time'];
+        }
+        
+        // Additional properties
+        if (!empty($atts['yield'])) {
+            $schema['yield'] = $atts['yield'];
+        }
+        if (!empty($atts['cost'])) {
+            $schema['estimatedCost'] = array(
+                '@type' => 'MonetaryAmount',
+                'value' => $atts['cost'],
+                'currency' => $atts['currency']
+            );
+        }
+        if (!empty($atts['difficulty'])) {
+            $schema['difficulty'] = $atts['difficulty'];
+        }
+        if (!empty($atts['category'])) {
+            $schema['category'] = $atts['category'];
+        }
+        if (!empty($atts['keywords'])) {
+            $schema['keywords'] = $atts['keywords'];
+        }
+        if (!empty($atts['author'])) {
+            $schema['author'] = array(
+                '@type' => 'Person',
+                'name' => $atts['author']
+            );
+        }
+        if (!empty($atts['date_published'])) {
+            $schema['datePublished'] = $atts['date_published'];
+        }
+        
+        // Tools and materials
+        if (!empty($atts['tools'])) {
+            $tools = array_map('trim', explode('|', $atts['tools']));
+            $tool_objects = array();
+            foreach ($tools as $tool) {
+                $tool_objects[] = array(
+                    '@type' => 'HowToTool',
+                    'name' => $tool
+                );
+            }
+            $schema['tool'] = $tool_objects;
+        }
+        
+        if (!empty($atts['materials'])) {
+            $materials = array_map('trim', explode('|', $atts['materials']));
+            $supply_objects = array();
+            foreach ($materials as $material) {
+                $supply_objects[] = array(
+                    '@type' => 'HowToSupply',
+                    'name' => $material
+                );
+            }
+            $schema['supply'] = $supply_objects;
+        }
+        
+        // Steps
+        if (!empty($atts['steps'])) {
+            $steps = array_map('trim', explode('|', $atts['steps']));
+            $step_objects = array();
+            foreach ($steps as $index => $step) {
+                $step_objects[] = array(
+                    '@type' => 'HowToStep',
+                    'position' => $index + 1,
+                    'name' => 'Bước ' . ($index + 1),
+                    'text' => $step
+                );
+            }
+            $schema['step'] = $step_objects;
+        }
+        
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div id="' . $howto_id . '" class="kata-howto-container">';
+            
+            // Header
+            $output .= '<header class="kata-howto-header">';
+            $output .= '<h2 class="kata-howto-title">' . esc_html($atts['name']) . '</h2>';
+            
+            if (!empty($atts['description'])) {
+                $output .= '<p class="kata-howto-description">' . esc_html($atts['description']) . '</p>';
+            }
+            
+            // Meta info
+            $output .= '<div class="kata-howto-meta">';
+            if (!empty($atts['author'])) {
+                $output .= '<span class="kata-howto-author">👤 ' . esc_html($atts['author']) . '</span>';
+            }
+            if (!empty($atts['total_time'])) {
+                $output .= '<span class="kata-howto-time">⏱️ Tổng thời gian: ' . esc_html($atts['total_time']) . '</span>';
+            }
+            if (!empty($atts['difficulty'])) {
+                $difficulty_icons = array(
+                    'beginner' => '🟢 Dễ',
+                    'intermediate' => '🟡 Trung bình', 
+                    'advanced' => '🔴 Khó'
+                );
+                $difficulty_text = $difficulty_icons[strtolower($atts['difficulty'])] ?? '📊 ' . $atts['difficulty'];
+                $output .= '<span class="kata-howto-difficulty">' . $difficulty_text . '</span>';
+            }
+            if (!empty($atts['cost'])) {
+                $formatted_cost = number_format($atts['cost'], 0, ',', '.') . ' ' . $atts['currency'];
+                $output .= '<span class="kata-howto-cost">💰 Chi phí: ' . $formatted_cost . '</span>';
+            }
+            if (!empty($atts['yield'])) {
+                $output .= '<span class="kata-howto-yield">📦 Kết quả: ' . esc_html($atts['yield']) . '</span>';
+            }
+            $output .= '</div>';
+            
+            $output .= '</header>';
+            
+            // Image/Video
+            if (!empty($atts['image'])) {
+                $output .= '<div class="kata-howto-media">';
+                $output .= '<img src="' . esc_url($atts['image']) . '" alt="' . esc_attr($atts['name']) . '" />';
+                $output .= '</div>';
+            } elseif (!empty($atts['video'])) {
+                $output .= '<div class="kata-howto-media">';
+                $output .= '<video controls>';
+                $output .= '<source src="' . esc_url($atts['video']) . '">';
+                $output .= 'Trình duyệt không hỗ trợ video.';
+                $output .= '</video>';
+                $output .= '</div>';
+            }
+            
+            // Time breakdown
+            if (!empty($atts['prep_time']) || !empty($atts['perform_time'])) {
+                $output .= '<div class="kata-howto-time-breakdown">';
+                $output .= '<h3>⏰ Phân Bổ Thời Gian</h3>';
+                if (!empty($atts['prep_time'])) {
+                    $output .= '<div class="kata-time-item">Chuẩn bị: <strong>' . esc_html($atts['prep_time']) . '</strong></div>';
+                }
+                if (!empty($atts['perform_time'])) {
+                    $output .= '<div class="kata-time-item">Thực hiện: <strong>' . esc_html($atts['perform_time']) . '</strong></div>';
+                }
+                $output .= '</div>';
+            }
+            
+            // Tools
+            if (!empty($atts['tools'])) {
+                $tools = array_map('trim', explode('|', $atts['tools']));
+                $output .= '<div class="kata-howto-tools">';
+                $output .= '<h3>🔧 Công Cụ Cần Thiết</h3>';
+                $output .= '<ul class="kata-tools-list">';
+                foreach ($tools as $tool) {
+                    $output .= '<li>' . esc_html($tool) . '</li>';
+                }
+                $output .= '</ul>';
+                $output .= '</div>';
+            }
+            
+            // Materials
+            if (!empty($atts['materials'])) {
+                $materials = array_map('trim', explode('|', $atts['materials']));
+                $output .= '<div class="kata-howto-materials">';
+                $output .= '<h3>📋 Vật Liệu</h3>';
+                $output .= '<ul class="kata-materials-list">';
+                foreach ($materials as $material) {
+                    $output .= '<li>' . esc_html($material) . '</li>';
+                }
+                $output .= '</ul>';
+                $output .= '</div>';
+            }
+            
+            // Steps
+            if (!empty($atts['steps'])) {
+                $steps = array_map('trim', explode('|', $atts['steps']));
+                $output .= '<div class="kata-howto-steps">';
+                $output .= '<h3>📝 Hướng Dẫn Chi Tiết</h3>';
+                $output .= '<ol class="kata-steps-list">';
+                foreach ($steps as $index => $step) {
+                    $output .= '<li class="kata-step-item">';
+                    $output .= '<div class="kata-step-number">' . ($index + 1) . '</div>';
+                    $output .= '<div class="kata-step-content">' . esc_html($step) . '</div>';
+                    $output .= '</li>';
+                }
+                $output .= '</ol>';
+                $output .= '</div>';
+            }
+            
+            // Keywords/Tags
+            if (!empty($atts['keywords'])) {
+                $keywords = array_map('trim', explode(',', $atts['keywords']));
+                $output .= '<div class="kata-howto-keywords">';
+                $output .= '<h3>🏷️ Từ Khóa</h3>';
+                $output .= '<div class="kata-keywords-list">';
+                foreach ($keywords as $keyword) {
+                    $output .= '<span class="kata-keyword-tag">' . esc_html($keyword) . '</span>';
+                }
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+            
+            $output .= '</div>'; // Close howto-container
+        }
+        
+        // Add JSON-LD Schema
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+        
+        return $output;
     }
     
     public function render_event($atts) {
-        return '';
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'description' => '',
+            'start_date' => '',
+            'end_date' => '',
+            'start_time' => '',
+            'end_time' => '',
+            'location_name' => '',
+            'location_address' => '',
+            'location_city' => '',
+            'location_country' => 'VN',
+            'organizer_name' => '',
+            'organizer_url' => '',
+            'performer_name' => '',
+            'performer_type' => 'Person', // Person, Organization, MusicGroup
+            'image' => '',
+            'url' => '',
+            'event_status' => 'EventScheduled', // EventScheduled, EventCancelled, EventPostponed, EventRescheduled
+            'event_attendance_mode' => 'OfflineEventAttendanceMode', // OfflineEventAttendanceMode, OnlineEventAttendanceMode, MixedEventAttendanceMode
+            'price' => '',
+            'currency' => 'VND',
+            'availability' => 'InStock',
+            'category' => '',
+            'audience' => '',
+            'language' => 'vi',
+            'duration' => '',
+            'max_attendance' => '',
+            'remaining_attendance' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_event');
+        
+        if (empty($atts['name']) || empty($atts['start_date'])) {
+            return '<div class="kata-event-error">Tên sự kiện và ngày bắt đầu không được để trống.</div>';
+        }
+        
+        $event_id = 'kata-event-' . uniqid();
+        
+        // Generate schema
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Event',
+            'name' => $atts['name']
+        );
+        
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['image'])) {
+            $schema['image'] = array(
+                '@type' => 'ImageObject',
+                'url' => $atts['image']
+            );
+        }
+        if (!empty($atts['url'])) {
+            $schema['url'] = $atts['url'];
+        }
+        
+        // Event dates
+        $start_datetime = $atts['start_date'];
+        if (!empty($atts['start_time'])) {
+            $start_datetime .= 'T' . $atts['start_time'];
+        }
+        $schema['startDate'] = $start_datetime;
+        
+        if (!empty($atts['end_date'])) {
+            $end_datetime = $atts['end_date'];
+            if (!empty($atts['end_time'])) {
+                $end_datetime .= 'T' . $atts['end_time'];
+            }
+            $schema['endDate'] = $end_datetime;
+        }
+        
+        // Location
+        if (!empty($atts['location_name']) || !empty($atts['location_address'])) {
+            $location = array('@type' => 'Place');
+            
+            if (!empty($atts['location_name'])) {
+                $location['name'] = $atts['location_name'];
+            }
+            
+            if (!empty($atts['location_address'])) {
+                $address = array('@type' => 'PostalAddress');
+                $address['streetAddress'] = $atts['location_address'];
+                
+                if (!empty($atts['location_city'])) {
+                    $address['addressLocality'] = $atts['location_city'];
+                }
+                if (!empty($atts['location_country'])) {
+                    $address['addressCountry'] = $atts['location_country'];
+                }
+                
+                $location['address'] = $address;
+            }
+            
+            $schema['location'] = $location;
+        }
+        
+        // Organizer
+        if (!empty($atts['organizer_name'])) {
+            $organizer = array(
+                '@type' => 'Organization',
+                'name' => $atts['organizer_name']
+            );
+            
+            if (!empty($atts['organizer_url'])) {
+                $organizer['url'] = $atts['organizer_url'];
+            }
+            
+            $schema['organizer'] = $organizer;
+        }
+        
+        // Performer
+        if (!empty($atts['performer_name'])) {
+            $performer = array(
+                '@type' => $atts['performer_type'],
+                'name' => $atts['performer_name']
+            );
+            
+            $schema['performer'] = $performer;
+        }
+        
+        // Event status and attendance mode
+        $schema['eventStatus'] = 'https://schema.org/' . $atts['event_status'];
+        $schema['eventAttendanceMode'] = 'https://schema.org/' . $atts['event_attendance_mode'];
+        
+        // Offers (ticket price)
+        if (!empty($atts['price'])) {
+            $offer = array(
+                '@type' => 'Offer',
+                'price' => $atts['price'],
+                'priceCurrency' => $atts['currency'],
+                'availability' => 'https://schema.org/' . $atts['availability']
+            );
+            
+            if (!empty($atts['url'])) {
+                $offer['url'] = $atts['url'];
+            }
+            
+            $schema['offers'] = $offer;
+        }
+        
+        // Additional properties
+        if (!empty($atts['category'])) {
+            $schema['category'] = $atts['category'];
+        }
+        if (!empty($atts['audience'])) {
+            $schema['audience'] = array(
+                '@type' => 'Audience',
+                'audienceType' => $atts['audience']
+            );
+        }
+        if (!empty($atts['language'])) {
+            $schema['inLanguage'] = $atts['language'];
+        }
+        if (!empty($atts['duration'])) {
+            $schema['duration'] = 'PT' . $atts['duration'];
+        }
+        if (!empty($atts['max_attendance'])) {
+            $schema['maximumAttendeeCapacity'] = intval($atts['max_attendance']);
+        }
+        if (!empty($atts['remaining_attendance'])) {
+            $schema['remainingAttendeeCapacity'] = intval($atts['remaining_attendance']);
+        }
+        
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div id="' . $event_id . '" class="kata-event-container">';
+            
+            // Event header
+            $output .= '<header class="kata-event-header">';
+            $output .= '<h2 class="kata-event-title">' . esc_html($atts['name']) . '</h2>';
+            
+            if (!empty($atts['description'])) {
+                $output .= '<p class="kata-event-description">' . esc_html($atts['description']) . '</p>';
+            }
+            
+            $output .= '</header>';
+            
+            // Event image
+            if (!empty($atts['image'])) {
+                $output .= '<div class="kata-event-image">';
+                $output .= '<img src="' . esc_url($atts['image']) . '" alt="' . esc_attr($atts['name']) . '" />';
+                $output .= '</div>';
+            }
+            
+            // Event details
+            $output .= '<div class="kata-event-details">';
+            
+            // Date and time
+            $output .= '<div class="kata-event-datetime">';
+            $output .= '<h3>📅 Thời Gian</h3>';
+            $formatted_start = date('d/m/Y', strtotime($atts['start_date']));
+            if (!empty($atts['start_time'])) {
+                $formatted_start .= ' lúc ' . $atts['start_time'];
+            }
+            $output .= '<div class="kata-datetime-item">Bắt đầu: <strong>' . $formatted_start . '</strong></div>';
+            
+            if (!empty($atts['end_date'])) {
+                $formatted_end = date('d/m/Y', strtotime($atts['end_date']));
+                if (!empty($atts['end_time'])) {
+                    $formatted_end .= ' lúc ' . $atts['end_time'];
+                }
+                $output .= '<div class="kata-datetime-item">Kết thúc: <strong>' . $formatted_end . '</strong></div>';
+            }
+            
+            if (!empty($atts['duration'])) {
+                $output .= '<div class="kata-datetime-item">Thời lượng: <strong>' . esc_html($atts['duration']) . '</strong></div>';
+            }
+            $output .= '</div>';
+            
+            // Location
+            if (!empty($atts['location_name']) || !empty($atts['location_address'])) {
+                $output .= '<div class="kata-event-location">';
+                $output .= '<h3>📍 Địa Điểm</h3>';
+                
+                if (!empty($atts['location_name'])) {
+                    $output .= '<div class="kata-location-name"><strong>' . esc_html($atts['location_name']) . '</strong></div>';
+                }
+                if (!empty($atts['location_address'])) {
+                    $output .= '<div class="kata-location-address">' . esc_html($atts['location_address']);
+                    if (!empty($atts['location_city'])) {
+                        $output .= ', ' . esc_html($atts['location_city']);
+                    }
+                    $output .= '</div>';
+                }
+                $output .= '</div>';
+            }
+            
+            // Organizer and Performer
+            if (!empty($atts['organizer_name']) || !empty($atts['performer_name'])) {
+                $output .= '<div class="kata-event-people">';
+                $output .= '<h3>👥 Người Tổ Chức & Diễn Giả</h3>';
+                
+                if (!empty($atts['organizer_name'])) {
+                    $output .= '<div class="kata-organizer">Tổ chức: <strong>' . esc_html($atts['organizer_name']) . '</strong></div>';
+                }
+                if (!empty($atts['performer_name'])) {
+                    $performer_label = ($atts['performer_type'] === 'MusicGroup') ? 'Ban nhạc' : 
+                                      (($atts['performer_type'] === 'Organization') ? 'Tổ chức trình diễn' : 'Diễn giả');
+                    $output .= '<div class="kata-performer">' . $performer_label . ': <strong>' . esc_html($atts['performer_name']) . '</strong></div>';
+                }
+                $output .= '</div>';
+            }
+            
+            // Event info
+            $output .= '<div class="kata-event-info">';
+            $output .= '<h3>ℹ️ Thông Tin Chi Tiết</h3>';
+            
+            // Status
+            $status_text = array(
+                'EventScheduled' => '✅ Đã lên lịch',
+                'EventCancelled' => '❌ Đã hủy',
+                'EventPostponed' => '⏸️ Tạm hoãn',
+                'EventRescheduled' => '🔄 Đổi lịch'
+            );
+            $output .= '<div class="kata-info-item">Trạng thái: <span>' . ($status_text[$atts['event_status']] ?? $atts['event_status']) . '</span></div>';
+            
+            // Attendance mode
+            $attendance_text = array(
+                'OfflineEventAttendanceMode' => '🏢 Trực tiếp',
+                'OnlineEventAttendanceMode' => '💻 Trực tuyến',
+                'MixedEventAttendanceMode' => '🔀 Kết hợp'
+            );
+            $output .= '<div class="kata-info-item">Hình thức: <span>' . ($attendance_text[$atts['event_attendance_mode']] ?? $atts['event_attendance_mode']) . '</span></div>';
+            
+            if (!empty($atts['category'])) {
+                $output .= '<div class="kata-info-item">Thể loại: <span>' . esc_html($atts['category']) . '</span></div>';
+            }
+            if (!empty($atts['audience'])) {
+                $output .= '<div class="kata-info-item">Đối tượng: <span>' . esc_html($atts['audience']) . '</span></div>';
+            }
+            if (!empty($atts['max_attendance'])) {
+                $output .= '<div class="kata-info-item">Sức chứa: <span>' . esc_html($atts['max_attendance']) . ' người</span></div>';
+            }
+            if (!empty($atts['remaining_attendance'])) {
+                $output .= '<div class="kata-info-item">Còn lại: <span>' . esc_html($atts['remaining_attendance']) . ' chỗ</span></div>';
+            }
+            
+            $output .= '</div>';
+            
+            // Ticket price
+            if (!empty($atts['price'])) {
+                $formatted_price = ($atts['price'] === '0' || $atts['price'] === 'free') ? 'Miễn phí' : 
+                                  number_format($atts['price'], 0, ',', '.') . ' ' . $atts['currency'];
+                
+                $output .= '<div class="kata-event-price">';
+                $output .= '<h3>🎫 Vé Tham Dự</h3>';
+                $output .= '<div class="kata-price-amount">' . $formatted_price . '</div>';
+                $output .= '</div>';
+            }
+            
+            // Register button
+            if (!empty($atts['url'])) {
+                $output .= '<div class="kata-event-actions">';
+                $output .= '<a href="' . esc_url($atts['url']) . '" class="kata-register-button" target="_blank">🎫 Đăng Ký Tham Dự</a>';
+                $output .= '</div>';
+            }
+            
+            $output .= '</div>'; // Close event-details
+            $output .= '</div>'; // Close event-container
+        }
+        
+        // Add JSON-LD Schema
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+        
+        return $output;
     }
     
     public function render_recipe($atts) {
-        return '';
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'description' => '',
+            'image' => '',
+            'author' => '',
+            'prep_time' => '',
+            'cook_time' => '',
+            'total_time' => '',
+            'yield' => '',
+            'category' => '',
+            'cuisine' => '',
+            'difficulty' => '',
+            'ingredients' => '',
+            'instructions' => '',
+            'nutrition_calories' => '',
+            'nutrition_fat' => '',
+            'nutrition_protein' => '',
+            'nutrition_carbs' => '',
+            'rating_value' => '',
+            'rating_count' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_recipe');
+        
+        if (empty($atts['name'])) {
+            return '<div class="kata-recipe-error">Tên công thức không được để trống.</div>';
+        }
+        
+        $recipe_id = 'kata-recipe-' . uniqid();
+        
+        // Generate schema
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Recipe',
+            'name' => $atts['name']
+        );
+        
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['image'])) {
+            $schema['image'] = array(
+                '@type' => 'ImageObject',
+                'url' => $atts['image']
+            );
+        }
+        if (!empty($atts['author'])) {
+            $schema['author'] = array(
+                '@type' => 'Person',
+                'name' => $atts['author']
+            );
+        }
+        if (!empty($atts['prep_time'])) {
+            $schema['prepTime'] = 'PT' . $atts['prep_time'];
+        }
+        if (!empty($atts['cook_time'])) {
+            $schema['cookTime'] = 'PT' . $atts['cook_time'];
+        }
+        if (!empty($atts['total_time'])) {
+            $schema['totalTime'] = 'PT' . $atts['total_time'];
+        }
+        if (!empty($atts['yield'])) {
+            $schema['recipeYield'] = $atts['yield'];
+        }
+        if (!empty($atts['category'])) {
+            $schema['recipeCategory'] = $atts['category'];
+        }
+        if (!empty($atts['cuisine'])) {
+            $schema['recipeCuisine'] = $atts['cuisine'];
+        }
+        
+        // Add ingredients
+        if (!empty($atts['ingredients'])) {
+            $ingredients = array_map('trim', explode('|', $atts['ingredients']));
+            $schema['recipeIngredient'] = $ingredients;
+        }
+        
+        // Add instructions
+        if (!empty($atts['instructions'])) {
+            $instructions = array_map('trim', explode('|', $atts['instructions']));
+            $instruction_objects = array();
+            foreach ($instructions as $index => $instruction) {
+                $instruction_objects[] = array(
+                    '@type' => 'HowToStep',
+                    'position' => $index + 1,
+                    'text' => $instruction
+                );
+            }
+            $schema['recipeInstructions'] = $instruction_objects;
+        }
+        
+        // Add nutrition info
+        if (!empty($atts['nutrition_calories']) || !empty($atts['nutrition_fat']) || 
+            !empty($atts['nutrition_protein']) || !empty($atts['nutrition_carbs'])) {
+            
+            $nutrition = array('@type' => 'NutritionInformation');
+            if (!empty($atts['nutrition_calories'])) {
+                $nutrition['calories'] = $atts['nutrition_calories'];
+            }
+            if (!empty($atts['nutrition_fat'])) {
+                $nutrition['fatContent'] = $atts['nutrition_fat'] . 'g';
+            }
+            if (!empty($atts['nutrition_protein'])) {
+                $nutrition['proteinContent'] = $atts['nutrition_protein'] . 'g';
+            }
+            if (!empty($atts['nutrition_carbs'])) {
+                $nutrition['carbohydrateContent'] = $atts['nutrition_carbs'] . 'g';
+            }
+            $schema['nutrition'] = $nutrition;
+        }
+        
+        // Add rating
+        if (!empty($atts['rating_value']) && !empty($atts['rating_count'])) {
+            $schema['aggregateRating'] = array(
+                '@type' => 'AggregateRating',
+                'ratingValue' => $atts['rating_value'],
+                'ratingCount' => $atts['rating_count']
+            );
+        }
+        
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div id="' . $recipe_id . '" class="kata-recipe-container">';
+            
+            // Header
+            $output .= '<header class="kata-recipe-header">';
+            $output .= '<h2 class="kata-recipe-title">' . esc_html($atts['name']) . '</h2>';
+            
+            if (!empty($atts['description'])) {
+                $output .= '<p class="kata-recipe-description">' . esc_html($atts['description']) . '</p>';
+            }
+            
+            $output .= '<div class="kata-recipe-meta">';
+            if (!empty($atts['author'])) {
+                $output .= '<span class="kata-recipe-author">👨‍🍳 ' . esc_html($atts['author']) . '</span>';
+            }
+            if (!empty($atts['prep_time'])) {
+                $output .= '<span class="kata-recipe-prep-time">⏱️ Chuẩn bị: ' . esc_html($atts['prep_time']) . '</span>';
+            }
+            if (!empty($atts['cook_time'])) {
+                $output .= '<span class="kata-recipe-cook-time">🍳 Nấu: ' . esc_html($atts['cook_time']) . '</span>';
+            }
+            if (!empty($atts['yield'])) {
+                $output .= '<span class="kata-recipe-yield">👥 Khẩu phần: ' . esc_html($atts['yield']) . '</span>';
+            }
+            if (!empty($atts['difficulty'])) {
+                $output .= '<span class="kata-recipe-difficulty">📊 Độ khó: ' . esc_html($atts['difficulty']) . '</span>';
+            }
+            $output .= '</div>';
+            
+            $output .= '</header>';
+            
+            // Image
+            if (!empty($atts['image'])) {
+                $output .= '<div class="kata-recipe-image">';
+                $output .= '<img src="' . esc_url($atts['image']) . '" alt="' . esc_attr($atts['name']) . '" />';
+                $output .= '</div>';
+            }
+            
+            // Ingredients
+            if (!empty($atts['ingredients'])) {
+                $ingredients = array_map('trim', explode('|', $atts['ingredients']));
+                $output .= '<div class="kata-recipe-ingredients">';
+                $output .= '<h3>🛒 Nguyên Liệu</h3>';
+                $output .= '<ul>';
+                foreach ($ingredients as $ingredient) {
+                    $output .= '<li>' . esc_html($ingredient) . '</li>';
+                }
+                $output .= '</ul>';
+                $output .= '</div>';
+            }
+            
+            // Instructions
+            if (!empty($atts['instructions'])) {
+                $instructions = array_map('trim', explode('|', $atts['instructions']));
+                $output .= '<div class="kata-recipe-instructions">';
+                $output .= '<h3>📝 Cách Làm</h3>';
+                $output .= '<ol>';
+                foreach ($instructions as $instruction) {
+                    $output .= '<li>' . esc_html($instruction) . '</li>';
+                }
+                $output .= '</ol>';
+                $output .= '</div>';
+            }
+            
+            // Nutrition
+            if (!empty($atts['nutrition_calories'])) {
+                $output .= '<div class="kata-recipe-nutrition">';
+                $output .= '<h3>📊 Thông Tin Dinh Dưỡng</h3>';
+                $output .= '<div class="kata-nutrition-grid">';
+                if (!empty($atts['nutrition_calories'])) {
+                    $output .= '<div class="kata-nutrition-item">Calo: ' . esc_html($atts['nutrition_calories']) . '</div>';
+                }
+                if (!empty($atts['nutrition_fat'])) {
+                    $output .= '<div class="kata-nutrition-item">Chất béo: ' . esc_html($atts['nutrition_fat']) . 'g</div>';
+                }
+                if (!empty($atts['nutrition_protein'])) {
+                    $output .= '<div class="kata-nutrition-item">Protein: ' . esc_html($atts['nutrition_protein']) . 'g</div>';
+                }
+                if (!empty($atts['nutrition_carbs'])) {
+                    $output .= '<div class="kata-nutrition-item">Carbs: ' . esc_html($atts['nutrition_carbs']) . 'g</div>';
+                }
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+            
+            // Rating
+            if (!empty($atts['rating_value'])) {
+                $rating_stars = str_repeat('⭐', round(floatval($atts['rating_value'])));
+                $output .= '<div class="kata-recipe-rating">';
+                $output .= '<span class="kata-rating-stars">' . $rating_stars . '</span>';
+                $output .= '<span class="kata-rating-text"> ' . esc_html($atts['rating_value']) . '/5';
+                if (!empty($atts['rating_count'])) {
+                    $output .= ' (' . esc_html($atts['rating_count']) . ' đánh giá)';
+                }
+                $output .= '</span>';
+                $output .= '</div>';
+            }
+            
+            $output .= '</div>';
+        }
+        
+        // Add JSON-LD Schema
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+        
+        return $output;
     }
     
     public function render_product($atts) {
-        return '';
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'description' => '',
+            'image' => '',
+            'brand' => '',
+            'model' => '',
+            'sku' => '',
+            'price' => '',
+            'currency' => 'VND',
+            'availability' => 'InStock', // InStock, OutOfStock, PreOrder
+            'condition' => 'NewCondition', // NewCondition, UsedCondition, RefurbishedCondition
+            'category' => '',
+            'rating_value' => '',
+            'rating_count' => '',
+            'review_count' => '',
+            'url' => '',
+            'offers_valid_until' => '',
+            'offers_price_valid_until' => '',
+            'gtin' => '',
+            'mpn' => '',
+            'weight' => '',
+            'dimensions' => '',
+            'color' => '',
+            'size' => '',
+            'material' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_product');
+        
+        if (empty($atts['name'])) {
+            return '<div class="kata-product-error">Tên sản phẩm không được để trống.</div>';
+        }
+        
+        $product_id = 'kata-product-' . uniqid();
+        
+        // Generate schema
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Product',
+            'name' => $atts['name']
+        );
+        
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['image'])) {
+            $schema['image'] = array(
+                '@type' => 'ImageObject',
+                'url' => $atts['image']
+            );
+        }
+        if (!empty($atts['brand'])) {
+            $schema['brand'] = array(
+                '@type' => 'Brand',
+                'name' => $atts['brand']
+            );
+        }
+        if (!empty($atts['model'])) {
+            $schema['model'] = $atts['model'];
+        }
+        if (!empty($atts['sku'])) {
+            $schema['sku'] = $atts['sku'];
+        }
+        if (!empty($atts['gtin'])) {
+            $schema['gtin'] = $atts['gtin'];
+        }
+        if (!empty($atts['mpn'])) {
+            $schema['mpn'] = $atts['mpn'];
+        }
+        if (!empty($atts['category'])) {
+            $schema['category'] = $atts['category'];
+        }
+        if (!empty($atts['color'])) {
+            $schema['color'] = $atts['color'];
+        }
+        if (!empty($atts['size'])) {
+            $schema['size'] = $atts['size'];
+        }
+        if (!empty($atts['material'])) {
+            $schema['material'] = $atts['material'];
+        }
+        if (!empty($atts['weight'])) {
+            $schema['weight'] = array(
+                '@type' => 'QuantitativeValue',
+                'value' => $atts['weight']
+            );
+        }
+        
+        // Add offers (price info)
+        if (!empty($atts['price'])) {
+            $offer = array(
+                '@type' => 'Offer',
+                'price' => $atts['price'],
+                'priceCurrency' => $atts['currency'],
+                'availability' => 'https://schema.org/' . $atts['availability'],
+                'itemCondition' => 'https://schema.org/' . $atts['condition']
+            );
+            
+            if (!empty($atts['url'])) {
+                $offer['url'] = $atts['url'];
+            }
+            if (!empty($atts['offers_valid_until'])) {
+                $offer['priceValidUntil'] = $atts['offers_valid_until'];
+            }
+            
+            $schema['offers'] = $offer;
+        }
+        
+        // Add rating
+        if (!empty($atts['rating_value']) && !empty($atts['rating_count'])) {
+            $schema['aggregateRating'] = array(
+                '@type' => 'AggregateRating',
+                'ratingValue' => $atts['rating_value'],
+                'ratingCount' => $atts['rating_count']
+            );
+            
+            if (!empty($atts['review_count'])) {
+                $schema['aggregateRating']['reviewCount'] = $atts['review_count'];
+            }
+        }
+        
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div id="' . $product_id . '" class="kata-product-container">';
+            
+            // Product header
+            $output .= '<div class="kata-product-main">';
+            
+            // Image
+            if (!empty($atts['image'])) {
+                $output .= '<div class="kata-product-image">';
+                $output .= '<img src="' . esc_url($atts['image']) . '" alt="' . esc_attr($atts['name']) . '" />';
+                $output .= '</div>';
+            }
+            
+            // Product info
+            $output .= '<div class="kata-product-info">';
+            $output .= '<h2 class="kata-product-title">' . esc_html($atts['name']) . '</h2>';
+            
+            if (!empty($atts['brand'])) {
+                $output .= '<div class="kata-product-brand">Thương hiệu: <strong>' . esc_html($atts['brand']) . '</strong></div>';
+            }
+            
+            if (!empty($atts['description'])) {
+                $output .= '<p class="kata-product-description">' . esc_html($atts['description']) . '</p>';
+            }
+            
+            // Price
+            if (!empty($atts['price'])) {
+                $formatted_price = number_format($atts['price'], 0, ',', '.') . ' ' . $atts['currency'];
+                $output .= '<div class="kata-product-price">';
+                $output .= '<span class="kata-price-amount">' . $formatted_price . '</span>';
+                $output .= '</div>';
+            }
+            
+            // Availability
+            $availability_text = array(
+                'InStock' => '✅ Còn hàng',
+                'OutOfStock' => '❌ Hết hàng',
+                'PreOrder' => '📅 Đặt trước'
+            );
+            $output .= '<div class="kata-product-availability">';
+            $output .= '<span class="kata-availability-text">' . ($availability_text[$atts['availability']] ?? $atts['availability']) . '</span>';
+            $output .= '</div>';
+            
+            // Product details
+            $output .= '<div class="kata-product-details">';
+            $output .= '<h3>Chi Tiết Sản Phẩm</h3>';
+            
+            if (!empty($atts['sku'])) {
+                $output .= '<div class="kata-detail-item">SKU: <span>' . esc_html($atts['sku']) . '</span></div>';
+            }
+            if (!empty($atts['model'])) {
+                $output .= '<div class="kata-detail-item">Model: <span>' . esc_html($atts['model']) . '</span></div>';
+            }
+            if (!empty($atts['category'])) {
+                $output .= '<div class="kata-detail-item">Danh mục: <span>' . esc_html($atts['category']) . '</span></div>';
+            }
+            if (!empty($atts['color'])) {
+                $output .= '<div class="kata-detail-item">Màu sắc: <span>' . esc_html($atts['color']) . '</span></div>';
+            }
+            if (!empty($atts['size'])) {
+                $output .= '<div class="kata-detail-item">Kích thước: <span>' . esc_html($atts['size']) . '</span></div>';
+            }
+            if (!empty($atts['material'])) {
+                $output .= '<div class="kata-detail-item">Chất liệu: <span>' . esc_html($atts['material']) . '</span></div>';
+            }
+            if (!empty($atts['weight'])) {
+                $output .= '<div class="kata-detail-item">Trọng lượng: <span>' . esc_html($atts['weight']) . '</span></div>';
+            }
+            if (!empty($atts['condition'])) {
+                $condition_text = array(
+                    'NewCondition' => 'Mới',
+                    'UsedCondition' => 'Đã sử dụng',
+                    'RefurbishedCondition' => 'Tân trang'
+                );
+                $output .= '<div class="kata-detail-item">Tình trạng: <span>' . ($condition_text[$atts['condition']] ?? $atts['condition']) . '</span></div>';
+            }
+            
+            $output .= '</div>';
+            
+            // Rating
+            if (!empty($atts['rating_value'])) {
+                $rating_stars = str_repeat('⭐', round(floatval($atts['rating_value'])));
+                $output .= '<div class="kata-product-rating">';
+                $output .= '<span class="kata-rating-stars">' . $rating_stars . '</span>';
+                $output .= '<span class="kata-rating-text"> ' . esc_html($atts['rating_value']) . '/5';
+                if (!empty($atts['rating_count'])) {
+                    $output .= ' (' . esc_html($atts['rating_count']) . ' đánh giá)';
+                }
+                $output .= '</span>';
+                $output .= '</div>';
+            }
+            
+            // Buy button
+            if (!empty($atts['url'])) {
+                $output .= '<div class="kata-product-actions">';
+                $output .= '<a href="' . esc_url($atts['url']) . '" class="kata-buy-button" target="_blank">🛒 Mua Ngay</a>';
+                $output .= '</div>';
+            }
+            
+            $output .= '</div>'; // Close product-info
+            $output .= '</div>'; // Close product-main
+            $output .= '</div>'; // Close product-container
+        }
+        
+        // Add JSON-LD Schema
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+        
+        return $output;
     }
     
     public function render_video($atts) {
@@ -1297,12 +2480,783 @@ class KATA_SEO_Manager {
         
         return $output;
     }
-    
+
+    public function render_review($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'review_body' => '',
+            'item_name' => '',
+            'item_type' => 'Product', // Product, Movie, Book, Restaurant, etc.
+            'rating_value' => '',
+            'best_rating' => '5',
+            'worst_rating' => '1',
+            'author' => '',
+            'date_published' => '',
+            'publisher' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_review');
+        
+        if (empty($atts['name']) || empty($atts['item_name'])) {
+            return '<div class="kata-review-error">Tên đánh giá và tên sản phẩm không được để trống.</div>';
+        }
+        
+        $review_id = 'kata-review-' . uniqid();
+        
+        // Generate schema
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Review',
+            'name' => $atts['name'],
+            'itemReviewed' => array(
+                '@type' => $atts['item_type'],
+                'name' => $atts['item_name']
+            )
+        );
+        
+        if (!empty($atts['review_body'])) {
+            $schema['reviewBody'] = $atts['review_body'];
+        }
+        if (!empty($atts['author'])) {
+            $schema['author'] = array(
+                '@type' => 'Person',
+                'name' => $atts['author']
+            );
+        }
+        if (!empty($atts['date_published'])) {
+            $schema['datePublished'] = $atts['date_published'];
+        }
+        if (!empty($atts['publisher'])) {
+            $schema['publisher'] = array(
+                '@type' => 'Organization',
+                'name' => $atts['publisher']
+            );
+        }
+        if (!empty($atts['rating_value'])) {
+            $schema['reviewRating'] = array(
+                '@type' => 'Rating',
+                'ratingValue' => $atts['rating_value'],
+                'bestRating' => $atts['best_rating'],
+                'worstRating' => $atts['worst_rating']
+            );
+        }
+        
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div id="' . $review_id . '" class="kata-review-container">';
+            $output .= '<h3 class="kata-review-title">' . esc_html($atts['name']) . '</h3>';
+            $output .= '<div class="kata-review-item">Đánh giá về: <strong>' . esc_html($atts['item_name']) . '</strong></div>';
+            
+            if (!empty($atts['rating_value'])) {
+                $stars = str_repeat('⭐', round(floatval($atts['rating_value'])));
+                $output .= '<div class="kata-review-rating">' . $stars . ' (' . esc_html($atts['rating_value']) . '/' . esc_html($atts['best_rating']) . ')</div>';
+            }
+            
+            if (!empty($atts['review_body'])) {
+                $output .= '<div class="kata-review-body">' . wpautop(esc_html($atts['review_body'])) . '</div>';
+            }
+            
+            if (!empty($atts['author'])) {
+                $output .= '<div class="kata-review-author">Người đánh giá: ' . esc_html($atts['author']) . '</div>';
+            }
+            
+            $output .= '</div>';
+        }
+        
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+        
+        return $output;
+    }
+
+    public function render_movie($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'description' => '',
+            'director' => '',
+            'actor' => '',
+            'genre' => '',
+            'duration' => '',
+            'release_date' => '',
+            'production_company' => '',
+            'country' => '',
+            'language' => 'vi',
+            'rating_value' => '',
+            'rating_count' => '',
+            'image' => '',
+            'trailer' => '',
+            'url' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_movie');
+        
+        if (empty($atts['name'])) {
+            return '<div class="kata-movie-error">Tên phim không được để trống.</div>';
+        }
+        
+        $movie_id = 'kata-movie-' . uniqid();
+        
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Movie',
+            'name' => $atts['name']
+        );
+        
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['director'])) {
+            $directors = array_map('trim', explode(',', $atts['director']));
+            $director_objects = array();
+            foreach ($directors as $director) {
+                $director_objects[] = array('@type' => 'Person', 'name' => $director);
+            }
+            $schema['director'] = count($director_objects) === 1 ? $director_objects[0] : $director_objects;
+        }
+        if (!empty($atts['actor'])) {
+            $actors = array_map('trim', explode(',', $atts['actor']));
+            $actor_objects = array();
+            foreach ($actors as $actor) {
+                $actor_objects[] = array('@type' => 'Person', 'name' => $actor);
+            }
+            $schema['actor'] = $actor_objects;
+        }
+        if (!empty($atts['genre'])) {
+            $schema['genre'] = array_map('trim', explode(',', $atts['genre']));
+        }
+        if (!empty($atts['duration'])) {
+            $schema['duration'] = 'PT' . $atts['duration'];
+        }
+        if (!empty($atts['release_date'])) {
+            $schema['dateCreated'] = $atts['release_date'];
+        }
+        if (!empty($atts['production_company'])) {
+            $schema['productionCompany'] = array(
+                '@type' => 'Organization',
+                'name' => $atts['production_company']
+            );
+        }
+        if (!empty($atts['country'])) {
+            $schema['countryOfOrigin'] = $atts['country'];
+        }
+        if (!empty($atts['language'])) {
+            $schema['inLanguage'] = $atts['language'];
+        }
+        if (!empty($atts['image'])) {
+            $schema['image'] = $atts['image'];
+        }
+        if (!empty($atts['trailer'])) {
+            $schema['trailer'] = array(
+                '@type' => 'VideoObject',
+                'contentUrl' => $atts['trailer']
+            );
+        }
+        if (!empty($atts['url'])) {
+            $schema['url'] = $atts['url'];
+        }
+        if (!empty($atts['rating_value']) && !empty($atts['rating_count'])) {
+            $schema['aggregateRating'] = array(
+                '@type' => 'AggregateRating',
+                'ratingValue' => $atts['rating_value'],
+                'ratingCount' => $atts['rating_count']
+            );
+        }
+        
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div id="' . $movie_id . '" class="kata-movie-container">';
+            $output .= '<h2 class="kata-movie-title">🎬 ' . esc_html($atts['name']) . '</h2>';
+            
+            if (!empty($atts['image'])) {
+                $output .= '<div class="kata-movie-poster"><img src="' . esc_url($atts['image']) . '" alt="' . esc_attr($atts['name']) . '" /></div>';
+            }
+            
+            if (!empty($atts['description'])) {
+                $output .= '<p class="kata-movie-description">' . esc_html($atts['description']) . '</p>';
+            }
+            
+            $output .= '<div class="kata-movie-details">';
+            if (!empty($atts['director'])) {
+                $output .= '<div class="kata-detail">Đạo diễn: <strong>' . esc_html($atts['director']) . '</strong></div>';
+            }
+            if (!empty($atts['actor'])) {
+                $output .= '<div class="kata-detail">Diễn viên: <strong>' . esc_html($atts['actor']) . '</strong></div>';
+            }
+            if (!empty($atts['genre'])) {
+                $output .= '<div class="kata-detail">Thể loại: <strong>' . esc_html($atts['genre']) . '</strong></div>';
+            }
+            if (!empty($atts['duration'])) {
+                $output .= '<div class="kata-detail">Thời lượng: <strong>' . esc_html($atts['duration']) . '</strong></div>';
+            }
+            if (!empty($atts['release_date'])) {
+                $output .= '<div class="kata-detail">Ngày phát hành: <strong>' . date('d/m/Y', strtotime($atts['release_date'])) . '</strong></div>';
+            }
+            $output .= '</div>';
+            
+            if (!empty($atts['rating_value'])) {
+                $stars = str_repeat('⭐', round(floatval($atts['rating_value'])));
+                $output .= '<div class="kata-movie-rating">' . $stars . ' ' . esc_html($atts['rating_value']) . '/5</div>';
+            }
+            
+            $output .= '</div>';
+        }
+        
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+        
+        return $output;
+    }
+
+    public function render_course($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'description' => '',
+            'provider' => '',
+            'instructor' => '',
+            'price' => '',
+            'currency' => 'VND',
+            'duration' => '',
+            'course_mode' => 'online', // online, offline, blended
+            'level' => '', // beginner, intermediate, advanced
+            'language' => 'vi',
+            'category' => '',
+            'skills' => '',
+            'requirements' => '',
+            'url' => '',
+            'image' => '',
+            'rating_value' => '',
+            'rating_count' => '',
+            'enrollment_count' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_course');
+        
+        if (empty($atts['name'])) {
+            return '<div class="kata-course-error">Tên khóa học không được để trống.</div>';
+        }
+        
+        $course_id = 'kata-course-' . uniqid();
+        
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Course',
+            'name' => $atts['name']
+        );
+        
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['provider'])) {
+            $schema['provider'] = array(
+                '@type' => 'Organization',
+                'name' => $atts['provider']
+            );
+        }
+        if (!empty($atts['instructor'])) {
+            $schema['instructor'] = array(
+                '@type' => 'Person',
+                'name' => $atts['instructor']
+            );
+        }
+        if (!empty($atts['price'])) {
+            $schema['offers'] = array(
+                '@type' => 'Offer',
+                'price' => $atts['price'],
+                'priceCurrency' => $atts['currency']
+            );
+        }
+        if (!empty($atts['duration'])) {
+            $schema['timeRequired'] = 'PT' . $atts['duration'];
+        }
+        if (!empty($atts['course_mode'])) {
+            $schema['courseMode'] = $atts['course_mode'];
+        }
+        if (!empty($atts['level'])) {
+            $schema['educationalLevel'] = $atts['level'];
+        }
+        if (!empty($atts['language'])) {
+            $schema['inLanguage'] = $atts['language'];
+        }
+        if (!empty($atts['category'])) {
+            $schema['about'] = $atts['category'];
+        }
+        if (!empty($atts['skills'])) {
+            $schema['teaches'] = array_map('trim', explode(',', $atts['skills']));
+        }
+        if (!empty($atts['requirements'])) {
+            $schema['coursePrerequisites'] = array_map('trim', explode(',', $atts['requirements']));
+        }
+        if (!empty($atts['url'])) {
+            $schema['url'] = $atts['url'];
+        }
+        if (!empty($atts['image'])) {
+            $schema['image'] = $atts['image'];
+        }
+        if (!empty($atts['rating_value']) && !empty($atts['rating_count'])) {
+            $schema['aggregateRating'] = array(
+                '@type' => 'AggregateRating',
+                'ratingValue' => $atts['rating_value'],
+                'ratingCount' => $atts['rating_count']
+            );
+        }
+        
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div id="' . $course_id . '" class="kata-course-container">';
+            $output .= '<h2 class="kata-course-title">📚 ' . esc_html($atts['name']) . '</h2>';
+            
+            if (!empty($atts['description'])) {
+                $output .= '<p class="kata-course-description">' . esc_html($atts['description']) . '</p>';
+            }
+            
+            $output .= '<div class="kata-course-details">';
+            if (!empty($atts['provider'])) {
+                $output .= '<div class="kata-detail">Nhà cung cấp: <strong>' . esc_html($atts['provider']) . '</strong></div>';
+            }
+            if (!empty($atts['instructor'])) {
+                $output .= '<div class="kata-detail">Giảng viên: <strong>' . esc_html($atts['instructor']) . '</strong></div>';
+            }
+            if (!empty($atts['duration'])) {
+                $output .= '<div class="kata-detail">Thời lượng: <strong>' . esc_html($atts['duration']) . '</strong></div>';
+            }
+            if (!empty($atts['level'])) {
+                $level_text = array(
+                    'beginner' => '🟢 Cơ bản',
+                    'intermediate' => '🟡 Trung cấp',
+                    'advanced' => '🔴 Nâng cao'
+                );
+                $output .= '<div class="kata-detail">Trình độ: <strong>' . ($level_text[$atts['level']] ?? $atts['level']) . '</strong></div>';
+            }
+            if (!empty($atts['price'])) {
+                $formatted_price = ($atts['price'] === '0') ? 'Miễn phí' : number_format($atts['price'], 0, ',', '.') . ' ' . $atts['currency'];
+                $output .= '<div class="kata-detail">Học phí: <strong>' . $formatted_price . '</strong></div>';
+            }
+            $output .= '</div>';
+            
+            if (!empty($atts['skills'])) {
+                $skills = array_map('trim', explode(',', $atts['skills']));
+                $output .= '<div class="kata-course-skills"><h4>🎯 Kỹ năng học được:</h4><ul>';
+                foreach ($skills as $skill) {
+                    $output .= '<li>' . esc_html($skill) . '</li>';
+                }
+                $output .= '</ul></div>';
+            }
+            
+            if (!empty($atts['url'])) {
+                $output .= '<div class="kata-course-action"><a href="' . esc_url($atts['url']) . '" class="kata-enroll-button" target="_blank">📝 Đăng Ký Học</a></div>';
+            }
+            
+            $output .= '</div>';
+        }
+        
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+        
+        return $output;
+    }
+
+    public function render_software($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'description' => '',
+            'version' => '',
+            'operating_system' => '',
+            'application_category' => '',
+            'price' => '',
+            'currency' => 'VND',
+            'file_size' => '',
+            'download_url' => '',
+            'screenshot' => '',
+            'rating_value' => '',
+            'rating_count' => '',
+            'author' => '',
+            'release_date' => '',
+            'requirements' => '',
+            'features' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_software');
+        
+        if (empty($atts['name'])) {
+            return '<div class="kata-software-error">Tên phần mềm không được để trống.</div>';
+        }
+        
+        $software_id = 'kata-software-' . uniqid();
+        
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'SoftwareApplication',
+            'name' => $atts['name']
+        );
+        
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['version'])) {
+            $schema['softwareVersion'] = $atts['version'];
+        }
+        if (!empty($atts['operating_system'])) {
+            $schema['operatingSystem'] = $atts['operating_system'];
+        }
+        if (!empty($atts['application_category'])) {
+            $schema['applicationCategory'] = $atts['application_category'];
+        }
+        if (!empty($atts['price'])) {
+            $schema['offers'] = array(
+                '@type' => 'Offer',
+                'price' => $atts['price'],
+                'priceCurrency' => $atts['currency']
+            );
+        }
+        if (!empty($atts['file_size'])) {
+            $schema['fileSize'] = $atts['file_size'];
+        }
+        if (!empty($atts['download_url'])) {
+            $schema['downloadUrl'] = $atts['download_url'];
+        }
+        if (!empty($atts['screenshot'])) {
+            $schema['screenshot'] = $atts['screenshot'];
+        }
+        if (!empty($atts['author'])) {
+            $schema['author'] = array(
+                '@type' => 'Person',
+                'name' => $atts['author']
+            );
+        }
+        if (!empty($atts['release_date'])) {
+            $schema['datePublished'] = $atts['release_date'];
+        }
+        if (!empty($atts['requirements'])) {
+            $schema['requirements'] = $atts['requirements'];
+        }
+        if (!empty($atts['rating_value']) && !empty($atts['rating_count'])) {
+            $schema['aggregateRating'] = array(
+                '@type' => 'AggregateRating',
+                'ratingValue' => $atts['rating_value'],
+                'ratingCount' => $atts['rating_count']
+            );
+        }
+        
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div id="' . $software_id . '" class="kata-software-container">';
+            $output .= '<h2 class="kata-software-title">💻 ' . esc_html($atts['name']) . '</h2>';
+            
+            if (!empty($atts['screenshot'])) {
+                $output .= '<div class="kata-software-screenshot"><img src="' . esc_url($atts['screenshot']) . '" alt="' . esc_attr($atts['name']) . '" /></div>';
+            }
+            
+            if (!empty($atts['description'])) {
+                $output .= '<p class="kata-software-description">' . esc_html($atts['description']) . '</p>';
+            }
+            
+            $output .= '<div class="kata-software-details">';
+            if (!empty($atts['version'])) {
+                $output .= '<div class="kata-detail">Phiên bản: <strong>' . esc_html($atts['version']) . '</strong></div>';
+            }
+            if (!empty($atts['operating_system'])) {
+                $output .= '<div class="kata-detail">Hệ điều hành: <strong>' . esc_html($atts['operating_system']) . '</strong></div>';
+            }
+            if (!empty($atts['file_size'])) {
+                $output .= '<div class="kata-detail">Dung lượng: <strong>' . esc_html($atts['file_size']) . '</strong></div>';
+            }
+            if (!empty($atts['price'])) {
+                $formatted_price = ($atts['price'] === '0') ? 'Miễn phí' : number_format($atts['price'], 0, ',', '.') . ' ' . $atts['currency'];
+                $output .= '<div class="kata-detail">Giá: <strong>' . $formatted_price . '</strong></div>';
+            }
+            $output .= '</div>';
+            
+            if (!empty($atts['download_url'])) {
+                $output .= '<div class="kata-software-action"><a href="' . esc_url($atts['download_url']) . '" class="kata-download-button" target="_blank">⬇️ Tải Xuống</a></div>';
+            }
+            
+            $output .= '</div>';
+        }
+        
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+        
+        return $output;
+    }
+
+    public function render_book($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'author' => '',
+            'description' => '',
+            'isbn' => '',
+            'publisher' => '',
+            'publication_date' => '',
+            'pages' => '',
+            'genre' => '',
+            'language' => 'vi',
+            'format' => 'Paperback', // Paperback, Hardcover, EBook, AudioBook
+            'price' => '',
+            'currency' => 'VND',
+            'image' => '',
+            'url' => '',
+            'rating_value' => '',
+            'rating_count' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_book');
+        
+        if (empty($atts['name']) || empty($atts['author'])) {
+            return '<div class="kata-book-error">Tên sách và tác giả không được để trống.</div>';
+        }
+        
+        $book_id = 'kata-book-' . uniqid();
+        
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Book',
+            'name' => $atts['name'],
+            'author' => array(
+                '@type' => 'Person',
+                'name' => $atts['author']
+            )
+        );
+        
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['isbn'])) {
+            $schema['isbn'] = $atts['isbn'];
+        }
+        if (!empty($atts['publisher'])) {
+            $schema['publisher'] = array(
+                '@type' => 'Organization',
+                'name' => $atts['publisher']
+            );
+        }
+        if (!empty($atts['publication_date'])) {
+            $schema['datePublished'] = $atts['publication_date'];
+        }
+        if (!empty($atts['pages'])) {
+            $schema['numberOfPages'] = intval($atts['pages']);
+        }
+        if (!empty($atts['genre'])) {
+            $schema['genre'] = $atts['genre'];
+        }
+        if (!empty($atts['language'])) {
+            $schema['inLanguage'] = $atts['language'];
+        }
+        if (!empty($atts['format'])) {
+            $schema['bookFormat'] = 'https://schema.org/' . $atts['format'] . 'Format';
+        }
+        if (!empty($atts['image'])) {
+            $schema['image'] = $atts['image'];
+        }
+        if (!empty($atts['url'])) {
+            $schema['url'] = $atts['url'];
+        }
+        if (!empty($atts['price'])) {
+            $schema['offers'] = array(
+                '@type' => 'Offer',
+                'price' => $atts['price'],
+                'priceCurrency' => $atts['currency']
+            );
+        }
+        if (!empty($atts['rating_value']) && !empty($atts['rating_count'])) {
+            $schema['aggregateRating'] = array(
+                '@type' => 'AggregateRating',
+                'ratingValue' => $atts['rating_value'],
+                'ratingCount' => $atts['rating_count']
+            );
+        }
+        
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div id="' . $book_id . '" class="kata-book-container">';
+            $output .= '<h2 class="kata-book-title">📖 ' . esc_html($atts['name']) . '</h2>';
+            
+            if (!empty($atts['image'])) {
+                $output .= '<div class="kata-book-cover"><img src="' . esc_url($atts['image']) . '" alt="' . esc_attr($atts['name']) . '" /></div>';
+            }
+            
+            $output .= '<div class="kata-book-author">Tác giả: <strong>' . esc_html($atts['author']) . '</strong></div>';
+            
+            if (!empty($atts['description'])) {
+                $output .= '<p class="kata-book-description">' . esc_html($atts['description']) . '</p>';
+            }
+            
+            $output .= '<div class="kata-book-details">';
+            if (!empty($atts['publisher'])) {
+                $output .= '<div class="kata-detail">Nhà xuất bản: <strong>' . esc_html($atts['publisher']) . '</strong></div>';
+            }
+            if (!empty($atts['publication_date'])) {
+                $output .= '<div class="kata-detail">Ngày xuất bản: <strong>' . date('d/m/Y', strtotime($atts['publication_date'])) . '</strong></div>';
+            }
+            if (!empty($atts['pages'])) {
+                $output .= '<div class="kata-detail">Số trang: <strong>' . esc_html($atts['pages']) . '</strong></div>';
+            }
+            if (!empty($atts['isbn'])) {
+                $output .= '<div class="kata-detail">ISBN: <strong>' . esc_html($atts['isbn']) . '</strong></div>';
+            }
+            if (!empty($atts['genre'])) {
+                $output .= '<div class="kata-detail">Thể loại: <strong>' . esc_html($atts['genre']) . '</strong></div>';
+            }
+            if (!empty($atts['format'])) {
+                $format_text = array(
+                    'Paperback' => 'Bìa mềm',
+                    'Hardcover' => 'Bìa cứng',
+                    'EBook' => 'Sách điện tử',
+                    'AudioBook' => 'Sách nói'
+                );
+                $output .= '<div class="kata-detail">Định dạng: <strong>' . ($format_text[$atts['format']] ?? $atts['format']) . '</strong></div>';
+            }
+            $output .= '</div>';
+            
+            if (!empty($atts['rating_value'])) {
+                $stars = str_repeat('⭐', round(floatval($atts['rating_value'])));
+                $output .= '<div class="kata-book-rating">' . $stars . ' ' . esc_html($atts['rating_value']) . '/5</div>';
+            }
+            
+            if (!empty($atts['url'])) {
+                $output .= '<div class="kata-book-action"><a href="' . esc_url($atts['url']) . '" class="kata-buy-book-button" target="_blank">📚 Mua Sách</a></div>';
+            }
+            
+            $output .= '</div>';
+        }
+        
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+        
+        return $output;
+    }
+
+    public function render_webpage($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'description' => '',
+            'url' => '',
+            'image' => '',
+            'author' => '',
+            'publisher' => '',
+            'date_published' => '',
+            'date_modified' => '',
+            'keywords' => '',
+            'language' => 'vi',
+            'breadcrumb' => '',
+            'show_content' => 'false',
+            'show_schema' => 'true'
+        ), $atts, 'kata_webpage');
+        
+        global $post;
+        
+        // Use current page data if not provided
+        if (empty($atts['name']) && $post) {
+            $atts['name'] = get_the_title($post);
+        }
+        if (empty($atts['description']) && $post) {
+            $atts['description'] = get_the_excerpt($post);
+        }
+        if (empty($atts['url']) && $post) {
+            $atts['url'] = get_permalink($post);
+        }
+        if (empty($atts['date_published']) && $post) {
+            $atts['date_published'] = get_the_date('c', $post);
+        }
+        if (empty($atts['date_modified']) && $post) {
+            $atts['date_modified'] = get_the_modified_date('c', $post);
+        }
+        
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'WebPage',
+            'name' => $atts['name'],
+            'url' => $atts['url']
+        );
+        
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['image'])) {
+            $schema['image'] = $atts['image'];
+        }
+        if (!empty($atts['author'])) {
+            $schema['author'] = array(
+                '@type' => 'Person',
+                'name' => $atts['author']
+            );
+        }
+        if (!empty($atts['publisher'])) {
+            $schema['publisher'] = array(
+                '@type' => 'Organization',
+                'name' => $atts['publisher']
+            );
+        }
+        if (!empty($atts['date_published'])) {
+            $schema['datePublished'] = $atts['date_published'];
+        }
+        if (!empty($atts['date_modified'])) {
+            $schema['dateModified'] = $atts['date_modified'];
+        }
+        if (!empty($atts['keywords'])) {
+            $schema['keywords'] = $atts['keywords'];
+        }
+        if (!empty($atts['language'])) {
+            $schema['inLanguage'] = $atts['language'];
+        }
+        
+        // Add breadcrumb if provided
+        if (!empty($atts['breadcrumb'])) {
+            $breadcrumb_items = array_map('trim', explode('>', $atts['breadcrumb']));
+            $breadcrumb_list = array();
+            
+            foreach ($breadcrumb_items as $index => $item) {
+                $breadcrumb_list[] = array(
+                    '@type' => 'ListItem',
+                    'position' => $index + 1,
+                    'name' => $item
+                );
+            }
+            
+            $schema['breadcrumb'] = array(
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => $breadcrumb_list
+            );
+        }
+        
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-webpage-info">';
+            $output .= '<h3>🌐 Thông Tin Trang Web</h3>';
+            $output .= '<div class="kata-webpage-details">';
+            $output .= '<div class="kata-detail">Tiêu đề: <strong>' . esc_html($atts['name']) . '</strong></div>';
+            if (!empty($atts['description'])) {
+                $output .= '<div class="kata-detail">Mô tả: ' . esc_html($atts['description']) . '</div>';
+            }
+            if (!empty($atts['url'])) {
+                $output .= '<div class="kata-detail">URL: <a href="' . esc_url($atts['url']) . '" target="_blank">' . esc_html($atts['url']) . '</a></div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+        
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+        
+        return $output;
+    }
+
     /**
      * Register TinyMCE button
      */
     public function register_tinymce_button($buttons) {
-        array_push($buttons, 'kata_seo_manager');
+        array_push($buttons, 'kata_seo_manager', 'kata_seo_quick');
         return $buttons;
     }
     

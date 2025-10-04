@@ -341,6 +341,37 @@ class KATA_SEO_Manager {
             return;
         }
         
+        // Dashboard specific styles and scripts
+        if (strpos($hook, 'kata-seo-manager') !== false) {
+            wp_enqueue_style(
+                'kata-seo-dashboard',
+                KATA_SEO_MANAGER_PLUGIN_URL . 'admin/assets/dashboard.css',
+                array(),
+                KATA_SEO_MANAGER_VERSION
+            );
+            
+            wp_enqueue_script(
+                'kata-seo-dashboard',
+                KATA_SEO_MANAGER_PLUGIN_URL . 'admin/assets/dashboard.js',
+                array('jquery'),
+                KATA_SEO_MANAGER_VERSION,
+                true
+            );
+            
+            // Localize dashboard script
+            wp_localize_script('kata-seo-dashboard', 'kataAdmin', array(
+                'nonce' => wp_create_nonce('kata_seo_dashboard_nonce'),
+                'ajaxurl' => admin_url('admin-ajax.php'),
+                'strings' => array(
+                    'loading' => __('Loading...', 'kata-seo-manager'),
+                    'error' => __('An error occurred', 'kata-seo-manager'),
+                    'success' => __('Success!', 'kata-seo-manager'),
+                    'exported' => __('Data exported successfully!', 'kata-seo-manager')
+                )
+            ));
+        }
+        
+        // General admin styles
         wp_enqueue_style(
             'kata-seo-manager-admin',
             KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/admin.css',

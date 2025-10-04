@@ -138,6 +138,9 @@ class KATA_SEO_Manager {
         // TinyMCE Integration
         add_filter('mce_buttons', array($this, 'register_tinymce_button'));
         add_filter('mce_external_plugins', array($this, 'register_tinymce_plugin'));
+        
+        // Ensure TinyMCE works properly
+        add_action('admin_head', array($this, 'tinymce_admin_head'));
     }
     
     /**
@@ -270,8 +273,8 @@ class KATA_SEO_Manager {
         
         add_submenu_page(
             'kata-seo-manager',
-            __('Dashboard', 'kata-seo-manager'),
-            __('Dashboard', 'kata-seo-manager'),
+            __('Bảng điều khiển', 'kata-seo-manager'),
+            __('Bảng điều khiển', 'kata-seo-manager'),
             'manage_options',
             'kata-seo-manager',
             array($this, 'admin_dashboard_page')
@@ -279,8 +282,8 @@ class KATA_SEO_Manager {
         
         add_submenu_page(
             'kata-seo-manager',
-            __('Schema Types', 'kata-seo-manager'),
-            __('Schema Types', 'kata-seo-manager'),
+            __('Loại Schema', 'kata-seo-manager'),
+            __('Loại Schema', 'kata-seo-manager'),
             'manage_options',
             'kata-seo-schema-types',
             array($this, 'admin_schema_types_page')
@@ -288,8 +291,8 @@ class KATA_SEO_Manager {
         
         add_submenu_page(
             'kata-seo-manager',
-            __('Statistics', 'kata-seo-manager'),
-            __('Statistics', 'kata-seo-manager'),
+            __('Thống kê', 'kata-seo-manager'),
+            __('Thống kê', 'kata-seo-manager'),
             'manage_options',
             'kata-seo-statistics',
             array($this, 'admin_statistics_page')
@@ -297,8 +300,8 @@ class KATA_SEO_Manager {
         
         add_submenu_page(
             'kata-seo-manager',
-            __('Settings', 'kata-seo-manager'),
-            __('Settings', 'kata-seo-manager'),
+            __('Cài đặt', 'kata-seo-manager'),
+            __('Cài đặt', 'kata-seo-manager'),
             'manage_options',
             'kata-seo-settings',
             array($this, 'admin_settings_page')
@@ -337,7 +340,12 @@ class KATA_SEO_Manager {
      * Enqueue admin scripts
      */
     public function enqueue_admin_scripts($hook) {
-        if (strpos($hook, 'kata-seo') === false && $hook !== 'post.php' && $hook !== 'post-new.php') {
+        // Load on all admin pages to avoid conflicts
+        $allowed_hooks = array('post.php', 'post-new.php', 'edit.php');
+        $is_kata_page = strpos($hook, 'kata-seo') !== false;
+        $is_editor_page = in_array($hook, $allowed_hooks);
+        
+        if (!$is_kata_page && !$is_editor_page) {
             return;
         }
         
@@ -363,10 +371,10 @@ class KATA_SEO_Manager {
                 'nonce' => wp_create_nonce('kata_seo_dashboard_nonce'),
                 'ajaxurl' => admin_url('admin-ajax.php'),
                 'strings' => array(
-                    'loading' => __('Loading...', 'kata-seo-manager'),
-                    'error' => __('An error occurred', 'kata-seo-manager'),
-                    'success' => __('Success!', 'kata-seo-manager'),
-                    'exported' => __('Data exported successfully!', 'kata-seo-manager')
+                    'loading' => __('Đang tải...', 'kata-seo-manager'),
+                    'error' => __('Đã xảy ra lỗi', 'kata-seo-manager'),
+                    'success' => __('Thành công!', 'kata-seo-manager'),
+                    'exported' => __('Xuất dữ liệu thành công!', 'kata-seo-manager')
                 )
             ));
         }
@@ -405,6 +413,39 @@ class KATA_SEO_Manager {
                 'success' => __('Success!', 'kata-seo-manager')
             )
         ));
+        
+        // Add inline script to fix TinyMCE issues
+        if ($is_editor_page) {
+            wp_add_inline_script('kata-seo-manager-admin', '
+                jQuery(document).ready(function($) {
+                    // Fix TinyMCE toolbar visibility
+                    if (typeof tinymce !== "undefined") {
+                        tinymce.on("AddEditor", function(e) {
+                            e.editor.on("init", function() {
+                                // Ensure toolbar is visible
+                                var toolbar = $(e.editor.getContainer()).find(".mce-toolbar-grp");
+                                toolbar.css({
+                                    "visibility": "visible",
+                                    "display": "block",
+                                    "opacity": "1",
+                                    "z-index": "100"
+                                });
+                            });
+                        });
+                    }
+                    
+                    // Check and fix toolbar after page load
+                    setTimeout(function() {
+                        $(".mce-toolbar-grp").css({
+                            "visibility": "visible",
+                            "display": "block",
+                            "opacity": "1",
+                            "z-index": "100"
+                        });
+                    }, 1000);
+                });
+            ');
+        }
     }
     
     /**
@@ -438,7 +479,7 @@ class KATA_SEO_Manager {
     public function add_schema_button() {
         echo '<button type="button" class="button kata-seo-insert-button" id="kata-seo-insert-schema">';
         echo '<span class="dashicons dashicons-editor-code" style="margin-top: 3px;"></span> ';
-        echo __('KATA Insert Schema', 'kata-seo-manager');
+        echo __('Chèn Schema KATA', 'kata-seo-manager');
         echo '</button>';
     }
     
@@ -493,13 +534,13 @@ class KATA_SEO_Manager {
     public function ajax_create_schema() {
         // Security check
         if (!wp_verify_nonce($_POST['nonce'] ?? '', 'kata_seo_manager_nonce')) {
-            wp_send_json_error(array('message' => __('Security check failed', 'kata-seo-manager')));
+            wp_send_json_error(array('message' => __('Kiểm tra bảo mật thất bại', 'kata-seo-manager')));
             return;
         }
         
         // Capability check for logged-in users
         if (is_user_logged_in() && !current_user_can('edit_posts')) {
-            wp_send_json_error(array('message' => __('Insufficient permissions', 'kata-seo-manager')));
+            wp_send_json_error(array('message' => __('Không đủ quyền hạn', 'kata-seo-manager')));
             return;
         }
         
@@ -508,7 +549,7 @@ class KATA_SEO_Manager {
         $post_id = intval($_POST['post_id'] ?? 0);
         
         if (empty($type) || empty($data)) {
-            wp_send_json_error(array('message' => __('Invalid data provided', 'kata-seo-manager')));
+            wp_send_json_error(array('message' => __('Dữ liệu không hợp lệ', 'kata-seo-manager')));
             return;
         }
         
@@ -4175,10 +4216,46 @@ class KATA_SEO_Manager {
     }
 
     /**
+     * TinyMCE admin head
+     */
+    public function tinymce_admin_head() {
+        global $current_screen;
+        if (isset($current_screen) && in_array($current_screen->base, array('post', 'page'))) {
+            ?>
+            <style>
+                /* Ensure TinyMCE toolbar is visible */
+                .mce-toolbar-grp {
+                    position: relative !important;
+                    z-index: 10 !important;
+                    visibility: visible !important;
+                    display: block !important;
+                }
+                
+                .mce-btn[aria-label*="KATA"] {
+                    visibility: visible !important;
+                    display: inline-block !important;
+                }
+                
+                /* Fix potential conflicts */
+                .kata-seo-manager .mce-toolbar {
+                    position: relative !important;
+                    top: auto !important;
+                    left: auto !important;
+                }
+            </style>
+            <?php
+        }
+    }
+    
+    /**
      * Register TinyMCE button
      */
     public function register_tinymce_button($buttons) {
-        array_push($buttons, 'kata_seo_manager', 'kata_seo_quick');
+        // Only add buttons on post edit screens
+        global $current_screen;
+        if (isset($current_screen) && in_array($current_screen->base, array('post', 'page'))) {
+            array_push($buttons, 'kata_seo_manager', 'kata_seo_quick');
+        }
         return $buttons;
     }
     
@@ -4186,7 +4263,10 @@ class KATA_SEO_Manager {
      * Register TinyMCE plugin
      */
     public function register_tinymce_plugin($plugins) {
-        $plugins['kata_seo_manager'] = KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/tinymce-plugin.js';
+        global $current_screen;
+        if (isset($current_screen) && in_array($current_screen->base, array('post', 'page'))) {
+            $plugins['kata_seo_manager'] = KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/tinymce-plugin.js?v=' . KATA_SEO_MANAGER_VERSION;
+        }
         return $plugins;
     }
 }

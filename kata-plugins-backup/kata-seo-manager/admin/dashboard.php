@@ -28,7 +28,7 @@ $validation_report = $statistics->get_validation_report();
                 </div>
                 <div class="kata-title">
                     <h1><?php _e('KATA SEO Manager', 'kata-seo-manager'); ?></h1>
-                    <p class="kata-subtitle"><?php _e('Advanced Schema Management System', 'kata-seo-manager'); ?></p>
+                    <p class="kata-subtitle"><?php _e('Hệ thống quản lý Schema nâng cao', 'kata-seo-manager'); ?></p>
                 </div>
             </div>
             <div class="kata-header-actions">
@@ -37,14 +37,14 @@ $validation_report = $statistics->get_validation_report();
                         <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
                         <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
                     </svg>
-                    <?php _e('Refresh', 'kata-seo-manager'); ?>
+                    <?php _e('Làm mới', 'kata-seo-manager'); ?>
                 </button>
                 <button class="kata-btn kata-btn-primary" onclick="window.open('https://developers.google.com/search/docs/appearance/structured-data', '_blank')">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M8.636 3.5a.5.5 0 0 0-.5-.5H1.5A1.5 1.5 0 0 0 0 4.5v10A1.5 1.5 0 0 0 1.5 16h10a1.5 1.5 0 0 0 1.5-1.5V7.864a.5.5 0 0 0-.5-.5C11.5 7.364 10 5.5 8.636 3.5z"/>
                         <path d="M6.5 7.5a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v.938l.4 1.599a1 1 0 0 1-.416 1.074l-.93.62a1 1 0 0 1-1.109 0l-.93-.62a1 1 0 0 1-.415-1.074l.4-1.599V7.5z"/>
                     </svg>
-                    <?php _e('Schema Guide', 'kata-seo-manager'); ?>
+                    <?php _e('Hướng dẫn Schema', 'kata-seo-manager'); ?>
                 </button>
             </div>
         </div>
@@ -70,8 +70,8 @@ $validation_report = $statistics->get_validation_report();
                 </div>
                 <div class="kata-stat-content">
                     <div class="kata-stat-number" data-count="<?php echo esc_attr($overview['total_schemas']); ?>">0</div>
-                    <div class="kata-stat-label"><?php _e('Total Schemas', 'kata-seo-manager'); ?></div>
-                    <div class="kata-stat-description"><?php _e('Active schema implementations', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-label"><?php _e('Tổng Schema', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-description"><?php _e('Các triển khai schema hoạt động', 'kata-seo-manager'); ?></div>
                 </div>
             </div>
             
@@ -91,8 +91,8 @@ $validation_report = $statistics->get_validation_report();
                 </div>
                 <div class="kata-stat-content">
                     <div class="kata-stat-number" data-count="<?php echo esc_attr($overview['active_schemas']); ?>">0</div>
-                    <div class="kata-stat-label"><?php _e('Active Schemas', 'kata-seo-manager'); ?></div>
-                    <div class="kata-stat-description"><?php _e('Currently rendering on site', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-label"><?php _e('Schema Hoạt động', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-description"><?php _e('Hiện đang hiển thị trên site', 'kata-seo-manager'); ?></div>
                 </div>
             </div>
             
@@ -110,8 +110,8 @@ $validation_report = $statistics->get_validation_report();
                 </div>
                 <div class="kata-stat-content">
                     <div class="kata-stat-number" data-count="<?php echo esc_attr($overview['validation']['pass_rate']); ?>">0</div>
-                    <div class="kata-stat-label"><?php _e('Validation Rate', 'kata-seo-manager'); ?></div>
-                    <div class="kata-stat-description"><?php _e('Schema validity percentage', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-label"><?php _e('Tỷ lệ Xác thực', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-description"><?php _e('Phần trăm hợp lệ của schema', 'kata-seo-manager'); ?></div>
                 </div>
             </div>
             
@@ -131,8 +131,8 @@ $validation_report = $statistics->get_validation_report();
                 </div>
                 <div class="kata-stat-content">
                     <div class="kata-stat-number" data-count="<?php echo count($overview['schemas_by_type']); ?>">0</div>
-                    <div class="kata-stat-label"><?php _e('Schema Types', 'kata-seo-manager'); ?></div>
-                    <div class="kata-stat-description"><?php _e('Different types in use', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-label"><?php _e('Các loại Schema', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-description"><?php _e('Các loại khác nhau đang sử dụng', 'kata-seo-manager'); ?></div>
                 </div>
             </div>
         </div>
@@ -142,15 +142,15 @@ $validation_report = $statistics->get_validation_report();
             <!-- Schema Usage Analytics -->
             <div class="kata-card kata-chart-card">
                 <div class="kata-card-header">
-                    <h3><?php _e('Schema Distribution Analytics', 'kata-seo-manager'); ?></h3>
+                    <h3><?php _e('Phân tích Phân phối Schema', 'kata-seo-manager'); ?></h3>
                     <div class="kata-card-actions">
-                        <button class="kata-btn-icon" title="<?php _e('Export Data', 'kata-seo-manager'); ?>">
+                        <button class="kata-btn-icon" title="<?php _e('Xuất dữ liệu', 'kata-seo-manager'); ?>">
                             <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                                 <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
                             </svg>
                         </button>
-                        <button class="kata-btn-icon" title="<?php _e('Refresh Chart', 'kata-seo-manager'); ?>">
+                        <button class="kata-btn-icon" title="<?php _e('Làm mới biểu đồ', 'kata-seo-manager'); ?>">
                             <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                 <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                                 <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
@@ -179,13 +179,13 @@ $validation_report = $statistics->get_validation_report();
             <!-- Recent Activity -->
             <div class="kata-card kata-activity-card">
                 <div class="kata-card-header">
-                    <h3><?php _e('Recent Schema Activity', 'kata-seo-manager'); ?></h3>
+                    <h3><?php _e('Hoạt động Schema gần đây', 'kata-seo-manager'); ?></h3>
                     <div class="kata-card-actions">
                         <select class="kata-filter-select">
-                            <option value="all"><?php _e('All Types', 'kata-seo-manager'); ?></option>
-                            <option value="article"><?php _e('Article', 'kata-seo-manager'); ?></option>
-                            <option value="product"><?php _e('Product', 'kata-seo-manager'); ?></option>
-                            <option value="organization"><?php _e('Organization', 'kata-seo-manager'); ?></option>
+                            <option value="all"><?php _e('Tất cả loại', 'kata-seo-manager'); ?></option>
+                            <option value="article"><?php _e('Bài viết', 'kata-seo-manager'); ?></option>
+                            <option value="product"><?php _e('Sản phẩm', 'kata-seo-manager'); ?></option>
+                            <option value="organization"><?php _e('Tổ chức', 'kata-seo-manager'); ?></option>
                         </select>
                     </div>
                 </div>
@@ -202,7 +202,7 @@ $validation_report = $statistics->get_validation_report();
                                     <div class="kata-activity-content">
                                         <div class="kata-activity-title">
                                             <a href="<?php echo get_edit_post_link($schema['post_id']); ?>">
-                                                <?php echo esc_html($schema['post_title'] ?? __('Untitled', 'kata-seo-manager')); ?>
+                                                <?php echo esc_html($schema['post_title'] ?? __('Chưa có tiêu đề', 'kata-seo-manager')); ?>
                                             </a>
                                         </div>
                                         <div class="kata-activity-meta">

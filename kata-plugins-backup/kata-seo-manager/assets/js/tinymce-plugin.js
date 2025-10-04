@@ -614,8 +614,23 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             }))
         });
 
-        // CSS cho preview styling  
+        // Ensure toolbar is visible after init
         editor.on('init', function() {
+            // Fix toolbar visibility
+            setTimeout(function() {
+                var container = editor.getContainer();
+                if (container) {
+                    var toolbar = jQuery(container).find('.mce-toolbar-grp');
+                    toolbar.css({
+                        'visibility': 'visible',
+                        'display': 'block',
+                        'opacity': '1',
+                        'z-index': '100'
+                    });
+                }
+            }, 100);
+            
+            // CSS cho preview styling  
             editor.dom.addStyle(`
                 .kata-preview-box {
                     border: 2px dashed #007cba;

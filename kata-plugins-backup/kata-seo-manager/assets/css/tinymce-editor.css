@@ -86,6 +86,10 @@
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
     border-color: #667eea !important;
     color: white !important;
+    visibility: visible !important;
+    display: inline-block !important;
+    position: relative !important;
+    z-index: 10 !important;
 }
 
 .mce-btn[aria-label*="KATA"]:hover {
@@ -98,6 +102,10 @@
     background: linear-gradient(135deg, #ff6b6b, #ffa500) !important;
     border-color: #ff6b6b !important;
     color: white !important;
+    visibility: visible !important;
+    display: inline-block !important;
+    position: relative !important;
+    z-index: 10 !important;
 }
 
 .mce-btn[aria-label*="Quick"]:hover {
@@ -206,4 +214,45 @@
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
     100% { transform: scale(1); }
+}
+
+/* Fix TinyMCE Toolbar Visibility Issues */
+.mce-toolbar-grp {
+    position: relative !important;
+    z-index: 100 !important;
+    visibility: visible !important;
+    display: block !important;
+    opacity: 1 !important;
+    height: auto !important;
+    overflow: visible !important;
+}
+
+.mce-toolbar {
+    position: relative !important;
+    visibility: visible !important;
+    display: block !important;
+    z-index: 100 !important;
+}
+
+.mce-container-body {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Ensure all editor buttons are visible */
+.mce-btn, .mce-menubtn {
+    visibility: visible !important;
+    display: inline-block !important;
+    opacity: 1 !important;
+}
+
+/* Fix potential overlay issues */
+.wp-editor-container {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+.wp-editor-tabs {
+    position: relative !important;
+    z-index: 10 !important;
 }

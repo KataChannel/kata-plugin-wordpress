@@ -31,8 +31,8 @@ global $wpdb;
                     </svg>
                 </div>
                 <div>
-                    <h1><?php _e('Analytics & Statistics', 'kata-seo-manager'); ?></h1>
-                    <p class="kata-page-description"><?php _e('Comprehensive schema performance insights and detailed analytics', 'kata-seo-manager'); ?></p>
+                    <h1><?php _e('Phân tích & Thống kê', 'kata-seo-manager'); ?></h1>
+                    <p class="kata-page-description"><?php _e('Thông tin chi tiết về hiệu suất schema và phân tích toàn diện', 'kata-seo-manager'); ?></p>
                 </div>
             </div>
             <div class="kata-header-actions">
@@ -41,14 +41,14 @@ global $wpdb;
                         <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
                         <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
                     </svg>
-                    <?php _e('Refresh Data', 'kata-seo-manager'); ?>
+                    <?php _e('Làm mới dữ liệu', 'kata-seo-manager'); ?>
                 </button>
                 <button class="kata-btn kata-btn-primary" onclick="kataExportStatistics()">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                         <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
                     </svg>
-                    <?php _e('Export Report', 'kata-seo-manager'); ?>
+                    <?php _e('Xuất báo cáo', 'kata-seo-manager'); ?>
                 </button>
             </div>
         </div>
@@ -67,8 +67,8 @@ global $wpdb;
                     <div class="kata-metric-trend positive">+15%</div>
                 </div>
                 <div class="kata-metric-value" data-count="<?php echo esc_attr($all_stats['total_schemas'] ?? 0); ?>">0</div>
-                <div class="kata-metric-label"><?php _e('Total Schemas', 'kata-seo-manager'); ?></div>
-                <div class="kata-metric-description"><?php _e('Active schema implementations', 'kata-seo-manager'); ?></div>
+                <div class="kata-metric-label"><?php _e('Tổng Schema', 'kata-seo-manager'); ?></div>
+                <div class="kata-metric-description"><?php _e('Các triển khai schema hoạt động', 'kata-seo-manager'); ?></div>
             </div>
             
             <div class="kata-metric-card success">
@@ -81,8 +81,8 @@ global $wpdb;
                     <div class="kata-metric-trend positive">+3</div>
                 </div>
                 <div class="kata-metric-value" data-count="<?php echo esc_attr($all_stats['schema_types_count'] ?? 0); ?>">0</div>
-                <div class="kata-metric-label"><?php _e('Schema Types', 'kata-seo-manager'); ?></div>
-                <div class="kata-metric-description"><?php _e('Different types in use', 'kata-seo-manager'); ?></div>
+                <div class="kata-metric-label"><?php _e('Các loại Schema', 'kata-seo-manager'); ?></div>
+                <div class="kata-metric-description"><?php _e('Các loại khác nhau đang sử dụng', 'kata-seo-manager'); ?></div>
             </div>
             
             <div class="kata-metric-card warning">
@@ -96,8 +96,8 @@ global $wpdb;
                     <div class="kata-metric-trend positive">+8</div>
                 </div>
                 <div class="kata-metric-value" data-count="<?php echo esc_attr($all_stats['posts_with_schema'] ?? 0); ?>">0</div>
-                <div class="kata-metric-label"><?php _e('Posts with Schema', 'kata-seo-manager'); ?></div>
-                <div class="kata-metric-description"><?php _e('Content with structured data', 'kata-seo-manager'); ?></div>
+                <div class="kata-metric-label"><?php _e('Bài viết có Schema', 'kata-seo-manager'); ?></div>
+                <div class="kata-metric-description"><?php _e('Nội dung có dữ liệu có cấu trúc', 'kata-seo-manager'); ?></div>
             </div>
             
             <div class="kata-metric-card info">
@@ -108,11 +108,11 @@ global $wpdb;
                             <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/>
                         </svg>
                     </div>
-                    <div class="kata-metric-status"><?php _e('Live', 'kata-seo-manager'); ?></div>
+                    <div class="kata-metric-status"><?php _e('Hoạt động', 'kata-seo-manager'); ?></div>
                 </div>
-                <div class="kata-metric-value-text"><?php echo esc_html($all_stats['last_updated'] ?? __('Never', 'kata-seo-manager')); ?></div>
-                <div class="kata-metric-label"><?php _e('Last Updated', 'kata-seo-manager'); ?></div>
-                <div class="kata-metric-description"><?php _e('Most recent schema modification', 'kata-seo-manager'); ?></div>
+                <div class="kata-metric-value-text"><?php echo esc_html($all_stats['last_updated'] ?? __('Chưa bao giờ', 'kata-seo-manager')); ?></div>
+                <div class="kata-metric-label"><?php _e('Cập nhật lần cuối', 'kata-seo-manager'); ?></div>
+                <div class="kata-metric-description"><?php _e('Thay đổi schema gần nhất', 'kata-seo-manager'); ?></div>
             </div>
         </div>
     
@@ -121,13 +121,13 @@ global $wpdb;
             <!-- Schema Type Distribution -->
             <div class="kata-card kata-distribution-card">
                 <div class="kata-card-header">
-                    <h3><?php _e('Schema Type Distribution', 'kata-seo-manager'); ?></h3>
+                    <h3><?php _e('Phân phối loại Schema', 'kata-seo-manager'); ?></h3>
                     <div class="kata-card-actions">
                         <select class="kata-filter-select" onchange="filterSchemaTypes(this.value)">
-                            <option value="all"><?php _e('All Types', 'kata-seo-manager'); ?></option>
-                            <option value="high"><?php _e('High Usage (>5)', 'kata-seo-manager'); ?></option>
-                            <option value="medium"><?php _e('Medium Usage (2-5)', 'kata-seo-manager'); ?></option>
-                            <option value="low"><?php _e('Low Usage (1)', 'kata-seo-manager'); ?></option>
+                            <option value="all"><?php _e('Tất cả loại', 'kata-seo-manager'); ?></option>
+                            <option value="high"><?php _e('Sử dụng cao (>5)', 'kata-seo-manager'); ?></option>
+                            <option value="medium"><?php _e('Sử dụng trung bình (2-5)', 'kata-seo-manager'); ?></option>
+                            <option value="low"><?php _e('Sử dụng thấp (1)', 'kata-seo-manager'); ?></option>
                         </select>
                     </div>
                 </div>
@@ -159,7 +159,7 @@ global $wpdb;
                                         </div>
                                         <div class="kata-distribution-info">
                                             <div class="kata-distribution-name"><?php echo esc_html(ucfirst($row['schema_type'])); ?></div>
-                                            <div class="kata-distribution-count"><?php echo esc_html($row['count']); ?> <?php _e('schemas', 'kata-seo-manager'); ?></div>
+                                            <div class="kata-distribution-count"><?php echo esc_html($row['count']); ?> <?php _e('schema', 'kata-seo-manager'); ?></div>
                                         </div>
                                         <div class="kata-distribution-percentage"><?php echo number_format($percentage, 1); ?>%</div>
                                     </div>

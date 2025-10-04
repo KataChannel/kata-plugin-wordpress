@@ -24,30 +24,30 @@ $all_stats = $statistics->get_overview();
                     <path d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52l-.094-.319z"/>
                 </svg>
             </div>
-            <h1><?php _e('Schema Types Management', 'kata-seo-manager'); ?></h1>
+            <h1><?php _e('Quản lý các loại Schema', 'kata-seo-manager'); ?></h1>
         </div>
-        <p class="kata-page-subtitle"><?php _e('Manage and configure structured data schema types for your content', 'kata-seo-manager'); ?></p>
+        <p class="kata-page-subtitle"><?php _e('Quản lý và cấu hình các loại schema dữ liệu có cấu trúc cho nội dung của bạn', 'kata-seo-manager'); ?></p>
         
         <div class="kata-page-actions">
             <button class="kata-btn kata-btn-primary" onclick="kataCreateNewSchema()">
                 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
                 </svg>
-                <?php _e('Create Schema', 'kata-seo-manager'); ?>
+                <?php _e('Tạo Schema', 'kata-seo-manager'); ?>
             </button>
             <button class="kata-btn kata-btn-outline" onclick="kataImportSchemas()">
                 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                     <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708l3-3z"/>
                 </svg>
-                <?php _e('Import', 'kata-seo-manager'); ?>
+                <?php _e('Nhập', 'kata-seo-manager'); ?>
             </button>
             <button class="kata-btn kata-btn-outline" onclick="kataExportSchemas()">
                 <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                     <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
                 </svg>
-                <?php _e('Export', 'kata-seo-manager'); ?>
+                <?php _e('Xuất', 'kata-seo-manager'); ?>
             </button>
         </div>
     </div>
@@ -55,9 +55,9 @@ $all_stats = $statistics->get_overview();
     <!-- Schema Type Filters -->
     <div class="kata-schema-filters">
         <div class="kata-filter-tabs">
-            <button class="kata-filter-tab active" data-filter="all"><?php _e('All Types', 'kata-seo-manager'); ?> (<?php echo count($schema_types); ?>)</button>
-            <button class="kata-filter-tab" data-filter="popular"><?php _e('Popular', 'kata-seo-manager'); ?> (8)</button>
-            <button class="kata-filter-tab" data-filter="business"><?php _e('Business', 'kata-seo-manager'); ?> (5)</button>
+            <button class="kata-filter-tab active" data-filter="all"><?php _e('Tất cả loại', 'kata-seo-manager'); ?> (<?php echo count($schema_types); ?>)</button>
+            <button class="kata-filter-tab" data-filter="popular"><?php _e('Phổ biến', 'kata-seo-manager'); ?> (8)</button>
+            <button class="kata-filter-tab" data-filter="business"><?php _e('Doanh nghiệp', 'kata-seo-manager'); ?> (5)</button>
             <button class="kata-filter-tab" data-filter="content"><?php _e('Content', 'kata-seo-manager'); ?> (7)</button>
             <button class="kata-filter-tab" data-filter="social"><?php _e('Social', 'kata-seo-manager'); ?> (3)</button>
         </div>

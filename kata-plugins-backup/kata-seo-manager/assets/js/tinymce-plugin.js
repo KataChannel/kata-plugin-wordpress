@@ -397,45 +397,64 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             }
         };
 
+        // Helper function để tính toán modal size responsive
+        function getModalSize(baseWidth, baseHeight) {
+            const screenWidth = window.innerWidth || document.documentElement.clientWidth || 800;
+            const screenHeight = window.innerHeight || document.documentElement.clientHeight || 600;
+            
+            const width = Math.min(baseWidth, screenWidth - 40);
+            const height = Math.min(baseHeight, screenHeight - 40);
+            
+            // Ensure minimum size
+            return {
+                width: Math.max(width, 400),
+                height: Math.max(height, 300)
+            };
+        }
+
         // Tạo modal selection cho schema templates
         function openSchemaSelector() {
             const schemaOptions = Object.keys(templates).map(key => `
                 <div class="kata-schema-option" data-key="${key}" style="
                     border: 1px solid #ddd; 
-                    border-radius: 8px; 
-                    padding: 15px; 
-                    margin: 10px 0; 
+                    border-radius: 6px; 
+                    padding: 12px; 
+                    margin: 8px 0; 
                     cursor: pointer; 
-                    transition: all 0.3s ease;
+                    transition: all 0.2s ease;
                     background: #f8f9fa;
-                " onmouseover="this.style.borderColor='#0073aa'; this.style.background='#e6f3ff';" 
-                   onmouseout="this.style.borderColor='#ddd'; this.style.background='#f8f9fa';">
-                    <h4 style="margin: 0 0 8px 0; color: #23282d;">${templates[key].title}</h4>
-                    <p style="margin: 0; font-size: 13px; color: #666;">
-                        ${templates[key].shortcode.length > 100 ? templates[key].shortcode.substring(0, 100) + '...' : templates[key].shortcode}
+                    position: relative;
+                    overflow: hidden;
+                " onmouseover="this.style.borderColor='#0073aa'; this.style.background='#e6f3ff'; this.style.transform='translateY(-1px)';" 
+                   onmouseout="this.style.borderColor='#ddd'; this.style.background='#f8f9fa'; this.style.transform='translateY(0)';">
+                    <h4 style="margin: 0 0 6px 0; color: #23282d; font-size: 14px; font-weight: 600;">${templates[key].title}</h4>
+                    <p style="margin: 0; font-size: 11px; color: #666; line-height: 1.3; word-break: break-word;">
+                        ${templates[key].shortcode.length > 80 ? templates[key].shortcode.substring(0, 80) + '...' : templates[key].shortcode}
                     </p>
                 </div>
             `).join('');
 
             editor.windowManager.open({
                 title: '🏷️ Chọn Schema Template để Chèn',
-                width: 600,
-                height: 500,
+                width: Math.min(650, window.innerWidth - 40),
+                height: Math.min(600, window.innerHeight - 40),
+                resizable: true,
+                maximizable: true,
                 body: [
                     {
                         type: 'container',
                         html: `
-                            <div style="padding: 20px; max-height: 400px; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;">
-                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
-                                    <h3 style="margin: 0 0 5px 0;">KATA SEO Manager</h3>
-                                    <p style="margin: 0; opacity: 0.9;">Chọn một template để chèn dữ liệu mẫu vào editor</p>
+                            <div style="padding: 15px; height: calc(100vh - 200px); max-height: 500px; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; box-sizing: border-box;">
+                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 15px; border-radius: 6px; margin-bottom: 15px; text-align: center;">
+                                    <h3 style="margin: 0 0 3px 0; font-size: 16px;">KATA SEO Manager</h3>
+                                    <p style="margin: 0; opacity: 0.9; font-size: 13px;">Chọn template để chèn dữ liệu mẫu</p>
                                 </div>
-                                <div id="kata-schema-list">
+                                <div id="kata-schema-list" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
                                     ${schemaOptions}
                                 </div>
-                                <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 10px; margin-top: 15px;">
-                                    <p style="margin: 0; font-size: 12px; color: #856404;">
-                                        💡 <strong>Lưu ý:</strong> Sau khi chọn, bạn có thể chỉnh sửa nội dung trực tiếp trong editor.
+                                <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 8px; margin-top: 12px;">
+                                    <p style="margin: 0; font-size: 11px; color: #856404; line-height: 1.3;">
+                                        💡 <strong>Lưu ý:</strong> Sau khi chọn, bạn có thể chỉnh sửa nội dung trong editor.
                                     </p>
                                 </div>
                             </div>
@@ -473,26 +492,30 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
         function showPreviewAndInsert(key) {
             editor.windowManager.open({
                 title: templates[key].title + ' - Xem Trước & Chèn',
-                width: 650,
-                height: 500,
+                width: Math.min(700, window.innerWidth - 40),
+                height: Math.min(650, window.innerHeight - 40),
+                resizable: true,
+                maximizable: true,
                 body: [
                     {
                         type: 'container',
                         html: `
-                            <div style="padding: 20px; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;">
-                                <div style="margin-bottom: 20px;">
-                                    <h3 style="color: #23282d; margin: 0 0 15px 0;">${templates[key].title}</h3>
-                                    ${templates[key].preview}
+                            <div style="padding: 15px; height: calc(100vh - 180px); max-height: 550px; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; box-sizing: border-box;">
+                                <div style="margin-bottom: 15px;">
+                                    <h3 style="color: #23282d; margin: 0 0 12px 0; font-size: 18px;">${templates[key].title}</h3>
+                                    <div style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">
+                                        ${templates[key].preview}
+                                    </div>
                                 </div>
                                 
-                                <div style="background: #f8f9fa; border-radius: 5px; padding: 15px; margin: 15px 0;">
-                                    <h4 style="margin: 0 0 10px 0; color: #495057;">📝 Shortcode sẽ được chèn:</h4>
-                                    <textarea readonly style="width: 100%; height: 120px; font-family: monospace; font-size: 12px; border: 1px solid #ced4da; border-radius: 4px; padding: 10px; background: white;">${templates[key].shortcode}</textarea>
+                                <div style="background: #f8f9fa; border-radius: 4px; padding: 12px; margin: 12px 0;">
+                                    <h4 style="margin: 0 0 8px 0; color: #495057; font-size: 14px;">📝 Shortcode sẽ được chèn:</h4>
+                                    <textarea readonly style="width: 100%; height: 100px; font-family: monospace; font-size: 11px; border: 1px solid #ced4da; border-radius: 3px; padding: 8px; background: white; box-sizing: border-box; resize: vertical;">${templates[key].shortcode}</textarea>
                                 </div>
                                 
-                                <div style="background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 5px; padding: 10px;">
-                                    <p style="margin: 0; font-size: 13px; color: #0c5460;">
-                                        ℹ️ <strong>Thông tin:</strong> Sau khi chèn, bạn có thể chỉnh sửa các thuộc tính trực tiếp trong editor. JSON-LD schema sẽ tự động được tạo khi xuất bản.
+                                <div style="background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; padding: 8px;">
+                                    <p style="margin: 0; font-size: 12px; color: #0c5460; line-height: 1.4;">
+                                        ℹ️ <strong>Thông tin:</strong> Sau khi chèn, có thể chỉnh sửa thuộc tính trong editor. JSON-LD schema tự động tạo khi publish.
                                     </p>
                                 </div>
                             </div>

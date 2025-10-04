@@ -114,6 +114,9 @@ class KATA_SEO_Manager {
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         add_action('wp_enqueue_scripts', array($this, 'enqueue_frontend_scripts'));
         
+        // Admin notices
+        add_action('admin_notices', array($this, 'show_admin_notices'));
+        
         // Editor integration
         add_action('media_buttons', array($this, 'add_schema_button'));
         add_action('admin_footer', array($this, 'add_schema_modal'));
@@ -141,19 +144,107 @@ class KATA_SEO_Manager {
      * Plugin activation
      */
     public function activate() {
+        try {
+            // Create database tables
+            $database = new KATA_SEO_Database();
+            $result = $database->create_tables();
+            
+            if (!$result) {
+                throw new Exception('Failed to create database tables');
+            }
+            
+            // Set default options
+            add_option('kata_seo_manager_version', KATA_SEO_MANAGER_VERSION);
+            add_option('kata_seo_manager_settings', array(
+                'enable_auto_schema' => true,
+                'default_schema_types' => array('Article', 'Breadcrumb', 'WebPage'),
+                'enable_editor_button' => true,
+                'enable_statistics' => true,
+                'installation_date' => current_time('mysql'),
+                'activation_count' => 1
+            ));
+            
+            // Initialize plugin data
+            $this->initialize_default_schemas();
+            
+            // Set activation success flag
+            update_option('kata_seo_manager_activated', true);
+            update_option('kata_seo_manager_activation_date', current_time('mysql'));
+            
+            flush_rewrite_rules();
+            
+        } catch (Exception $e) {
+            // Log error and show admin notice
+            error_log('KATA SEO Manager Activation Error: ' . $e->getMessage());
+            add_option('kata_seo_manager_activation_error', $e->getMessage());
+        }
+    }
+    
+    /**
+     * Initialize default schemas for better setup
+     */
+    private function initialize_default_schemas() {
+        $default_schemas = array(
+            'article' => array(
+                'enabled' => true,
+                'auto_insert' => true,
+                'post_types' => array('post')
+            ),
+            'webpage' => array(
+                'enabled' => true,
+                'auto_insert' => true,
+                'post_types' => array('page')
+            ),
+            'breadcrumb' => array(
+                'enabled' => true,
+                'auto_insert' => true,
+                'post_types' => array('post', 'page')
+            )
+        );
+        
+        add_option('kata_seo_default_schemas', $default_schemas);
+    }
+    
+    /**
+     * Create plugin database tables
+     */
+    public function create_plugin_tables() {
         $database = new KATA_SEO_Database();
-        $database->create_tables();
+        return $database->create_tables();
+    }
+    
+    /**
+     * Show admin notices
+     */
+    public function show_admin_notices() {
+        // Check for activation errors
+        $activation_error = get_option('kata_seo_manager_activation_error');
+        if ($activation_error) {
+            echo '<div class="notice notice-error is-dismissible">';
+            echo '<p><strong>KATA SEO Manager:</strong> Activation error - ' . esc_html($activation_error) . '</p>';
+            echo '<p>Please check your database permissions and try again.</p>';
+            echo '</div>';
+            delete_option('kata_seo_manager_activation_error');
+        }
         
-        // Set default options
-        add_option('kata_seo_manager_version', KATA_SEO_MANAGER_VERSION);
-        add_option('kata_seo_manager_settings', array(
-            'enable_auto_schema' => true,
-            'default_schema_types' => array('Article', 'Breadcrumb', 'WebPage'),
-            'enable_editor_button' => true,
-            'enable_statistics' => true
-        ));
+        // Show welcome notice for new installations
+        if (get_option('kata_seo_manager_activated') && !get_option('kata_seo_welcome_shown')) {
+            echo '<div class="notice notice-success is-dismissible">';
+            echo '<p><strong>🎉 KATA SEO Manager activated successfully!</strong></p>';
+            echo '<p>Plugin is ready to use. Visit <a href="' . admin_url('admin.php?page=kata-seo-manager') . '">Settings</a> to configure.</p>';
+            echo '</div>';
+            update_option('kata_seo_welcome_shown', true);
+        }
         
-        flush_rewrite_rules();
+        // Check database tables
+        if (get_option('kata_seo_manager_activated')) {
+            $database = new KATA_SEO_Database();
+            if (!$database->verify_tables()) {
+                echo '<div class="notice notice-warning is-dismissible">';
+                echo '<p><strong>KATA SEO Manager:</strong> Database tables missing. <a href="' . admin_url('admin.php?page=kata-seo-manager&action=repair-db') . '">Repair Database</a></p>';
+                echo '</div>';
+            }
+        }
     }
     
     /**

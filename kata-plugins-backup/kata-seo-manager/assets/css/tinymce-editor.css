@@ -107,12 +107,26 @@
 /* Modal Dialog Enhancements */
 .mce-window .mce-container-body {
     background: #f8f9fa;
+    overflow: hidden;
 }
 
 .mce-window .mce-title {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     font-weight: 600;
+}
+
+.mce-window {
+    max-width: 95vw;
+    max-height: 95vh;
+}
+
+.mce-window .mce-window-body {
+    overflow: hidden;
+}
+
+.mce-container-body .mce-container {
+    overflow: hidden;
 }
 
 /* Preview sections specific styling */

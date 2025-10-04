@@ -768,3 +768,263 @@
         flex-direction: column;
     }
 }
+
+/* ===================================
+   14. DASHBOARD PAGE STYLES
+   =================================== */
+
+.kata-seo-dashboard h1,
+.kata-seo-analytics h1,
+.kata-seo-settings h1 {
+    margin-bottom: 30px;
+    color: #1d2327;
+    font-size: 28px;
+}
+
+/* Stats Grid */
+.kata-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kata-stat-card {
+    background: white;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.kata-stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.kata-stat-card .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.kata-stat-card.quiz .stat-icon {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.kata-stat-card.poll .stat-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+.kata-stat-card.rating .stat-icon {
+    background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+    color: white;
+}
+
+.kata-stat-card.form .stat-icon {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+    color: #333;
+}
+
+.kata-stat-card.wheel .stat-icon {
+    background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+    color: #333;
+}
+
+.kata-stat-card.social .stat-icon {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: white;
+}
+
+.kata-stat-card .stat-content {
+    flex: 1;
+}
+
+.kata-stat-card .stat-content h3 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 700;
+    color: #1d2327;
+}
+
+.kata-stat-card .stat-content p {
+    margin: 5px 0 0 0;
+    font-size: 14px;
+    color: #666;
+    font-weight: 500;
+}
+
+.kata-stat-card .stat-meta {
+    display: block;
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+}
+
+/* Charts Row */
+.kata-charts-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kata-chart-card {
+    background: white;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.kata-chart-card h2 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    color: #1d2327;
+}
+
+.kata-chart-card canvas {
+    max-height: 300px;
+}
+
+/* Recent Activity */
+.kata-recent-activity {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kata-activity-card {
+    background: white;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.kata-activity-card h2 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    color: #1d2327;
+}
+
+.kata-activity-card table {
+    margin: 0;
+}
+
+/* Quick Actions */
+.kata-quick-actions {
+    background: white;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    padding: 24px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.kata-quick-actions h2 {
+    margin: 0 0 20px 0;
+    font-size: 18px;
+    color: #1d2327;
+}
+
+.kata-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.kata-action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.kata-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    color: white;
+}
+
+.kata-action-btn .dashicons {
+    font-size: 20px;
+}
+
+/* Analytics Filters */
+.kata-analytics-filters {
+    background: white;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.kata-analytics-filters select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.kata-analytics-filters .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Analytics Stats */
+.kata-seo-analytics .kata-stat-card {
+    text-align: center;
+}
+
+.kata-seo-analytics .kata-stat-card .stat-number {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1d2327;
+    margin: 10px 0;
+}
+
+.kata-seo-analytics .kata-stat-card .stat-meta {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .kata-charts-row,
+    .kata-recent-activity {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .kata-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-actions-grid {
+        grid-template-columns: 1fr;
+    }
+}

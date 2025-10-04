@@ -29,12 +29,27 @@ class Kata_SEO_FAQ_Handler {
             'icon' => 'plus'
         ), $atts);
         
-        // Get FAQ items from meta or content
+        // Get FAQ items from meta
         $post_id = get_the_ID();
-        $faq_items = get_post_meta($post_id, '_kata_seo_faq_items', true);
+        $faq_items = get_post_meta($post_id, '_kata_seo_faqs', true);
         
+        // Fallback to old meta key for backward compatibility
         if (empty($faq_items)) {
-            return '<div class="kata-faq-error">No FAQ items found.</div>';
+            $faq_items = get_post_meta($post_id, '_kata_seo_faq_items', true);
+        }
+        
+        if (empty($faq_items) || !is_array($faq_items)) {
+            return '<div class="kata-faq-notice" style="padding: 15px; background: #fff3cd; border-left: 4px solid #ffc107; margin: 20px 0;">
+                <strong>⚠️ No FAQ items found.</strong><br>
+                <p style="margin: 10px 0 0 0;">To add FAQs:</p>
+                <ol style="margin: 5px 0 0 20px;">
+                    <li>Edit this post/page</li>
+                    <li>Scroll to the <strong>"KATA FAQ Schema"</strong> meta box</li>
+                    <li>Click <strong>"Add FAQ"</strong> button</li>
+                    <li>Enter your questions and answers</li>
+                    <li>Save the post</li>
+                </ol>
+            </div>';
         }
         
         ob_start();

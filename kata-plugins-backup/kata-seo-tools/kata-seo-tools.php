@@ -319,12 +319,33 @@ class Kata_SEO_Tools {
      * Enqueue admin scripts and styles
      */
     public function admin_enqueue_scripts($hook) {
+        // Load on post edit pages
         if ('post.php' === $hook || 'post-new.php' === $hook) {
             wp_enqueue_style('kata-seo-admin', KATA_SEO_PLUGIN_URL . 'assets/css/admin.css', array(), KATA_SEO_VERSION);
             wp_enqueue_script('kata-seo-admin', KATA_SEO_PLUGIN_URL . 'assets/js/admin.js', array('jquery', 'jquery-ui-sortable'), KATA_SEO_VERSION, true);
             
             wp_localize_script('kata-seo-admin', 'kataSEOAdmin', array(
-                'nonce' => wp_create_nonce('kata_seo_admin_nonce')
+                'nonce' => wp_create_nonce('kata_seo_admin_nonce'),
+                'ajax_url' => admin_url('admin-ajax.php')
+            ));
+        }
+        
+        // Load on plugin admin pages
+        if (strpos($hook, 'kata-seo') !== false) {
+            // Enqueue admin styles
+            wp_enqueue_style('kata-seo-admin', KATA_SEO_PLUGIN_URL . 'assets/css/admin.css', array(), KATA_SEO_VERSION);
+            
+            // Enqueue Chart.js for dashboard and analytics
+            if ($hook === 'toplevel_page_kata-seo-tools' || $hook === 'kata-seo_page_kata-seo-analytics') {
+                wp_enqueue_script('chart-js', 'https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js', array(), '3.9.1', true);
+            }
+            
+            // Enqueue admin scripts
+            wp_enqueue_script('kata-seo-admin', KATA_SEO_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), KATA_SEO_VERSION, true);
+            
+            wp_localize_script('kata-seo-admin', 'kataSEOAdmin', array(
+                'nonce' => wp_create_nonce('kata_seo_admin_nonce'),
+                'ajax_url' => admin_url('admin-ajax.php')
             ));
         }
     }
@@ -888,18 +909,42 @@ class Kata_SEO_Tools {
      * Shortcode handlers
      */
     public function quiz_shortcode($atts) {
-        $quiz_handler = new Kata_SEO_Quiz_Handler();
-        return $quiz_handler->render($atts);
+        if (!class_exists('Kata_SEO_Quiz_Handler')) {
+            require_once KATA_SEO_PLUGIN_DIR . 'includes/class-quiz-handler.php';
+        }
+        
+        if (class_exists('Kata_SEO_Quiz_Handler')) {
+            $quiz_handler = new Kata_SEO_Quiz_Handler();
+            return $quiz_handler->render($atts);
+        }
+        
+        return '<div class="kata-quiz-error">Quiz handler not available.</div>';
     }
     
     public function poll_shortcode($atts) {
-        $poll_handler = new Kata_SEO_Poll_Handler();
-        return $poll_handler->render($atts);
+        if (!class_exists('Kata_SEO_Poll_Handler')) {
+            require_once KATA_SEO_PLUGIN_DIR . 'includes/class-poll-handler.php';
+        }
+        
+        if (class_exists('Kata_SEO_Poll_Handler')) {
+            $poll_handler = new Kata_SEO_Poll_Handler();
+            return $poll_handler->render($atts);
+        }
+        
+        return '<div class="kata-poll-error">Poll handler not available.</div>';
     }
     
     public function wheel_shortcode($atts) {
-        $wheel_handler = new Kata_SEO_Wheel_Handler();
-        return $wheel_handler->render($atts);
+        if (!class_exists('Kata_SEO_Wheel_Handler')) {
+            require_once KATA_SEO_PLUGIN_DIR . 'includes/class-wheel-handler.php';
+        }
+        
+        if (class_exists('Kata_SEO_Wheel_Handler')) {
+            $wheel_handler = new Kata_SEO_Wheel_Handler();
+            return $wheel_handler->render($atts);
+        }
+        
+        return '<div class="kata-wheel-error">Wheel handler not available.</div>';
     }
     
     public function rating_shortcode($atts) {
@@ -945,18 +990,45 @@ class Kata_SEO_Tools {
     }
     
     public function social_share_shortcode($atts) {
-        $social_share = new Kata_SEO_Social_Share();
-        return $social_share->render($atts);
+        // Ensure the class is loaded
+        if (!class_exists('Kata_SEO_Social_Share')) {
+            require_once KATA_SEO_PLUGIN_DIR . 'includes/class-social-share.php';
+        }
+        
+        if (class_exists('Kata_SEO_Social_Share')) {
+            $social_share = new Kata_SEO_Social_Share();
+            return $social_share->render($atts);
+        }
+        
+        return '<div class="kata-social-error">Social share not available.</div>';
     }
     
     public function cta_shortcode($atts, $content = null) {
-        $cta_handler = new Kata_SEO_CTA_Handler();
-        return $cta_handler->render($atts, $content);
+        // Ensure the class is loaded
+        if (!class_exists('Kata_SEO_CTA_Handler')) {
+            require_once KATA_SEO_PLUGIN_DIR . 'includes/class-cta-handler.php';
+        }
+        
+        if (class_exists('Kata_SEO_CTA_Handler')) {
+            $cta_handler = new Kata_SEO_CTA_Handler();
+            return $cta_handler->render($atts, $content);
+        }
+        
+        return '<div class="kata-cta-error">CTA handler not available.</div>';
     }
     
     public function form_shortcode($atts) {
-        $form_handler = new Kata_SEO_Form_Handler();
-        return $form_handler->render($atts);
+        // Ensure the class is loaded
+        if (!class_exists('Kata_SEO_Form_Handler')) {
+            require_once KATA_SEO_PLUGIN_DIR . 'includes/class-form-handler.php';
+        }
+        
+        if (class_exists('Kata_SEO_Form_Handler')) {
+            $form_handler = new Kata_SEO_Form_Handler();
+            return $form_handler->render($atts);
+        }
+        
+        return '<div class="kata-form-error">Form handler not available.</div>';
     }
     
     /**

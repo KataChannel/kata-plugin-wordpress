@@ -629,6 +629,20 @@ class KATA_SEO_Manager {
         add_shortcode('kata_software', array($this, 'render_software'));
         add_shortcode('kata_book', array($this, 'render_book'));
         add_shortcode('kata_webpage', array($this, 'render_webpage'));
+        
+        // Additional schema shortcodes for demo posts
+        add_shortcode('kata_person', array($this, 'render_person'));
+        add_shortcode('kata_service', array($this, 'render_service'));
+        add_shortcode('kata_vehicle', array($this, 'render_vehicle'));
+        add_shortcode('kata_realestate', array($this, 'render_realestate'));
+        add_shortcode('kata_restaurant', array($this, 'render_restaurant'));
+        add_shortcode('kata_medicalorganization', array($this, 'render_medicalorganization'));
+        add_shortcode('kata_creativework', array($this, 'render_creativework'));
+        add_shortcode('kata_videoobject', array($this, 'render_videoobject'));
+        add_shortcode('kata_newsarticle', array($this, 'render_newsarticle'));
+        add_shortcode('kata_blogposting', array($this, 'render_blogposting'));
+        add_shortcode('kata_website', array($this, 'render_website'));
+        add_shortcode('kata_breadcrumblist', array($this, 'render_breadcrumblist'));
     }
     
     /**
@@ -3340,6 +3354,792 @@ class KATA_SEO_Manager {
             $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
         
+        return $output;
+    }
+
+    /**
+     * Render Person Schema
+     */
+    public function render_person($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'job_title' => '',
+            'company' => '',
+            'description' => '',
+            'url' => '',
+            'image' => '',
+            'email' => '',
+            'address' => '',
+            'birth_date' => '',
+            'nationality' => '',
+            'skills' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_person');
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Person',
+            'name' => $atts['name']
+        );
+
+        if (!empty($atts['job_title'])) {
+            $schema['jobTitle'] = $atts['job_title'];
+        }
+        if (!empty($atts['company'])) {
+            $schema['worksFor'] = array(
+                '@type' => 'Organization',
+                'name' => $atts['company']
+            );
+        }
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['url'])) {
+            $schema['url'] = $atts['url'];
+        }
+        if (!empty($atts['image'])) {
+            $schema['image'] = $atts['image'];
+        }
+        if (!empty($atts['email'])) {
+            $schema['email'] = $atts['email'];
+        }
+        if (!empty($atts['address'])) {
+            $schema['address'] = $atts['address'];
+        }
+        if (!empty($atts['birth_date'])) {
+            $schema['birthDate'] = $atts['birth_date'];
+        }
+        if (!empty($atts['nationality'])) {
+            $schema['nationality'] = $atts['nationality'];
+        }
+        if (!empty($atts['skills'])) {
+            $schema['knowsAbout'] = array_map('trim', explode('|', $atts['skills']));
+        }
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-person-info">';
+            $output .= '<h3>👨‍💼 Thông Tin Cá Nhân</h3>';
+            $output .= '<div class="kata-person-details">';
+            $output .= '<div class="kata-detail">Tên: <strong>' . esc_html($atts['name']) . '</strong></div>';
+            if (!empty($atts['job_title'])) {
+                $output .= '<div class="kata-detail">Chức vụ: ' . esc_html($atts['job_title']) . '</div>';
+            }
+            if (!empty($atts['company'])) {
+                $output .= '<div class="kata-detail">Công ty: ' . esc_html($atts['company']) . '</div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render Service Schema
+     */
+    public function render_service($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'provider' => '',
+            'type' => '',
+            'description' => '',
+            'area_served' => '',
+            'price_range' => '',
+            'currency' => 'VND',
+            'duration' => '',
+            'category' => '',
+            'features' => '',
+            'guarantee' => '',
+            'contact_phone' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_service');
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Service',
+            'name' => $atts['name']
+        );
+
+        if (!empty($atts['provider'])) {
+            $schema['provider'] = array(
+                '@type' => 'Organization',
+                'name' => $atts['provider']
+            );
+        }
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['area_served'])) {
+            $schema['areaServed'] = $atts['area_served'];
+        }
+        if (!empty($atts['category'])) {
+            $schema['serviceType'] = $atts['category'];
+        }
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-service-info">';
+            $output .= '<h3>🛠️ Thông Tin Dịch Vụ</h3>';
+            $output .= '<div class="kata-service-details">';
+            $output .= '<div class="kata-detail">Dịch vụ: <strong>' . esc_html($atts['name']) . '</strong></div>';
+            if (!empty($atts['provider'])) {
+                $output .= '<div class="kata-detail">Nhà cung cấp: ' . esc_html($atts['provider']) . '</div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render Vehicle Schema
+     */
+    public function render_vehicle($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'brand' => '',
+            'model' => '',
+            'year' => '',
+            'type' => '',
+            'fuel_type' => '',
+            'engine' => '',
+            'transmission' => '',
+            'doors' => '',
+            'seats' => '',
+            'price' => '',
+            'currency' => 'VND',
+            'color' => '',
+            'mileage' => '',
+            'condition' => '',
+            'description' => '',
+            'features' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_vehicle');
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Vehicle',
+            'name' => $atts['name']
+        );
+
+        if (!empty($atts['brand'])) {
+            $schema['brand'] = $atts['brand'];
+        }
+        if (!empty($atts['model'])) {
+            $schema['model'] = $atts['model'];
+        }
+        if (!empty($atts['year'])) {
+            $schema['vehicleModelDate'] = $atts['year'];
+        }
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-vehicle-info">';
+            $output .= '<h3>🚗 Thông Tin Xe</h3>';
+            $output .= '<div class="kata-vehicle-details">';
+            $output .= '<div class="kata-detail">Tên: <strong>' . esc_html($atts['name']) . '</strong></div>';
+            if (!empty($atts['brand'])) {
+                $output .= '<div class="kata-detail">Hãng: ' . esc_html($atts['brand']) . '</div>';
+            }
+            if (!empty($atts['model'])) {
+                $output .= '<div class="kata-detail">Model: ' . esc_html($atts['model']) . '</div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render Real Estate Schema
+     */
+    public function render_realestate($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'type' => 'Apartment',
+            'price' => '',
+            'currency' => 'VND',
+            'address' => '',
+            'bedrooms' => '',
+            'bathrooms' => '',
+            'area' => '',
+            'area_unit' => 'm2',
+            'floor' => '',
+            'total_floors' => '',
+            'year_built' => '',
+            'description' => '',
+            'amenities' => '',
+            'direction' => '',
+            'legal' => '',
+            'contact_phone' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_realestate');
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'RealEstateListing',
+            'name' => $atts['name']
+        );
+
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['address'])) {
+            $schema['address'] = $atts['address'];
+        }
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-realestate-info">';
+            $output .= '<h3>🏠 Thông Tin Bất Động Sản</h3>';
+            $output .= '<div class="kata-realestate-details">';
+            $output .= '<div class="kata-detail">Tên: <strong>' . esc_html($atts['name']) . '</strong></div>';
+            if (!empty($atts['type'])) {
+                $output .= '<div class="kata-detail">Loại: ' . esc_html($atts['type']) . '</div>';
+            }
+            if (!empty($atts['address'])) {
+                $output .= '<div class="kata-detail">Địa chỉ: ' . esc_html($atts['address']) . '</div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render Restaurant Schema
+     */
+    public function render_restaurant($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'cuisine' => '',
+            'address' => '',
+            'phone' => '',
+            'website' => '',
+            'price_range' => '',
+            'opening_hours' => '',
+            'accepts_reservations' => '',
+            'delivery' => '',
+            'description' => '',
+            'specialties' => '',
+            'atmosphere' => '',
+            'rating_value' => '',
+            'rating_count' => '',
+            'image' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_restaurant');
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Restaurant',
+            'name' => $atts['name']
+        );
+
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['address'])) {
+            $schema['address'] = $atts['address'];
+        }
+        if (!empty($atts['phone'])) {
+            $schema['telephone'] = $atts['phone'];
+        }
+        if (!empty($atts['cuisine'])) {
+            $schema['servesCuisine'] = $atts['cuisine'];
+        }
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-restaurant-info">';
+            $output .= '<h3>🍽️ Thông Tin Nhà Hàng</h3>';
+            $output .= '<div class="kata-restaurant-details">';
+            $output .= '<div class="kata-detail">Tên: <strong>' . esc_html($atts['name']) . '</strong></div>';
+            if (!empty($atts['cuisine'])) {
+                $output .= '<div class="kata-detail">Ẩm thực: ' . esc_html($atts['cuisine']) . '</div>';
+            }
+            if (!empty($atts['address'])) {
+                $output .= '<div class="kata-detail">Địa chỉ: ' . esc_html($atts['address']) . '</div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render Medical Organization Schema
+     */
+    public function render_medicalorganization($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'type' => 'Hospital',
+            'description' => '',
+            'address' => '',
+            'phone' => '',
+            'website' => '',
+            'specialties' => '',
+            'services' => '',
+            'insurance_accepted' => '',
+            'opening_hours' => '',
+            'rating_value' => '',
+            'rating_count' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_medicalorganization');
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'MedicalOrganization',
+            'name' => $atts['name']
+        );
+
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['address'])) {
+            $schema['address'] = $atts['address'];
+        }
+        if (!empty($atts['phone'])) {
+            $schema['telephone'] = $atts['phone'];
+        }
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-medical-info">';
+            $output .= '<h3>🏥 Thông Tin Y Tế</h3>';
+            $output .= '<div class="kata-medical-details">';
+            $output .= '<div class="kata-detail">Tên: <strong>' . esc_html($atts['name']) . '</strong></div>';
+            if (!empty($atts['type'])) {
+                $output .= '<div class="kata-detail">Loại: ' . esc_html($atts['type']) . '</div>';
+            }
+            if (!empty($atts['address'])) {
+                $output .= '<div class="kata-detail">Địa chỉ: ' . esc_html($atts['address']) . '</div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render Creative Work Schema
+     */
+    public function render_creativework($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'creator' => '',
+            'type' => 'CreativeWork',
+            'description' => '',
+            'medium' => '',
+            'dimensions' => '',
+            'creation_date' => '',
+            'genre' => '',
+            'style' => '',
+            'price' => '',
+            'currency' => 'VND',
+            'copyright' => '',
+            'exhibition' => '',
+            'location' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_creativework');
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'CreativeWork',
+            'name' => $atts['name']
+        );
+
+        if (!empty($atts['creator'])) {
+            $schema['creator'] = array(
+                '@type' => 'Person',
+                'name' => $atts['creator']
+            );
+        }
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['creation_date'])) {
+            $schema['dateCreated'] = $atts['creation_date'];
+        }
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-creative-info">';
+            $output .= '<h3>🎨 Thông Tin Tác Phẩm</h3>';
+            $output .= '<div class="kata-creative-details">';
+            $output .= '<div class="kata-detail">Tên: <strong>' . esc_html($atts['name']) . '</strong></div>';
+            if (!empty($atts['creator'])) {
+                $output .= '<div class="kata-detail">Tác giả: ' . esc_html($atts['creator']) . '</div>';
+            }
+            if (!empty($atts['type'])) {
+                $output .= '<div class="kata-detail">Loại: ' . esc_html($atts['type']) . '</div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render Video Object Schema
+     */
+    public function render_videoobject($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'description' => '',
+            'duration' => '',
+            'upload_date' => '',
+            'thumbnail' => '',
+            'embed_url' => '',
+            'content_url' => '',
+            'creator' => '',
+            'publisher' => '',
+            'category' => '',
+            'language' => '',
+            'quality' => '',
+            'view_count' => '',
+            'like_count' => '',
+            'comment_count' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_videoobject');
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'VideoObject',
+            'name' => $atts['name']
+        );
+
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['duration'])) {
+            $schema['duration'] = $atts['duration'];
+        }
+        if (!empty($atts['upload_date'])) {
+            $schema['uploadDate'] = $atts['upload_date'];
+        }
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-video-info">';
+            $output .= '<h3>📹 Thông Tin Video</h3>';
+            $output .= '<div class="kata-video-details">';
+            $output .= '<div class="kata-detail">Tên: <strong>' . esc_html($atts['name']) . '</strong></div>';
+            if (!empty($atts['creator'])) {
+                $output .= '<div class="kata-detail">Tác giả: ' . esc_html($atts['creator']) . '</div>';
+            }
+            if (!empty($atts['duration'])) {
+                $output .= '<div class="kata-detail">Thời lượng: ' . esc_html($atts['duration']) . '</div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render News Article Schema
+     */
+    public function render_newsarticle($atts) {
+        $atts = shortcode_atts(array(
+            'headline' => '',
+            'description' => '',
+            'author' => '',
+            'publisher' => '',
+            'publication_date' => '',
+            'location' => '',
+            'category' => '',
+            'keywords' => '',
+            'image' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_newsarticle');
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'NewsArticle',
+            'headline' => $atts['headline']
+        );
+
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['author'])) {
+            $schema['author'] = array(
+                '@type' => 'Person',
+                'name' => $atts['author']
+            );
+        }
+        if (!empty($atts['publisher'])) {
+            $schema['publisher'] = array(
+                '@type' => 'Organization',
+                'name' => $atts['publisher']
+            );
+        }
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-news-info">';
+            $output .= '<h3>📰 Thông Tin Tin Tức</h3>';
+            $output .= '<div class="kata-news-details">';
+            $output .= '<div class="kata-detail">Tiêu đề: <strong>' . esc_html($atts['headline']) . '</strong></div>';
+            if (!empty($atts['author'])) {
+                $output .= '<div class="kata-detail">Tác giả: ' . esc_html($atts['author']) . '</div>';
+            }
+            if (!empty($atts['publisher'])) {
+                $output .= '<div class="kata-detail">Nhà xuất bản: ' . esc_html($atts['publisher']) . '</div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render Blog Posting Schema
+     */
+    public function render_blogposting($atts) {
+        $atts = shortcode_atts(array(
+            'headline' => '',
+            'description' => '',
+            'author' => '',
+            'publisher' => '',
+            'publication_date' => '',
+            'category' => '',
+            'tags' => '',
+            'word_count' => '',
+            'reading_time' => '',
+            'comment_count' => '',
+            'share_count' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_blogposting');
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'BlogPosting',
+            'headline' => $atts['headline']
+        );
+
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['author'])) {
+            $schema['author'] = array(
+                '@type' => 'Person',
+                'name' => $atts['author']
+            );
+        }
+        if (!empty($atts['publisher'])) {
+            $schema['publisher'] = array(
+                '@type' => 'Organization',
+                'name' => $atts['publisher']
+            );
+        }
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-blog-info">';
+            $output .= '<h3>📝 Thông Tin Blog</h3>';
+            $output .= '<div class="kata-blog-details">';
+            $output .= '<div class="kata-detail">Tiêu đề: <strong>' . esc_html($atts['headline']) . '</strong></div>';
+            if (!empty($atts['author'])) {
+                $output .= '<div class="kata-detail">Tác giả: ' . esc_html($atts['author']) . '</div>';
+            }
+            if (!empty($atts['word_count'])) {
+                $output .= '<div class="kata-detail">Số từ: ' . esc_html($atts['word_count']) . '</div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render Website Schema
+     */
+    public function render_website($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'url' => '',
+            'description' => '',
+            'publisher' => '',
+            'category' => '',
+            'language' => '',
+            'search_action' => '',
+            'search_url' => '',
+            'about' => '',
+            'keywords' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_website');
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            'name' => $atts['name']
+        );
+
+        if (!empty($atts['url'])) {
+            $schema['url'] = $atts['url'];
+        }
+        if (!empty($atts['description'])) {
+            $schema['description'] = $atts['description'];
+        }
+        if (!empty($atts['publisher'])) {
+            $schema['publisher'] = array(
+                '@type' => 'Organization',
+                'name' => $atts['publisher']
+            );
+        }
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-website-info">';
+            $output .= '<h3>🌐 Thông Tin Website</h3>';
+            $output .= '<div class="kata-website-details">';
+            $output .= '<div class="kata-detail">Tên: <strong>' . esc_html($atts['name']) . '</strong></div>';
+            if (!empty($atts['url'])) {
+                $output .= '<div class="kata-detail">URL: <a href="' . esc_url($atts['url']) . '">' . esc_html($atts['url']) . '</a></div>';
+            }
+            if (!empty($atts['description'])) {
+                $output .= '<div class="kata-detail">Mô tả: ' . esc_html($atts['description']) . '</div>';
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render Breadcrumb List Schema
+     */
+    public function render_breadcrumblist($atts) {
+        $atts = shortcode_atts(array(
+            'items' => '',
+            'show_content' => 'true',
+            'show_schema' => 'true'
+        ), $atts, 'kata_breadcrumblist');
+
+        $breadcrumb_items = array();
+        
+        if (!empty($atts['items'])) {
+            $items = explode('|', $atts['items']);
+            foreach ($items as $index => $item) {
+                $parts = explode('>', $item);
+                if (count($parts) >= 2) {
+                    $breadcrumb_items[] = array(
+                        '@type' => 'ListItem',
+                        'position' => $index + 1,
+                        'name' => trim($parts[0]),
+                        'item' => trim($parts[1])
+                    );
+                }
+            }
+        }
+
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => $breadcrumb_items
+        );
+
+        $output = '';
+        
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-breadcrumb-info">';
+            $output .= '<h3>🧭 Breadcrumb Navigation</h3>';
+            $output .= '<div class="kata-breadcrumb-list">';
+            foreach ($breadcrumb_items as $item) {
+                $output .= '<span class="breadcrumb-item">' . esc_html($item['name']) . '</span>';
+                if ($item !== end($breadcrumb_items)) {
+                    $output .= ' > ';
+                }
+            }
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        }
+
         return $output;
     }
 

@@ -118,10 +118,6 @@ class KATA_SEO_Manager {
         // Admin notices
         add_action('admin_notices', array($this, 'show_admin_notices'));
         
-        // Editor integration
-        add_action('media_buttons', array($this, 'add_schema_button'));
-        add_action('admin_footer', array($this, 'add_schema_modal'));
-        
         // Schema output
         add_action('wp_head', array($this, 'output_schema_markup'), 1);
         
@@ -138,6 +134,12 @@ class KATA_SEO_Manager {
         add_action('wp_ajax_nopriv_kata_submit_user_interaction', array($this, 'ajax_submit_user_interaction'));
         add_action('wp_ajax_kata_load_user_interactions', array($this, 'ajax_load_user_interactions'));
         add_action('wp_ajax_nopriv_kata_load_user_interactions', array($this, 'ajax_load_user_interactions'));
+        
+        // Poll AJAX handlers
+        add_action('wp_ajax_kata_submit_poll_vote', array($this, 'ajax_submit_poll_vote'));
+        add_action('wp_ajax_nopriv_kata_submit_poll_vote', array($this, 'ajax_submit_poll_vote'));
+        add_action('wp_ajax_kata_get_poll_results', array($this, 'ajax_get_poll_results'));
+        add_action('wp_ajax_nopriv_kata_get_poll_results', array($this, 'ajax_get_poll_results'));
         
         // Shortcodes
         $this->register_shortcodes();
@@ -334,6 +336,24 @@ class KATA_SEO_Manager {
         
         add_submenu_page(
             'kata-seo-manager',
+            __('Quản lý Poll', 'kata-seo-manager'),
+            __('Quản lý Poll', 'kata-seo-manager'),
+            'manage_options',
+            'kata-seo-poll-management',
+            array($this, 'admin_poll_management_page')
+        );
+        
+        add_submenu_page(
+            'kata-seo-manager',
+            __('Phân tích Poll', 'kata-seo-manager'),
+            __('Phân tích Poll', 'kata-seo-manager'),
+            'manage_options',
+            'kata-seo-poll-analytics',
+            array($this, 'admin_poll_analytics_page')
+        );
+        
+        add_submenu_page(
+            'kata-seo-manager',
             __('Cài đặt', 'kata-seo-manager'),
             __('Cài đặt', 'kata-seo-manager'),
             'manage_options',
@@ -382,6 +402,189 @@ class KATA_SEO_Manager {
      */
     public function admin_user_interactions_page() {
         include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/user-interactions.php';
+    }
+    
+    /**
+     * Poll Management page
+     */
+    public function admin_poll_management_page() {
+        $this->handle_poll_actions();
+        include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/poll-management.php';
+    }
+    
+    /**
+     * Poll Analytics page
+     */
+    public function admin_poll_analytics_page() {
+        include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/poll-analytics.php';
+    }
+    
+    /**
+     * Handle poll management actions
+     */
+    private function handle_poll_actions() {
+        if (!isset($_POST['kata_poll_action']) || !wp_verify_nonce($_POST['_wpnonce'], 'kata_poll_action')) {
+            return;
+        }
+        
+        global $wpdb;
+        $action = sanitize_text_field($_POST['kata_poll_action']);
+        
+        switch ($action) {
+            case 'create':
+                $this->handle_create_poll();
+                break;
+            case 'update':
+                $this->handle_update_poll();
+                break;
+            case 'delete':
+                $this->handle_delete_poll();
+                break;
+            case 'toggle_status':
+                $this->handle_toggle_poll_status();
+                break;
+        }
+    }
+    
+    /**
+     * Handle create poll
+     */
+    private function handle_create_poll() {
+        $title = sanitize_text_field($_POST['poll_title']);
+        $description = sanitize_textarea_field($_POST['poll_description']);
+        $question = sanitize_textarea_field($_POST['poll_question']);
+        $options = array_map('sanitize_text_field', $_POST['poll_options']);
+        $options = array_filter($options); // Remove empty options
+        
+        if (empty($title) || empty($question) || count($options) < 2) {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-error"><p>Vui lòng điền đầy đủ thông tin poll với ít nhất 2 tùy chọn.</p></div>';
+            });
+            return;
+        }
+        
+        global $wpdb;
+        $result = $wpdb->insert(
+            $wpdb->prefix . 'kata_polls',
+            array(
+                'post_id' => 0,
+                'poll_title' => $title,
+                'poll_description' => $description,
+                'poll_question' => $question,
+                'poll_options' => json_encode($options),
+                'total_votes' => 0,
+                'status' => 'active',
+                'show_results' => 'after_vote',
+                'allow_multiple' => 'no',
+                'require_login' => 'no',
+                'created_at' => current_time('mysql'),
+                'updated_at' => current_time('mysql')
+            ),
+            array('%d', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s')
+        );
+        
+        if ($result) {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-success"><p>Poll đã được tạo thành công!</p></div>';
+            });
+        } else {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-error"><p>Lỗi khi tạo poll: ' . $wpdb->last_error . '</p></div>';
+            });
+        }
+    }
+    
+    /**
+     * Handle update poll
+     */
+    private function handle_update_poll() {
+        $poll_id = intval($_POST['poll_id']);
+        $title = sanitize_text_field($_POST['poll_title']);
+        $description = sanitize_textarea_field($_POST['poll_description']);
+        $question = sanitize_textarea_field($_POST['poll_question']);
+        $options = array_map('sanitize_text_field', $_POST['poll_options']);
+        $options = array_filter($options);
+        $status = sanitize_text_field($_POST['poll_status']);
+        
+        if (empty($title) || empty($question) || count($options) < 2) {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-error"><p>Vui lòng điền đầy đủ thông tin poll với ít nhất 2 tùy chọn.</p></div>';
+            });
+            return;
+        }
+        
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'kata_polls',
+            array(
+                'poll_title' => $title,
+                'poll_description' => $description,
+                'poll_question' => $question,
+                'poll_options' => json_encode($options),
+                'status' => $status,
+                'updated_at' => current_time('mysql')
+            ),
+            array('id' => $poll_id),
+            array('%s', '%s', '%s', '%s', '%s', '%s'),
+            array('%d')
+        );
+        
+        if ($result !== false) {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-success"><p>Poll đã được cập nhật thành công!</p></div>';
+            });
+        } else {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-error"><p>Lỗi khi cập nhật poll.</p></div>';
+            });
+        }
+    }
+    
+    /**
+     * Handle delete poll
+     */
+    private function handle_delete_poll() {
+        $poll_id = intval($_POST['poll_id']);
+        
+        global $wpdb;
+        // Delete votes first
+        $wpdb->delete($wpdb->prefix . 'kata_poll_votes', array('poll_id' => $poll_id), array('%d'));
+        // Delete poll
+        $result = $wpdb->delete($wpdb->prefix . 'kata_polls', array('id' => $poll_id), array('%d'));
+        
+        if ($result) {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-success"><p>Poll đã được xóa thành công!</p></div>';
+            });
+        } else {
+            add_action('admin_notices', function() {
+                echo '<div class="notice notice-error"><p>Lỗi khi xóa poll.</p></div>';
+            });
+        }
+    }
+    
+    /**
+     * Handle toggle poll status
+     */
+    private function handle_toggle_poll_status() {
+        $poll_id = intval($_POST['poll_id']);
+        $new_status = sanitize_text_field($_POST['new_status']);
+        
+        global $wpdb;
+        $result = $wpdb->update(
+            $wpdb->prefix . 'kata_polls',
+            array('status' => $new_status, 'updated_at' => current_time('mysql')),
+            array('id' => $poll_id),
+            array('%s', '%s'),
+            array('%d')
+        );
+        
+        if ($result !== false) {
+            add_action('admin_notices', function() use ($new_status) {
+                $status_text = $new_status === 'active' ? 'kích hoạt' : 'tạm dừng';
+                echo '<div class="notice notice-success"><p>Poll đã được ' . $status_text . ' thành công!</p></div>';
+            });
+        }
     }
     
     /**
@@ -527,6 +730,12 @@ class KATA_SEO_Manager {
             'nonce' => wp_create_nonce('kata_seo_manager_nonce')
         ));
         
+        // Localize script for poll functionality (fix kata_ajax undefined error)
+        wp_localize_script('kata-seo-manager-frontend', 'kata_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('kata_poll_nonce')
+        ));
+        
         // Enqueue user interaction assets if needed
         global $post;
         if (is_object($post) && (has_shortcode($post->post_content, 'kata_user_interaction') || 
@@ -601,24 +810,9 @@ class KATA_SEO_Manager {
         }
     }
     
-    /**
-     * Add schema button to editor
-     */
-    public function add_schema_button() {
-        echo '<button type="button" class="button kata-seo-insert-button" id="kata-seo-insert-schema">';
-        echo '<span class="dashicons dashicons-editor-code" style="margin-top: 3px;"></span> ';
-        echo __('Chèn Schema KATA', 'kata-seo-manager');
-        echo '</button>';
-    }
+
     
-    /**
-     * Add schema modal
-     */
-    public function add_schema_modal() {
-        // Make schema types available to modal
-        $schema_types = $this->get_schema_types();
-        include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/modal-schema.php';
-    }
+
     
     /**
      * Output schema markup
@@ -2479,12 +2673,95 @@ class KATA_SEO_Manager {
 
     public function render_poll($atts, $content = null) {
         $atts = shortcode_atts(array(
+            'id' => '',
             'title' => 'Bình Chọn',
             'description' => '',
             'style' => 'default',
             'show_results' => 'false'
         ), $atts, 'kata_poll');
         
+        // If poll ID is provided, get from database
+        if (!empty($atts['id'])) {
+            global $wpdb;
+            $poll = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM {$wpdb->prefix}kata_polls WHERE id = %d",
+                $atts['id']
+            ));
+            
+            if (!$poll) {
+                return '<div class="kata-poll-empty">Không tìm thấy cuộc bình chọn.</div>';
+            }
+            
+            $options = !empty($poll->poll_options) ? json_decode($poll->poll_options, true) : array();
+            $poll_id = 'kata-poll-' . $poll->id;
+            
+            // Get current vote counts
+            $vote_counts = $wpdb->get_results($wpdb->prepare(
+                "SELECT option_index, COUNT(*) as count FROM {$wpdb->prefix}kata_poll_votes WHERE poll_id = %d GROUP BY option_index",
+                $poll->id
+            ), OBJECT_K);
+            
+            $total_votes = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->prefix}kata_poll_votes WHERE poll_id = %d",
+                $poll->id
+            ));
+            
+            $output = '<div id="' . $poll_id . '" class="kata-poll-container kata-poll-' . esc_attr($atts['style']) . '" data-poll-id="' . $poll->id . '">';
+            $output .= '<h3 class="kata-poll-title">' . esc_html($poll->poll_title) . '</h3>';
+            
+            if (!empty($poll->poll_description)) {
+                $output .= '<p class="kata-poll-description">' . esc_html($poll->poll_description) . '</p>';
+            }
+            
+            // Check if user has already voted
+            $user_ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+            $user_id = get_current_user_id();
+            
+            $has_voted = $wpdb->get_var($wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->prefix}kata_poll_votes WHERE poll_id = %d AND (voter_user_id = %d OR voter_ip = %s)",
+                $poll->id, $user_id, $user_ip
+            ));
+            
+            if ($has_voted > 0 || $atts['show_results'] === 'true') {
+                // Show results
+                $output .= '<div class="kata-poll-results">';
+                foreach ($options as $index => $option) {
+                    $votes = isset($vote_counts[$index]) ? $vote_counts[$index]->count : 0;
+                    $percentage = $total_votes > 0 ? round(($votes / $total_votes) * 100, 1) : 0;
+                    
+                    $output .= '<div class="kata-poll-result-item">';
+                    $output .= '<span class="kata-poll-option-text">' . esc_html($option) . '</span>';
+                    $output .= '<span class="kata-poll-votes">(' . $votes . ' phiếu)</span>';
+                    $output .= '<div class="kata-poll-progress-bar">';
+                    $output .= '<div class="kata-poll-progress" style="width: ' . $percentage . '%"></div>';
+                    $output .= '</div>';
+                    $output .= '<span class="kata-poll-percentage">' . $percentage . '%</span>';
+                    $output .= '</div>';
+                }
+                $output .= '<p class="kata-poll-total">Tổng số phiếu: ' . $total_votes . '</p>';
+                $output .= '</div>';
+            } else {
+                // Show voting form
+                $output .= '<form class="kata-poll-form">';
+                foreach ($options as $index => $option) {
+                    $input_id = $poll_id . '-opt' . $index;
+                    $output .= '<label for="' . $input_id . '" class="kata-poll-option">';
+                    $output .= '<input type="radio" id="' . $input_id . '" name="poll_option" value="' . $index . '">';
+                    $output .= '<span>' . esc_html($option) . '</span>';
+                    $output .= '</label>';
+                }
+                
+                $output .= '<button type="button" class="kata-poll-submit" onclick="kataSubmitPoll(\'' . $poll_id . '\')">Bình Chọn</button>';
+                $output .= '<div class="kata-poll-results" style="display:none;"></div>';
+                $output .= '</form>';
+            }
+            
+            $output .= '</div>';
+            
+            return $output;
+        }
+        
+        // Original shortcode-based poll
         if (empty($content)) {
             return '<div class="kata-poll-empty">Không có tùy chọn bình chọn nào được tìm thấy.</div>';
         }
@@ -4968,6 +5245,129 @@ class KATA_SEO_Manager {
             'page' => $page,
             'per_page' => $per_page,
             'total_pages' => ceil($total / $per_page)
+        ));
+    }
+
+    /**
+     * Submit poll vote
+     */
+    public function ajax_submit_poll_vote() {
+        $poll_id = intval($_POST['poll_id']);
+        $option_value = intval($_POST['option_value']);
+        
+        if (!$poll_id || !isset($_POST['option_value'])) {
+            wp_send_json_error('Dữ liệu không hợp lệ.');
+        }
+        
+        global $wpdb;
+        
+        // Check if poll exists
+        $poll = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_polls WHERE id = %d",
+            $poll_id
+        ));
+        
+        if (!$poll) {
+            wp_send_json_error('Không tìm thấy cuộc bình chọn.');
+        }
+        
+        // Check if user already voted
+        $user_ip = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1';
+        $user_id = get_current_user_id();
+        
+        $existing_vote = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}kata_poll_votes WHERE poll_id = %d AND (voter_user_id = %d OR voter_ip = %s)",
+            $poll_id, $user_id, $user_ip
+        ));
+        
+        if ($existing_vote > 0) {
+            wp_send_json_error('Bạn đã bình chọn cho cuộc thăm dò này rồi.');
+        }
+        
+        // Get option text from poll options
+        $poll_options = json_decode($poll->poll_options, true);
+        $option_text = isset($poll_options[$option_value]) ? $poll_options[$option_value] : '';
+        
+        // Insert vote
+        $result = $wpdb->insert(
+            $wpdb->prefix . 'kata_poll_votes',
+            array(
+                'poll_id' => $poll_id,
+                'voter_user_id' => $user_id > 0 ? $user_id : null,
+                'option_index' => $option_value,
+                'option_text' => $option_text,
+                'voter_ip' => $user_ip,
+                'user_agent' => isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : 'Unknown',
+                'voted_at' => current_time('mysql')
+            ),
+            array('%d', '%d', '%d', '%s', '%s', '%s', '%s')
+        );
+        
+        if ($result === false) {
+            wp_send_json_error('Không thể lưu phiếu bình chọn.');
+        }
+        
+        // Update total votes count in poll table
+        $wpdb->query($wpdb->prepare(
+            "UPDATE {$wpdb->prefix}kata_polls SET total_votes = (
+                SELECT COUNT(*) FROM {$wpdb->prefix}kata_poll_votes WHERE poll_id = %d
+            ) WHERE id = %d",
+            $poll_id, $poll_id
+        ));
+        
+        wp_send_json_success(array('message' => 'Cảm ơn bạn đã bình chọn!'));
+    }
+    
+    /**
+     * Get poll results
+     */
+    public function ajax_get_poll_results() {
+        $poll_id = intval($_POST['poll_id']);
+        
+        if (!$poll_id) {
+            wp_send_json_error('ID cuộc bình chọn không hợp lệ.');
+        }
+        
+        global $wpdb;
+        
+        // Get poll details
+        $poll = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_polls WHERE id = %d",
+            $poll_id
+        ));
+        
+        if (!$poll) {
+            wp_send_json_error('Không tìm thấy cuộc bình chọn.');
+        }
+        
+        $options = json_decode($poll->poll_options, true);
+        
+        // Get vote counts
+        $vote_counts = $wpdb->get_results($wpdb->prepare(
+            "SELECT option_index, COUNT(*) as count FROM {$wpdb->prefix}kata_poll_votes WHERE poll_id = %d GROUP BY option_index",
+            $poll_id
+        ), OBJECT_K);
+        
+        $total_votes = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}kata_poll_votes WHERE poll_id = %d",
+            $poll_id
+        ));
+        
+        $results = array();
+        foreach ($options as $index => $option) {
+            $votes = isset($vote_counts[$index]) ? $vote_counts[$index]->count : 0;
+            $percentage = $total_votes > 0 ? round(($votes / $total_votes) * 100, 1) : 0;
+            
+            $results[] = array(
+                'option' => $option,
+                'votes' => intval($votes),
+                'percentage' => $percentage
+            );
+        }
+        
+        wp_send_json_success(array(
+            'results' => $results,
+            'total_votes' => intval($total_votes)
         ));
     }
 

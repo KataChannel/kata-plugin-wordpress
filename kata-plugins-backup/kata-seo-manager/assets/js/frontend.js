@@ -450,4 +450,109 @@
     
     document.head.insertAdjacentHTML('beforeend', styles);
     
+    // Poll Functions
+    window.kataSubmitPoll = function(pollId) {
+        var container = document.getElementById(pollId);
+        if (!container) return;
+        
+        var form = container.querySelector('.kata-poll-form');
+        var selected = form.querySelector('input[type="radio"]:checked');
+        
+        if (!selected) {
+            alert('Vui lòng chọn một tùy chọn.');
+            return;
+        }
+        
+        var submitButton = form.querySelector('.kata-poll-submit');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Đang xử lý...';
+        
+        var pollIdFromData = container.getAttribute('data-poll-id');
+        if (!pollIdFromData) {
+            alert('Lỗi: Không tìm thấy ID cuộc bình chọn.');
+            submitButton.disabled = false;
+            submitButton.textContent = 'Bình Chọn';
+            return;
+        }
+        
+        var formData = new FormData();
+        formData.append('action', 'kata_submit_poll_vote');
+        formData.append('poll_id', pollIdFromData);
+        formData.append('option_value', selected.value);
+        
+        fetch(kata_ajax.ajax_url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Hide form and show results
+                form.style.display = 'none';
+                kataLoadPollResults(pollId, pollIdFromData);
+                
+                // Show success message
+                var message = document.createElement('div');
+                message.className = 'kata-poll-success';
+                message.innerHTML = '<p style="color: green; font-weight: bold;">' + data.data.message + '</p>';
+                container.insertBefore(message, container.querySelector('.kata-poll-results'));
+            } else {
+                alert('Lỗi: ' + data.data);
+                submitButton.disabled = false;
+                submitButton.textContent = 'Bình Chọn';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi gửi phiếu bình chọn.');
+            submitButton.disabled = false;
+            submitButton.textContent = 'Bình Chọn';
+        });
+    };
+    
+    window.kataLoadPollResults = function(pollId, pollIdFromData) {
+        var container = document.getElementById(pollId);
+        if (!container) return;
+        
+        var resultsDiv = container.querySelector('.kata-poll-results');
+        if (!resultsDiv) return;
+        
+        var formData = new FormData();
+        formData.append('action', 'kata_get_poll_results');
+        formData.append('poll_id', pollIdFromData);
+        
+        fetch(kata_ajax.ajax_url, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                var results = data.data.results;
+                var totalVotes = data.data.total_votes;
+                
+                var html = '<h4>Kết Quả Bình Chọn</h4>';
+                results.forEach(function(result) {
+                    html += '<div class="kata-poll-result-item">';
+                    html += '<span class="kata-poll-option-text">' + result.option + '</span>';
+                    html += '<span class="kata-poll-votes">(' + result.votes + ' phiếu)</span>';
+                    html += '<div class="kata-poll-progress-bar">';
+                    html += '<div class="kata-poll-progress" style="width: ' + result.percentage + '%"></div>';
+                    html += '</div>';
+                    html += '<span class="kata-poll-percentage">' + result.percentage + '%</span>';
+                    html += '</div>';
+                });
+                html += '<p class="kata-poll-total">Tổng số phiếu: ' + totalVotes + '</p>';
+                
+                resultsDiv.innerHTML = html;
+                resultsDiv.style.display = 'block';
+            } else {
+                console.error('Error loading poll results:', data.data);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    };
+    
 })();

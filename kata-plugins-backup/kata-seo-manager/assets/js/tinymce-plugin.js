@@ -113,22 +113,22 @@
                 `
             },
 
-            review: {
-                title: '⭐ Review Schema',
-                shortcode: '[kata_review name="Đánh giá MacBook Pro M3" item_name="MacBook Pro 14 inch M3" item_type="Product" rating_value="4.5" review_body="Laptop có hiệu suất mạnh mẽ, thiết kế đẹp và thời lượng pin ấn tượng. Rất phù hợp cho công việc đồ họa và lập trình." author="Tech Reviewer"]',
-                preview: `
-                    <div class="kata-preview-box">
-                        <h4>⭐ Review Schema sẽ tạo:</h4>
-                        <div class="review-preview">
-                            <h3>Đánh giá MacBook Pro M3</h3>
-                            <p>⭐⭐⭐⭐⭐ 4.5/5 bởi Tech Reviewer</p>
-                            <p><strong>Sản phẩm:</strong> MacBook Pro 14 inch M3</p>
-                            <p>Laptop có hiệu suất mạnh mẽ, thiết kế đẹp...</p>
-                        </div>
-                        <small>✅ Rich snippets đánh giá với rating</small>
-                    </div>
-                `
-            },
+            // review: {
+            //     title: '⭐ Review Schema',
+            //     shortcode: '[kata_review name="Đánh giá MacBook Pro M3" item_name="MacBook Pro 14 inch M3" item_type="Product" rating_value="4.5" review_body="Laptop có hiệu suất mạnh mẽ, thiết kế đẹp và thời lượng pin ấn tượng. Rất phù hợp cho công việc đồ họa và lập trình." author="Tech Reviewer"]',
+            //     preview: `
+            //         <div class="kata-preview-box">
+            //             <h4>⭐ Review Schema sẽ tạo:</h4>
+            //             <div class="review-preview">
+            //                 <h3>Đánh giá MacBook Pro M3</h3>
+            //                 <p>⭐⭐⭐⭐⭐ 4.5/5 bởi Tech Reviewer</p>
+            //                 <p><strong>Sản phẩm:</strong> MacBook Pro 14 inch M3</p>
+            //                 <p>Laptop có hiệu suất mạnh mẽ, thiết kế đẹp...</p>
+            //             </div>
+            //             <small>✅ Rich snippets đánh giá với rating</small>
+            //         </div>
+            //     `
+            // },
 
             quiz: {
                 title: '🎯 Quiz Tương Tác',
@@ -163,21 +163,16 @@
             },
 
             poll: {
-                title: '📊 Bình Chọn',
-                shortcode: `[kata_poll question="Tính năng KATA SEO Manager nào bạn thích nhất?"]
-[kata_poll_option]26 loại Schema markup[/kata_poll_option]
-[kata_poll_option]Editor buttons tiện lợi[/kata_poll_option]
-[kata_poll_option]Analytics dashboard[/kata_poll_option]
-[kata_poll_option]Tích hợp Gutenberg[/kata_poll_option]
-[kata_poll_option]Tối ưu performance[/kata_poll_option]
-[/kata_poll]`,
+                title: '📊 Bình Chọn Database',
+                shortcode: `[kata_poll id="1"]`,
                 preview: `
                     <div class="kata-preview-box">
-                        <h4>📊 Poll: "Tính năng yêu thích nhất?"</h4>
-                        <p>📝 5 lựa chọn voting</p>
-                        <p>📈 Kết quả real-time</p>
-                        <p>📊 Biểu đồ % cho từng option</p>
-                        <small>✅ Thu thập feedback từ audience</small>
+                        <h4>📊 Poll Database: "Tính năng yêu thích nhất?"</h4>
+                        <p>�️ Bình chọn một lần mỗi IP/user</p>
+                        <p>� Hiển thị kết quả real-time với thanh tiến trình</p>
+                        <p>� Lưu trữ trong database với analytics</p>
+                        <p>🎨 Giao diện đẹp và responsive</p>
+                        <small>✅ Sử dụng poll có sẵn trong database (ID=1 hoặc ID=2)</small>
                     </div>
                 `
             },
@@ -198,6 +193,24 @@
                         <p>📧 Auto-response email</p>
                         <p>📊 Lead tracking trong admin</p>
                         <small>✅ Thu thập leads chất lượng cao</small>
+                    </div>
+                `
+            },
+
+            user_interaction: {
+                title: '💬 User Interaction (Reviews & Ratings)',
+                shortcode: `[kata_user_interaction type="all" show_form="true" show_list="true" show_ratings="true" style="card" title="Đánh giá & Bình luận" items_per_page="5"]`,
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>💬 User Interaction: "Đánh giá & Bình luận"</h4>
+                        <p>⭐ Hệ thống rating đa tiêu chí (1-5 sao)</p>
+                        <p>📝 Form đánh giá với title, content, pros/cons</p>
+                        <p>💬 Comments và reply system</p>
+                        <p>👨‍💼 Admin moderation & approval workflow</p>
+                        <p>📊 Statistics dashboard & analytics</p>
+                        <p>🎨 3 style options: default, card, minimal</p>
+                        <p>📱 Responsive design với AJAX loading</p>
+                        <small>✅ Thu thập feedback từ users với database storage</small>
                     </div>
                 `
             },

@@ -269,6 +269,110 @@ class KATA_SEO_Database {
             UNIQUE KEY quiz_period (quiz_id, period, period_start)
         ) $charset_collate;";
         dbDelta($sql_quiz_trends);
+
+        // Table 13: Kata Wheels - Store wheel configurations
+        $table_wheels = $wpdb->prefix . 'kata_wheels';
+        $sql_wheels = "CREATE TABLE IF NOT EXISTS $table_wheels (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            wheel_title varchar(500) NOT NULL,
+            wheel_description text DEFAULT NULL,
+            requirement enum('none', 'email', 'phone', 'both') DEFAULT 'email',
+            max_spins_per_user int(11) DEFAULT 1,
+            max_spins_per_day int(11) DEFAULT 1,
+            start_date datetime DEFAULT NULL,
+            end_date datetime DEFAULT NULL,
+            status enum('active', 'inactive', 'scheduled', 'expired') DEFAULT 'active',
+            total_spins int(11) DEFAULT 0,
+            total_prizes_won int(11) DEFAULT 0,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY status (status),
+            KEY created_at (created_at)
+        ) $charset_collate;";
+        dbDelta($sql_wheels);
+
+        // Table 14: Kata Wheel Prizes - Store prize configurations for each wheel
+        $table_wheel_prizes = $wpdb->prefix . 'kata_wheel_prizes';
+        $sql_wheel_prizes = "CREATE TABLE IF NOT EXISTS $table_wheel_prizes (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            wheel_id bigint(20) NOT NULL,
+            prize_text varchar(255) NOT NULL,
+            prize_value varchar(255) DEFAULT NULL,
+            prize_type enum('discount', 'gift', 'service', 'retry', 'nothing', 'custom') DEFAULT 'discount',
+            probability decimal(5,2) DEFAULT 0.00,
+            color varchar(20) DEFAULT '#ff6b6b',
+            total_available int(11) DEFAULT -1,
+            total_won int(11) DEFAULT 0,
+            is_active tinyint(1) DEFAULT 1,
+            position_order int(11) DEFAULT 0,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY wheel_id (wheel_id),
+            KEY is_active (is_active)
+        ) $charset_collate;";
+        dbDelta($sql_wheel_prizes);
+
+        // Table 15: Kata Wheel Spins - Store spin history and results
+        $table_wheel_spins = $wpdb->prefix . 'kata_wheel_spins';
+        $sql_wheel_spins = "CREATE TABLE IF NOT EXISTS $table_wheel_spins (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            wheel_id bigint(20) NOT NULL,
+            prize_id bigint(20) DEFAULT NULL,
+            user_id bigint(20) DEFAULT NULL,
+            user_email varchar(255) DEFAULT NULL,
+            user_phone varchar(50) DEFAULT NULL,
+            user_name varchar(255) DEFAULT NULL,
+            user_ip varchar(45) DEFAULT NULL,
+            user_agent text DEFAULT NULL,
+            prize_text varchar(255) DEFAULT NULL,
+            prize_type varchar(50) DEFAULT NULL,
+            prize_value varchar(255) DEFAULT NULL,
+            is_claimed tinyint(1) DEFAULT 0,
+            claimed_at datetime DEFAULT NULL,
+            referrer varchar(500) DEFAULT NULL,
+            utm_source varchar(100) DEFAULT NULL,
+            utm_medium varchar(100) DEFAULT NULL,
+            utm_campaign varchar(100) DEFAULT NULL,
+            device_type varchar(50) DEFAULT NULL,
+            browser varchar(100) DEFAULT NULL,
+            country varchar(100) DEFAULT NULL,
+            city varchar(100) DEFAULT NULL,
+            spin_date datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY wheel_id (wheel_id),
+            KEY prize_id (prize_id),
+            KEY user_id (user_id),
+            KEY user_email (user_email),
+            KEY user_ip (user_ip),
+            KEY spin_date (spin_date),
+            KEY created_at (created_at)
+        ) $charset_collate;";
+        dbDelta($sql_wheel_spins);
+
+        // Table 16: Kata Wheel Analytics - Daily aggregated statistics
+        $table_wheel_analytics = $wpdb->prefix . 'kata_wheel_analytics';
+        $sql_wheel_analytics = "CREATE TABLE IF NOT EXISTS $table_wheel_analytics (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            wheel_id bigint(20) NOT NULL,
+            date date NOT NULL,
+            total_views int(11) DEFAULT 0,
+            total_spins int(11) DEFAULT 0,
+            total_prizes_won int(11) DEFAULT 0,
+            total_emails_collected int(11) DEFAULT 0,
+            total_phones_collected int(11) DEFAULT 0,
+            unique_users int(11) DEFAULT 0,
+            conversion_rate decimal(5,2) DEFAULT 0.00,
+            avg_spins_per_user decimal(5,2) DEFAULT 0.00,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY wheel_id (wheel_id),
+            KEY date (date),
+            UNIQUE KEY wheel_date (wheel_id, date)
+        ) $charset_collate;";
+        dbDelta($sql_wheel_analytics);
         
         // Insert default templates
         $this->insert_default_templates();

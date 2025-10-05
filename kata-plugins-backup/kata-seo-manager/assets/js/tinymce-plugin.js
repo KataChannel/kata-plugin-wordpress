@@ -237,19 +237,19 @@
                 `
             },
 
-            rating: {
-                title: '⭐ Đánh Giá',
-                shortcode: `[kata_rating item_name="KATA SEO Manager Plugin" rating="4.9" review_count="247" review_text="Plugin SEO tuyệt vời! Hỗ trợ 26 loại Schema, dễ sử dụng, tích hợp mượt mà với WordPress. Highly recommended!"]`,
-                preview: `
-                    <div class="kata-preview-box">
-                        <h4>⭐ Rating: "KATA SEO Manager Plugin"</h4>
-                        <p>🌟 4.9/5 sao (247 đánh giá)</p>
-                        <p>📝 Review: "Plugin SEO tuyệt vời!..."</p>
-                        <p>🔍 Rich snippets trên Google</p>
-                        <small>✅ Tăng CTR và trust của người dùng</small>
-                    </div>
-                `
-            },
+            // rating: {
+            //     title: '⭐ Đánh Giá',
+            //     shortcode: `[kata_rating item_name="KATA SEO Manager Plugin" rating="4.9" review_count="247" review_text="Plugin SEO tuyệt vời! Hỗ trợ 26 loại Schema, dễ sử dụng, tích hợp mượt mà với WordPress. Highly recommended!"]`,
+            //     preview: `
+            //         <div class="kata-preview-box">
+            //             <h4>⭐ Rating: "KATA SEO Manager Plugin"</h4>
+            //             <p>🌟 4.9/5 sao (247 đánh giá)</p>
+            //             <p>📝 Review: "Plugin SEO tuyệt vời!..."</p>
+            //             <p>🔍 Rich snippets trên Google</p>
+            //             <small>✅ Tăng CTR và trust của người dùng</small>
+            //         </div>
+            //     `
+            // },
 
             product: {
                 title: '🛒 Sản Phẩm',
@@ -573,59 +573,59 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
         });
 
         // Tạo menu dropdown phụ cho quick access
-        editor.addButton('kata_seo_quick', {
-            title: 'KATA Quick Schema',
-            type: 'menubutton', 
-            icon: 'dashicon dashicons-performance',
-            menu: Object.keys(templates).slice(0, 6).map(key => ({
-                text: templates[key].title,
-                onclick: function() {
-                    // Chèn shortcode vào editor
-                    editor.insertContent('\n' + templates[key].shortcode + '\n');
+        // editor.addButton('kata_seo_quick', {
+        //     title: 'KATA Quick Schema',
+        //     type: 'menubutton', 
+        //     icon: 'dashicon dashicons-performance',
+        //     menu: Object.keys(templates).slice(0, 6).map(key => ({
+        //         text: templates[key].title,
+        //         onclick: function() {
+        //             // Chèn shortcode vào editor
+        //             editor.insertContent('\n' + templates[key].shortcode + '\n');
                     
-                    // Hiển thị dialog preview
-                    editor.windowManager.open({
-                        title: templates[key].title + ' - Đã Thêm Thành Công!',
-                        width: 500,
-                        height: 400,
-                        body: [
-                            {
-                                type: 'container',
-                                html: `
-                                    <div style="padding: 20px; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;">
-                                        <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; padding: 15px; margin-bottom: 15px;">
-                                            <h3 style="color: #155724; margin: 0 0 10px 0;">✅ Đã thêm thành công!</h3>
-                                            <p style="margin: 0; color: #155724;">Shortcode đã được chèn vào editor với dữ liệu mẫu.</p>
-                                        </div>
-                                        ${templates[key].preview}
-                                        <div style="background: #e2e3e5; border-radius: 5px; padding: 10px; margin-top: 15px;">
-                                            <p style="margin: 0; font-size: 12px; color: #6c757d;">
-                                                💡 <strong>Tip:</strong> Bạn có thể chỉnh sửa nội dung trực tiếp trong editor. 
-                                                Schema JSON-LD sẽ tự động được tạo khi publish bài viết.
-                                            </p>
-                                        </div>
-                                    </div>
-                                `
-                            }
-                        ],
-                        buttons: [
-                            {
-                                text: 'Xem Analytics',
-                                onclick: function() {
-                                    window.open(ajaxurl.replace('/admin-ajax.php', '/admin.php?page=kata-seo-manager'), '_blank');
-                                    this.parent().close();
-                                }
-                            },
-                            {
-                                text: 'OK',
-                                onclick: 'close',
-                                primary: true
-                            }
-                        ]
-                    });
-                }
-            }))
-        });
+        //             // Hiển thị dialog preview
+        //             editor.windowManager.open({
+        //                 title: templates[key].title + ' - Đã Thêm Thành Công!',
+        //                 width: 500,
+        //                 height: 400,
+        //                 body: [
+        //                     {
+        //                         type: 'container',
+        //                         html: `
+        //                             <div style="padding: 20px; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;">
+        //                                 <div style="background: #d4edda; border: 1px solid #c3e6cb; border-radius: 5px; padding: 15px; margin-bottom: 15px;">
+        //                                     <h3 style="color: #155724; margin: 0 0 10px 0;">✅ Đã thêm thành công!</h3>
+        //                                     <p style="margin: 0; color: #155724;">Shortcode đã được chèn vào editor với dữ liệu mẫu.</p>
+        //                                 </div>
+        //                                 ${templates[key].preview}
+        //                                 <div style="background: #e2e3e5; border-radius: 5px; padding: 10px; margin-top: 15px;">
+        //                                     <p style="margin: 0; font-size: 12px; color: #6c757d;">
+        //                                         💡 <strong>Tip:</strong> Bạn có thể chỉnh sửa nội dung trực tiếp trong editor. 
+        //                                         Schema JSON-LD sẽ tự động được tạo khi publish bài viết.
+        //                                     </p>
+        //                                 </div>
+        //                             </div>
+        //                         `
+        //                     }
+        //                 ],
+        //                 buttons: [
+        //                     {
+        //                         text: 'Xem Analytics',
+        //                         onclick: function() {
+        //                             window.open(ajaxurl.replace('/admin-ajax.php', '/admin.php?page=kata-seo-manager'), '_blank');
+        //                             this.parent().close();
+        //                         }
+        //                     },
+        //                     {
+        //                         text: 'OK',
+        //                         onclick: 'close',
+        //                         primary: true
+        //                     }
+        //                 ]
+        //             });
+        //         }
+        //     }))
+        // });
 
         // Ensure toolbar is visible after init
         editor.on('init', function() {

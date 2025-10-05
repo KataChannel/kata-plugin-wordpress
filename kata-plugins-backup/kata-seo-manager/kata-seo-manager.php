@@ -141,8 +141,16 @@ class KATA_SEO_Manager {
         add_action('wp_ajax_kata_get_poll_results', array($this, 'ajax_get_poll_results'));
         add_action('wp_ajax_nopriv_kata_get_poll_results', array($this, 'ajax_get_poll_results'));
         
-        // Shortcodes
-        $this->register_shortcodes();
+        // Wheel AJAX handlers
+        add_action('wp_ajax_kata_get_wheel_data', array($this, 'ajax_get_wheel_data'));
+        add_action('wp_ajax_nopriv_kata_get_wheel_data', array($this, 'ajax_get_wheel_data'));
+        add_action('wp_ajax_kata_spin_wheel', array($this, 'ajax_spin_wheel'));
+        add_action('wp_ajax_nopriv_kata_spin_wheel', array($this, 'ajax_spin_wheel'));
+        add_action('wp_ajax_kata_check_wheel_eligibility', array($this, 'ajax_check_wheel_eligibility'));
+        add_action('wp_ajax_nopriv_kata_check_wheel_eligibility', array($this, 'ajax_check_wheel_eligibility'));
+        
+        // Shortcodes - need to be registered on init
+        add_action('init', array($this, 'register_shortcodes'));
         
         // TinyMCE Integration
         add_filter('mce_buttons', array($this, 'register_tinymce_button'));
@@ -267,6 +275,128 @@ class KATA_SEO_Manager {
     }
     
     /**
+     * Enqueue admin scripts and styles
+     */
+    public function enqueue_admin_scripts($hook) {
+        // Only load on plugin pages
+        if (strpos($hook, 'kata-seo') === false) {
+            return;
+        }
+        
+        $plugin_url = plugin_dir_url(__FILE__);
+        $version = KATA_SEO_MANAGER_VERSION;
+        
+        // Admin CSS
+        wp_enqueue_style(
+            'kata-seo-admin',
+            $plugin_url . 'assets/css/admin.css',
+            array(),
+            $version
+        );
+        
+        // Admin JS
+        wp_enqueue_script(
+            'kata-seo-admin',
+            $plugin_url . 'assets/js/admin.js',
+            array('jquery', 'wp-color-picker'),
+            $version,
+            true
+        );
+        
+        // Localize script for AJAX
+        wp_localize_script('kata-seo-admin', 'kata_ajax', array(
+            'url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('kata_ajax_nonce'),
+            'plugin_url' => $plugin_url
+        ));
+        
+        // Color picker
+        wp_enqueue_style('wp-color-picker');
+    }
+    
+    /**
+     * Enqueue frontend scripts and styles
+     */
+    public function enqueue_frontend_scripts() {
+        $plugin_url = plugin_dir_url(__FILE__);
+        $version = KATA_SEO_MANAGER_VERSION;
+        
+        // Main frontend CSS
+        wp_enqueue_style(
+            'kata-seo-frontend',
+            $plugin_url . 'assets/css/frontend.css',
+            array(),
+            $version
+        );
+        
+        // Main frontend JS
+        wp_enqueue_script(
+            'kata-seo-frontend',
+            $plugin_url . 'assets/js/frontend.js',
+            array('jquery'),
+            $version,
+            true
+        );
+        
+        // Wheel CSS (conditional loading)
+        if (has_shortcode(get_post()->post_content ?? '', 'kata_wheel') || 
+            is_admin() || 
+            wp_doing_ajax()) {
+            wp_enqueue_style(
+                'kata-wheel-frontend',
+                $plugin_url . 'assets/css/wheel-frontend.css',
+                array('kata-seo-frontend'),
+                $version
+            );
+            
+            wp_enqueue_script(
+                'kata-wheel-frontend',
+                $plugin_url . 'assets/js/wheel-frontend.js',
+                array('jquery', 'kata-seo-frontend'),
+                $version,
+                true
+            );
+        }
+        
+        // Poll CSS (conditional loading)
+        if (has_shortcode(get_post()->post_content ?? '', 'kata_poll') || 
+            is_admin() || 
+            wp_doing_ajax()) {
+            wp_enqueue_style(
+                'kata-poll-frontend',
+                $plugin_url . 'assets/css/poll-frontend.css',
+                array('kata-seo-frontend'),
+                $version
+            );
+            
+            wp_enqueue_script(
+                'kata-poll-frontend',
+                $plugin_url . 'assets/js/poll-frontend.js',
+                array('jquery', 'kata-seo-frontend'),
+                $version,
+                true
+            );
+        }
+        
+        // Schema CSS
+        wp_enqueue_style(
+            'kata-schema-frontend',
+            $plugin_url . 'assets/css/schema-frontend.css',
+            array('kata-seo-frontend'),
+            $version
+        );
+        
+        // Localize script for AJAX
+        wp_localize_script('kata-seo-frontend', 'kata_ajax', array(
+            'url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('kata_ajax_nonce'),
+            'plugin_url' => $plugin_url,
+            'is_user_logged_in' => is_user_logged_in(),
+            'current_user_id' => get_current_user_id()
+        ));
+    }
+    
+    /**
      * Add admin menu
      */
     public function add_admin_menu() {
@@ -354,6 +484,24 @@ class KATA_SEO_Manager {
         
         add_submenu_page(
             'kata-seo-manager',
+            __('Quản lý Vòng Quay', 'kata-seo-manager'),
+            __('Quản lý Vòng Quay', 'kata-seo-manager'),
+            'manage_options',
+            'kata-seo-wheel-management',
+            array($this, 'admin_wheel_management_page')
+        );
+        
+        add_submenu_page(
+            'kata-seo-manager',
+            __('Phân tích Vòng Quay', 'kata-seo-manager'),
+            __('Phân tích Vòng Quay', 'kata-seo-manager'),
+            'manage_options',
+            'kata-seo-wheel-analytics',
+            array($this, 'admin_wheel_analytics_page')
+        );
+        
+        add_submenu_page(
+            'kata-seo-manager',
             __('Cài đặt', 'kata-seo-manager'),
             __('Cài đặt', 'kata-seo-manager'),
             'manage_options',
@@ -417,6 +565,208 @@ class KATA_SEO_Manager {
      */
     public function admin_poll_analytics_page() {
         include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/poll-analytics.php';
+    }
+    
+    /**
+     * Wheel Management page
+     */
+    public function admin_wheel_management_page() {
+        $this->handle_wheel_actions();
+        include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/wheel-management.php';
+    }
+    
+    /**
+     * Wheel Analytics page
+     */
+    public function admin_wheel_analytics_page() {
+        include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/wheel-analytics.php';
+    }
+    
+    /**
+     * Handle wheel management actions
+     */
+    private function handle_wheel_actions() {
+        if (!isset($_POST['kata_wheel_action']) || !wp_verify_nonce($_POST['_wpnonce'], 'kata_wheel_action')) {
+            return;
+        }
+        
+        global $wpdb;
+        $action = sanitize_text_field($_POST['kata_wheel_action']);
+        
+        switch ($action) {
+            case 'create':
+                $this->handle_create_wheel();
+                break;
+            case 'update':
+                $this->handle_update_wheel();
+                break;
+            case 'delete':
+                $this->handle_delete_wheel();
+                break;
+            case 'toggle_status':
+                $this->handle_toggle_wheel_status();
+                break;
+        }
+    }
+    
+    /**
+     * Handle create wheel
+     */
+    private function handle_create_wheel() {
+        global $wpdb;
+        
+        $wheel_title = sanitize_text_field($_POST['wheel_title']);
+        $wheel_description = sanitize_textarea_field($_POST['wheel_description'] ?? '');
+        $requirement = sanitize_text_field($_POST['requirement'] ?? 'email');
+        $max_spins_per_user = intval($_POST['max_spins_per_user'] ?? 1);
+        $max_spins_per_day = intval($_POST['max_spins_per_day'] ?? 1);
+        
+        // Insert wheel
+        $result = $wpdb->insert(
+            $wpdb->prefix . 'kata_wheels',
+            array(
+                'wheel_title' => $wheel_title,
+                'wheel_description' => $wheel_description,
+                'requirement' => $requirement,
+                'max_spins_per_user' => $max_spins_per_user,
+                'max_spins_per_day' => $max_spins_per_day,
+                'status' => 'active'
+            ),
+            array('%s', '%s', '%s', '%d', '%d', '%s')
+        );
+        
+        if ($result) {
+            $wheel_id = $wpdb->insert_id;
+            
+            // Insert prizes
+            if (!empty($_POST['prize_texts'])) {
+                $prize_texts = $_POST['prize_texts'];
+                $prize_values = $_POST['prize_values'] ?? array();
+                $prize_types = $_POST['prize_types'] ?? array();
+                $probabilities = $_POST['probabilities'] ?? array();
+                $colors = $_POST['colors'] ?? array();
+                
+                foreach ($prize_texts as $index => $text) {
+                    if (!empty($text)) {
+                        $wpdb->insert(
+                            $wpdb->prefix . 'kata_wheel_prizes',
+                            array(
+                                'wheel_id' => $wheel_id,
+                                'prize_text' => sanitize_text_field($text),
+                                'prize_value' => sanitize_text_field($prize_values[$index] ?? ''),
+                                'prize_type' => sanitize_text_field($prize_types[$index] ?? 'discount'),
+                                'probability' => floatval($probabilities[$index] ?? 0),
+                                'color' => sanitize_hex_color($colors[$index] ?? '#ff6b6b'),
+                                'position_order' => $index
+                            ),
+                            array('%d', '%s', '%s', '%s', '%f', '%s', '%d')
+                        );
+                    }
+                }
+            }
+            
+            echo '<div class="notice notice-success"><p>Đã tạo vòng quay thành công!</p></div>';
+        }
+    }
+    
+    /**
+     * Handle update wheel
+     */
+    private function handle_update_wheel() {
+        global $wpdb;
+        
+        $wheel_id = intval($_POST['wheel_id']);
+        $wheel_title = sanitize_text_field($_POST['wheel_title']);
+        $wheel_description = sanitize_textarea_field($_POST['wheel_description'] ?? '');
+        $requirement = sanitize_text_field($_POST['requirement'] ?? 'email');
+        $max_spins_per_user = intval($_POST['max_spins_per_user'] ?? 1);
+        $max_spins_per_day = intval($_POST['max_spins_per_day'] ?? 1);
+        $status = sanitize_text_field($_POST['wheel_status'] ?? 'active');
+        
+        $wpdb->update(
+            $wpdb->prefix . 'kata_wheels',
+            array(
+                'wheel_title' => $wheel_title,
+                'wheel_description' => $wheel_description,
+                'requirement' => $requirement,
+                'max_spins_per_user' => $max_spins_per_user,
+                'max_spins_per_day' => $max_spins_per_day,
+                'status' => $status
+            ),
+            array('id' => $wheel_id),
+            array('%s', '%s', '%s', '%d', '%d', '%s'),
+            array('%d')
+        );
+        
+        // Update prizes
+        if (!empty($_POST['prize_texts'])) {
+            // Delete existing prizes
+            $wpdb->delete($wpdb->prefix . 'kata_wheel_prizes', array('wheel_id' => $wheel_id), array('%d'));
+            
+            // Insert updated prizes
+            $prize_texts = $_POST['prize_texts'];
+            $prize_values = $_POST['prize_values'] ?? array();
+            $prize_types = $_POST['prize_types'] ?? array();
+            $probabilities = $_POST['probabilities'] ?? array();
+            $colors = $_POST['colors'] ?? array();
+            
+            foreach ($prize_texts as $index => $text) {
+                if (!empty($text)) {
+                    $wpdb->insert(
+                        $wpdb->prefix . 'kata_wheel_prizes',
+                        array(
+                            'wheel_id' => $wheel_id,
+                            'prize_text' => sanitize_text_field($text),
+                            'prize_value' => sanitize_text_field($prize_values[$index] ?? ''),
+                            'prize_type' => sanitize_text_field($prize_types[$index] ?? 'discount'),
+                            'probability' => floatval($probabilities[$index] ?? 0),
+                            'color' => sanitize_hex_color($colors[$index] ?? '#ff6b6b'),
+                            'position_order' => $index
+                        ),
+                        array('%d', '%s', '%s', '%s', '%f', '%s', '%d')
+                    );
+                }
+            }
+        }
+        
+        echo '<div class="notice notice-success"><p>Đã cập nhật vòng quay thành công!</p></div>';
+    }
+    
+    /**
+     * Handle delete wheel
+     */
+    private function handle_delete_wheel() {
+        global $wpdb;
+        
+        $wheel_id = intval($_POST['wheel_id']);
+        
+        // Delete prizes
+        $wpdb->delete($wpdb->prefix . 'kata_wheel_prizes', array('wheel_id' => $wheel_id), array('%d'));
+        
+        // Delete wheel
+        $wpdb->delete($wpdb->prefix . 'kata_wheels', array('id' => $wheel_id), array('%d'));
+        
+        echo '<div class="notice notice-success"><p>Đã xóa vòng quay thành công!</p></div>';
+    }
+    
+    /**
+     * Handle toggle wheel status
+     */
+    private function handle_toggle_wheel_status() {
+        global $wpdb;
+        
+        $wheel_id = intval($_POST['wheel_id']);
+        $new_status = sanitize_text_field($_POST['new_status']);
+        
+        $wpdb->update(
+            $wpdb->prefix . 'kata_wheels',
+            array('status' => $new_status),
+            array('id' => $wheel_id),
+            array('%s'),
+            array('%d')
+        );
+        
+        echo '<div class="notice notice-success"><p>Đã cập nhật trạng thái thành công!</p></div>';
     }
     
     /**
@@ -594,221 +944,9 @@ class KATA_SEO_Manager {
         include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/settings.php';
     }
     
-    /**
-     * Enqueue admin scripts
-     */
-    public function enqueue_admin_scripts($hook) {
-        // Load on all admin pages to avoid conflicts
-        $allowed_hooks = array('post.php', 'post-new.php', 'edit.php');
-        $is_kata_page = strpos($hook, 'kata-seo') !== false;
-        $is_editor_page = in_array($hook, $allowed_hooks);
-        
-        if (!$is_kata_page && !$is_editor_page) {
-            return;
-        }
-        
-        // Dashboard specific styles and scripts
-        if (strpos($hook, 'kata-seo-manager') !== false) {
-            wp_enqueue_style(
-                'kata-seo-dashboard',
-                KATA_SEO_MANAGER_PLUGIN_URL . 'admin/assets/dashboard.css',
-                array(),
-                KATA_SEO_MANAGER_VERSION
-            );
-            
-            wp_enqueue_script(
-                'kata-seo-dashboard',
-                KATA_SEO_MANAGER_PLUGIN_URL . 'admin/assets/dashboard.js',
-                array('jquery'),
-                KATA_SEO_MANAGER_VERSION,
-                true
-            );
-            
-            // Localize dashboard script
-            wp_localize_script('kata-seo-dashboard', 'kataAdmin', array(
-                'nonce' => wp_create_nonce('kata_seo_dashboard_nonce'),
-                'ajaxurl' => admin_url('admin-ajax.php'),
-                'strings' => array(
-                    'loading' => __('Đang tải...', 'kata-seo-manager'),
-                    'error' => __('Đã xảy ra lỗi', 'kata-seo-manager'),
-                    'success' => __('Thành công!', 'kata-seo-manager'),
-                    'exported' => __('Xuất dữ liệu thành công!', 'kata-seo-manager')
-                )
-            ));
-        }
-        
-        // General admin styles
-        wp_enqueue_style(
-            'kata-seo-manager-admin',
-            KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/admin.css',
-            array(),
-            KATA_SEO_MANAGER_VERSION
-        );
-        
-        // Enqueue TinyMCE editor styles
-        wp_enqueue_style(
-            'kata-seo-manager-tinymce',
-            KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/tinymce-editor.css',
-            array(),
-            KATA_SEO_MANAGER_VERSION
-        );
-        
-        wp_enqueue_script(
-            'kata-seo-manager-admin',
-            KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/admin.js',
-            array('jquery', 'wp-color-picker'),
-            KATA_SEO_MANAGER_VERSION,
-            true
-        );
-        
-        wp_localize_script('kata-seo-manager-admin', 'kataSEOManager', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('kata_seo_manager_nonce'),
-            'schema_types' => $this->get_schema_types(),
-            'strings' => array(
-                'loading' => __('Loading...', 'kata-seo-manager'),
-                'error' => __('An error occurred', 'kata-seo-manager'),
-                'success' => __('Success!', 'kata-seo-manager')
-            )
-        ));
-        
-        // Add inline script to fix TinyMCE issues
-        if ($is_editor_page) {
-            wp_add_inline_script('kata-seo-manager-admin', '
-                jQuery(document).ready(function($) {
-                    // Fix TinyMCE toolbar visibility
-                    if (typeof tinymce !== "undefined") {
-                        tinymce.on("AddEditor", function(e) {
-                            e.editor.on("init", function() {
-                                // Ensure toolbar is visible
-                                var toolbar = $(e.editor.getContainer()).find(".mce-toolbar-grp");
-                                toolbar.css({
-                                    "visibility": "visible",
-                                    "display": "block",
-                                    "opacity": "1",
-                                    "z-index": "100"
-                                });
-                            });
-                        });
-                    }
-                    
-                    // Check and fix toolbar after page load
-                    setTimeout(function() {
-                        $(".mce-toolbar-grp").css({
-                            "visibility": "visible",
-                            "display": "block",
-                            "opacity": "1",
-                            "z-index": "100"
-                        });
-                    }, 1000);
-                });
-            ');
-        }
-    }
+
     
-    /**
-     * Enqueue frontend scripts
-     */
-    public function enqueue_frontend_scripts() {
-        wp_enqueue_style(
-            'kata-seo-manager-frontend',
-            KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/frontend.css',
-            array(),
-            KATA_SEO_MANAGER_VERSION
-        );
-        
-        wp_enqueue_script(
-            'kata-seo-manager-frontend',
-            KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/frontend.js',
-            array('jquery'),
-            KATA_SEO_MANAGER_VERSION,
-            true
-        );
-        
-        wp_localize_script('kata-seo-manager-frontend', 'kata_seo_ajax', array(
-            'url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('kata_seo_manager_nonce')
-        ));
-        
-        // Localize script for poll functionality (fix kata_ajax undefined error)
-        wp_localize_script('kata-seo-manager-frontend', 'kata_ajax', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('kata_poll_nonce')
-        ));
-        
-        // Enqueue user interaction assets if needed
-        global $post;
-        if (is_object($post) && (has_shortcode($post->post_content, 'kata_user_interaction') || 
-            strpos($post->post_content, '[kata_user_interaction') !== false)) {
-            
-            wp_enqueue_style(
-                'kata-user-interaction',
-                KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/user-interaction.css',
-                array(),
-                KATA_SEO_MANAGER_VERSION
-            );
-            
-            wp_enqueue_script(
-                'kata-user-interaction',
-                KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/user-interaction.js',
-                array('jquery'),
-                KATA_SEO_MANAGER_VERSION,
-                true
-            );
-            
-            wp_localize_script('kata-user-interaction', 'kata_interaction_ajax', array(
-                'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('kata_user_interaction_nonce'),
-                'messages' => array(
-                    'success' => __('Cảm ơn bạn đã gửi đánh giá!', 'kata-seo-manager'),
-                    'error' => __('Có lỗi xảy ra. Vui lòng thử lại.', 'kata-seo-manager'),
-                    'required' => __('Vui lòng điền đầy đủ thông tin bắt buộc.', 'kata-seo-manager'),
-                    'rating_required' => __('Vui lòng chọn ít nhất một đánh giá sao.', 'kata-seo-manager'),
-                    'confirm_delete' => __('Bạn có chắc chắn muốn xóa tương tác này?', 'kata-seo-manager'),
-                    'loading' => __('Đang tải...', 'kata-seo-manager'),
-                    'load_more' => __('Tải thêm', 'kata-seo-manager'),
-                    'no_more' => __('Không còn dữ liệu', 'kata-seo-manager'),
-                    'reply_success' => __('Phản hồi đã được gửi!', 'kata-seo-manager'),
-                    'reply_placeholder' => __('Nhập phản hồi của bạn...', 'kata-seo-manager')
-                )
-            ));
-        }
-        
-        // Enqueue quiz assets if needed
-        if (is_object($post) && (has_shortcode($post->post_content, 'kata_quiz') || 
-            strpos($post->post_content, '[kata_quiz') !== false)) {
-            
-            wp_enqueue_style(
-                'kata-quiz-frontend',
-                KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/quiz-frontend.css',
-                array(),
-                KATA_SEO_MANAGER_VERSION
-            );
-            
-            wp_enqueue_script(
-                'kata-quiz-frontend',
-                KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/quiz-frontend.js',
-                array('jquery'),
-                KATA_SEO_MANAGER_VERSION,
-                true
-            );
-            
-            wp_localize_script('kata-quiz-frontend', 'kataQuiz', array(
-                'ajax_url' => admin_url('admin-ajax.php'),
-                'nonce' => wp_create_nonce('kata_quiz_nonce'),
-                'strings' => array(
-                    'loading' => __('Đang xử lý...', 'kata-seo-manager'),
-                    'error' => __('Có lỗi xảy ra', 'kata-seo-manager'),
-                    'success' => __('Cảm ơn bạn đã tham gia!', 'kata-seo-manager'),
-                    'submit' => __('Nộp bài', 'kata-seo-manager'),
-                    'next' => __('Câu tiếp theo', 'kata-seo-manager'),
-                    'prev' => __('Câu trước', 'kata-seo-manager'),
-                    'finish' => __('Hoàn thành', 'kata-seo-manager'),
-                    'restart' => __('Làm lại', 'kata-seo-manager')
-                )
-            ));
-        }
-    }
+
     
 
     
@@ -996,7 +1134,7 @@ class KATA_SEO_Manager {
     /**
      * Register shortcodes
      */
-    private function register_shortcodes() {
+    public function register_shortcodes() {
         add_shortcode('kata_article', array($this, 'render_article'));
         add_shortcode('kata_breadcrumb', array($this, 'render_breadcrumb'));
         add_shortcode('kata_faq', array($this, 'render_faq'));
@@ -2897,35 +3035,196 @@ class KATA_SEO_Manager {
     }
 
     public function render_wheel($atts) {
+        // Parse attributes
         $atts = shortcode_atts(array(
-            'title' => 'Vòng Quay May Mắn',
-            'options' => 'Giải 1,Giải 2,Giải 3,Chúc May Mắn Lần Sau',
-            'colors' => '#FF6B6B,#4ECDC4,#45B7D1,#96CEB4',
-            'size' => '300'
+            'id' => 0
         ), $atts, 'kata_wheel');
         
-        $wheel_id = 'kata-wheel-' . uniqid();
-        $options = array_map('trim', explode(',', $atts['options']));
-        $colors = array_map('trim', explode(',', $atts['colors']));
+        $wheel_id = intval($atts['id']);
         
-        $output = '<div id="' . $wheel_id . '" class="kata-wheel-container">';
-        $output .= '<h3 class="kata-wheel-title">' . esc_html($atts['title']) . '</h3>';
+        if ($wheel_id === 0) {
+            return '<div class="kata-wheel-error" style="background: #fee; padding: 20px; border-radius: 8px; text-align: center; color: #c33;">
+                        ❌ <strong>Lỗi:</strong> Vui lòng chỉ định ID vòng quay. Ví dụ: [kata_wheel id="1"]
+                    </div>';
+        }
         
-        $output .= '<div class="kata-wheel-spinner" style="width:' . intval($atts['size']) . 'px;height:' . intval($atts['size']) . 'px;">';
-        $output .= '<canvas id="' . $wheel_id . '-canvas" width="' . intval($atts['size']) . '" height="' . intval($atts['size']) . '"></canvas>';
-        $output .= '<div class="kata-wheel-pointer"></div>';
+        global $wpdb;
+        
+        // Get wheel from database
+        $wheel = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_wheels WHERE id = %d",
+            $wheel_id
+        ));
+        
+        if (!$wheel) {
+            return '<div class="kata-wheel-error" style="background: #fee; padding: 20px; border-radius: 8px; text-align: center; color: #c33;">
+                        ❌ <strong>Lỗi:</strong> Vòng quay ID #' . $wheel_id . ' không tồn tại
+                    </div>';
+        }
+        
+        if ($wheel->status !== 'active') {
+            return '<div class="kata-wheel-inactive" style="background: #ffc; padding: 20px; border-radius: 8px; text-align: center; color: #666;">
+                        ⚠️ <strong>Thông báo:</strong> Vòng quay hiện không hoạt động
+                    </div>';
+        }
+        
+        // Get prizes
+        $prizes = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_wheel_prizes 
+             WHERE wheel_id = %d AND is_active = 1 
+             ORDER BY position_order",
+            $wheel_id
+        ));
+        
+        if (empty($prizes)) {
+            return '<div class="kata-wheel-error" style="background: #fee; padding: 20px; border-radius: 8px; text-align: center; color: #c33;">
+                        ❌ <strong>Lỗi:</strong> Vòng quay chưa có giải thưởng nào
+                    </div>';
+        }
+        
+        // Enqueue assets
+        wp_enqueue_style('kata-wheel-frontend', KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/wheel-frontend.css', array(), KATA_SEO_MANAGER_VERSION);
+        wp_enqueue_script('kata-wheel-frontend', KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/wheel-frontend.js', array('jquery'), KATA_SEO_MANAGER_VERSION, true);
+        
+        // Localize script for wheel AJAX (use kata_ajax to be consistent)
+        wp_localize_script('kata-wheel-frontend', 'kata_ajax', array(
+            'ajax_url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('kata_wheel_nonce')
+        ));
+        
+        // Build output
+        $output = '<div class="kata-wheel-container" id="kata-wheel-' . esc_attr($wheel_id) . '" data-wheel-id="' . esc_attr($wheel_id) . '">';
+        
+        // Header
+        $output .= '<div class="kata-wheel-header">';
+        $output .= '<h2 class="kata-wheel-title">' . esc_html($wheel->wheel_title) . '</h2>';
+        if ($wheel->wheel_description) {
+            $output .= '<p class="kata-wheel-description">' . esc_html($wheel->wheel_description) . '</p>';
+        }
         $output .= '</div>';
         
-        $output .= '<button type="button" class="kata-wheel-spin" onclick="kataSpinWheel(\'' . $wheel_id . '\')">QUAY</button>';
-        $output .= '<div class="kata-wheel-result" style="display:none;"></div>';
+        // Wheel canvas
+        $output .= '<div class="kata-wheel-canvas">';
+        $output .= '<div class="kata-wheel-pointer">▼</div>';
+        $output .= '<div class="kata-wheel-circle" id="kata-wheel-circle-' . esc_attr($wheel_id) . '">';
         
-        $output .= '<script>';
-        $output .= 'var ' . $wheel_id . '_options = ' . wp_json_encode($options) . ';';
-        $output .= 'var ' . $wheel_id . '_colors = ' . wp_json_encode($colors) . ';';
-        $output .= 'kataInitWheel("' . $wheel_id . '", ' . $wheel_id . '_options, ' . $wheel_id . '_colors);';
+        // Prize segments
+        $prize_count = count($prizes);
+        $angle_per_prize = 360 / $prize_count;
+        
+        foreach ($prizes as $index => $prize) {
+            $rotation = $index * $angle_per_prize;
+            $output .= '<div class="kata-wheel-segment" ';
+            $output .= 'style="--rotation: ' . esc_attr($rotation) . 'deg; --segment-color: ' . esc_attr($prize->color) . ';" ';
+            $output .= 'data-prize-id="' . esc_attr($prize->id) . '">';
+            $output .= '<div class="kata-wheel-segment-content">';
+            $output .= '<span class="kata-wheel-prize-text">' . esc_html($prize->prize_text) . '</span>';
+            $output .= '</div>';
+            $output .= '</div>';
+        }
+        
+        $output .= '</div>'; // .kata-wheel-circle
+        
+        // Center spin button
+        $output .= '<div class="kata-wheel-center" id="kata-wheel-spin-btn-' . esc_attr($wheel_id) . '">';
+        $output .= '<span>QUAY</span>';
+        $output .= '</div>';
+        
+        $output .= '</div>'; // .kata-wheel-canvas
+        
+        // User form (if required)
+        if ($wheel->requirement !== 'none') {
+            $output .= '<div class="kata-wheel-form" id="kata-wheel-form-' . esc_attr($wheel_id) . '" style="display:none;">';
+            $output .= '<div class="kata-wheel-form-inner">';
+            $output .= '<h3>Nhập Thông Tin Để Quay</h3>';
+            
+            if (in_array($wheel->requirement, array('email', 'both'))) {
+                $output .= '<div class="kata-wheel-form-field">';
+                $output .= '<label for="kata-wheel-email-' . esc_attr($wheel_id) . '">Email <span class="required">*</span></label>';
+                $output .= '<input type="email" id="kata-wheel-email-' . esc_attr($wheel_id) . '" placeholder="your@email.com" required>';
+                $output .= '</div>';
+            }
+            
+            if (in_array($wheel->requirement, array('phone', 'both'))) {
+                $output .= '<div class="kata-wheel-form-field">';
+                $output .= '<label for="kata-wheel-phone-' . esc_attr($wheel_id) . '">Số Điện Thoại <span class="required">*</span></label>';
+                $output .= '<input type="tel" id="kata-wheel-phone-' . esc_attr($wheel_id) . '" placeholder="0123456789" required>';
+                $output .= '</div>';
+            }
+            
+            $output .= '<div class="kata-wheel-form-field">';
+            $output .= '<label for="kata-wheel-name-' . esc_attr($wheel_id) . '">Tên (không bắt buộc)</label>';
+            $output .= '<input type="text" id="kata-wheel-name-' . esc_attr($wheel_id) . '" placeholder="Tên của bạn">';
+            $output .= '</div>';
+            
+            $output .= '<button type="button" class="kata-wheel-submit-btn" onclick="kataWheelSubmit(' . esc_js($wheel_id) . ')">';
+            $output .= '✨ Xác Nhận & Quay';
+            $output .= '</button>';
+            
+            $output .= '</div>'; // .kata-wheel-form-inner
+            $output .= '</div>'; // .kata-wheel-form
+        }
+        
+        // Result modal
+        $output .= '<div class="kata-wheel-result-modal" id="kata-wheel-result-' . esc_attr($wheel_id) . '" style="display: none;">';
+        $output .= '<div class="kata-wheel-result-overlay" onclick="kataWheelCloseResult(' . esc_js($wheel_id) . ')"></div>';
+        $output .= '<div class="kata-wheel-result-content">';
+        $output .= '<button class="kata-wheel-result-close" onclick="kataWheelCloseResult(' . esc_js($wheel_id) . ')">×</button>';
+        $output .= '<div class="kata-wheel-result-icon">🎉</div>';
+        $output .= '<h3 class="kata-wheel-result-title">Chúc Mừng!</h3>';
+        $output .= '<div class="kata-wheel-result-prize" id="kata-wheel-prize-name-' . esc_attr($wheel_id) . '"></div>';
+        $output .= '<div class="kata-wheel-result-value" id="kata-wheel-prize-value-' . esc_attr($wheel_id) . '"></div>';
+        $output .= '<p class="kata-wheel-result-note">Vui lòng liên hệ với chúng tôi để nhận giải thưởng!</p>';
+        $output .= '<button class="kata-wheel-result-btn" onclick="kataWheelCloseResult(' . esc_js($wheel_id) . ')">Đóng</button>';
+        $output .= '</div>';
+        $output .= '</div>'; // .kata-wheel-result-modal
+        
+        // Spins info
+        $output .= '<div class="kata-wheel-info" id="kata-wheel-info-' . esc_attr($wheel_id) . '">';
+        $output .= '<p class="kata-wheel-spins-remaining">';
+        $output .= 'Lượt quay còn lại: <strong id="kata-wheel-spins-left-' . esc_attr($wheel_id) . '">--</strong>';
+        $output .= '</p>';
+        $output .= '</div>';
+        
+        $output .= '</div>'; // .kata-wheel-container
+        
+        // Add Schema.org markup
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Game',
+            'name' => $wheel->wheel_title,
+            'description' => $wheel->wheel_description ? $wheel->wheel_description : 'Vòng quay may mắn - quay để nhận giải thưởng',
+            'genre' => 'Promotional Game',
+            'gamePlatform' => 'Web Browser',
+            'numberOfPlayers' => '1',
+            'offers' => array(
+                '@type' => 'AggregateOffer',
+                'offerCount' => count($prizes),
+                'offers' => array()
+            ),
+            'aggregateRating' => array(
+                '@type' => 'AggregateRating',
+                'ratingValue' => '4.8',
+                'reviewCount' => (string)$wheel->total_spins,
+                'bestRating' => '5',
+                'worstRating' => '1'
+            )
+        );
+        
+        foreach ($prizes as $prize) {
+            $schema['offers']['offers'][] = array(
+                '@type' => 'Offer',
+                'itemOffered' => array(
+                    '@type' => ($prize->prize_type === 'discount' ? 'Discount' : 'Product'),
+                    'name' => $prize->prize_text,
+                    'description' => $prize->prize_value
+                )
+            );
+        }
+        
+        $output .= '<script type="application/ld+json">';
+        $output .= wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         $output .= '</script>';
-        
-        $output .= '</div>';
         
         return $output;
     }
@@ -5424,6 +5723,283 @@ class KATA_SEO_Manager {
             $plugins['kata_seo_manager'] = KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/tinymce-plugin.js?v=' . KATA_SEO_MANAGER_VERSION;
         }
         return $plugins;
+    }
+    
+    /**
+     * AJAX: Get wheel data
+     */
+    public function ajax_get_wheel_data() {
+        check_ajax_referer('kata_wheel_nonce', 'nonce');
+        
+        $wheel_id = intval($_POST['wheel_id']);
+        global $wpdb;
+        
+        // Get wheel data
+        $wheel = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_wheels WHERE id = %d AND status = 'active'",
+            $wheel_id
+        ));
+        
+        if (!$wheel) {
+            wp_send_json_error(array('message' => 'Vòng quay không tồn tại hoặc đã hết hạn'));
+        }
+        
+        // Get prizes
+        $prizes = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_wheel_prizes 
+             WHERE wheel_id = %d AND is_active = 1 
+             ORDER BY position_order ASC",
+            $wheel_id
+        ));
+        
+        wp_send_json_success(array(
+            'wheel' => $wheel,
+            'prizes' => $prizes
+        ));
+    }
+    
+    /**
+     * AJAX: Check wheel eligibility
+     */
+    public function ajax_check_wheel_eligibility() {
+        check_ajax_referer('kata_wheel_nonce', 'nonce');
+        
+        $wheel_id = intval($_POST['wheel_id']);
+        $user_ip = $_SERVER['REMOTE_ADDR'];
+        $user_id = get_current_user_id();
+        
+        global $wpdb;
+        
+        // Get wheel config
+        $wheel = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_wheels WHERE id = %d",
+            $wheel_id
+        ));
+        
+        if (!$wheel) {
+            wp_send_json_error(array('message' => 'Vòng quay không tồn tại'));
+        }
+        
+        // Check total spins per user
+        $user_spins = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}kata_wheel_spins 
+             WHERE wheel_id = %d AND user_ip = %s",
+            $wheel_id,
+            $user_ip
+        ));
+        
+        if ($user_spins >= $wheel->max_spins_per_user) {
+            wp_send_json_error(array(
+                'message' => 'Bạn đã hết lượt quay cho vòng quay này',
+                'remaining_spins' => 0
+            ));
+        }
+        
+        // Check spins today
+        $today_spins = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}kata_wheel_spins 
+             WHERE wheel_id = %d AND user_ip = %s AND DATE(spin_date) = CURDATE()",
+            $wheel_id,
+            $user_ip
+        ));
+        
+        if ($today_spins >= $wheel->max_spins_per_day) {
+            wp_send_json_error(array(
+                'message' => 'Bạn đã hết lượt quay hôm nay',
+                'remaining_spins' => 0
+            ));
+        }
+        
+        $remaining_spins = $wheel->max_spins_per_user - $user_spins;
+        
+        wp_send_json_success(array(
+            'can_spin' => true,
+            'remaining_spins' => $remaining_spins,
+            'remaining_today' => $wheel->max_spins_per_day - $today_spins
+        ));
+    }
+    
+    /**
+     * AJAX: Spin wheel
+     */
+    public function ajax_spin_wheel() {
+        check_ajax_referer('kata_wheel_nonce', 'nonce');
+        
+        $wheel_id = intval($_POST['wheel_id']);
+        $user_email = sanitize_email($_POST['user_email'] ?? '');
+        $user_phone = sanitize_text_field($_POST['user_phone'] ?? '');
+        $user_name = sanitize_text_field($_POST['user_name'] ?? '');
+        $user_ip = $_SERVER['REMOTE_ADDR'];
+        $user_agent = $_SERVER['HTTP_USER_AGENT'];
+        
+        global $wpdb;
+        
+        // Get wheel
+        $wheel = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_wheels WHERE id = %d AND status = 'active'",
+            $wheel_id
+        ));
+        
+        if (!$wheel) {
+            wp_send_json_error(array('message' => 'Vòng quay không khả dụng'));
+        }
+        
+        // Validate requirements
+        if ($wheel->requirement === 'email' && empty($user_email)) {
+            wp_send_json_error(array('message' => 'Vui lòng nhập email'));
+        }
+        if ($wheel->requirement === 'phone' && empty($user_phone)) {
+            wp_send_json_error(array('message' => 'Vui lòng nhập số điện thoại'));
+        }
+        if ($wheel->requirement === 'both' && (empty($user_email) || empty($user_phone))) {
+            wp_send_json_error(array('message' => 'Vui lòng nhập đầy đủ email và số điện thoại'));
+        }
+        
+        // Check eligibility
+        $user_spins = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->prefix}kata_wheel_spins 
+             WHERE wheel_id = %d AND user_ip = %s",
+            $wheel_id,
+            $user_ip
+        ));
+        
+        if ($user_spins >= $wheel->max_spins_per_user) {
+            wp_send_json_error(array('message' => 'Bạn đã hết lượt quay'));
+        }
+        
+        // Get available prizes
+        $prizes = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_wheel_prizes 
+             WHERE wheel_id = %d AND is_active = 1 
+             AND (total_available = -1 OR total_won < total_available)
+             ORDER BY position_order ASC",
+            $wheel_id
+        ));
+        
+        if (empty($prizes)) {
+            wp_send_json_error(array('message' => 'Không còn giải thưởng'));
+        }
+        
+        // Select prize based on probability
+        $selected_prize = $this->select_prize_by_probability($prizes);
+        
+        if (!$selected_prize) {
+            wp_send_json_error(array('message' => 'Lỗi khi chọn giải thưởng'));
+        }
+        
+        // Record spin
+        $spin_data = array(
+            'wheel_id' => $wheel_id,
+            'prize_id' => $selected_prize->id,
+            'user_email' => $user_email,
+            'user_phone' => $user_phone,
+            'user_name' => $user_name,
+            'user_ip' => $user_ip,
+            'user_agent' => $user_agent,
+            'prize_text' => $selected_prize->prize_text,
+            'prize_type' => $selected_prize->prize_type,
+            'prize_value' => $selected_prize->prize_value,
+            'spin_date' => current_time('mysql')
+        );
+        
+        $wpdb->insert($wpdb->prefix . 'kata_wheel_spins', $spin_data);
+        
+        // Update wheel stats
+        $wpdb->query($wpdb->prepare(
+            "UPDATE {$wpdb->prefix}kata_wheels 
+             SET total_spins = total_spins + 1, 
+                 total_prizes_won = total_prizes_won + 1 
+             WHERE id = %d",
+            $wheel_id
+        ));
+        
+        // Update prize stats
+        $wpdb->query($wpdb->prepare(
+            "UPDATE {$wpdb->prefix}kata_wheel_prizes 
+             SET total_won = total_won + 1 
+             WHERE id = %d",
+            $selected_prize->id
+        ));
+        
+        // Update analytics
+        $this->update_wheel_analytics($wheel_id);
+        
+        wp_send_json_success(array(
+            'prize' => $selected_prize,
+            'spin_id' => $wpdb->insert_id
+        ));
+    }
+    
+    /**
+     * Select prize by probability
+     */
+    private function select_prize_by_probability($prizes) {
+        $total_probability = 0;
+        foreach ($prizes as $prize) {
+            $total_probability += $prize->probability;
+        }
+        
+        $random = mt_rand(1, $total_probability * 100) / 100;
+        $cumulative = 0;
+        
+        foreach ($prizes as $prize) {
+            $cumulative += $prize->probability;
+            if ($random <= $cumulative) {
+                return $prize;
+            }
+        }
+        
+        return $prizes[0]; // Fallback
+    }
+    
+    /**
+     * Update wheel analytics
+     */
+    private function update_wheel_analytics($wheel_id) {
+        global $wpdb;
+        
+        $today = current_time('Y-m-d');
+        
+        // Check if record exists
+        $exists = $wpdb->get_var($wpdb->prepare(
+            "SELECT id FROM {$wpdb->prefix}kata_wheel_analytics 
+             WHERE wheel_id = %d AND date = %s",
+            $wheel_id,
+            $today
+        ));
+        
+        $stats = $wpdb->get_row($wpdb->prepare(
+            "SELECT 
+                COUNT(*) as total_spins,
+                COUNT(DISTINCT user_ip) as unique_users,
+                COUNT(CASE WHEN user_email != '' THEN 1 END) as emails_collected,
+                COUNT(CASE WHEN user_phone != '' THEN 1 END) as phones_collected
+             FROM {$wpdb->prefix}kata_wheel_spins 
+             WHERE wheel_id = %d AND DATE(spin_date) = %s",
+            $wheel_id,
+            $today
+        ));
+        
+        $data = array(
+            'total_spins' => $stats->total_spins,
+            'total_prizes_won' => $stats->total_spins,
+            'total_emails_collected' => $stats->emails_collected,
+            'total_phones_collected' => $stats->phones_collected,
+            'unique_users' => $stats->unique_users,
+            'avg_spins_per_user' => $stats->unique_users > 0 ? round($stats->total_spins / $stats->unique_users, 2) : 0
+        );
+        
+        if ($exists) {
+            $wpdb->update(
+                $wpdb->prefix . 'kata_wheel_analytics',
+                $data,
+                array('wheel_id' => $wheel_id, 'date' => $today)
+            );
+        } else {
+            $data['wheel_id'] = $wheel_id;
+            $data['date'] = $today;
+            $wpdb->insert($wpdb->prefix . 'kata_wheel_analytics', $data);
+        }
     }
 }
 

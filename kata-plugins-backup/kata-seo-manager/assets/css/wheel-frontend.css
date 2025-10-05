@@ -142,7 +142,8 @@
     justify-content: center;
 }
 
-.kata-wheel-pointer {
+/* Pointer triangle - Override theme styles */
+.kata-wheel-container .kata-wheel-pointer {
     position: absolute;
     top: -35px;
     left: 50%;
@@ -156,23 +157,26 @@
     height: 60px;
     text-align: center;
     pointer-events: none;
+    /* Reset theme's border-based triangle */
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
 }
 
-.kata-wheel-pointer::before {
+.kata-wheel-container .kata-wheel-pointer::before {
     content: '▼';
     display: block;
-    text-shadow: 
-        0 0 30px rgba(255, 215, 0, 1),
-        0 0 50px rgba(255, 165, 0, 0.8),
-        0 6px 12px rgba(0, 0, 0, 0.8),
-        0 0 10px rgba(255, 255, 255, 0.6);
-    filter: drop-shadow(0 6px 15px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 20px rgba(255, 165, 0, 0.6));
+    color: #FFD700;
+    filter: drop-shadow(0 6px 15px rgba(255, 215, 0, 0.8)) 
+            drop-shadow(0 0 20px rgba(255, 165, 0, 0.6))
+            drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
     animation: pointerBounce 2s ease-in-out infinite;
 }
 
 @keyframes pointerBounce {
-    0%, 100% { transform: translateX(-50%) translateY(0); }
-    50% { transform: translateX(-50%) translateY(-5px); }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
 }
 
 .kata-wheel-circle {
@@ -992,9 +996,10 @@
         margin-bottom: 30px;
     }
     
-    .kata-wheel-pointer {
-        font-size: 38px;
-        top: -20px;
+    .kata-wheel-container .kata-wheel-pointer {
+        font-size: 38px !important;
+        top: -20px !important;
+        border: none !important;
     }
     
     .kata-wheel-center {
@@ -1061,8 +1066,9 @@
         height: 280px;
     }
     
-    .kata-wheel-pointer {
-        font-size: 32px;
+    .kata-wheel-container .kata-wheel-pointer {
+        font-size: 32px !important;
+        border: none !important;
     }
     
     .kata-wheel-center {

@@ -3139,7 +3139,7 @@ class KATA_SEO_Manager {
             
             <!-- Wheel Canvas -->
             <div class="kata-wheel-canvas">
-                <div class="kata-wheel-pointer">▼</div>
+                <div class="kata-wheel-pointer"></div>
                 <div class="kata-wheel-circle" id="kata-wheel-circle-<?php echo esc_attr($wheel_id); ?>">
                     <?php 
                     $prize_count = count($prizes);

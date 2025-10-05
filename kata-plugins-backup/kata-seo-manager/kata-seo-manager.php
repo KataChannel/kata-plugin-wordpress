@@ -3034,8 +3034,13 @@ class KATA_SEO_Manager {
         return $output;
     }
 
+    /**
+     * Render Lucky Wheel - Refactored for better maintainability
+     * @param array $atts Shortcode attributes
+     * @return string HTML output
+     */
     public function render_wheel($atts) {
-        // Parse attributes
+        // Parse and validate attributes
         $atts = shortcode_atts(array(
             'id' => 0,
             'style' => 'default' // 'default' or 'simple'
@@ -3044,30 +3049,25 @@ class KATA_SEO_Manager {
         $wheel_id = intval($atts['id']);
         $style = sanitize_text_field($atts['style']);
         
+        // Validate wheel ID
         if ($wheel_id === 0) {
-            return '<div class="kata-wheel-error" style="background: #fee; padding: 20px; border-radius: 8px; text-align: center; color: #c33;">
-                        ❌ <strong>Lỗi:</strong> Vui lòng chỉ định ID vòng quay. VD: [kata_wheel id="1"] hoặc [kata_wheel id="1" style="simple"]
-                    </div>';
+            return $this->render_wheel_error('Vui lòng chỉ định ID vòng quay. VD: [kata_wheel id="1"]');
         }
         
         global $wpdb;
         
-        // Get wheel from database
+        // Get wheel data
         $wheel = $wpdb->get_row($wpdb->prepare(
             "SELECT * FROM {$wpdb->prefix}kata_wheels WHERE id = %d",
             $wheel_id
         ));
         
         if (!$wheel) {
-            return '<div class="kata-wheel-error" style="background: #fee; padding: 20px; border-radius: 8px; text-align: center; color: #c33;">
-                        ❌ <strong>Lỗi:</strong> Vòng quay ID #' . $wheel_id . ' không tồn tại
-                    </div>';
+            return $this->render_wheel_error('Vòng quay ID #' . $wheel_id . ' không tồn tại');
         }
         
         if ($wheel->status !== 'active') {
-            return '<div class="kata-wheel-inactive" style="background: #ffc; padding: 20px; border-radius: 8px; text-align: center; color: #666;">
-                        ⚠️ <strong>Thông báo:</strong> Vòng quay hiện không hoạt động
-                    </div>';
+            return $this->render_wheel_inactive('Vòng quay hiện không hoạt động');
         }
         
         // Get prizes
@@ -3079,123 +3079,299 @@ class KATA_SEO_Manager {
         ));
         
         if (empty($prizes)) {
-            return '<div class="kata-wheel-error" style="background: #fee; padding: 20px; border-radius: 8px; text-align: center; color: #c33;">
-                        ❌ <strong>Lỗi:</strong> Vòng quay chưa có giải thưởng nào
-                    </div>';
+            return $this->render_wheel_error('Vòng quay chưa có giải thưởng nào');
         }
         
         // Enqueue assets
         wp_enqueue_style('kata-wheel-frontend', KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/wheel-frontend.css', array(), KATA_SEO_MANAGER_VERSION);
         wp_enqueue_script('kata-wheel-frontend', KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/wheel-frontend.js', array('jquery'), KATA_SEO_MANAGER_VERSION, true);
         
-        // Localize script for wheel AJAX (use kata_ajax to be consistent)
+        // Localize script
         wp_localize_script('kata-wheel-frontend', 'kata_ajax', array(
             'ajax_url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('kata_wheel_nonce')
         ));
         
-        // Check for simple style
+        // Render based on style
         if ($style === 'simple') {
             return $this->render_wheel_simple($wheel, $prizes, $wheel_id);
         }
         
-        // Build output for default style
-        $output = '<div class="kata-wheel-container" id="kata-wheel-' . esc_attr($wheel_id) . '" data-wheel-id="' . esc_attr($wheel_id) . '">';
-        
-        // Header
-        $output .= '<div class="kata-wheel-header">';
-        $output .= '<h2 class="kata-wheel-title">' . esc_html($wheel->wheel_title) . '</h2>';
-        if ($wheel->wheel_description) {
-            $output .= '<p class="kata-wheel-description">' . esc_html($wheel->wheel_description) . '</p>';
-        }
-        $output .= '</div>';
-        
-        // Wheel canvas
-        $output .= '<div class="kata-wheel-canvas">';
-        $output .= '<div class="kata-wheel-pointer">▼</div>';
-        $output .= '<div class="kata-wheel-circle" id="kata-wheel-circle-' . esc_attr($wheel_id) . '">';
-        
-        // Prize segments
-        $prize_count = count($prizes);
-        $angle_per_prize = 360 / $prize_count;
-        
-        foreach ($prizes as $index => $prize) {
-            $rotation = $index * $angle_per_prize;
-            $output .= '<div class="kata-wheel-segment" ';
-            $output .= 'style="--rotation: ' . esc_attr($rotation) . 'deg; --segment-color: ' . esc_attr($prize->color) . ';" ';
-            $output .= 'data-prize-id="' . esc_attr($prize->id) . '">';
-            $output .= '<div class="kata-wheel-segment-content">';
-            $output .= '<span class="kata-wheel-prize-text">' . esc_html($prize->prize_text) . '</span>';
-            $output .= '</div>';
-            $output .= '</div>';
-        }
-        
-        $output .= '</div>'; // .kata-wheel-circle
-        
-        // Center spin button
-        $output .= '<div class="kata-wheel-center" id="kata-wheel-spin-btn-' . esc_attr($wheel_id) . '">';
-        $output .= '<span>QUAY</span>';
-        $output .= '</div>';
-        
-        $output .= '</div>'; // .kata-wheel-canvas
-        
-        // User form (if required)
-        if ($wheel->requirement !== 'none') {
-            $output .= '<div class="kata-wheel-form" id="kata-wheel-form-' . esc_attr($wheel_id) . '" style="display:none;">';
-            $output .= '<div class="kata-wheel-form-inner">';
-            $output .= '<h3>Nhập Thông Tin Để Quay</h3>';
+        return $this->render_wheel_default($wheel, $prizes, $wheel_id);
+    }
+
+    /**
+     * Render error message for wheel
+     */
+    private function render_wheel_error($message) {
+        return '<div class="kata-wheel-error">
+                    <span class="kata-wheel-error-icon">❌</span>
+                    <strong>Lỗi:</strong> ' . esc_html($message) . '
+                </div>';
+    }
+
+    /**
+     * Render inactive message for wheel
+     */
+    private function render_wheel_inactive($message) {
+        return '<div class="kata-wheel-inactive">
+                    <span class="kata-wheel-inactive-icon">⚠️</span>
+                    <strong>Thông báo:</strong> ' . esc_html($message) . '
+                </div>';
+    }
+
+    /**
+     * Render wheel with default style (canvas-based)
+     */
+    private function render_wheel_default($wheel, $prizes, $wheel_id) {
+        ob_start();
+        ?>
+        <div class="kata-wheel-container" 
+             id="kata-wheel-<?php echo esc_attr($wheel_id); ?>" 
+             data-wheel-id="<?php echo esc_attr($wheel_id); ?>"
+             data-requirement="<?php echo esc_attr($wheel->requirement); ?>">
             
-            if (in_array($wheel->requirement, array('email', 'both'))) {
-                $output .= '<div class="kata-wheel-form-field">';
-                $output .= '<label for="kata-wheel-email-' . esc_attr($wheel_id) . '">Email <span class="required">*</span></label>';
-                $output .= '<input type="email" id="kata-wheel-email-' . esc_attr($wheel_id) . '" placeholder="your@email.com" required>';
-                $output .= '</div>';
-            }
+            <!-- Header -->
+            <div class="kata-wheel-header">
+                <h2 class="kata-wheel-title"><?php echo esc_html($wheel->wheel_title); ?></h2>
+                <?php if ($wheel->wheel_description): ?>
+                    <p class="kata-wheel-description"><?php echo esc_html($wheel->wheel_description); ?></p>
+                <?php endif; ?>
+            </div>
             
-            if (in_array($wheel->requirement, array('phone', 'both'))) {
-                $output .= '<div class="kata-wheel-form-field">';
-                $output .= '<label for="kata-wheel-phone-' . esc_attr($wheel_id) . '">Số Điện Thoại <span class="required">*</span></label>';
-                $output .= '<input type="tel" id="kata-wheel-phone-' . esc_attr($wheel_id) . '" placeholder="0123456789" required>';
-                $output .= '</div>';
-            }
+            <!-- Wheel Canvas -->
+            <div class="kata-wheel-canvas">
+                <div class="kata-wheel-pointer">▼</div>
+                <div class="kata-wheel-circle" id="kata-wheel-circle-<?php echo esc_attr($wheel_id); ?>">
+                    <?php 
+                    $prize_count = count($prizes);
+                    $angle_per_prize = 360 / $prize_count;
+                    foreach ($prizes as $index => $prize): 
+                        $rotation = $index * $angle_per_prize;
+                    ?>
+                        <div class="kata-wheel-segment" 
+                             style="--rotation: <?php echo esc_attr($rotation); ?>deg; --segment-color: <?php echo esc_attr($prize->color); ?>;" 
+                             data-prize-id="<?php echo esc_attr($prize->id); ?>">
+                            <div class="kata-wheel-segment-content">
+                                <span class="kata-wheel-prize-text"><?php echo esc_html($prize->prize_text); ?></span>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+                
+                <!-- Center Spin Button -->
+                <button type="button" class="kata-wheel-center" id="kata-wheel-spin-btn-<?php echo esc_attr($wheel_id); ?>">
+                    <span>QUAY</span>
+                </button>
+            </div>
             
-            $output .= '<div class="kata-wheel-form-field">';
-            $output .= '<label for="kata-wheel-name-' . esc_attr($wheel_id) . '">Tên (không bắt buộc)</label>';
-            $output .= '<input type="text" id="kata-wheel-name-' . esc_attr($wheel_id) . '" placeholder="Tên của bạn">';
-            $output .= '</div>';
+            <!-- User Form (if required) -->
+            <?php if ($wheel->requirement !== 'none'): ?>
+                <div class="kata-wheel-form" id="kata-wheel-form-<?php echo esc_attr($wheel_id); ?>">
+                    <div class="kata-wheel-form-inner">
+                        <h3>Nhập Thông Tin Để Quay</h3>
+                        
+                        <?php if (in_array($wheel->requirement, array('email', 'both'))): ?>
+                            <div class="kata-wheel-form-field">
+                                <label for="kata-wheel-email-<?php echo esc_attr($wheel_id); ?>">
+                                    Email <span class="required">*</span>
+                                </label>
+                                <input type="email" 
+                                       id="kata-wheel-email-<?php echo esc_attr($wheel_id); ?>" 
+                                       class="kata-wheel-input" 
+                                       placeholder="your@email.com" 
+                                       required>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if (in_array($wheel->requirement, array('phone', 'both'))): ?>
+                            <div class="kata-wheel-form-field">
+                                <label for="kata-wheel-phone-<?php echo esc_attr($wheel_id); ?>">
+                                    Số Điện Thoại <span class="required">*</span>
+                                </label>
+                                <input type="tel" 
+                                       id="kata-wheel-phone-<?php echo esc_attr($wheel_id); ?>" 
+                                       class="kata-wheel-input" 
+                                       placeholder="0123456789" 
+                                       required>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <div class="kata-wheel-form-field">
+                            <label for="kata-wheel-name-<?php echo esc_attr($wheel_id); ?>">
+                                Tên (không bắt buộc)
+                            </label>
+                            <input type="text" 
+                                   id="kata-wheel-name-<?php echo esc_attr($wheel_id); ?>" 
+                                   class="kata-wheel-input" 
+                                   placeholder="Tên của bạn">
+                        </div>
+                        
+                        <button type="button" class="kata-wheel-submit-btn">
+                            ✨ Xác Nhận & Quay
+                        </button>
+                    </div>
+                </div>
+            <?php endif; ?>
             
-            $output .= '<button type="button" class="kata-wheel-submit-btn">';
-            $output .= '✨ Xác Nhận & Quay';
-            $output .= '</button>';
+            <!-- Result Modal -->
+            <div class="kata-wheel-result-modal" id="kata-wheel-result-<?php echo esc_attr($wheel_id); ?>">
+                <div class="kata-wheel-result-overlay"></div>
+                <div class="kata-wheel-result-content">
+                    <button type="button" class="kata-wheel-result-close">×</button>
+                    <div class="kata-wheel-result-icon">🎉</div>
+                    <h3 class="kata-wheel-result-title">Chúc Mừng!</h3>
+                    <div class="kata-wheel-result-prize" id="kata-wheel-prize-name-<?php echo esc_attr($wheel_id); ?>"></div>
+                    <div class="kata-wheel-result-value" id="kata-wheel-prize-value-<?php echo esc_attr($wheel_id); ?>"></div>
+                    <p class="kata-wheel-result-note">Vui lòng liên hệ với chúng tôi để nhận giải thưởng!</p>
+                    <button type="button" class="kata-wheel-result-btn">Đóng</button>
+                </div>
+            </div>
             
-            $output .= '</div>'; // .kata-wheel-form-inner
-            $output .= '</div>'; // .kata-wheel-form
-        }
+            <!-- Spins Info -->
+            <div class="kata-wheel-info" id="kata-wheel-info-<?php echo esc_attr($wheel_id); ?>">
+                <p class="kata-wheel-spins-remaining">
+                    Lượt quay còn lại: <strong id="kata-wheel-spins-left-<?php echo esc_attr($wheel_id); ?>">--</strong>
+                </p>
+            </div>
+        </div>
         
-        // Result modal
-        $output .= '<div class="kata-wheel-result-modal" id="kata-wheel-result-' . esc_attr($wheel_id) . '" style="display: none;">';
-        $output .= '<div class="kata-wheel-result-overlay" onclick="kataWheelCloseResult(' . esc_js($wheel_id) . ')"></div>';
-        $output .= '<div class="kata-wheel-result-content">';
-        $output .= '<button class="kata-wheel-result-close" onclick="kataWheelCloseResult(' . esc_js($wheel_id) . ')">×</button>';
-        $output .= '<div class="kata-wheel-result-icon">🎉</div>';
-        $output .= '<h3 class="kata-wheel-result-title">Chúc Mừng!</h3>';
-        $output .= '<div class="kata-wheel-result-prize" id="kata-wheel-prize-name-' . esc_attr($wheel_id) . '"></div>';
-        $output .= '<div class="kata-wheel-result-value" id="kata-wheel-prize-value-' . esc_attr($wheel_id) . '"></div>';
-        $output .= '<p class="kata-wheel-result-note">Vui lòng liên hệ với chúng tôi để nhận giải thưởng!</p>';
-        $output .= '<button class="kata-wheel-result-btn" onclick="kataWheelCloseResult(' . esc_js($wheel_id) . ')">Đóng</button>';
-        $output .= '</div>';
-        $output .= '</div>'; // .kata-wheel-result-modal
+        <!-- Schema.org Markup -->
+        <script type="application/ld+json">
+        <?php echo wp_json_encode($this->generate_wheel_schema($wheel, $prizes), JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT); ?>
+        </script>
+        <?php
         
-        // Spins info
-        $output .= '<div class="kata-wheel-info" id="kata-wheel-info-' . esc_attr($wheel_id) . '">';
-        $output .= '<p class="kata-wheel-spins-remaining">';
-        $output .= 'Lượt quay còn lại: <strong id="kata-wheel-spins-left-' . esc_attr($wheel_id) . '">--</strong>';
-        $output .= '</p>';
-        $output .= '</div>';
+        return ob_get_clean();
+    }
+
+    /**
+     * Render wheel with simple style (list-based)
+     */
+    private function render_wheel_simple($wheel, $prizes, $wheel_id) {
+        ob_start();
+        ?>
+        <div class="kata-wheel-container kata-wheel-simple" 
+             id="kata-wheel-<?php echo esc_attr($wheel_id); ?>" 
+             data-wheel-id="<?php echo esc_attr($wheel_id); ?>"
+             data-requirement="<?php echo esc_attr($wheel->requirement); ?>">
+            
+            <!-- Simple Header -->
+            <div class="kata-wheel-header-simple">
+                <h3 class="kata-wheel-title-simple"><?php echo esc_html($wheel->wheel_title); ?></h3>
+                <?php if ($wheel->wheel_description): ?>
+                    <p class="kata-wheel-description-simple"><?php echo esc_html($wheel->wheel_description); ?></p>
+                <?php endif; ?>
+            </div>
+            
+            <!-- Prizes List -->
+            <div class="kata-wheel-prizes-list">
+                <div class="kata-wheel-prizes-title">🎁 Giải thưởng:</div>
+                <div class="kata-wheel-prizes-grid">
+                    <?php foreach ($prizes as $prize): ?>
+                        <div class="kata-wheel-prize-item" style="border-left: 4px solid <?php echo esc_attr($prize->color); ?>;">
+                            <span class="kata-wheel-prize-name"><?php echo esc_html($prize->prize_text); ?></span>
+                            <?php if ($prize->prize_value): ?>
+                                <span class="kata-wheel-prize-value"><?php echo esc_html($prize->prize_value); ?></span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            
+            <!-- Spin Button -->
+            <div class="kata-wheel-simple-spin">
+                <button type="button" class="kata-wheel-simple-btn" id="kata-wheel-spin-btn-<?php echo esc_attr($wheel_id); ?>">
+                    <span class="kata-wheel-btn-icon">🎲</span>
+                    <span class="kata-wheel-btn-text">QUAY NGAY</span>
+                    <span class="kata-wheel-btn-subtitle">Nhấn để quay!</span>
+                </button>
+            </div>
+            
+            <!-- User Form (if required) -->
+            <?php if ($wheel->requirement !== 'none'): ?>
+                <div class="kata-wheel-form kata-wheel-form-simple" id="kata-wheel-form-<?php echo esc_attr($wheel_id); ?>">
+                    <div class="kata-wheel-form-simple-inner">
+                        <div class="kata-wheel-form-simple-title">
+                            <span class="kata-wheel-form-icon">✨</span>
+                            <h4>Nhập thông tin để quay</h4>
+                        </div>
+                        
+                        <?php if (in_array($wheel->requirement, array('email', 'both'))): ?>
+                            <div class="kata-wheel-form-field-simple">
+                                <label for="kata-wheel-email-<?php echo esc_attr($wheel_id); ?>">
+                                    📧 Email <span class="required">*</span>
+                                </label>
+                                <input type="email" 
+                                       id="kata-wheel-email-<?php echo esc_attr($wheel_id); ?>" 
+                                       class="kata-wheel-input" 
+                                       placeholder="your@email.com" 
+                                       required>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <?php if (in_array($wheel->requirement, array('phone', 'both'))): ?>
+                            <div class="kata-wheel-form-field-simple">
+                                <label for="kata-wheel-phone-<?php echo esc_attr($wheel_id); ?>">
+                                    📱 Số điện thoại <span class="required">*</span>
+                                </label>
+                                <input type="tel" 
+                                       id="kata-wheel-phone-<?php echo esc_attr($wheel_id); ?>" 
+                                       class="kata-wheel-input" 
+                                       placeholder="0123456789" 
+                                       required>
+                            </div>
+                        <?php endif; ?>
+                        
+                        <div class="kata-wheel-form-field-simple">
+                            <label for="kata-wheel-name-<?php echo esc_attr($wheel_id); ?>">
+                                👤 Tên (không bắt buộc)
+                            </label>
+                            <input type="text" 
+                                   id="kata-wheel-name-<?php echo esc_attr($wheel_id); ?>" 
+                                   class="kata-wheel-input" 
+                                   placeholder="Tên của bạn">
+                        </div>
+                        
+                        <button type="button" class="kata-wheel-submit-btn-simple">
+                            🎯 Xác nhận & quay
+                        </button>
+                    </div>
+                </div>
+            <?php endif; ?>
+            
+            <!-- Result Display -->
+            <div class="kata-wheel-result kata-wheel-result-simple" id="kata-wheel-result-<?php echo esc_attr($wheel_id); ?>">
+                <div class="kata-wheel-result-simple-content">
+                    <div class="kata-wheel-result-simple-icon">🎉</div>
+                    <div class="kata-wheel-result-simple-title">Chúc mừng bạn!</div>
+                    <div class="kata-wheel-result-simple-prize">
+                        <div class="kata-wheel-result-prize-name" id="kata-wheel-prize-name-<?php echo esc_attr($wheel_id); ?>"></div>
+                        <div class="kata-wheel-result-prize-value" id="kata-wheel-prize-value-<?php echo esc_attr($wheel_id); ?>"></div>
+                    </div>
+                    <div class="kata-wheel-result-simple-note">💡 Liên hệ với chúng tôi để nhận giải thưởng!</div>
+                    <button type="button" class="kata-wheel-result-simple-btn">
+                        👍 Đã hiểu
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Spins Info -->
+            <div class="kata-wheel-info-simple" id="kata-wheel-info-<?php echo esc_attr($wheel_id); ?>">
+                <div class="kata-wheel-spins-simple">
+                    🎯 Lượt quay còn lại: <strong id="kata-wheel-spins-left-<?php echo esc_attr($wheel_id); ?>">--</strong>
+                </div>
+            </div>
+        </div>
+        <?php
         
-        $output .= '</div>'; // .kata-wheel-container
-        
-        // Add Schema.org markup
+        return ob_get_clean();
+    }
+
+    /**
+     * Generate wheel schema markup
+     */
+    private function generate_wheel_schema($wheel, $prizes) {
         $schema = array(
             '@context' => 'https://schema.org',
             '@type' => 'Game',
@@ -3208,16 +3384,21 @@ class KATA_SEO_Manager {
                 '@type' => 'AggregateOffer',
                 'offerCount' => count($prizes),
                 'offers' => array()
-            ),
-            'aggregateRating' => array(
+            )
+        );
+        
+        // Add aggregate rating if available
+        if (isset($wheel->total_spins) && $wheel->total_spins > 0) {
+            $schema['aggregateRating'] = array(
                 '@type' => 'AggregateRating',
                 'ratingValue' => '4.8',
                 'reviewCount' => (string)$wheel->total_spins,
                 'bestRating' => '5',
                 'worstRating' => '1'
-            )
-        );
+            );
+        }
         
+        // Add prize offers
         foreach ($prizes as $prize) {
             $schema['offers']['offers'][] = array(
                 '@type' => 'Offer',
@@ -3229,516 +3410,7 @@ class KATA_SEO_Manager {
             );
         }
         
-        $output .= '<script type="application/ld+json">';
-        $output .= wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-        $output .= '</script>';
-        
-        // Add inline CSS for default wheel style
-        $output .= '<style>
-/* Default Wheel Form Styles */
-.kata-wheel-form {
-    display: none;
-    background: #fff;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 25px;
-    margin: 20px auto;
-    max-width: 400px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.kata-wheel-form.active {
-    display: block;
-    animation: fadeIn 0.3s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.kata-wheel-form-inner h3 {
-    text-align: center;
-    color: #2d3748;
-    margin: 0 0 20px 0;
-    font-size: 20px;
-    font-weight: 600;
-}
-
-.kata-wheel-form-field {
-    margin-bottom: 15px;
-}
-
-.kata-wheel-form-field label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: #4a5568;
-    margin-bottom: 6px;
-}
-
-.kata-wheel-form-field .required {
-    color: #e53e3e;
-}
-
-.kata-wheel-form-field input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #cbd5e0;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    box-sizing: border-box;
-}
-
-.kata-wheel-form-field input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.kata-wheel-form-field input.error {
-    border-color: #e53e3e;
-    background: #fff5f5;
-}
-
-.kata-wheel-submit-btn {
-    width: 100%;
-    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
-    color: white;
-    border: none;
-    padding: 14px 20px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    margin-top: 10px;
-}
-
-.kata-wheel-submit-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
-}
-
-.kata-wheel-submit-btn:active {
-    transform: translateY(0);
-}
-
-/* Wheel Error Messages */
-.kata-wheel-error {
-    background: #fff5f5;
-    color: #e53e3e;
-    padding: 12px 15px;
-    border-radius: 6px;
-    margin: 10px 0;
-    border-left: 4px solid #e53e3e;
-    font-size: 14px;
-    animation: fadeIn 0.3s ease-in-out;
-}
-</style>';
-        
-        return $output;
-    }
-
-    /**
-     * Render wheel with simple style
-     */
-    private function render_wheel_simple($wheel, $prizes, $wheel_id) {
-        // Build simple output
-        $output = '<div class="kata-wheel-container kata-wheel-simple" id="kata-wheel-' . esc_attr($wheel_id) . '" data-wheel-id="' . esc_attr($wheel_id) . '">';
-        
-        // Simple header
-        $output .= '<div class="kata-wheel-header-simple">';
-        $output .= '<h3 class="kata-wheel-title-simple">' . esc_html($wheel->wheel_title) . '</h3>';
-        if ($wheel->wheel_description) {
-            $output .= '<p class="kata-wheel-description-simple">' . esc_html($wheel->wheel_description) . '</p>';
-        }
-        $output .= '</div>';
-        
-        // Simple wheel display
-        $output .= '<div class="kata-wheel-simple-display">';
-        
-        // Prize list preview
-        $output .= '<div class="kata-wheel-prizes-list">';
-        $output .= '<div class="kata-wheel-prizes-title">🎁 Giải thưởng:</div>';
-        $output .= '<div class="kata-wheel-prizes-grid">';
-        
-        foreach ($prizes as $index => $prize) {
-            $output .= '<div class="kata-wheel-prize-item" style="border-left: 4px solid ' . esc_attr($prize->color) . ';">';
-            $output .= '<span class="kata-wheel-prize-name">' . esc_html($prize->prize_text) . '</span>';
-            if ($prize->prize_value) {
-                $output .= '<span class="kata-wheel-prize-value">' . esc_html($prize->prize_value) . '</span>';
-            }
-            $output .= '</div>';
-        }
-        
-        $output .= '</div>'; // .kata-wheel-prizes-grid
-        $output .= '</div>'; // .kata-wheel-prizes-list
-        
-        // Simple spin button
-        $output .= '<div class="kata-wheel-simple-spin">';
-        $output .= '<button type="button" class="kata-wheel-simple-btn" id="kata-wheel-spin-btn-' . esc_attr($wheel_id) . '">';
-        $output .= '<span class="kata-wheel-btn-icon">🎲</span>';
-        $output .= '<span class="kata-wheel-btn-text">QUAY NGAY</span>';
-        $output .= '<span class="kata-wheel-btn-subtitle">Nhấn để quay!</span>';
-        $output .= '</button>';
-        $output .= '</div>';
-        
-        $output .= '</div>'; // .kata-wheel-simple-display
-        
-        // Simple form (if required)
-        if ($wheel->requirement !== 'none') {
-            $output .= '<div class="kata-wheel-form kata-wheel-form-simple" id="kata-wheel-form-' . esc_attr($wheel_id) . '" style="display:none;">';
-            $output .= '<div class="kata-wheel-form-simple-inner">';
-            $output .= '<div class="kata-wheel-form-simple-title">';
-            $output .= '<span class="kata-wheel-form-icon">✨</span>';
-            $output .= '<h4>Nhập thông tin để quay</h4>';
-            $output .= '</div>';
-            
-            if (in_array($wheel->requirement, array('email', 'both'))) {
-                $output .= '<div class="kata-wheel-form-field-simple">';
-                $output .= '<label for="kata-wheel-email-' . esc_attr($wheel_id) . '">📧 Email <span class="required">*</span></label>';
-                $output .= '<input type="email" id="kata-wheel-email-' . esc_attr($wheel_id) . '" placeholder="your@email.com" required>';
-                $output .= '</div>';
-            }
-            
-            if (in_array($wheel->requirement, array('phone', 'both'))) {
-                $output .= '<div class="kata-wheel-form-field-simple">';
-                $output .= '<label for="kata-wheel-phone-' . esc_attr($wheel_id) . '">📱 Số điện thoại <span class="required">*</span></label>';
-                $output .= '<input type="tel" id="kata-wheel-phone-' . esc_attr($wheel_id) . '" placeholder="0123456789" required>';
-                $output .= '</div>';
-            }
-            
-            $output .= '<div class="kata-wheel-form-field-simple">';
-            $output .= '<label for="kata-wheel-name-' . esc_attr($wheel_id) . '">👤 Tên (không bắt buộc)</label>';
-            $output .= '<input type="text" id="kata-wheel-name-' . esc_attr($wheel_id) . '" placeholder="Tên của bạn">';
-            $output .= '</div>';
-            
-            $output .= '<div class="kata-wheel-form-actions-simple">';
-            $output .= '<button type="button" class="kata-wheel-submit-btn-simple">';
-            $output .= '🎯 Xác nhận & quay';
-            $output .= '</button>';
-            $output .= '</div>';
-            
-            $output .= '</div>'; // .kata-wheel-form-simple-inner
-            $output .= '</div>'; // .kata-wheel-form-simple
-        }
-        
-        // Simple result display
-        $output .= '<div class="kata-wheel-result kata-wheel-result-simple" id="kata-wheel-result-' . esc_attr($wheel_id) . '" style="display: none;">';
-        $output .= '<div class="kata-wheel-result-simple-content">';
-        $output .= '<div class="kata-wheel-result-simple-icon">🎉</div>';
-        $output .= '<div class="kata-wheel-result-simple-title">Chúc mừng bạn!</div>';
-        $output .= '<div class="kata-wheel-result-simple-prize">';
-        $output .= '<div class="kata-wheel-result-prize-name" id="kata-wheel-prize-name-' . esc_attr($wheel_id) . '"></div>';
-        $output .= '<div class="kata-wheel-result-prize-value" id="kata-wheel-prize-value-' . esc_attr($wheel_id) . '"></div>';
-        $output .= '</div>';
-        $output .= '<div class="kata-wheel-result-simple-note">💡 Liên hệ với chúng tôi để nhận giải thưởng!</div>';
-        $output .= '<button class="kata-wheel-result-simple-btn" onclick="kataWheelCloseResult(' . esc_js($wheel_id) . ')">';
-        $output .= '👍 Đã hiểu';
-        $output .= '</button>';
-        $output .= '</div>';
-        $output .= '</div>'; // .kata-wheel-result-simple
-        
-        // Simple info
-        $output .= '<div class="kata-wheel-info-simple" id="kata-wheel-info-' . esc_attr($wheel_id) . '">';
-        $output .= '<div class="kata-wheel-spins-simple">';
-        $output .= '🎯 Lượt quay còn lại: <strong id="kata-wheel-spins-left-' . esc_attr($wheel_id) . '">--</strong>';
-        $output .= '</div>';
-        $output .= '</div>';
-        
-        $output .= '</div>'; // .kata-wheel-container
-        
-        // Add simple style CSS
-        $output .= '<style>
-/* Simple Wheel Styles */
-.kata-wheel-simple {
-    max-width: 500px;
-    margin: 30px auto;
-    padding: 25px;
-    background: #ffffff;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-}
-
-.kata-wheel-header-simple {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.kata-wheel-title-simple {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1a202c;
-    margin: 0 0 8px 0;
-}
-
-.kata-wheel-description-simple {
-    font-size: 14px;
-    color: #666;
-    margin: 0;
-}
-
-.kata-wheel-prizes-list {
-    margin-bottom: 25px;
-}
-
-.kata-wheel-prizes-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 15px;
-}
-
-.kata-wheel-prizes-grid {
-    display: grid;
-    gap: 10px;
-}
-
-.kata-wheel-prize-item {
-    background: #f8fafc;
-    padding: 12px 15px;
-    border-radius: 8px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.kata-wheel-prize-name {
-    font-weight: 500;
-    color: #2d3748;
-}
-
-.kata-wheel-prize-value {
-    font-size: 12px;
-    color: #666;
-    background: #e2e8f0;
-    padding: 4px 8px;
-    border-radius: 4px;
-}
-
-.kata-wheel-simple-spin {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.kata-wheel-simple-btn {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border: none;
-    padding: 18px 35px;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-}
-
-.kata-wheel-simple-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-}
-
-.kata-wheel-simple-btn.spinning {
-    animation: spinningPulse 0.8s ease-in-out infinite;
-    pointer-events: none;
-}
-
-@keyframes spinningPulse {
-    0%, 100% { 
-        transform: scale(1) translateY(-2px); 
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-    50% { 
-        transform: scale(1.05) translateY(-4px); 
-        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    }
-}
-
-.kata-wheel-btn-icon {
-    font-size: 20px;
-}
-
-.kata-wheel-btn-text {
-    font-size: 16px;
-    font-weight: 700;
-}
-
-.kata-wheel-btn-subtitle {
-    font-size: 12px;
-    opacity: 0.9;
-}
-
-.kata-wheel-form-simple {
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.kata-wheel-form-simple-title {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.kata-wheel-form-simple-title h4 {
-    margin: 5px 0 0 0;
-    color: #2d3748;
-}
-
-.kata-wheel-form-icon {
-    font-size: 24px;
-}
-
-.kata-wheel-form-field-simple {
-    margin-bottom: 15px;
-}
-
-.kata-wheel-form-field-simple label {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-    color: #4a5568;
-    margin-bottom: 5px;
-}
-
-.kata-wheel-form-field-simple input {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: border-color 0.3s ease;
-    box-sizing: border-box;
-}
-
-.kata-wheel-form-field-simple input:focus {
-    outline: none;
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.kata-wheel-form-actions-simple {
-    text-align: center;
-    margin-top: 20px;
-}
-
-.kata-wheel-submit-btn-simple {
-    background: #48bb78;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.kata-wheel-submit-btn-simple:hover {
-    background: #38a169;
-}
-
-.kata-wheel-result-simple {
-    background: #f0fff4;
-    border: 2px solid #48bb78;
-    border-radius: 8px;
-    padding: 25px;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.kata-wheel-result-simple-icon {
-    font-size: 48px;
-    margin-bottom: 15px;
-}
-
-.kata-wheel-result-simple-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: #2d3748;
-    margin-bottom: 15px;
-}
-
-.kata-wheel-result-prize-name {
-    font-size: 18px;
-    font-weight: 600;
-    color: #38a169;
-    margin-bottom: 8px;
-}
-
-.kata-wheel-result-prize-value {
-    font-size: 14px;
-    color: #666;
-    background: #e6fffa;
-    padding: 8px 15px;
-    border-radius: 6px;
-    display: inline-block;
-    margin-bottom: 15px;
-}
-
-.kata-wheel-result-simple-note {
-    font-size: 13px;
-    color: #666;
-    margin-bottom: 20px;
-}
-
-.kata-wheel-result-simple-btn {
-    background: #667eea;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-}
-
-.kata-wheel-info-simple {
-    text-align: center;
-    padding: 15px;
-    background: #fafafa;
-    border-radius: 6px;
-    font-size: 14px;
-    color: #666;
-}
-
-.required {
-    color: #e53e3e;
-}
-
-@media (max-width: 768px) {
-    .kata-wheel-simple {
-        margin: 20px 15px;
-        padding: 20px;
-    }
-    
-    .kata-wheel-title-simple {
-        font-size: 20px;
-    }
-    
-    .kata-wheel-simple-btn {
-        padding: 15px 25px;
-        font-size: 14px;
-    }
-}
-</style>';
-        
-        return $output;
+        return $schema;
     }
 
     public function render_rating($atts) {

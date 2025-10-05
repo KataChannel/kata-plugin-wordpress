@@ -21,6 +21,8 @@
             this.startTime = Date.now();
             this.passScore = parseInt(this.container.data('pass-score')) || 70;
             this.allowRetake = this.container.data('allow-retake') === 'true';
+            this.remainingAttempts = parseInt(this.container.data('remaining-attempts')) || 0;
+            this.maxAttempts = parseInt(this.container.data('max-attempts')) || 3;
             
             this.init();
         }
@@ -31,6 +33,7 @@
             this.trackView();
             this.updateProgress();
             this.showCurrentQuestion();
+            this.showAttemptWarning();
         }
         
         bindEvents() {
@@ -114,6 +117,18 @@
             clearInterval(this.timer);
             this.showNotification('⏰ Hết thời gian! Quiz sẽ được nộp tự động.', 'warning');
             setTimeout(() => this.submitQuiz(), 2000);
+        }
+        
+        showAttemptWarning() {
+            if (this.remainingAttempts <= 1) {
+                const warningMessage = this.remainingAttempts === 1 
+                    ? '⚠️ Đây là lần thử cuối cùng của bạn! Hãy cẩn thận khi trả lời.'
+                    : '🚨 Bạn đã hết lượt thử cho quiz này.';
+                    
+                this.showNotification(warningMessage, 'warning', 8000);
+            } else if (this.remainingAttempts <= 2) {
+                this.showNotification(`ℹ️ Bạn còn ${this.remainingAttempts} lượt thử cho quiz này.`, 'info', 5000);
+            }
         }
         
         trackView() {
@@ -348,8 +363,23 @@
             })
             .done((response) => {
                 if (response.success) {
+                    // Giảm số lần thử còn lại
+                    this.remainingAttempts = Math.max(0, this.remainingAttempts - 1);
+                    this.updateAttemptInfo();
+                    
                     this.showResults(response.data);
                     this.showNotification('🎉 Hoàn thành quiz thành công!', 'success');
+                    
+                    // Hiển thị thông báo về số lượt còn lại
+                    if (this.remainingAttempts > 0) {
+                        setTimeout(() => {
+                            this.showNotification(`ℹ️ Bạn còn ${this.remainingAttempts} lượt thử cho quiz này.`, 'info', 5000);
+                        }, 2000);
+                    } else {
+                        setTimeout(() => {
+                            this.showNotification('⚠️ Bạn đã hết lượt thử cho quiz này.', 'warning', 8000);
+                        }, 2000);
+                    }
                 } else {
                     this.showNotification('❌ ' + (response.data?.message || 'Có lỗi xảy ra'), 'error');
                 }
@@ -410,7 +440,25 @@
             }
         }
         
-        showNotification(message, type = 'info') {
+        updateAttemptInfo() {
+            // Cập nhật hiển thị số lượt thử còn lại
+            const attemptText = this.container.find('.attempt-text');
+            if (attemptText.length) {
+                attemptText.html(`Còn lại: <strong>${this.remainingAttempts}</strong> lượt thử`);
+                
+                // Thay đổi màu sắc dựa trên số lượt còn lại
+                const attemptInfo = this.container.find('.kata-quiz-attempt-info');
+                attemptInfo.removeClass('warning danger');
+                
+                if (this.remainingAttempts <= 0) {
+                    attemptInfo.addClass('danger');
+                } else if (this.remainingAttempts <= 1) {
+                    attemptInfo.addClass('warning');
+                }
+            }
+        }
+        
+        showNotification(message, type = 'info', duration = 4000) {
             // Remove existing notifications
             $('.kata-quiz-notification').remove();
             
@@ -424,10 +472,10 @@
             // Insert notification
             this.container.prepend(notification);
             
-            // Auto hide after 5 seconds
+            // Auto hide after specified duration
             setTimeout(() => {
                 notification.fadeOut(() => notification.remove());
-            }, 5000);
+            }, duration);
             
             // Manual close
             notification.find('.notification-close').on('click', () => {

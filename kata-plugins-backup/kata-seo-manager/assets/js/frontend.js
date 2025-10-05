@@ -24,7 +24,7 @@
         
         questions.forEach(function(question, index) {
             var selected = question.querySelector('input[type="radio"]:checked');
-            var questionData = window[quizId.replace('-', '_') + '_questions'] || [];
+            var questionData = window[quizId.replace(/-/g, '_') + '_questions'] || [];
             
             if (selected && questionData[index]) {
                 var selectedValue = parseInt(selected.value);

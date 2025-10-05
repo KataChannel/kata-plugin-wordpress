@@ -465,7 +465,7 @@ $engagement_stats = $wpdb->get_row("
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="quiz-completions"><?php echo intval($quiz->completions); ?></span>
+                                                <span class="quiz-completions"><?php echo isset($quiz->completions) ? intval($quiz->completions) : (isset($quiz->total_completions) ? intval($quiz->total_completions) : 0); ?></span>
                                             </td>
                                             <td>
                                                 <span class="quiz-date"><?php echo date_i18n('d/m/Y', strtotime($quiz->created_at)); ?></span>

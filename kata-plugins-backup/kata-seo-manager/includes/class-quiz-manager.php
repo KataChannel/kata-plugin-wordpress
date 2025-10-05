@@ -24,12 +24,16 @@ class KATA_SEO_Quiz_Manager {
      * Initialize hooks
      */
     private function init_hooks() {
-        // AJAX handlers
-        add_action('wp_ajax_kata_quiz_submit', array($this, 'handle_quiz_submission'));
-        add_action('wp_ajax_nopriv_kata_quiz_submit', array($this, 'handle_quiz_submission'));
-        add_action('wp_ajax_kata_quiz_analytics', array($this, 'get_quiz_analytics'));
-        add_action('wp_ajax_kata_quiz_track_view', array($this, 'track_quiz_view'));
-        add_action('wp_ajax_nopriv_kata_quiz_track_view', array($this, 'track_quiz_view'));
+                // Register AJAX handlers
+        add_action('wp_ajax_kata_submit_quiz', array($this, 'handle_quiz_submission'));
+        add_action('wp_ajax_nopriv_kata_submit_quiz', array($this, 'handle_quiz_submission'));
+        add_action('wp_ajax_kata_track_quiz_view', array($this, 'track_quiz_view'));
+        add_action('wp_ajax_nopriv_kata_track_quiz_view', array($this, 'track_quiz_view'));
+        add_action('wp_ajax_kata_get_quiz_analytics', array($this, 'get_quiz_analytics'));
+        add_action('wp_ajax_kata_check_ip_status', array($this, 'check_ip_status_ajax'));
+        add_action('wp_ajax_nopriv_kata_check_ip_status', array($this, 'check_ip_status_ajax'));
+        add_action('wp_ajax_kata_reset_ip_attempts', array($this, 'reset_ip_attempts_ajax'));
+        add_action('wp_ajax_nopriv_kata_reset_ip_attempts', array($this, 'reset_ip_attempts_ajax'));
         
         // Advanced Analytics AJAX handlers
         add_action('wp_ajax_kata_get_quiz_details', array($this, 'get_quiz_details'));
@@ -215,12 +219,113 @@ class KATA_SEO_Quiz_Manager {
     }
     
     /**
+     * Check IP attempt limit for quiz
+     */
+    private function check_ip_attempt_limit($quiz_id, $max_attempts = 3) {
+        global $wpdb;
+        $table_attempts = $wpdb->prefix . 'kata_seo_quiz_attempts';
+        $user_ip = $this->get_user_ip();
+        
+        // Count attempts in last 24 hours to allow daily reset
+        $attempt_count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$table_attempts} 
+             WHERE quiz_id = %d AND ip_address = %s 
+             AND (attempt_date >= DATE_SUB(NOW(), INTERVAL 24 HOUR) OR attempt_date IS NULL)",
+            $quiz_id,
+            $user_ip
+        ));
+        
+        return array(
+            'allowed' => $attempt_count < $max_attempts,
+            'current_attempts' => intval($attempt_count),
+            'max_attempts' => $max_attempts,
+            'remaining' => max(0, $max_attempts - intval($attempt_count))
+        );
+    }
+    
+    /**
+     * Generate limit exceeded HTML
+     */
+    private function generate_limit_exceeded_html($attempt_check) {
+        ob_start();
+        ?>
+        <div class="kata-quiz-limit-exceeded">
+            <div class="limit-message">
+                <div class="limit-icon">🚫</div>
+                <h4>Đã hết lượt thử Quiz</h4>
+                <p>Bạn đã thử quiz này <strong><?php echo $attempt_check['current_attempts']; ?></strong> lần (tối đa <?php echo $attempt_check['max_attempts']; ?> lần).</p>
+                <p>Mỗi địa chỉ IP chỉ được phép thử quiz này tối đa <?php echo $attempt_check['max_attempts']; ?> lần để đảm bảo tính công bằng.</p>
+                <div class="limit-suggestions">
+                    <h5>💡 Gợi ý:</h5>
+                    <ul>
+                        <li>Thử các quiz khác của chúng tôi</li>
+                        <li>Chia sẻ với bạn bè để họ cũng có thể tham gia</li>
+                        <li>Quay lại sau để tham gia quiz mới</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <style>
+        .kata-quiz-limit-exceeded {
+            background: linear-gradient(135deg, #fff3e0, #ffebee);
+            border: 2px solid #ff9800;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+        }
+        .limit-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .kata-quiz-limit-exceeded h4 {
+            color: #d84315;
+            margin-bottom: 16px;
+            font-size: 24px;
+        }
+        .kata-quiz-limit-exceeded p {
+            color: #5d4037;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        .limit-suggestions {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .limit-suggestions h5 {
+            color: #e65100;
+            margin-bottom: 12px;
+        }
+        .limit-suggestions ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .limit-suggestions li {
+            color: #5d4037;
+            margin-bottom: 8px;
+        }
+        </style>
+        <?php
+        return ob_get_clean();
+    }
+    
+    /**
      * Generate quiz HTML
      */
     private function generate_quiz_html($quiz_id, $atts, $quiz_data) {
         // If no quiz data, return empty
         if (empty($quiz_data)) {
             return '<div class="kata-quiz-error">Không có dữ liệu quiz để hiển thị.</div>';
+        }
+        
+        // Check IP attempt limit
+        $attempt_check = $this->check_ip_attempt_limit($quiz_id);
+        if (!$attempt_check['allowed']) {
+            return $this->generate_limit_exceeded_html($attempt_check);
         }
         
         ob_start();
@@ -230,16 +335,24 @@ class KATA_SEO_Quiz_Manager {
              data-timer="<?php echo esc_attr($atts['timer']); ?>"
              data-total-questions="<?php echo count($quiz_data); ?>"
              data-pass-score="<?php echo esc_attr($atts['pass_score']); ?>"
-             data-allow-retake="<?php echo esc_attr($atts['allow_retake']); ?>">
+             data-allow-retake="<?php echo esc_attr($atts['allow_retake']); ?>"
+             data-remaining-attempts="<?php echo $attempt_check['remaining']; ?>"
+             data-max-attempts="3">
             
             <div class="kata-quiz-header">
                 <h3 class="kata-quiz-title"><?php echo esc_html($atts['title']); ?></h3>
-                <?php if ($atts['timer'] > 0): ?>
-                    <div class="kata-quiz-timer" data-timer="<?php echo esc_attr($atts['timer']); ?>">
-                        <span class="timer-icon">⏱️</span>
-                        <span class="timer-text">Thời gian: <span class="timer-count"><?php echo gmdate('i:s', $atts['timer']); ?></span></span>
+                <div class="kata-quiz-meta">
+                    <?php if ($atts['timer'] > 0): ?>
+                        <div class="kata-quiz-timer" data-timer="<?php echo esc_attr($atts['timer']); ?>">
+                            <span class="timer-icon">⏱️</span>
+                            <span class="timer-text">Thời gian: <span class="timer-count"><?php echo gmdate('i:s', $atts['timer']); ?></span></span>
+                        </div>
+                    <?php endif; ?>
+                    <div class="kata-quiz-attempt-info">
+                        <span class="attempt-icon">🎯</span>
+                        <span class="attempt-text">Còn lại: <strong><?php echo $attempt_check['remaining']; ?></strong> lượt thử</span>
                     </div>
-                <?php endif; ?>
+                </div>
             </div>
             
             <div class="kata-quiz-progress">
@@ -341,6 +454,18 @@ class KATA_SEO_Quiz_Manager {
         }
         
         $quiz_id = intval($_POST['quiz_id']);
+        
+        // Check IP attempt limit before processing
+        $attempt_check = $this->check_ip_attempt_limit($quiz_id);
+        if (!$attempt_check['allowed']) {
+            wp_send_json_error(array(
+                'message' => 'Bạn đã hết lượt thử cho quiz này. Mỗi IP chỉ được thử tối đa ' . $attempt_check['max_attempts'] . ' lần.',
+                'attempts_exceeded' => true,
+                'current_attempts' => $attempt_check['current_attempts'],
+                'max_attempts' => $attempt_check['max_attempts']
+            ));
+        }
+        
         $answers = json_decode(stripslashes($_POST['answers']), true);
         $time_taken = intval($_POST['time_taken']) ?? 0;
         
@@ -491,22 +616,30 @@ class KATA_SEO_Quiz_Manager {
         global $wpdb;
         
         $table_name = $wpdb->prefix . 'kata_seo_quiz_attempts';
+        $user_ip = $this->get_user_ip();
+        $pass_score = 70; // Default pass score
+        $passed = ($score >= $pass_score) ? 1 : 0;
         
         $wpdb->insert(
             $table_name,
             array(
                 'quiz_id' => $quiz_id,
                 'user_id' => get_current_user_id() ?: null,
-                'user_ip' => $this->get_user_ip(),
+                'user_ip' => $user_ip,
+                'ip_address' => $user_ip,
                 'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
                 'answers' => json_encode($answers),
+                'user_answers' => json_encode($answers),
                 'score' => $score,
                 'total_questions' => $total_questions,
                 'correct_answers' => $correct_answers,
                 'time_taken' => $time_taken,
-                'completion_rate' => $completion_rate
+                'completion_rate' => $completion_rate,
+                'passed' => $passed,
+                'attempt_date' => current_time('mysql'),
+                'created_at' => current_time('mysql')
             ),
-            array('%d', '%d', '%s', '%s', '%s', '%f', '%d', '%d', '%d', '%f')
+            array('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%f', '%d', '%d', '%d', '%f', '%d', '%s', '%s')
         );
         
         return $wpdb->insert_id;
@@ -629,21 +762,49 @@ class KATA_SEO_Quiz_Manager {
     }
     
     /**
-     * Render quiz option shortcode
+     * AJAX handler to check IP status
      */
-    public function render_quiz_option_shortcode($atts, $content = '') {
-        // Check if we're inside a quiz shortcode by checking global
-        global $kata_quiz_parsing;
-        
-        // When used outside quiz context, return formatted option
-        if (empty($kata_quiz_parsing)) {
-            return '<div class="kata-quiz-standalone-option">' . wp_kses_post($content) . '</div>';
+    public function check_ip_status_ajax() {
+        $quiz_id = intval($_POST['quiz_id']);
+        if (!$quiz_id) {
+            wp_send_json_error(array('message' => 'Invalid quiz ID'));
         }
-        // Within quiz context, return content for parsing
-        return $content;
+        
+        $attempt_check = $this->check_ip_attempt_limit($quiz_id);
+        wp_send_json_success($attempt_check);
     }
     
     /**
+     * AJAX handler to reset IP attempts (for testing)
+     */
+    public function reset_ip_attempts_ajax() {
+        $quiz_id = intval($_POST['quiz_id']);
+        if (!$quiz_id) {
+            wp_send_json_error(array('message' => 'Invalid quiz ID'));
+        }
+        
+        global $wpdb;
+        $table_attempts = $wpdb->prefix . 'kata_seo_quiz_attempts';
+        $user_ip = $this->get_user_ip();
+        
+        $deleted = $wpdb->delete($table_attempts, array(
+            'quiz_id' => $quiz_id,
+            'ip_address' => $user_ip
+        ));
+        
+        wp_send_json_success(array(
+            'message' => "Reset thành công! Đã xóa $deleted attempts.",
+            'deleted_count' => $deleted
+        ));
+    }
+
+    /**
+     * Render quiz option shortcode
+     */
+    public function render_quiz_option_shortcode($atts, $content = '') {
+        // This is handled within the main quiz shortcode
+        return '';
+    }    /**
      * Get detailed quiz information for analytics
      */
     public function get_quiz_details() {

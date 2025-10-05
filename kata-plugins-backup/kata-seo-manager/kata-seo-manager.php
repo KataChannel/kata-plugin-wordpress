@@ -301,6 +301,15 @@ class KATA_SEO_Manager {
         
         add_submenu_page(
             'kata-seo-manager',
+            __('Quiz Management', 'kata-seo-manager'),
+            __('Quiz Management', 'kata-seo-manager'),
+            'manage_options',
+            'kata-seo-quiz-management',
+            array($this, 'admin_quiz_management_page')
+        );
+        
+        add_submenu_page(
+            'kata-seo-manager',
             __('Phân tích Quiz', 'kata-seo-manager'),
             __('Phân tích Quiz', 'kata-seo-manager'),
             'manage_options',
@@ -337,6 +346,13 @@ class KATA_SEO_Manager {
      */
     public function admin_statistics_page() {
         include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/statistics.php';
+    }
+    
+    /**
+     * Quiz management page
+     */
+    public function admin_quiz_management_page() {
+        include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/quiz-management.php';
     }
     
     /**
@@ -488,6 +504,42 @@ class KATA_SEO_Manager {
             'url' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('kata_seo_manager_nonce')
         ));
+        
+        // Enqueue quiz assets if needed
+        global $post;
+        if (is_object($post) && (has_shortcode($post->post_content, 'kata_quiz') || 
+            strpos($post->post_content, '[kata_quiz') !== false)) {
+            
+            wp_enqueue_style(
+                'kata-quiz-frontend',
+                KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/quiz-frontend.css',
+                array(),
+                KATA_SEO_MANAGER_VERSION
+            );
+            
+            wp_enqueue_script(
+                'kata-quiz-frontend',
+                KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/quiz-frontend.js',
+                array('jquery'),
+                KATA_SEO_MANAGER_VERSION,
+                true
+            );
+            
+            wp_localize_script('kata-quiz-frontend', 'kataQuiz', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('kata_quiz_nonce'),
+                'strings' => array(
+                    'loading' => __('Đang xử lý...', 'kata-seo-manager'),
+                    'error' => __('Có lỗi xảy ra', 'kata-seo-manager'),
+                    'success' => __('Cảm ơn bạn đã tham gia!', 'kata-seo-manager'),
+                    'submit' => __('Nộp bài', 'kata-seo-manager'),
+                    'next' => __('Câu tiếp theo', 'kata-seo-manager'),
+                    'prev' => __('Câu trước', 'kata-seo-manager'),
+                    'finish' => __('Hoàn thành', 'kata-seo-manager'),
+                    'restart' => __('Làm lại', 'kata-seo-manager')
+                )
+            ));
+        }
     }
     
     /**
@@ -2225,20 +2277,54 @@ class KATA_SEO_Manager {
 
     public function render_quiz($atts, $content = null) {
         $atts = shortcode_atts(array(
+            'id' => '',
             'title' => 'Quiz',
             'description' => '',
             'style' => 'default',
             'show_results' => 'true'
         ), $atts, 'kata_quiz');
         
-        if (empty($content)) {
-            return '<div class="kata-quiz-empty">Không có câu hỏi quiz nào được tìm thấy.</div>';
-        }
-        
         global $kata_quiz_questions;
         $kata_quiz_questions = array();
         
-        do_shortcode($content);
+        // If ID is provided, load quiz from database
+        if (!empty($atts['id'])) {
+            global $wpdb;
+            $quiz_id = intval($atts['id']);
+            $quiz = $wpdb->get_row($wpdb->prepare(
+                "SELECT * FROM {$wpdb->prefix}kata_seo_quizzes WHERE id = %d",
+                $quiz_id
+            ));
+            
+            if (!$quiz) {
+                return '<div class="kata-quiz-empty">Quiz với ID "' . esc_html($quiz_id) . '" không tồn tại.</div>';
+            }
+            
+            // Override attributes with database values
+            $atts['title'] = $quiz->quiz_title;
+            if (!empty($quiz->quiz_data)) {
+                $quiz_data = json_decode($quiz->quiz_data, true);
+                if ($quiz_data && isset($quiz_data['questions'])) {
+                    // Convert database format to JavaScript expected format
+                    $kata_quiz_questions = array();
+                    foreach ($quiz_data['questions'] as $question) {
+                        $kata_quiz_questions[] = array(
+                            'question' => $question['question'],
+                            'options' => $question['options'],
+                            'correct' => isset($question['correct_answer']) ? $question['correct_answer'] : 0,
+                            'explanation' => isset($question['explanation']) ? $question['explanation'] : ''
+                        );
+                    }
+                }
+            }
+        } else {
+            // Legacy content-based quiz
+            if (empty($content)) {
+                return '<div class="kata-quiz-empty">Không có câu hỏi quiz nào được tìm thấy.</div>';
+            }
+            
+            do_shortcode($content);
+        }
         
         if (empty($kata_quiz_questions)) {
             return '<div class="kata-quiz-empty">Không có câu hỏi quiz nào được tìm thấy.</div>';
@@ -2276,6 +2362,14 @@ class KATA_SEO_Manager {
         }
         
         $output .= '</form>';
+        
+        // Add JavaScript data for quiz scoring
+        $js_var_name = str_replace('-', '_', $quiz_id) . '_questions';
+        $quiz_data_js = json_encode($kata_quiz_questions, JSON_HEX_APOS | JSON_HEX_QUOT);
+        $output .= '<script type="text/javascript">';
+        $output .= 'window.' . $js_var_name . ' = ' . $quiz_data_js . ';';
+        $output .= '</script>';
+        
         $output .= '</div>';
         
         $kata_quiz_questions = array();

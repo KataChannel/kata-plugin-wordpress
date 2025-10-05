@@ -159,20 +159,24 @@
          */
         bindEvents() {
             // Spin button click
-            this.$center.on('click', () => this.handleSpinClick());
+            this.$center.on('click', (e) => {
+                e.preventDefault();
+                console.log('Center button clicked');
+                this.handleSpinClick();
+            });
             
             // Form submit - handle both styles
-            if (this.isSimple) {
-                this.$form.find('.kata-wheel-submit-btn-simple').on('click', (e) => {
-                    e.preventDefault();
-                    this.handleFormSubmit();
-                });
-            } else {
-                this.$form.find('button').on('click', (e) => {
-                    e.preventDefault();
-                    this.handleFormSubmit();
-                });
-            }
+            const $submitBtn = this.isSimple ? 
+                this.$form.find('.kata-wheel-submit-btn-simple') : 
+                this.$form.find('.kata-wheel-submit-btn');
+            
+            console.log('Found submit button:', $submitBtn.length);
+            
+            $submitBtn.on('click', (e) => {
+                e.preventDefault();
+                console.log('Form submit button clicked');
+                this.handleFormSubmit();
+            });
             
             // Modal close - handle both styles
             if (this.isSimple) {
@@ -180,17 +184,24 @@
                     this.closeModal();
                 });
             } else {
-                this.$modal.find('.kata-wheel-close-result').on('click', () => {
+                this.$modal.find('.kata-wheel-result-close').on('click', () => {
                     this.closeModal();
                 });
                 
-                // Click outside modal to close (only for default style)
+                // Overlay click to close
+                this.$modal.find('.kata-wheel-result-overlay').on('click', () => {
+                    this.closeModal();
+                });
+                
+                // Click on modal backdrop to close
                 this.$modal.on('click', (e) => {
                     if ($(e.target).is('.kata-wheel-result-modal')) {
                         this.closeModal();
                     }
                 });
             }
+            
+            console.log('Events bound successfully');
         }
 
         /**
@@ -210,13 +221,27 @@
                 return;
             }
             
+            // Check if wheelData is loaded
+            if (!this.wheelData) {
+                console.log('Wheel data not loaded yet, waiting...');
+                this.showError('Đang tải dữ liệu vòng quay, vui lòng thử lại...');
+                return;
+            }
+            
             // Check if form is required
-            if (this.wheelData && this.wheelData.requirement !== 'none' && !this.hasUserData()) {
+            const requiresForm = this.wheelData.requirement && this.wheelData.requirement !== 'none';
+            const hasData = this.hasUserData();
+            
+            console.log('Form required:', requiresForm, 'Has user data:', hasData, 'Requirement:', this.wheelData.requirement);
+            
+            if (requiresForm && !hasData) {
+                console.log('Showing form for user data collection');
                 this.showForm();
                 return;
             }
             
             // Spin the wheel
+            console.log('Spinning wheel now...');
             this.spin();
         }
 
@@ -426,14 +451,40 @@
          * Show form for user info
          */
         showForm() {
-            this.$form.addClass('active').slideDown(400);
+            console.log('Showing form...');
+            
+            // Make sure form exists
+            if (!this.$form || this.$form.length === 0) {
+                console.error('Form element not found!');
+                this.showError('Lỗi: Không tìm thấy form nhập liệu.');
+                return;
+            }
+            
+            // Show form with animation
+            this.$form.stop(true, true); // Stop any ongoing animation
+            this.$form.css('display', 'block').addClass('active').slideDown(400);
+            
+            // Focus on first input
+            setTimeout(() => {
+                const $firstInput = this.$form.find('input:visible:first');
+                if ($firstInput.length) {
+                    $firstInput.focus();
+                }
+            }, 450);
+            
+            console.log('Form should now be visible');
         }
 
         /**
          * Hide form
          */
         hideForm() {
-            this.$form.removeClass('active').slideUp(400);
+            console.log('Hiding form...');
+            if (this.$form && this.$form.length) {
+                this.$form.stop(true, true).removeClass('active').slideUp(400, function() {
+                    $(this).css('display', 'none');
+                });
+            }
         }
 
         /**

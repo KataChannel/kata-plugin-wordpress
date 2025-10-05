@@ -3164,7 +3164,7 @@ class KATA_SEO_Manager {
             $output .= '<input type="text" id="kata-wheel-name-' . esc_attr($wheel_id) . '" placeholder="Tên của bạn">';
             $output .= '</div>';
             
-            $output .= '<button type="button" class="kata-wheel-submit-btn" onclick="kataWheelSubmit(' . esc_js($wheel_id) . ')">';
+            $output .= '<button type="button" class="kata-wheel-submit-btn">';
             $output .= '✨ Xác Nhận & Quay';
             $output .= '</button>';
             
@@ -3232,6 +3232,117 @@ class KATA_SEO_Manager {
         $output .= '<script type="application/ld+json">';
         $output .= wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         $output .= '</script>';
+        
+        // Add inline CSS for default wheel style
+        $output .= '<style>
+/* Default Wheel Form Styles */
+.kata-wheel-form {
+    display: none;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px auto;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.kata-wheel-form.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kata-wheel-form-inner h3 {
+    text-align: center;
+    color: #2d3748;
+    margin: 0 0 20px 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.kata-wheel-form-field {
+    margin-bottom: 15px;
+}
+
+.kata-wheel-form-field label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 6px;
+}
+
+.kata-wheel-form-field .required {
+    color: #e53e3e;
+}
+
+.kata-wheel-form-field input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.kata-wheel-form-field input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.kata-wheel-form-field input.error {
+    border-color: #e53e3e;
+    background: #fff5f5;
+}
+
+.kata-wheel-submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.kata-wheel-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+}
+
+.kata-wheel-submit-btn:active {
+    transform: translateY(0);
+}
+
+/* Wheel Error Messages */
+.kata-wheel-error {
+    background: #fff5f5;
+    color: #e53e3e;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin: 10px 0;
+    border-left: 4px solid #e53e3e;
+    font-size: 14px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+</style>';
         
         return $output;
     }
@@ -3311,7 +3422,7 @@ class KATA_SEO_Manager {
             $output .= '</div>';
             
             $output .= '<div class="kata-wheel-form-actions-simple">';
-            $output .= '<button type="button" class="kata-wheel-submit-btn-simple" onclick="kataWheelSubmit(' . esc_js($wheel_id) . ')">';
+            $output .= '<button type="button" class="kata-wheel-submit-btn-simple">';
             $output .= '🎯 Xác nhận & quay';
             $output .= '</button>';
             $output .= '</div>';

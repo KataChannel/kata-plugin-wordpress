@@ -338,45 +338,37 @@ class KATA_SEO_Manager {
             true
         );
         
-        // Wheel CSS (conditional loading)
-        if (has_shortcode(get_post()->post_content ?? '', 'kata_wheel') || 
-            is_admin() || 
-            wp_doing_ajax()) {
-            wp_enqueue_style(
-                'kata-wheel-frontend',
-                $plugin_url . 'assets/css/wheel-frontend.css',
-                array('kata-seo-frontend'),
-                $version
-            );
-            
-            wp_enqueue_script(
-                'kata-wheel-frontend',
-                $plugin_url . 'assets/js/wheel-frontend.js',
-                array('jquery', 'kata-seo-frontend'),
-                $version,
-                true
-            );
-        }
+        // Wheel CSS & JS - Always load for better compatibility
+        wp_enqueue_style(
+            'kata-wheel-frontend',
+            $plugin_url . 'assets/css/wheel-frontend.css',
+            array('kata-seo-frontend'),
+            $version
+        );
         
-        // Poll CSS (conditional loading)
-        if (has_shortcode(get_post()->post_content ?? '', 'kata_poll') || 
-            is_admin() || 
-            wp_doing_ajax()) {
-            wp_enqueue_style(
-                'kata-poll-frontend',
-                $plugin_url . 'assets/css/poll-frontend.css',
-                array('kata-seo-frontend'),
-                $version
-            );
-            
-            wp_enqueue_script(
-                'kata-poll-frontend',
-                $plugin_url . 'assets/js/poll-frontend.js',
-                array('jquery', 'kata-seo-frontend'),
-                $version,
-                true
-            );
-        }
+        wp_enqueue_script(
+            'kata-wheel-frontend',
+            $plugin_url . 'assets/js/wheel-frontend.js',
+            array('jquery', 'kata-seo-frontend'),
+            $version,
+            true
+        );
+        
+        // Poll CSS & JS - Always load for better compatibility
+        wp_enqueue_style(
+            'kata-poll-frontend',
+            $plugin_url . 'assets/css/poll-frontend.css',
+            array('kata-seo-frontend'),
+            $version
+        );
+        
+        wp_enqueue_script(
+            'kata-poll-frontend',
+            $plugin_url . 'assets/js/poll-frontend.js',
+            array('jquery', 'kata-seo-frontend'),
+            $version,
+            true
+        );
         
         // Schema CSS
         wp_enqueue_style(

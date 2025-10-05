@@ -1,9 +1,6 @@
 /**
- * KATA Wheel Frontend JavaScript - UPGRADED VERSION
- * New Features:
- * 1. Spin button in center of wheel
- * 2. Modal for user info before spinning
- * 3. Result shown in modal + below wheel after closing
+ * KATA Wheel Frontend JavaScript
+ * Handles wheel initialization, spinning, AJAX calls, and user interactions
  */
 
 (function($) {
@@ -20,28 +17,23 @@
             
             // Initialize elements based on style
             if (this.isSimple) {
-                this.$circle = null;
+                this.$circle = null; // Simple style doesn't have wheel circle
                 this.$center = this.$container.find('.kata-wheel-simple-btn');
                 this.$form = this.$container.find('.kata-wheel-form-simple');
-                this.$formModal = null; // Simple style uses inline form
-                this.$resultModal = this.$container.find('.kata-wheel-result-simple');
+                this.$modal = this.$container.find('.kata-wheel-result-simple');
                 this.$spinsInfo = this.$container.find('.kata-wheel-info-simple strong');
-                this.$resultDisplay = null;
             } else {
                 this.$circle = this.$container.find('.kata-wheel-circle');
                 this.$center = this.$container.find('.kata-wheel-center');
                 this.$form = this.$container.find('.kata-wheel-form');
-                this.$formModal = this.$container.find('.kata-wheel-form-modal');
-                this.$resultModal = this.$container.find('.kata-wheel-result-modal');
+                this.$modal = this.$container.find('.kata-wheel-result-modal');
                 this.$spinsInfo = this.$container.find('.kata-wheel-info strong');
-                this.$resultDisplay = this.$container.find('.kata-wheel-result-display');
             }
             
             this.wheelData = null;
             this.isSpinning = false;
             this.canSpin = false;
             this.remainingSpins = 0;
-            this.lastPrize = null;
             
             this.init();
         }
@@ -52,13 +44,19 @@
         init() {
             console.log('Initializing KATA Wheel #' + this.wheelId);
             
+            // Check if kata_ajax is available
             if (typeof kata_ajax === 'undefined') {
                 this.showError('Lỗi: AJAX không được cấu hình đúng.');
                 return;
             }
             
+            // Load wheel data
             this.loadWheelData();
+            
+            // Bind events
             this.bindEvents();
+            
+            // Check eligibility
             this.checkEligibility();
         }
 
@@ -89,7 +87,7 @@
         }
 
         /**
-         * Setup wheel segments with colors and positions
+         * Setup wheel segments with colors and positions (only for default style)
          */
         setupWheelSegments() {
             if (!this.wheelData || !this.wheelData.prizes || this.isSimple) return;
@@ -101,8 +99,10 @@
                 const rotation = index * segmentAngle;
                 const $segment = this.$circle.find(`.kata-wheel-segment:eq(${index})`);
                 
+                // Update segment rotation
                 $segment.css('--rotation', rotation + 'deg');
                 
+                // Update segment color if not set
                 if (!$segment.css('--segment-color')) {
                     const colors = [
                         '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', 
@@ -132,6 +132,7 @@
                         this.remainingSpins = response.data.remaining_spins || 0;
                         this.$spinsInfo.text(this.remainingSpins);
                         
+                        // Enable button if can spin
                         if (this.canSpin && this.remainingSpins > 0) {
                             this.$center.removeClass('disabled');
                             console.log('Wheel ready! Remaining spins: ' + this.remainingSpins);
@@ -140,6 +141,7 @@
                             this.showError('Bạn đã hết lượt quay!');
                         }
                     } else {
+                        // Error response
                         this.canSpin = false;
                         this.remainingSpins = 0;
                         this.$spinsInfo.text(0);
@@ -156,55 +158,45 @@
          * Bind event handlers
          */
         bindEvents() {
-            // Spin button click - UPDATED: Show form modal first if needed
+            // Spin button click
             this.$center.on('click', (e) => {
                 e.preventDefault();
                 console.log('Center button clicked');
                 this.handleSpinClick();
             });
             
-            // Form modal submit (for default style)
-            if (!this.isSimple && this.$formModal && this.$formModal.length) {
-                this.$formModal.find('.kata-wheel-submit-btn').on('click', (e) => {
-                    e.preventDefault();
-                    console.log('Form modal submit clicked');
-                    this.handleFormModalSubmit();
-                });
-                
-                // Close form modal
-                this.$formModal.find('.kata-wheel-form-close').on('click', () => {
-                    this.closeFormModal();
-                });
-                
-                this.$formModal.find('.kata-wheel-form-overlay').on('click', () => {
-                    this.closeFormModal();
-                });
-            }
+            // Form submit - handle both styles
+            const $submitBtn = this.isSimple ? 
+                this.$form.find('.kata-wheel-submit-btn-simple') : 
+                this.$form.find('.kata-wheel-submit-btn');
             
-            // Form inline submit (for simple style or old structure)
-            this.$form.find('.kata-wheel-submit-btn, .kata-wheel-submit-btn-simple').on('click', (e) => {
+            console.log('Found submit button:', $submitBtn.length);
+            
+            $submitBtn.on('click', (e) => {
                 e.preventDefault();
-                console.log('Inline form submit clicked');
+                console.log('Form submit button clicked');
                 this.handleFormSubmit();
             });
             
-            // Result modal close
+            // Modal close - handle both styles
             if (this.isSimple) {
-                this.$resultModal.find('.kata-wheel-result-simple-btn').on('click', () => {
-                    this.closeResultModal();
+                this.$modal.find('.kata-wheel-result-simple-btn').on('click', () => {
+                    this.closeModal();
                 });
             } else {
-                this.$resultModal.find('.kata-wheel-result-close, .kata-wheel-result-btn').on('click', () => {
-                    this.closeResultModal();
+                this.$modal.find('.kata-wheel-result-close').on('click', () => {
+                    this.closeModal();
                 });
                 
-                this.$resultModal.find('.kata-wheel-result-overlay').on('click', () => {
-                    this.closeResultModal();
+                // Overlay click to close
+                this.$modal.find('.kata-wheel-result-overlay').on('click', () => {
+                    this.closeModal();
                 });
                 
-                this.$resultModal.on('click', (e) => {
+                // Click on modal backdrop to close
+                this.$modal.on('click', (e) => {
                     if ($(e.target).is('.kata-wheel-result-modal')) {
-                        this.closeResultModal();
+                        this.closeModal();
                     }
                 });
             }
@@ -213,7 +205,7 @@
         }
 
         /**
-         * Handle spin button click - UPDATED LOGIC
+         * Handle spin button click
          */
         handleSpinClick() {
             console.log('Spin clicked! isSpinning:', this.isSpinning, 'canSpin:', this.canSpin, 'remainingSpins:', this.remainingSpins);
@@ -229,81 +221,32 @@
                 return;
             }
             
+            // Check if wheelData is loaded
             if (!this.wheelData) {
                 console.log('Wheel data not loaded yet, waiting...');
                 this.showError('Đang tải dữ liệu vòng quay, vui lòng thử lại...');
                 return;
             }
             
-            // NEW: Check if form is required
+            // Check if form is required
             const requiresForm = this.wheelData.requirement && this.wheelData.requirement !== 'none';
             const hasData = this.hasUserData();
             
-            console.log('Form required:', requiresForm, 'Has user data:', hasData);
+            console.log('Form required:', requiresForm, 'Has user data:', hasData, 'Requirement:', this.wheelData.requirement);
             
-            // NEW: Show form modal BEFORE spinning if needed
             if (requiresForm && !hasData) {
-                console.log('Showing form modal for user data collection');
-                this.showFormModal();
+                console.log('Showing form for user data collection');
+                this.showForm();
                 return;
             }
             
-            // Spin immediately if no form required or data already exists
+            // Spin the wheel
             console.log('Spinning wheel now...');
             this.spin();
         }
 
         /**
-         * NEW: Show form modal
-         */
-        showFormModal() {
-            if (this.isSimple) {
-                // Simple style uses inline form
-                this.showForm();
-            } else if (this.$formModal && this.$formModal.length) {
-                // Default style uses modal
-                this.$formModal.addClass('show');
-                this.$formModal.find('input:visible:first').focus();
-            } else {
-                // Fallback to inline form
-                this.showForm();
-            }
-        }
-
-        /**
-         * NEW: Close form modal
-         */
-        closeFormModal() {
-            if (this.$formModal && this.$formModal.length) {
-                this.$formModal.removeClass('show');
-            }
-        }
-
-        /**
-         * NEW: Handle form modal submit
-         */
-        handleFormModalSubmit() {
-            const email = this.$formModal.find('input[type="email"]').val();
-            const phone = this.$formModal.find('input[type="tel"]').val();
-            const name = this.$formModal.find('input[type="text"]').val();
-            
-            // Validate
-            if (!this.validateFormData(email, phone, this.$formModal)) {
-                return;
-            }
-            
-            // Save user data
-            this.saveUserData(email, phone, name);
-            
-            // Close modal
-            this.closeFormModal();
-            
-            // Spin immediately
-            this.spin();
-        }
-
-        /**
-         * Handle inline form submission
+         * Handle form submission
          */
         handleFormSubmit() {
             const email = this.$form.find('input[type="email"]').val();
@@ -311,7 +254,28 @@
             const name = this.$form.find('input[type="text"]').val();
             
             // Validate
-            if (!this.validateFormData(email, phone, this.$form)) {
+            let isValid = true;
+            
+            if (this.wheelData.requirement === 'email' || this.wheelData.requirement === 'both') {
+                if (!this.validateEmail(email)) {
+                    this.$form.find('input[type="email"]').addClass('error');
+                    isValid = false;
+                } else {
+                    this.$form.find('input[type="email"]').removeClass('error');
+                }
+            }
+            
+            if (this.wheelData.requirement === 'phone' || this.wheelData.requirement === 'both') {
+                if (!this.validatePhone(phone)) {
+                    this.$form.find('input[type="tel"]').addClass('error');
+                    isValid = false;
+                } else {
+                    this.$form.find('input[type="tel"]').removeClass('error');
+                }
+            }
+            
+            if (!isValid) {
+                this.showError('Vui lòng nhập đầy đủ thông tin hợp lệ.');
                 return;
             }
             
@@ -326,70 +290,11 @@
         }
 
         /**
-         * Validate form data
-         */
-        validateFormData(email, phone, $context) {
-            let isValid = true;
-            
-            if (this.wheelData.requirement === 'email' || this.wheelData.requirement === 'both') {
-                if (!this.validateEmail(email)) {
-                    $context.find('input[type="email"]').addClass('error');
-                    isValid = false;
-                } else {
-                    $context.find('input[type="email"]').removeClass('error');
-                }
-            }
-            
-            if (this.wheelData.requirement === 'phone' || this.wheelData.requirement === 'both') {
-                if (!this.validatePhone(phone)) {
-                    $context.find('input[type="tel"]').addClass('error');
-                    isValid = false;
-                } else {
-                    $context.find('input[type="tel"]').removeClass('error');
-                }
-            }
-            
-            if (!isValid) {
-                this.showError('Vui lòng nhập đầy đủ thông tin hợp lệ.');
-            }
-            
-            return isValid;
-        }
-
-        /**
-         * Show inline user form
+         * Show user form
          */
         showForm() {
-            console.log('Showing inline form...');
-            
-            if (!this.$form || this.$form.length === 0) {
-                console.error('Form element not found!');
-                this.showError('Lỗi: Không tìm thấy form nhập liệu.');
-                return;
-            }
-            
-            this.$form.stop(true, true).css('display', 'block').addClass('active').slideDown(400);
-            
-            setTimeout(() => {
-                const $firstInput = this.$form.find('input:visible:first');
-                if ($firstInput.length) {
-                    $firstInput.focus();
-                }
-            }, 450);
-            
-            console.log('Inline form should now be visible');
-        }
-
-        /**
-         * Hide inline form
-         */
-        hideForm() {
-            console.log('Hiding inline form...');
-            if (this.$form && this.$form.length) {
-                this.$form.stop(true, true).removeClass('active').slideUp(400, function() {
-                    $(this).css('display', 'none');
-                });
-            }
+            this.$form.slideDown();
+            this.$form.find('input:first').focus();
         }
 
         /**
@@ -399,8 +304,9 @@
             if (this.isSpinning || !this.canSpin) return;
             
             this.isSpinning = true;
-            this.$center.addClass('disabled spinning');
+            this.$center.addClass('disabled');
             
+            // AJAX call to get prize
             $.ajax({
                 url: kata_ajax.ajax_url,
                 type: 'POST',
@@ -416,7 +322,6 @@
                 success: (response) => {
                     if (response.success) {
                         const prize = response.data.prize;
-                        this.lastPrize = prize; // Store for later display
                         const prizeIndex = this.getPrizeIndex(prize.id);
                         
                         // Animate wheel
@@ -430,55 +335,59 @@
                                 this.$center.addClass('disabled');
                             }
                             
-                            // Show result in modal
-                            this.showResultModal(prize);
+                            // Show result
+                            this.showResult(prize);
                             
                             this.isSpinning = false;
-                            this.$center.removeClass('spinning');
                             
+                            // Re-enable center button if can still spin
                             if (this.canSpin) {
                                 this.$center.removeClass('disabled');
                             }
                         });
                     } else {
                         this.isSpinning = false;
-                        this.$center.removeClass('disabled spinning');
+                        this.$center.removeClass('disabled');
                         this.showError(response.data.message || 'Không thể quay. Vui lòng thử lại.');
                     }
                 },
                 error: () => {
                     this.isSpinning = false;
-                    this.$center.removeClass('disabled spinning');
+                    this.$center.removeClass('disabled');
                     this.showError('Lỗi kết nối. Vui lòng thử lại.');
                 }
             });
         }
 
         /**
-         * Animate wheel rotation
+         * Animate wheel rotation (for default style) or simulate for simple style
          */
         animateWheel(prizeIndex, callback) {
             if (this.isSimple) {
-                // Simple style: button animation
-                this.$center.text('⏳ Đang quay...');
+                // Simple style: just show spinning animation on button
+                this.$center.addClass('spinning').text('⏳ Đang quay...');
                 
+                // Simulate spinning time
                 setTimeout(() => {
-                    this.$center.html('<span class="kata-wheel-btn-icon">🎲</span><span class="kata-wheel-btn-text">QUAY NGAY</span><span class="kata-wheel-btn-subtitle">Nhấn để quay!</span>');
+                    this.$center.removeClass('spinning').html('<span class="kata-wheel-btn-icon">🎲</span><span class="kata-wheel-btn-text">QUAY NGAY</span><span class="kata-wheel-btn-subtitle">Nhấn để quay!</span>');
                     if (callback) callback();
-                }, 2500);
+                }, 2000);
             } else {
                 // Default style: full wheel animation
                 const segmentAngle = 360 / this.wheelData.prizes.length;
                 const prizeAngle = prizeIndex * segmentAngle;
                 
-                // Spin 5 full rotations + land on prize
+                // Calculate final rotation
+                // Spin 5 full rotations + land on prize (adjusted for pointer at top)
                 const spins = 5;
-                const randomOffset = Math.random() * (segmentAngle * 0.6) - (segmentAngle * 0.3);
+                const randomOffset = Math.random() * (segmentAngle * 0.8) - (segmentAngle * 0.4);
                 const finalRotation = (spins * 360) + (360 - prizeAngle) + randomOffset;
                 
+                // Apply rotation
                 this.$circle.addClass('spinning');
                 this.$circle.css('transform', `rotate(${finalRotation}deg)`);
                 
+                // Callback after animation
                 setTimeout(() => {
                     this.$circle.removeClass('spinning');
                     if (callback) callback();
@@ -501,10 +410,10 @@
         }
 
         /**
-         * NEW: Show result modal
+         * Show result modal
          */
-        showResultModal(prize) {
-            const $modal = this.$resultModal;
+        showResult(prize) {
+            const $modal = this.$modal;
             
             // Update content
             $modal.find('#kata-wheel-prize-name-' + this.wheelId).html(
@@ -517,50 +426,65 @@
                 );
             }
             
-            // Show modal
+            // Show modal - different styles
             if (this.isSimple) {
                 $modal.show();
             } else {
                 $modal.addClass('show');
+                // Create confetti effect for default style
                 this.createConfetti();
             }
         }
 
         /**
-         * NEW: Close result modal and show result below wheel
+         * Close modal
          */
-        closeResultModal() {
+        closeModal() {
             if (this.isSimple) {
-                this.$resultModal.hide();
+                this.$modal.hide();
             } else {
-                this.$resultModal.removeClass('show');
-            }
-            
-            // NEW: Show result display below wheel
-            if (this.lastPrize && this.$resultDisplay && this.$resultDisplay.length) {
-                this.showResultDisplay(this.lastPrize);
+                this.$modal.removeClass('show');
             }
         }
 
         /**
-         * NEW: Show result below wheel
+         * Show form for user info
          */
-        showResultDisplay(prize) {
-            // Update content
-            this.$resultDisplay.find('.kata-wheel-result-display-name').html(
-                this.escapeHtml(prize.name)
-            );
+        showForm() {
+            console.log('Showing form...');
             
-            if (prize.value) {
-                this.$resultDisplay.find('.kata-wheel-result-display-value').html(
-                    this.escapeHtml(prize.value)
-                ).show();
-            } else {
-                this.$resultDisplay.find('.kata-wheel-result-display-value').hide();
+            // Make sure form exists
+            if (!this.$form || this.$form.length === 0) {
+                console.error('Form element not found!');
+                this.showError('Lỗi: Không tìm thấy form nhập liệu.');
+                return;
             }
             
-            // Show with animation
-            this.$resultDisplay.slideDown(400).addClass('show');
+            // Show form with animation
+            this.$form.stop(true, true); // Stop any ongoing animation
+            this.$form.css('display', 'block').addClass('active').slideDown(400);
+            
+            // Focus on first input
+            setTimeout(() => {
+                const $firstInput = this.$form.find('input:visible:first');
+                if ($firstInput.length) {
+                    $firstInput.focus();
+                }
+            }, 450);
+            
+            console.log('Form should now be visible');
+        }
+
+        /**
+         * Hide form
+         */
+        hideForm() {
+            console.log('Hiding form...');
+            if (this.$form && this.$form.length) {
+                this.$form.stop(true, true).removeClass('active').slideUp(400, function() {
+                    $(this).css('display', 'none');
+                });
+            }
         }
 
         /**

@@ -3155,12 +3155,12 @@ class KATA_SEO_Manager {
                             </div>
                         </div>
                     <?php endforeach; ?>
+                    
+                    <!-- Center Spin Button - POSITIONED IN MIDDLE OF WHEEL -->
+                    <button type="button" class="kata-wheel-center" id="kata-wheel-spin-btn-<?php echo esc_attr($wheel_id); ?>">
+                        <span>QUAY</span>
+                    </button>
                 </div>
-                
-                <!-- Center Spin Button -->
-                <button type="button" class="kata-wheel-center" id="kata-wheel-spin-btn-<?php echo esc_attr($wheel_id); ?>">
-                    <span>QUAY</span>
-                </button>
             </div>
             
             <!-- User Form (if required) -->
@@ -3212,6 +3212,57 @@ class KATA_SEO_Manager {
                 </div>
             <?php endif; ?>
             
+            <!-- Form Modal (NEW - shows before spinning) -->
+            <?php if ($wheel->requirement !== 'none'): ?>
+            <div class="kata-wheel-form-modal" id="kata-wheel-form-modal-<?php echo esc_attr($wheel_id); ?>">
+                <div class="kata-wheel-form-overlay"></div>
+                <div class="kata-wheel-form-content">
+                    <button type="button" class="kata-wheel-form-close">×</button>
+                    <h3>✨ Nhập Thông Tin Để Quay</h3>
+                    
+                    <?php if (in_array($wheel->requirement, array('email', 'both'))): ?>
+                        <div class="kata-wheel-form-field">
+                            <label for="kata-wheel-modal-email-<?php echo esc_attr($wheel_id); ?>">
+                                Email <span class="required">*</span>
+                            </label>
+                            <input type="email" 
+                                   id="kata-wheel-modal-email-<?php echo esc_attr($wheel_id); ?>" 
+                                   class="kata-wheel-input" 
+                                   placeholder="your@email.com" 
+                                   required>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <?php if (in_array($wheel->requirement, array('phone', 'both'))): ?>
+                        <div class="kata-wheel-form-field">
+                            <label for="kata-wheel-modal-phone-<?php echo esc_attr($wheel_id); ?>">
+                                Số Điện Thoại <span class="required">*</span>
+                            </label>
+                            <input type="tel" 
+                                   id="kata-wheel-modal-phone-<?php echo esc_attr($wheel_id); ?>" 
+                                   class="kata-wheel-input" 
+                                   placeholder="0123456789" 
+                                   required>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <div class="kata-wheel-form-field">
+                        <label for="kata-wheel-modal-name-<?php echo esc_attr($wheel_id); ?>">
+                            Tên (không bắt buộc)
+                        </label>
+                        <input type="text" 
+                               id="kata-wheel-modal-name-<?php echo esc_attr($wheel_id); ?>" 
+                               class="kata-wheel-input" 
+                               placeholder="Tên của bạn">
+                    </div>
+                    
+                    <button type="button" class="kata-wheel-submit-btn">
+                        🎯 Xác Nhận & Quay Ngay
+                    </button>
+                </div>
+            </div>
+            <?php endif; ?>
+            
             <!-- Result Modal -->
             <div class="kata-wheel-result-modal" id="kata-wheel-result-<?php echo esc_attr($wheel_id); ?>">
                 <div class="kata-wheel-result-overlay"></div>
@@ -3230,6 +3281,17 @@ class KATA_SEO_Manager {
             <div class="kata-wheel-info" id="kata-wheel-info-<?php echo esc_attr($wheel_id); ?>">
                 <p class="kata-wheel-spins-remaining">
                     Lượt quay còn lại: <strong id="kata-wheel-spins-left-<?php echo esc_attr($wheel_id); ?>">--</strong>
+                </p>
+            </div>
+            
+            <!-- Result Display Below Wheel (NEW - shows after closing modal) -->
+            <div class="kata-wheel-result-display" id="kata-wheel-result-display-<?php echo esc_attr($wheel_id); ?>">
+                <div class="kata-wheel-result-display-icon">🎊</div>
+                <h3 class="kata-wheel-result-display-title">Kết Quả Của Bạn</h3>
+                <div class="kata-wheel-result-display-name"></div>
+                <div class="kata-wheel-result-display-value" style="display: none;"></div>
+                <p class="kata-wheel-result-display-message">
+                    Chúc mừng! Vui lòng liên hệ với chúng tôi để nhận giải thưởng.
                 </p>
             </div>
         </div>

@@ -133,6 +133,12 @@ class KATA_SEO_Manager {
         add_action('wp_ajax_kata_seo_validate_schema', array($this, 'ajax_validate_schema'));
         add_action('wp_ajax_nopriv_kata_seo_validate_schema', array($this, 'ajax_validate_schema'));
         
+        // User Interaction AJAX handlers
+        add_action('wp_ajax_kata_submit_user_interaction', array($this, 'ajax_submit_user_interaction'));
+        add_action('wp_ajax_nopriv_kata_submit_user_interaction', array($this, 'ajax_submit_user_interaction'));
+        add_action('wp_ajax_kata_load_user_interactions', array($this, 'ajax_load_user_interactions'));
+        add_action('wp_ajax_nopriv_kata_load_user_interactions', array($this, 'ajax_load_user_interactions'));
+        
         // Shortcodes
         $this->register_shortcodes();
         
@@ -319,6 +325,15 @@ class KATA_SEO_Manager {
         
         add_submenu_page(
             'kata-seo-manager',
+            __('User Interactions', 'kata-seo-manager'),
+            __('User Interactions', 'kata-seo-manager'),
+            'manage_options',
+            'kata-seo-user-interactions',
+            array($this, 'admin_user_interactions_page')
+        );
+        
+        add_submenu_page(
+            'kata-seo-manager',
             __('Cài đặt', 'kata-seo-manager'),
             __('Cài đặt', 'kata-seo-manager'),
             'manage_options',
@@ -360,6 +375,13 @@ class KATA_SEO_Manager {
      */
     public function admin_quiz_analytics_page() {
         include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/quiz-analytics.php';
+    }
+    
+    /**
+     * User Interactions page
+     */
+    public function admin_user_interactions_page() {
+        include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/user-interactions.php';
     }
     
     /**
@@ -505,8 +527,45 @@ class KATA_SEO_Manager {
             'nonce' => wp_create_nonce('kata_seo_manager_nonce')
         ));
         
-        // Enqueue quiz assets if needed
+        // Enqueue user interaction assets if needed
         global $post;
+        if (is_object($post) && (has_shortcode($post->post_content, 'kata_user_interaction') || 
+            strpos($post->post_content, '[kata_user_interaction') !== false)) {
+            
+            wp_enqueue_style(
+                'kata-user-interaction',
+                KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/user-interaction.css',
+                array(),
+                KATA_SEO_MANAGER_VERSION
+            );
+            
+            wp_enqueue_script(
+                'kata-user-interaction',
+                KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/user-interaction.js',
+                array('jquery'),
+                KATA_SEO_MANAGER_VERSION,
+                true
+            );
+            
+            wp_localize_script('kata-user-interaction', 'kata_interaction_ajax', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('kata_user_interaction_nonce'),
+                'messages' => array(
+                    'success' => __('Cảm ơn bạn đã gửi đánh giá!', 'kata-seo-manager'),
+                    'error' => __('Có lỗi xảy ra. Vui lòng thử lại.', 'kata-seo-manager'),
+                    'required' => __('Vui lòng điền đầy đủ thông tin bắt buộc.', 'kata-seo-manager'),
+                    'rating_required' => __('Vui lòng chọn ít nhất một đánh giá sao.', 'kata-seo-manager'),
+                    'confirm_delete' => __('Bạn có chắc chắn muốn xóa tương tác này?', 'kata-seo-manager'),
+                    'loading' => __('Đang tải...', 'kata-seo-manager'),
+                    'load_more' => __('Tải thêm', 'kata-seo-manager'),
+                    'no_more' => __('Không còn dữ liệu', 'kata-seo-manager'),
+                    'reply_success' => __('Phản hồi đã được gửi!', 'kata-seo-manager'),
+                    'reply_placeholder' => __('Nhập phản hồi của bạn...', 'kata-seo-manager')
+                )
+            ));
+        }
+        
+        // Enqueue quiz assets if needed
         if (is_object($post) && (has_shortcode($post->post_content, 'kata_quiz') || 
             strpos($post->post_content, '[kata_quiz') !== false)) {
             
@@ -784,6 +843,11 @@ class KATA_SEO_Manager {
         add_shortcode('kata_blogposting', array($this, 'render_blogposting'));
         add_shortcode('kata_website', array($this, 'render_website'));
         add_shortcode('kata_breadcrumblist', array($this, 'render_breadcrumblist'));
+        
+        // New integrated user interaction shortcode
+        add_shortcode('kata_user_interaction', array($this, 'render_user_interaction'));
+        add_shortcode('kata_reviews', array($this, 'render_user_interaction')); // Alias
+        add_shortcode('kata_comments', array($this, 'render_user_interaction')); // Alias
     }
     
     /**
@@ -4324,6 +4388,587 @@ class KATA_SEO_Manager {
         }
 
         return $output;
+    }
+
+
+
+    /**
+     * Render User Interaction shortcode (Reviews + Ratings + Comments)
+     */
+    public function render_user_interaction($atts) {
+        $atts = shortcode_atts(array(
+            'post_id' => get_the_ID(),
+            'type' => 'combined', // combined, review, rating, comment
+            'enable_reviews' => 'true',
+            'enable_ratings' => 'true', 
+            'enable_comments' => 'true',
+            'enable_replies' => 'true',
+            'require_login' => 'false',
+            'require_moderation' => 'true',
+            'show_form' => 'true',
+            'show_list' => 'true',
+            'items_per_page' => '10',
+            'rating_criteria' => '', // JSON or comma-separated
+            'title' => 'Đánh giá & Bình luận',
+            'style' => 'default' // default, card, minimal
+        ), $atts, 'kata_user_interaction');
+
+        $post_id = intval($atts['post_id']);
+        if (!$post_id) {
+            // Try to get current post ID
+            $current_post_id = get_the_ID();
+            if ($current_post_id) {
+                $post_id = $current_post_id;
+            } else {
+                // For testing or general use, allow post_id = 1 as default
+                $post_id = 1;
+            }
+        }
+
+        // Generate unique container ID
+        $container_id = 'kata-user-interaction-' . uniqid();
+        
+        // Enqueue required assets
+        wp_enqueue_script('kata-user-interaction', KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/user-interaction.js', array('jquery'), KATA_SEO_MANAGER_VERSION, true);
+        wp_enqueue_style('kata-user-interaction', KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/user-interaction.css', array(), KATA_SEO_MANAGER_VERSION);
+        
+        // Localize script
+        wp_localize_script('kata-user-interaction', 'kataUserInteraction', array(
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('kata_user_interaction_nonce'),
+            'postId' => $post_id,
+            'strings' => array(
+                'submitSuccess' => 'Cảm ơn bạn đã đánh giá!',
+                'submitError' => 'Có lỗi xảy ra. Vui lòng thử lại.',
+                'loginRequired' => 'Bạn cần đăng nhập để đánh giá.',
+                'fillRequired' => 'Vui lòng điền đầy đủ thông tin bắt buộc.',
+                'rating' => 'Đánh giá',
+                'stars' => 'sao'
+            )
+        ));
+
+        ob_start();
+        ?>
+        <div id="<?php echo esc_attr($container_id); ?>" class="kata-user-interaction-container kata-style-<?php echo esc_attr($atts['style']); ?>" data-post-id="<?php echo esc_attr($post_id); ?>">
+            
+            <?php if (!empty($atts['title'])): ?>
+            <h3 class="kata-interaction-title"><?php echo esc_html($atts['title']); ?></h3>
+            <?php endif; ?>
+
+            <?php if ($atts['show_form'] === 'true'): ?>
+            <!-- User Interaction Form -->
+            <div class="kata-interaction-form-container">
+                <?php echo $this->render_interaction_form($atts, $post_id); ?>
+            </div>
+            <?php endif; ?>
+
+            <?php if ($atts['show_list'] === 'true'): ?>
+            <!-- Existing Interactions List -->
+            <div class="kata-interaction-list-container">
+                <?php echo $this->render_interaction_list($atts, $post_id); ?>
+            </div>
+            <?php endif; ?>
+
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
+     * Render interaction form
+     */
+    private function render_interaction_form($atts, $post_id) {
+        $require_login = ($atts['require_login'] === 'true');
+        $is_logged_in = is_user_logged_in();
+        
+        if ($require_login && !$is_logged_in) {
+            return '<p class="kata-login-required">Bạn cần <a href="' . wp_login_url(get_permalink()) . '">đăng nhập</a> để đánh giá.</p>';
+        }
+
+        // Get rating criteria
+        $rating_criteria = $this->parse_rating_criteria($atts['rating_criteria']);
+        
+        ob_start();
+        ?>
+        <form class="kata-interaction-form" data-post-id="<?php echo esc_attr($post_id); ?>">
+            
+            <?php if (!$is_logged_in): ?>
+            <!-- Guest user info -->
+            <div class="kata-user-info">
+                <div class="kata-form-row">
+                    <div class="kata-form-group">
+                        <label for="user_name">Họ tên <span class="required">*</span></label>
+                        <input type="text" id="user_name" name="user_name" required>
+                    </div>
+                    <div class="kata-form-group">
+                        <label for="user_email">Email <span class="required">*</span></label>
+                        <input type="email" id="user_email" name="user_email" required>
+                    </div>
+                </div>
+                <div class="kata-form-group">
+                    <label for="user_website">Website</label>
+                    <input type="url" id="user_website" name="user_website">
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if ($atts['enable_reviews'] === 'true'): ?>
+            <!-- Review Section -->
+            <div class="kata-review-section">
+                <h4>📝 Đánh giá chi tiết</h4>
+                <div class="kata-form-group">
+                    <label for="review_title">Tiêu đề đánh giá</label>
+                    <input type="text" id="review_title" name="review_title" placeholder="Tóm tắt trải nghiệm của bạn...">
+                </div>
+                <div class="kata-form-group">
+                    <label for="review_content">Nội dung đánh giá</label>
+                    <textarea id="review_content" name="review_content" rows="4" placeholder="Chia sẻ chi tiết về trải nghiệm của bạn..."></textarea>
+                </div>
+                <div class="kata-form-row">
+                    <div class="kata-form-group">
+                        <label for="review_pros">Điểm tốt</label>
+                        <textarea id="review_pros" name="review_pros" rows="2" placeholder="Những gì bạn thích..."></textarea>
+                    </div>
+                    <div class="kata-form-group">
+                        <label for="review_cons">Điểm chưa tốt</label>
+                        <textarea id="review_cons" name="review_cons" rows="2" placeholder="Những gì cần cải thiện..."></textarea>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <?php if ($atts['enable_ratings'] === 'true'): ?>
+            <!-- Rating Section -->
+            <div class="kata-rating-section">
+                <h4>⭐ Đánh giá bằng sao</h4>
+                <?php foreach ($rating_criteria as $key => $criterion): ?>
+                <div class="kata-rating-group">
+                    <label><?php echo esc_html($criterion['label']); ?></label>
+                    <div class="kata-star-rating" data-rating="<?php echo esc_attr($key); ?>">
+                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <span class="kata-star" data-value="<?php echo $i; ?>">⭐</span>
+                        <?php endfor; ?>
+                        <input type="hidden" name="<?php echo esc_attr($key); ?>_rating" value="0">
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <?php endif; ?>
+
+            <?php if ($atts['enable_comments'] === 'true'): ?>
+            <!-- Comment Section -->
+            <div class="kata-comment-section">
+                <h4>💬 Bình luận</h4>
+                <div class="kata-form-group">
+                    <label for="comment_content">Bình luận của bạn</label>
+                    <textarea id="comment_content" name="comment_content" rows="3" placeholder="Để lại bình luận..."></textarea>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <div class="kata-form-actions">
+                <button type="submit" class="kata-submit-btn">
+                    <span class="kata-submit-text">Gửi đánh giá</span>
+                    <span class="kata-submit-loading" style="display:none;">Đang gửi...</span>
+                </button>
+            </div>
+
+            <input type="hidden" name="action" value="kata_submit_user_interaction">
+            <input type="hidden" name="post_id" value="<?php echo esc_attr($post_id); ?>">
+            <input type="hidden" name="interaction_type" value="<?php echo esc_attr($atts['type']); ?>">
+            <?php wp_nonce_field('kata_user_interaction_nonce', 'nonce'); ?>
+        </form>
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
+     * Render interaction list
+     */
+    private function render_interaction_list($atts, $post_id) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'kata_user_interactions';
+        $per_page = intval($atts['items_per_page']);
+        $page = isset($_GET['interaction_page']) ? max(1, intval($_GET['interaction_page'])) : 1;
+        $offset = ($page - 1) * $per_page;
+
+        // Get interactions
+        $interactions = $wpdb->get_results($wpdb->prepare("
+            SELECT * FROM $table_name 
+            WHERE post_id = %d AND status = 'approved' 
+            ORDER BY created_at DESC 
+            LIMIT %d OFFSET %d
+        ", $post_id, $per_page, $offset));
+
+        // Get total count for pagination
+        $total = $wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(*) FROM $table_name 
+            WHERE post_id = %d AND status = 'approved'
+        ", $post_id));
+
+        ob_start();
+        ?>
+        <div class="kata-interaction-list">
+            
+            <?php if ($interactions): ?>
+            <div class="kata-interactions-summary">
+                <h4>💭 Đánh giá từ cộng đồng (<?php echo intval($total); ?>)</h4>
+                <?php echo $this->render_rating_summary($post_id); ?>
+            </div>
+
+            <div class="kata-interactions-items">
+                <?php foreach ($interactions as $interaction): ?>
+                <div class="kata-interaction-item" data-id="<?php echo esc_attr($interaction->id); ?>">
+                    
+                    <div class="kata-interaction-header">
+                        <div class="kata-user-info">
+                            <strong class="kata-user-name"><?php echo esc_html($interaction->user_name); ?></strong>
+                            <span class="kata-interaction-date"><?php echo date('j/n/Y', strtotime($interaction->created_at)); ?></span>
+                        </div>
+                        <?php if ($interaction->overall_rating > 0): ?>
+                        <div class="kata-interaction-rating">
+                            <?php echo $this->render_stars($interaction->overall_rating); ?>
+                            <span class="kata-rating-value"><?php echo number_format($interaction->overall_rating, 1); ?>/5</span>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="kata-interaction-content">
+                        <?php if ($interaction->review_title): ?>
+                        <h5 class="kata-review-title"><?php echo esc_html($interaction->review_title); ?></h5>
+                        <?php endif; ?>
+                        
+                        <?php if ($interaction->review_content): ?>
+                        <div class="kata-review-content"><?php echo nl2br(esc_html($interaction->review_content)); ?></div>
+                        <?php endif; ?>
+
+                        <?php if ($interaction->review_pros || $interaction->review_cons): ?>
+                        <div class="kata-review-proscons">
+                            <?php if ($interaction->review_pros): ?>
+                            <div class="kata-pros">
+                                <strong>👍 Điểm tốt:</strong> <?php echo esc_html($interaction->review_pros); ?>
+                            </div>
+                            <?php endif; ?>
+                            <?php if ($interaction->review_cons): ?>
+                            <div class="kata-cons">
+                                <strong>👎 Điểm chưa tốt:</strong> <?php echo esc_html($interaction->review_cons); ?>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if ($interaction->comment_content): ?>
+                        <div class="kata-comment-content"><?php echo nl2br(esc_html($interaction->comment_content)); ?></div>
+                        <?php endif; ?>
+                    </div>
+
+                    <?php if ($atts['enable_replies'] === 'true'): ?>
+                    <div class="kata-interaction-actions">
+                        <button class="kata-reply-btn" data-parent-id="<?php echo esc_attr($interaction->id); ?>">Trả lời</button>
+                    </div>
+                    <?php endif; ?>
+
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <?php if ($total > $per_page): ?>
+            <div class="kata-pagination">
+                <?php echo $this->render_pagination($total, $per_page, $page); ?>
+            </div>
+            <?php endif; ?>
+
+            <?php else: ?>
+            <div class="kata-no-interactions">
+                <p>Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá!</p>
+            </div>
+            <?php endif; ?>
+
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
+     * Parse rating criteria
+     */
+    private function parse_rating_criteria($criteria_string) {
+        $default_criteria = array(
+            'overall' => array('label' => 'Tổng thể', 'enabled' => true),
+            'quality' => array('label' => 'Chất lượng', 'enabled' => true),
+            'value' => array('label' => 'Giá trị', 'enabled' => true),
+            'service' => array('label' => 'Dịch vụ', 'enabled' => false)
+        );
+
+        if (empty($criteria_string)) {
+            return array_filter($default_criteria, function($criterion) {
+                return $criterion['enabled'];
+            });
+        }
+
+        // Try to parse as JSON first
+        $json_criteria = json_decode($criteria_string, true);
+        if (is_array($json_criteria)) {
+            return $json_criteria;
+        }
+
+        // Parse as comma-separated values
+        $criteria = array();
+        $items = explode(',', $criteria_string);
+        foreach ($items as $item) {
+            $item = trim($item);
+            if (!empty($item)) {
+                $key = sanitize_title($item);
+                $criteria[$key] = array('label' => $item, 'enabled' => true);
+            }
+        }
+
+        return $criteria ?: $default_criteria;
+    }
+
+    /**
+     * Render rating summary
+     */
+    private function render_rating_summary($post_id) {
+        global $wpdb;
+        
+        $table_name = $wpdb->prefix . 'kata_user_interactions';
+        $stats = $wpdb->get_row($wpdb->prepare("
+            SELECT 
+                COUNT(*) as total_count,
+                AVG(overall_rating) as avg_rating,
+                COUNT(CASE WHEN overall_rating >= 4 THEN 1 END) as positive_count
+            FROM $table_name 
+            WHERE post_id = %d AND status = 'approved' AND overall_rating > 0
+        ", $post_id));
+
+        if (!$stats || $stats->total_count == 0) {
+            return '';
+        }
+
+        $avg_rating = round($stats->avg_rating, 1);
+        $positive_percentage = round(($stats->positive_count / $stats->total_count) * 100);
+
+        ob_start();
+        ?>
+        <div class="kata-rating-summary">
+            <div class="kata-avg-rating">
+                <div class="kata-rating-display">
+                    <span class="kata-rating-number"><?php echo $avg_rating; ?></span>
+                    <div class="kata-rating-stars"><?php echo $this->render_stars($avg_rating); ?></div>
+                    <span class="kata-rating-count">(<?php echo intval($stats->total_count); ?> đánh giá)</span>
+                </div>
+            </div>
+            <div class="kata-rating-stats">
+                <span class="kata-positive-rate"><?php echo $positive_percentage; ?>% hài lòng</span>
+            </div>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
+    /**
+     * Render star rating display
+     */
+    private function render_stars($rating) {
+        $rating = floatval($rating);
+        $full_stars = floor($rating);
+        $has_half = ($rating - $full_stars) >= 0.5;
+        $empty_stars = 5 - $full_stars - ($has_half ? 1 : 0);
+
+        $output = '';
+        
+        // Full stars
+        for ($i = 0; $i < $full_stars; $i++) {
+            $output .= '<span class="kata-star kata-star-full">⭐</span>';
+        }
+        
+        // Half star
+        if ($has_half) {
+            $output .= '<span class="kata-star kata-star-half">⭐</span>';
+        }
+        
+        // Empty stars
+        for ($i = 0; $i < $empty_stars; $i++) {
+            $output .= '<span class="kata-star kata-star-empty">☆</span>';
+        }
+
+        return $output;
+    }
+
+    /**
+     * Render pagination
+     */
+    private function render_pagination($total, $per_page, $current_page) {
+        $total_pages = ceil($total / $per_page);
+        
+        if ($total_pages <= 1) {
+            return '';
+        }
+
+        $output = '<div class="kata-pagination-links">';
+        
+        for ($i = 1; $i <= $total_pages; $i++) {
+            $class = ($i == $current_page) ? 'current' : '';
+            $url = add_query_arg('interaction_page', $i);
+            $output .= sprintf('<a href="%s" class="kata-page-link %s">%d</a>', esc_url($url), $class, $i);
+        }
+        
+        $output .= '</div>';
+        return $output;
+    }
+    /**
+     * AJAX handler for submitting user interactions
+     */
+    public function ajax_submit_user_interaction() {
+        // Verify nonce
+        if (!wp_verify_nonce($_POST['nonce'], 'kata_user_interaction_nonce')) {
+            wp_die('Security check failed');
+        }
+
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'kata_user_interactions';
+
+        // Get data from POST
+        $post_id = intval($_POST['post_id']);
+        $interaction_type = sanitize_text_field($_POST['interaction_type']);
+        
+        // User info
+        $user_id = get_current_user_id();
+        $user_name = $user_id ? wp_get_current_user()->display_name : sanitize_text_field($_POST['user_name']);
+        $user_email = $user_id ? wp_get_current_user()->user_email : sanitize_email($_POST['user_email']);
+        $user_website = isset($_POST['user_website']) ? esc_url_raw($_POST['user_website']) : '';
+
+        // Review data
+        $review_title = isset($_POST['review_title']) ? sanitize_text_field($_POST['review_title']) : '';
+        $review_content = isset($_POST['review_content']) ? sanitize_textarea_field($_POST['review_content']) : '';
+        $review_pros = isset($_POST['review_pros']) ? sanitize_textarea_field($_POST['review_pros']) : '';
+        $review_cons = isset($_POST['review_cons']) ? sanitize_textarea_field($_POST['review_cons']) : '';
+
+        // Rating data
+        $overall_rating = isset($_POST['overall_rating']) ? floatval($_POST['overall_rating']) : 0;
+        $quality_rating = isset($_POST['quality_rating']) ? floatval($_POST['quality_rating']) : 0;
+        $value_rating = isset($_POST['value_rating']) ? floatval($_POST['value_rating']) : 0;
+        $service_rating = isset($_POST['service_rating']) ? floatval($_POST['service_rating']) : 0;
+
+        // Comment data
+        $comment_content = isset($_POST['comment_content']) ? sanitize_textarea_field($_POST['comment_content']) : '';
+        $parent_id = isset($_POST['parent_id']) ? intval($_POST['parent_id']) : null;
+
+        // Validation
+        if (!$post_id) {
+            wp_send_json_error('ID bài viết không hợp lệ.');
+        }
+
+        if (!$user_id && (empty($user_name) || empty($user_email))) {
+            wp_send_json_error('Vui lòng điền đầy đủ thông tin cá nhân.');
+        }
+
+        if (empty($review_content) && empty($comment_content) && $overall_rating == 0) {
+            wp_send_json_error('Vui lòng điền ít nhất một nội dung đánh giá.');
+        }
+
+        // Prepare data for insertion
+        $data = array(
+            'post_id' => $post_id,
+            'user_id' => $user_id ?: null,
+            'user_name' => $user_name,
+            'user_email' => $user_email,
+            'user_website' => $user_website,
+            'interaction_type' => $interaction_type,
+            'review_title' => $review_title,
+            'review_content' => $review_content,
+            'review_pros' => $review_pros,
+            'review_cons' => $review_cons,
+            'overall_rating' => $overall_rating,
+            'quality_rating' => $quality_rating,
+            'value_rating' => $value_rating,
+            'service_rating' => $service_rating,
+            'comment_content' => $comment_content,
+            'parent_id' => $parent_id,
+            'status' => 'pending', // Default to pending for moderation
+            'ip_address' => $_SERVER['REMOTE_ADDR'],
+            'user_agent' => $_SERVER['HTTP_USER_AGENT']
+        );
+
+        // Insert into database
+        $result = $wpdb->insert($table_name, $data);
+
+        if ($result === false) {
+            wp_send_json_error('Có lỗi xảy ra khi lưu đánh giá. Vui lòng thử lại.');
+        }
+
+        // Get the inserted ID
+        $interaction_id = $wpdb->insert_id;
+
+        // Send success response
+        wp_send_json_success(array(
+            'message' => 'Cảm ơn bạn đã đánh giá! Đánh giá của bạn sẽ được duyệt sớm.',
+            'interaction_id' => $interaction_id,
+            'status' => 'pending'
+        ));
+    }
+
+    /**
+     * AJAX handler for loading user interactions
+     */
+    public function ajax_load_user_interactions() {
+        $post_id = intval($_POST['post_id']);
+        $page = isset($_POST['page']) ? max(1, intval($_POST['page'])) : 1;
+        $per_page = isset($_POST['per_page']) ? intval($_POST['per_page']) : 10;
+
+        if (!$post_id) {
+            wp_send_json_error('ID bài viết không hợp lệ.');
+        }
+
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'kata_user_interactions';
+        $offset = ($page - 1) * $per_page;
+
+        // Get interactions
+        $interactions = $wpdb->get_results($wpdb->prepare("
+            SELECT * FROM $table_name 
+            WHERE post_id = %d AND status = 'approved' 
+            ORDER BY created_at DESC 
+            LIMIT %d OFFSET %d
+        ", $post_id, $per_page, $offset));
+
+        // Get total count
+        $total = $wpdb->get_var($wpdb->prepare("
+            SELECT COUNT(*) FROM $table_name 
+            WHERE post_id = %d AND status = 'approved'
+        ", $post_id));
+
+        // Format interactions for JSON response
+        $formatted_interactions = array();
+        foreach ($interactions as $interaction) {
+            $formatted_interactions[] = array(
+                'id' => $interaction->id,
+                'user_name' => $interaction->user_name,
+                'user_website' => $interaction->user_website,
+                'review_title' => $interaction->review_title,
+                'review_content' => $interaction->review_content,
+                'review_pros' => $interaction->review_pros,
+                'review_cons' => $interaction->review_cons,
+                'overall_rating' => floatval($interaction->overall_rating),
+                'quality_rating' => floatval($interaction->quality_rating),
+                'value_rating' => floatval($interaction->value_rating),
+                'service_rating' => floatval($interaction->service_rating),
+                'comment_content' => $interaction->comment_content,
+                'created_at' => $interaction->created_at,
+                'is_verified' => intval($interaction->is_verified),
+                'is_featured' => intval($interaction->is_featured)
+            );
+        }
+
+        wp_send_json_success(array(
+            'interactions' => $formatted_interactions,
+            'total' => intval($total),
+            'page' => $page,
+            'per_page' => $per_page,
+            'total_pages' => ceil($total / $per_page)
+        ));
     }
 
     /**

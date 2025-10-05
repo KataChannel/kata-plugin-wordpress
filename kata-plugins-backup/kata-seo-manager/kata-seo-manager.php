@@ -3037,14 +3037,16 @@ class KATA_SEO_Manager {
     public function render_wheel($atts) {
         // Parse attributes
         $atts = shortcode_atts(array(
-            'id' => 0
+            'id' => 0,
+            'style' => 'default' // 'default' or 'simple'
         ), $atts, 'kata_wheel');
         
         $wheel_id = intval($atts['id']);
+        $style = sanitize_text_field($atts['style']);
         
         if ($wheel_id === 0) {
             return '<div class="kata-wheel-error" style="background: #fee; padding: 20px; border-radius: 8px; text-align: center; color: #c33;">
-                        ❌ <strong>Lỗi:</strong> Vui lòng chỉ định ID vòng quay. Ví dụ: [kata_wheel id="1"]
+                        ❌ <strong>Lỗi:</strong> Vui lòng chỉ định ID vòng quay. VD: [kata_wheel id="1"] hoặc [kata_wheel id="1" style="simple"]
                     </div>';
         }
         
@@ -3092,7 +3094,12 @@ class KATA_SEO_Manager {
             'nonce' => wp_create_nonce('kata_wheel_nonce')
         ));
         
-        // Build output
+        // Check for simple style
+        if ($style === 'simple') {
+            return $this->render_wheel_simple($wheel, $prizes, $wheel_id);
+        }
+        
+        // Build output for default style
         $output = '<div class="kata-wheel-container" id="kata-wheel-' . esc_attr($wheel_id) . '" data-wheel-id="' . esc_attr($wheel_id) . '">';
         
         // Header
@@ -3225,6 +3232,400 @@ class KATA_SEO_Manager {
         $output .= '<script type="application/ld+json">';
         $output .= wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         $output .= '</script>';
+        
+        return $output;
+    }
+
+    /**
+     * Render wheel with simple style
+     */
+    private function render_wheel_simple($wheel, $prizes, $wheel_id) {
+        // Build simple output
+        $output = '<div class="kata-wheel-container kata-wheel-simple" id="kata-wheel-' . esc_attr($wheel_id) . '" data-wheel-id="' . esc_attr($wheel_id) . '">';
+        
+        // Simple header
+        $output .= '<div class="kata-wheel-header-simple">';
+        $output .= '<h3 class="kata-wheel-title-simple">' . esc_html($wheel->wheel_title) . '</h3>';
+        if ($wheel->wheel_description) {
+            $output .= '<p class="kata-wheel-description-simple">' . esc_html($wheel->wheel_description) . '</p>';
+        }
+        $output .= '</div>';
+        
+        // Simple wheel display
+        $output .= '<div class="kata-wheel-simple-display">';
+        
+        // Prize list preview
+        $output .= '<div class="kata-wheel-prizes-list">';
+        $output .= '<div class="kata-wheel-prizes-title">🎁 Giải thưởng:</div>';
+        $output .= '<div class="kata-wheel-prizes-grid">';
+        
+        foreach ($prizes as $index => $prize) {
+            $output .= '<div class="kata-wheel-prize-item" style="border-left: 4px solid ' . esc_attr($prize->color) . ';">';
+            $output .= '<span class="kata-wheel-prize-name">' . esc_html($prize->prize_text) . '</span>';
+            if ($prize->prize_value) {
+                $output .= '<span class="kata-wheel-prize-value">' . esc_html($prize->prize_value) . '</span>';
+            }
+            $output .= '</div>';
+        }
+        
+        $output .= '</div>'; // .kata-wheel-prizes-grid
+        $output .= '</div>'; // .kata-wheel-prizes-list
+        
+        // Simple spin button
+        $output .= '<div class="kata-wheel-simple-spin">';
+        $output .= '<button type="button" class="kata-wheel-simple-btn" id="kata-wheel-spin-btn-' . esc_attr($wheel_id) . '">';
+        $output .= '<span class="kata-wheel-btn-icon">🎲</span>';
+        $output .= '<span class="kata-wheel-btn-text">QUAY NGAY</span>';
+        $output .= '<span class="kata-wheel-btn-subtitle">Nhấn để quay!</span>';
+        $output .= '</button>';
+        $output .= '</div>';
+        
+        $output .= '</div>'; // .kata-wheel-simple-display
+        
+        // Simple form (if required)
+        if ($wheel->requirement !== 'none') {
+            $output .= '<div class="kata-wheel-form kata-wheel-form-simple" id="kata-wheel-form-' . esc_attr($wheel_id) . '" style="display:none;">';
+            $output .= '<div class="kata-wheel-form-simple-inner">';
+            $output .= '<div class="kata-wheel-form-simple-title">';
+            $output .= '<span class="kata-wheel-form-icon">✨</span>';
+            $output .= '<h4>Nhập thông tin để quay</h4>';
+            $output .= '</div>';
+            
+            if (in_array($wheel->requirement, array('email', 'both'))) {
+                $output .= '<div class="kata-wheel-form-field-simple">';
+                $output .= '<label for="kata-wheel-email-' . esc_attr($wheel_id) . '">📧 Email <span class="required">*</span></label>';
+                $output .= '<input type="email" id="kata-wheel-email-' . esc_attr($wheel_id) . '" placeholder="your@email.com" required>';
+                $output .= '</div>';
+            }
+            
+            if (in_array($wheel->requirement, array('phone', 'both'))) {
+                $output .= '<div class="kata-wheel-form-field-simple">';
+                $output .= '<label for="kata-wheel-phone-' . esc_attr($wheel_id) . '">📱 Số điện thoại <span class="required">*</span></label>';
+                $output .= '<input type="tel" id="kata-wheel-phone-' . esc_attr($wheel_id) . '" placeholder="0123456789" required>';
+                $output .= '</div>';
+            }
+            
+            $output .= '<div class="kata-wheel-form-field-simple">';
+            $output .= '<label for="kata-wheel-name-' . esc_attr($wheel_id) . '">👤 Tên (không bắt buộc)</label>';
+            $output .= '<input type="text" id="kata-wheel-name-' . esc_attr($wheel_id) . '" placeholder="Tên của bạn">';
+            $output .= '</div>';
+            
+            $output .= '<div class="kata-wheel-form-actions-simple">';
+            $output .= '<button type="button" class="kata-wheel-submit-btn-simple" onclick="kataWheelSubmit(' . esc_js($wheel_id) . ')">';
+            $output .= '🎯 Xác nhận & quay';
+            $output .= '</button>';
+            $output .= '</div>';
+            
+            $output .= '</div>'; // .kata-wheel-form-simple-inner
+            $output .= '</div>'; // .kata-wheel-form-simple
+        }
+        
+        // Simple result display
+        $output .= '<div class="kata-wheel-result kata-wheel-result-simple" id="kata-wheel-result-' . esc_attr($wheel_id) . '" style="display: none;">';
+        $output .= '<div class="kata-wheel-result-simple-content">';
+        $output .= '<div class="kata-wheel-result-simple-icon">🎉</div>';
+        $output .= '<div class="kata-wheel-result-simple-title">Chúc mừng bạn!</div>';
+        $output .= '<div class="kata-wheel-result-simple-prize">';
+        $output .= '<div class="kata-wheel-result-prize-name" id="kata-wheel-prize-name-' . esc_attr($wheel_id) . '"></div>';
+        $output .= '<div class="kata-wheel-result-prize-value" id="kata-wheel-prize-value-' . esc_attr($wheel_id) . '"></div>';
+        $output .= '</div>';
+        $output .= '<div class="kata-wheel-result-simple-note">💡 Liên hệ với chúng tôi để nhận giải thưởng!</div>';
+        $output .= '<button class="kata-wheel-result-simple-btn" onclick="kataWheelCloseResult(' . esc_js($wheel_id) . ')">';
+        $output .= '👍 Đã hiểu';
+        $output .= '</button>';
+        $output .= '</div>';
+        $output .= '</div>'; // .kata-wheel-result-simple
+        
+        // Simple info
+        $output .= '<div class="kata-wheel-info-simple" id="kata-wheel-info-' . esc_attr($wheel_id) . '">';
+        $output .= '<div class="kata-wheel-spins-simple">';
+        $output .= '🎯 Lượt quay còn lại: <strong id="kata-wheel-spins-left-' . esc_attr($wheel_id) . '">--</strong>';
+        $output .= '</div>';
+        $output .= '</div>';
+        
+        $output .= '</div>'; // .kata-wheel-container
+        
+        // Add simple style CSS
+        $output .= '<style>
+/* Simple Wheel Styles */
+.kata-wheel-simple {
+    max-width: 500px;
+    margin: 30px auto;
+    padding: 25px;
+    background: #ffffff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.kata-wheel-header-simple {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.kata-wheel-title-simple {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a202c;
+    margin: 0 0 8px 0;
+}
+
+.kata-wheel-description-simple {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.kata-wheel-prizes-list {
+    margin-bottom: 25px;
+}
+
+.kata-wheel-prizes-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 15px;
+}
+
+.kata-wheel-prizes-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.kata-wheel-prize-item {
+    background: #f8fafc;
+    padding: 12px 15px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.kata-wheel-prize-name {
+    font-weight: 500;
+    color: #2d3748;
+}
+
+.kata-wheel-prize-value {
+    font-size: 12px;
+    color: #666;
+    background: #e2e8f0;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.kata-wheel-simple-spin {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.kata-wheel-simple-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 18px 35px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.kata-wheel-simple-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.kata-wheel-simple-btn.spinning {
+    animation: spinningPulse 0.8s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes spinningPulse {
+    0%, 100% { 
+        transform: scale(1) translateY(-2px); 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    50% { 
+        transform: scale(1.05) translateY(-4px); 
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    }
+}
+
+.kata-wheel-btn-icon {
+    font-size: 20px;
+}
+
+.kata-wheel-btn-text {
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.kata-wheel-btn-subtitle {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.kata-wheel-form-simple {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.kata-wheel-form-simple-title {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.kata-wheel-form-simple-title h4 {
+    margin: 5px 0 0 0;
+    color: #2d3748;
+}
+
+.kata-wheel-form-icon {
+    font-size: 24px;
+}
+
+.kata-wheel-form-field-simple {
+    margin-bottom: 15px;
+}
+
+.kata-wheel-form-field-simple label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #4a5568;
+    margin-bottom: 5px;
+}
+
+.kata-wheel-form-field-simple input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.kata-wheel-form-field-simple input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.kata-wheel-form-actions-simple {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.kata-wheel-submit-btn-simple {
+    background: #48bb78;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.kata-wheel-submit-btn-simple:hover {
+    background: #38a169;
+}
+
+.kata-wheel-result-simple {
+    background: #f0fff4;
+    border: 2px solid #48bb78;
+    border-radius: 8px;
+    padding: 25px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.kata-wheel-result-simple-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.kata-wheel-result-simple-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2d3748;
+    margin-bottom: 15px;
+}
+
+.kata-wheel-result-prize-name {
+    font-size: 18px;
+    font-weight: 600;
+    color: #38a169;
+    margin-bottom: 8px;
+}
+
+.kata-wheel-result-prize-value {
+    font-size: 14px;
+    color: #666;
+    background: #e6fffa;
+    padding: 8px 15px;
+    border-radius: 6px;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.kata-wheel-result-simple-note {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.kata-wheel-result-simple-btn {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.kata-wheel-info-simple {
+    text-align: center;
+    padding: 15px;
+    background: #fafafa;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #666;
+}
+
+.required {
+    color: #e53e3e;
+}
+
+@media (max-width: 768px) {
+    .kata-wheel-simple {
+        margin: 20px 15px;
+        padding: 20px;
+    }
+    
+    .kata-wheel-title-simple {
+        font-size: 20px;
+    }
+    
+    .kata-wheel-simple-btn {
+        padding: 15px 25px;
+        font-size: 14px;
+    }
+}
+</style>';
         
         return $output;
     }
@@ -5676,6 +6077,14 @@ class KATA_SEO_Manager {
     public function tinymce_admin_head() {
         global $current_screen;
         if (isset($current_screen) && in_array($current_screen->base, array('post', 'page'))) {
+            // Enqueue TinyMCE editor CSS file
+            wp_enqueue_style(
+                'kata-tinymce-editor',
+                KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/tinymce-editor.css',
+                array(),
+                KATA_SEO_MANAGER_VERSION
+            );
+            
             ?>
             <style>
                 /* Ensure TinyMCE toolbar is visible */
@@ -5696,6 +6105,33 @@ class KATA_SEO_Manager {
                     position: relative !important;
                     top: auto !important;
                     left: auto !important;
+                }
+                
+                /* Fix TinyMCE Editor Area Padding Issue - Additional Override */
+                .mce-edit-area.mce-container.mce-panel.mce-stack-layout-item {
+                    padding-top: 0 !important;
+                }
+                
+                .mce-edit-area {
+                    padding-top: 0 !important;
+                }
+                
+                /* Additional TinyMCE container fixes */
+                .mce-container.mce-panel.mce-stack-layout-item.mce-edit-area {
+                    padding-top: 0 !important;
+                    margin-top: 0 !important;
+                }
+                
+                /* Ensure iframe content area is properly positioned */
+                .mce-edit-area iframe {
+                    padding-top: 0 !important;
+                    margin-top: 0 !important;
+                }
+                
+                /* Fix for specific TinyMCE layout classes - Force override of 74px padding */
+                .mce-stack-layout-item.mce-edit-area,
+                div[class*="mce-edit-area"] {
+                    padding-top: 0 !important;
                 }
             </style>
             <?php

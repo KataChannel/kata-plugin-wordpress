@@ -13,11 +13,22 @@
         constructor(container) {
             this.$container = $(container);
             this.wheelId = this.$container.data('wheel-id');
-            this.$circle = this.$container.find('.kata-wheel-circle');
-            this.$center = this.$container.find('.kata-wheel-center');
-            this.$form = this.$container.find('.kata-wheel-form');
-            this.$modal = this.$container.find('.kata-wheel-result-modal');
-            this.$spinsInfo = this.$container.find('.kata-wheel-info strong');
+            this.isSimple = this.$container.hasClass('kata-wheel-simple');
+            
+            // Initialize elements based on style
+            if (this.isSimple) {
+                this.$circle = null; // Simple style doesn't have wheel circle
+                this.$center = this.$container.find('.kata-wheel-simple-btn');
+                this.$form = this.$container.find('.kata-wheel-form-simple');
+                this.$modal = this.$container.find('.kata-wheel-result-simple');
+                this.$spinsInfo = this.$container.find('.kata-wheel-info-simple strong');
+            } else {
+                this.$circle = this.$container.find('.kata-wheel-circle');
+                this.$center = this.$container.find('.kata-wheel-center');
+                this.$form = this.$container.find('.kata-wheel-form');
+                this.$modal = this.$container.find('.kata-wheel-result-modal');
+                this.$spinsInfo = this.$container.find('.kata-wheel-info strong');
+            }
             
             this.wheelData = null;
             this.isSpinning = false;
@@ -76,10 +87,10 @@
         }
 
         /**
-         * Setup wheel segments with colors and positions
+         * Setup wheel segments with colors and positions (only for default style)
          */
         setupWheelSegments() {
-            if (!this.wheelData || !this.wheelData.prizes) return;
+            if (!this.wheelData || !this.wheelData.prizes || this.isSimple) return;
             
             const prizes = this.wheelData.prizes;
             const segmentAngle = 360 / prizes.length;
@@ -150,23 +161,36 @@
             // Spin button click
             this.$center.on('click', () => this.handleSpinClick());
             
-            // Form submit
-            this.$form.find('button').on('click', (e) => {
-                e.preventDefault();
-                this.handleFormSubmit();
-            });
+            // Form submit - handle both styles
+            if (this.isSimple) {
+                this.$form.find('.kata-wheel-submit-btn-simple').on('click', (e) => {
+                    e.preventDefault();
+                    this.handleFormSubmit();
+                });
+            } else {
+                this.$form.find('button').on('click', (e) => {
+                    e.preventDefault();
+                    this.handleFormSubmit();
+                });
+            }
             
-            // Modal close
-            this.$modal.find('.kata-wheel-close-result').on('click', () => {
-                this.closeModal();
-            });
-            
-            // Click outside modal to close
-            this.$modal.on('click', (e) => {
-                if ($(e.target).is('.kata-wheel-result-modal')) {
+            // Modal close - handle both styles
+            if (this.isSimple) {
+                this.$modal.find('.kata-wheel-result-simple-btn').on('click', () => {
                     this.closeModal();
-                }
-            });
+                });
+            } else {
+                this.$modal.find('.kata-wheel-close-result').on('click', () => {
+                    this.closeModal();
+                });
+                
+                // Click outside modal to close (only for default style)
+                this.$modal.on('click', (e) => {
+                    if ($(e.target).is('.kata-wheel-result-modal')) {
+                        this.closeModal();
+                    }
+                });
+            }
         }
 
         /**
@@ -311,27 +335,39 @@
         }
 
         /**
-         * Animate wheel rotation
+         * Animate wheel rotation (for default style) or simulate for simple style
          */
         animateWheel(prizeIndex, callback) {
-            const segmentAngle = 360 / this.wheelData.prizes.length;
-            const prizeAngle = prizeIndex * segmentAngle;
-            
-            // Calculate final rotation
-            // Spin 5 full rotations + land on prize (adjusted for pointer at top)
-            const spins = 5;
-            const randomOffset = Math.random() * (segmentAngle * 0.8) - (segmentAngle * 0.4);
-            const finalRotation = (spins * 360) + (360 - prizeAngle) + randomOffset;
-            
-            // Apply rotation
-            this.$circle.addClass('spinning');
-            this.$circle.css('transform', `rotate(${finalRotation}deg)`);
-            
-            // Callback after animation
-            setTimeout(() => {
-                this.$circle.removeClass('spinning');
-                if (callback) callback();
-            }, 4000);
+            if (this.isSimple) {
+                // Simple style: just show spinning animation on button
+                this.$center.addClass('spinning').text('⏳ Đang quay...');
+                
+                // Simulate spinning time
+                setTimeout(() => {
+                    this.$center.removeClass('spinning').html('<span class="kata-wheel-btn-icon">🎲</span><span class="kata-wheel-btn-text">QUAY NGAY</span><span class="kata-wheel-btn-subtitle">Nhấn để quay!</span>');
+                    if (callback) callback();
+                }, 2000);
+            } else {
+                // Default style: full wheel animation
+                const segmentAngle = 360 / this.wheelData.prizes.length;
+                const prizeAngle = prizeIndex * segmentAngle;
+                
+                // Calculate final rotation
+                // Spin 5 full rotations + land on prize (adjusted for pointer at top)
+                const spins = 5;
+                const randomOffset = Math.random() * (segmentAngle * 0.8) - (segmentAngle * 0.4);
+                const finalRotation = (spins * 360) + (360 - prizeAngle) + randomOffset;
+                
+                // Apply rotation
+                this.$circle.addClass('spinning');
+                this.$circle.css('transform', `rotate(${finalRotation}deg)`);
+                
+                // Callback after animation
+                setTimeout(() => {
+                    this.$circle.removeClass('spinning');
+                    if (callback) callback();
+                }, 4000);
+            }
         }
 
         /**
@@ -356,27 +392,34 @@
             
             // Update content
             $modal.find('#kata-wheel-prize-name-' + this.wheelId).html(
-                '<strong>' + this.escapeHtml(prize.name) + '</strong>'
+                this.escapeHtml(prize.name)
             );
             
             if (prize.value) {
                 $modal.find('#kata-wheel-prize-value-' + this.wheelId).html(
-                    '<p>Giá trị: <strong>' + this.escapeHtml(prize.value) + '</strong></p>'
+                    this.escapeHtml(prize.value)
                 );
             }
             
-            // Show modal
-            $modal.addClass('show');
-            
-            // Create confetti effect
-            this.createConfetti();
+            // Show modal - different styles
+            if (this.isSimple) {
+                $modal.show();
+            } else {
+                $modal.addClass('show');
+                // Create confetti effect for default style
+                this.createConfetti();
+            }
         }
 
         /**
          * Close modal
          */
         closeModal() {
-            this.$modal.removeClass('show');
+            if (this.isSimple) {
+                this.$modal.hide();
+            } else {
+                this.$modal.removeClass('show');
+            }
         }
 
         /**

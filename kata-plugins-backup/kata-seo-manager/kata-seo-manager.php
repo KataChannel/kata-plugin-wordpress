@@ -141,6 +141,9 @@ class KATA_SEO_Manager {
         add_action('wp_ajax_kata_get_poll_results', array($this, 'ajax_get_poll_results'));
         add_action('wp_ajax_nopriv_kata_get_poll_results', array($this, 'ajax_get_poll_results'));
         
+        // Poll management AJAX
+        add_action('wp_ajax_kata_get_poll_for_edit', array($this, 'ajax_get_poll_for_edit'));
+        
         // Wheel AJAX handlers
         add_action('wp_ajax_kata_get_wheel_data', array($this, 'ajax_get_wheel_data'));
         add_action('wp_ajax_nopriv_kata_get_wheel_data', array($this, 'ajax_get_wheel_data'));
@@ -148,6 +151,9 @@ class KATA_SEO_Manager {
         add_action('wp_ajax_nopriv_kata_spin_wheel', array($this, 'ajax_spin_wheel'));
         add_action('wp_ajax_kata_check_wheel_eligibility', array($this, 'ajax_check_wheel_eligibility'));
         add_action('wp_ajax_nopriv_kata_check_wheel_eligibility', array($this, 'ajax_check_wheel_eligibility'));
+        
+        // Wheel management AJAX
+        add_action('wp_ajax_kata_get_wheel_for_edit', array($this, 'ajax_get_wheel_for_edit'));
         
         // Shortcodes - need to be registered on init
         add_action('init', array($this, 'register_shortcodes'));
@@ -5847,6 +5853,54 @@ class KATA_SEO_Manager {
     }
 
     /**
+     * Get poll data for editing (AJAX handler)
+     */
+    public function ajax_get_poll_for_edit() {
+        // Check nonce
+        if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'kata_poll_edit')) {
+            wp_send_json_error('Nonce verification failed');
+        }
+        
+        // Check permissions
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error('Unauthorized access');
+        }
+        
+        // Get poll ID
+        $poll_id = isset($_POST['poll_id']) ? intval($_POST['poll_id']) : 0;
+        if (!$poll_id) {
+            wp_send_json_error('Invalid poll ID');
+        }
+        
+        global $wpdb;
+        
+        // Get poll data
+        $poll = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_polls WHERE id = %d",
+            $poll_id
+        ));
+        
+        if (!$poll) {
+            wp_send_json_error('Poll not found');
+        }
+        
+        // Parse options
+        $options = array();
+        if (!empty($poll->poll_options)) {
+            $options = json_decode($poll->poll_options, true);
+            if (!is_array($options)) {
+                $options = array();
+            }
+        }
+        
+        // Return poll data
+        wp_send_json_success(array(
+            'poll' => $poll,
+            'options' => $options
+        ));
+    }
+
+    /**
      * TinyMCE admin head
      */
     public function tinymce_admin_head() {
@@ -6211,6 +6265,51 @@ class KATA_SEO_Manager {
             $data['date'] = $today;
             $wpdb->insert($wpdb->prefix . 'kata_wheel_analytics', $data);
         }
+    }
+    
+    /**
+     * AJAX: Get wheel data for editing (admin only)
+     */
+    public function ajax_get_wheel_for_edit() {
+        // Check nonce
+        if (!check_ajax_referer('kata_wheel_edit', 'nonce', false)) {
+            wp_send_json_error(array('message' => 'Security check failed'));
+        }
+        
+        // Check admin permission
+        if (!current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => 'Unauthorized'));
+        }
+        
+        $wheel_id = intval($_POST['wheel_id']);
+        if (!$wheel_id) {
+            wp_send_json_error(array('message' => 'Invalid wheel ID'));
+        }
+        
+        global $wpdb;
+        
+        // Get wheel data
+        $wheel = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_wheels WHERE id = %d",
+            $wheel_id
+        ));
+        
+        if (!$wheel) {
+            wp_send_json_error(array('message' => 'Vòng quay không tồn tại'));
+        }
+        
+        // Get prizes
+        $prizes = $wpdb->get_results($wpdb->prepare(
+            "SELECT * FROM {$wpdb->prefix}kata_wheel_prizes 
+             WHERE wheel_id = %d 
+             ORDER BY position_order ASC",
+            $wheel_id
+        ));
+        
+        wp_send_json_success(array(
+            'wheel' => $wheel,
+            'prizes' => $prizes
+        ));
     }
 }
 

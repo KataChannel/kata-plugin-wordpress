@@ -44,11 +44,13 @@ if (isset($_GET['action']) && isset($_GET['id'])) {
         $wpdb->delete($table_name, array('id' => $id));
         echo '<div class="notice notice-success"><p>Đã xóa tương tác.</p></div>';
     } elseif ($action === 'feature') {
-        $wpdb->update($table_name, array('is_featured' => 1), array('id' => $id));
-        echo '<div class="notice notice-success"><p>Đã đánh dấu tương tác nổi bật.</p></div>';
+        // TODO: Enable when is_featured column is added
+        // $wpdb->update($table_name, array('is_featured' => 1), array('id' => $id));
+        echo '<div class="notice notice-error"><p>Tính năng nổi bật chưa khả dụng. Vui lòng nâng cấp cơ sở dữ liệu.</p></div>';
     } elseif ($action === 'unfeature') {
-        $wpdb->update($table_name, array('is_featured' => 0), array('id' => $id));
-        echo '<div class="notice notice-success"><p>Đã bỏ đánh dấu tương tác nổi bật.</p></div>';
+        // TODO: Enable when is_featured column is added
+        // $wpdb->update($table_name, array('is_featured' => 0), array('id' => $id));
+        echo '<div class="notice notice-error"><p>Tính năng nổi bật chưa khả dụng. Vui lòng nâng cấp cơ sở dữ liệu.</p></div>';
     }
 }
 
@@ -84,7 +86,11 @@ $interactions = $wpdb->get_results($wpdb->prepare($query, $where_values));
 
 // Get total count
 $count_query = "SELECT COUNT(*) FROM $table_name $where_clause";
-$total = $wpdb->get_var(!empty($where_values) ? $wpdb->prepare($count_query, array_slice($where_values, 0, -2)) : $count_query);
+if (!empty($where_conditions)) {
+    $total = $wpdb->get_var($wpdb->prepare($count_query, array_slice($where_values, 0, -2)));
+} else {
+    $total = $wpdb->get_var($count_query);
+}
 
 // Get statistics
 $stats = $wpdb->get_row("
@@ -93,9 +99,9 @@ $stats = $wpdb->get_row("
         COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending,
         COUNT(CASE WHEN status = 'approved' THEN 1 END) as approved,
         COUNT(CASE WHEN status = 'rejected' THEN 1 END) as rejected,
-        AVG(overall_rating) as avg_rating
+        AVG(rating) as avg_rating
     FROM $table_name
-    WHERE overall_rating > 0
+    WHERE rating > 0
 ");
 
 // Get popular posts
@@ -103,7 +109,7 @@ $popular_posts = $wpdb->get_results("
     SELECT 
         post_id,
         COUNT(*) as interaction_count,
-        AVG(overall_rating) as avg_rating
+        AVG(rating) as avg_rating
     FROM $table_name 
     WHERE status = 'approved'
     GROUP BY post_id 
@@ -122,19 +128,19 @@ $popular_posts = $wpdb->get_results("
     <div class="kata-admin-stats" style="display: flex; gap: 20px; margin: 20px 0;">
         <div class="kata-stat-card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex: 1;">
             <h3 style="margin: 0 0 10px 0; color: #2271b1;">📊 Tổng quan</h3>
-            <div style="font-size: 24px; font-weight: bold; color: #3c434a;"><?php echo number_format($stats->total); ?></div>
+            <div style="font-size: 24px; font-weight: bold; color: #3c434a;"><?php echo $stats ? number_format($stats->total) : '0'; ?></div>
             <div style="color: #646970;">Tổng tương tác</div>
         </div>
         
         <div class="kata-stat-card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex: 1;">
             <h3 style="margin: 0 0 10px 0; color: #d63638;">⏳ Chờ duyệt</h3>
-            <div style="font-size: 24px; font-weight: bold; color: #d63638;"><?php echo number_format($stats->pending); ?></div>
+            <div style="font-size: 24px; font-weight: bold; color: #d63638;"><?php echo $stats ? number_format($stats->pending) : '0'; ?></div>
             <div style="color: #646970;">Cần xử lý</div>
         </div>
         
         <div class="kata-stat-card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); flex: 1;">
             <h3 style="margin: 0 0 10px 0; color: #00a32a;">✅ Đã duyệt</h3>
-            <div style="font-size: 24px; font-weight: bold; color: #00a32a;"><?php echo number_format($stats->approved); ?></div>
+            <div style="font-size: 24px; font-weight: bold; color: #00a32a;"><?php echo $stats ? number_format($stats->approved) : '0'; ?></div>
             <div style="color: #646970;">Hiển thị công khai</div>
         </div>
         
@@ -194,26 +200,33 @@ $popular_posts = $wpdb->get_results("
                         <td class="column-user">
                             <strong><?php echo esc_html($interaction->user_name); ?></strong><br>
                             <small><?php echo esc_html($interaction->user_email); ?></small>
-                            <?php if ($interaction->is_verified): ?>
+                            <?php // TODO: Enable when is_verified and is_featured columns are added ?>
+                            <?php /* if (isset($interaction->is_verified) && $interaction->is_verified): ?>
                                 <span class="dashicons dashicons-yes-alt" title="Đã xác thực" style="color: #00a32a;"></span>
                             <?php endif; ?>
-                            <?php if ($interaction->is_featured): ?>
+                            <?php if (isset($interaction->is_featured) && $interaction->is_featured): ?>
                                 <span class="dashicons dashicons-star-filled" title="Nổi bật" style="color: #dba617;"></span>
-                            <?php endif; ?>
+                            <?php endif; */ ?>
                         </td>
                         
                         <td class="column-content">
-                            <?php if ($interaction->review_title): ?>
+                            <?php // Use existing content column for now ?>
+                            <?php if (!empty($interaction->content)): ?>
+                                <div><?php echo esc_html(wp_trim_words($interaction->content, 15)); ?></div>
+                            <?php endif; ?>
+                            
+                            <?php // TODO: Enable when new columns are added ?>
+                            <?php /* if (isset($interaction->review_title) && $interaction->review_title): ?>
                                 <strong><?php echo esc_html(wp_trim_words($interaction->review_title, 8)); ?></strong><br>
                             <?php endif; ?>
                             
-                            <?php if ($interaction->review_content): ?>
+                            <?php if (isset($interaction->review_content) && $interaction->review_content): ?>
                                 <div><?php echo esc_html(wp_trim_words($interaction->review_content, 15)); ?></div>
                             <?php endif; ?>
                             
-                            <?php if ($interaction->comment_content): ?>
+                            <?php if (isset($interaction->comment_content) && $interaction->comment_content): ?>
                                 <div><em><?php echo esc_html(wp_trim_words($interaction->comment_content, 15)); ?></em></div>
-                            <?php endif; ?>
+                            <?php endif; */ ?>
                             
                             <div class="row-actions">
                                 <?php if ($interaction->status === 'pending'): ?>
@@ -225,7 +238,8 @@ $popular_posts = $wpdb->get_results("
                                     </span>
                                 <?php endif; ?>
                                 
-                                <?php if (!$interaction->is_featured): ?>
+                                <?php // TODO: Enable when is_featured column is added ?>
+                                <?php /* if (!isset($interaction->is_featured) || !$interaction->is_featured): ?>
                                     <span class="feature">
                                         <a href="?page=kata-seo-user-interactions&action=feature&id=<?php echo $interaction->id; ?>">Nổi bật</a> |
                                     </span>
@@ -233,7 +247,7 @@ $popular_posts = $wpdb->get_results("
                                     <span class="unfeature">
                                         <a href="?page=kata-seo-user-interactions&action=unfeature&id=<?php echo $interaction->id; ?>">Bỏ nổi bật</a> |
                                     </span>
-                                <?php endif; ?>
+                                <?php endif; */ ?>
                                 
                                 <span class="delete">
                                     <a href="?page=kata-seo-user-interactions&action=delete&id=<?php echo $interaction->id; ?>" 
@@ -243,22 +257,23 @@ $popular_posts = $wpdb->get_results("
                         </td>
                         
                         <td class="column-rating">
-                            <?php if ($interaction->overall_rating > 0): ?>
+                            <?php if ($interaction->rating > 0): ?>
                                 <div style="display: flex; align-items: center; gap: 5px;">
-                                    <span style="font-weight: bold;"><?php echo number_format($interaction->overall_rating, 1); ?></span>
+                                    <span style="font-weight: bold;"><?php echo number_format($interaction->rating, 1); ?></span>
                                     <div>
                                         <?php for ($i = 1; $i <= 5; $i++): ?>
-                                            <span style="color: <?php echo $i <= $interaction->overall_rating ? '#dba617' : '#ddd'; ?>;">⭐</span>
+                                            <span style="color: <?php echo $i <= $interaction->rating ? '#dba617' : '#ddd'; ?>;">⭐</span>
                                         <?php endfor; ?>
                                     </div>
                                 </div>
                                 
-                                <?php if ($interaction->quality_rating > 0 || $interaction->value_rating > 0): ?>
+                                <?php // TODO: Enable when quality_rating and value_rating columns are added ?>
+                                <?php /* if (isset($interaction->quality_rating) && ($interaction->quality_rating > 0 || $interaction->value_rating > 0)): ?>
                                 <small style="color: #646970;">
                                     <?php if ($interaction->quality_rating): ?>CL: <?php echo $interaction->quality_rating; ?><?php endif; ?>
                                     <?php if ($interaction->value_rating): ?> | GT: <?php echo $interaction->value_rating; ?><?php endif; ?>
                                 </small>
-                                <?php endif; ?>
+                                <?php endif; */ ?>
                             <?php else: ?>
                                 <span style="color: #646970;">—</span>
                             <?php endif; ?>

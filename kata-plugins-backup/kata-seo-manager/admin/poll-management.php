@@ -15,9 +15,9 @@ $polls = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}kata_polls ORDER BY cr
 
 // Calculate statistics
 $total_polls = count($polls);
-$active_polls = count(array_filter($polls, function($p) { return $p->status === 'active'; }));
+$active_polls = count(array_filter($polls, function($p) { return $p->active == 1; }));
 $total_votes = array_sum(array_column($polls, 'total_votes'));
-$closed_polls = count(array_filter($polls, function($p) { return $p->status === 'closed'; }));
+$closed_polls = count(array_filter($polls, function($p) { return $p->active == 0; }));
 
 // Include styles and scripts
 include_once(__DIR__ . '/poll-management-styles.php');
@@ -123,15 +123,18 @@ include_once(__DIR__ . '/poll-management-scripts.php');
         <?php else: ?>
             <div class="polls-grid" id="polls-grid">
                 <?php foreach ($polls as $poll): 
-                    $options = json_decode($poll->poll_options, true);
+                    $options = json_decode($poll->options, true);
                     $option_count = is_array($options) ? count($options) : 0;
                     
+                    // Map active column to status strings
+                    $status = $poll->active ? 'active' : 'closed';
+                    
                     // Calculate status class
-                    $status_class = 'status-' . $poll->status;
+                    $status_class = 'status-' . $status;
                     $status_text = '';
                     $status_icon = '';
                     
-                    switch ($poll->status) {
+                    switch ($status) {
                         case 'active':
                             $status_text = 'Hoạt động';
                             $status_icon = '<span class="status-dot"></span>';
@@ -146,7 +149,7 @@ include_once(__DIR__ . '/poll-management-scripts.php');
                             break;
                     }
                 ?>
-                <div class="poll-card" data-poll-id="<?php echo $poll->id; ?>" data-status="<?php echo $poll->status; ?>">
+                <div class="poll-card" data-poll-id="<?php echo $poll->id; ?>" data-status="<?php echo $status; ?>">
                     <div class="poll-card-header">
                         <div class="poll-status <?php echo $status_class; ?>">
                             <?php echo $status_icon . ' ' . $status_text; ?>
@@ -194,8 +197,8 @@ include_once(__DIR__ . '/poll-management-scripts.php');
                         </a>
                         <?php endif; ?>
                         
-                        <button type="button" class="action-btn toggle-status-btn" data-poll-id="<?php echo $poll->id; ?>" data-status="<?php echo $poll->status; ?>" title="<?php echo $poll->status === 'active' ? 'Tạm dừng' : 'Kích hoạt'; ?>">
-                            <span class="dashicons dashicons-controls-<?php echo $poll->status === 'active' ? 'pause' : 'play'; ?>"></span>
+                        <button type="button" class="action-btn toggle-status-btn" data-poll-id="<?php echo $poll->id; ?>" data-status="<?php echo $status; ?>" title="<?php echo $status === 'active' ? 'Tạm dừng' : 'Kích hoạt'; ?>">
+                            <span class="dashicons dashicons-controls-<?php echo $status === 'active' ? 'pause' : 'play'; ?>"></span>
                         </button>
                         
                         <button type="button" class="action-btn delete-poll-btn" data-poll-id="<?php echo $poll->id; ?>" title="Xóa">

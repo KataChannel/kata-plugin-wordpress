@@ -270,6 +270,25 @@ class KATA_SEO_Database {
         ) $charset_collate;";
         dbDelta($sql_quiz_trends);
 
+        // Table 12.5: Kata Polls - Store poll configurations
+        $table_polls = $wpdb->prefix . 'kata_polls';
+        $sql_polls = "CREATE TABLE IF NOT EXISTS $table_polls (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            title varchar(500) NOT NULL,
+            description text DEFAULT NULL,
+            options longtext NOT NULL,
+            allow_multiple tinyint(1) DEFAULT 0,
+            show_results tinyint(1) DEFAULT 1,
+            require_login tinyint(1) DEFAULT 0,
+            active tinyint(1) DEFAULT 1,
+            total_votes int(11) DEFAULT 0,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY active (active)
+        ) $charset_collate;";
+        dbDelta($sql_polls);
+
         // Table 13: Kata Wheels - Store wheel configurations
         $table_wheels = $wpdb->prefix . 'kata_wheels';
         $sql_wheels = "CREATE TABLE IF NOT EXISTS $table_wheels (
@@ -291,6 +310,44 @@ class KATA_SEO_Database {
             KEY created_at (created_at)
         ) $charset_collate;";
         dbDelta($sql_wheels);
+
+        // Table 13.5: Kata User Interactions - Store user interaction records
+        $table_user_interactions = $wpdb->prefix . 'kata_user_interactions';
+        $sql_user_interactions = "CREATE TABLE IF NOT EXISTS $table_user_interactions (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            post_id bigint(20) DEFAULT NULL,
+            user_id bigint(20) DEFAULT NULL,
+            user_name varchar(255) DEFAULT NULL,
+            user_email varchar(255) DEFAULT NULL,
+            user_website varchar(500) DEFAULT NULL,
+            interaction_type enum('comment', 'like', 'share', 'follow', 'subscribe', 'review', 'rating', 'other') DEFAULT 'comment',
+            review_title varchar(500) DEFAULT NULL,
+            review_content text DEFAULT NULL,
+            review_pros text DEFAULT NULL,
+            review_cons text DEFAULT NULL,
+            overall_rating decimal(3,2) DEFAULT NULL,
+            quality_rating decimal(3,2) DEFAULT NULL,
+            value_rating decimal(3,2) DEFAULT NULL,
+            service_rating decimal(3,2) DEFAULT NULL,
+            comment_content text DEFAULT NULL,
+            parent_id bigint(20) DEFAULT NULL,
+            target_id bigint(20) DEFAULT NULL,
+            ip_address varchar(45) DEFAULT NULL,
+            user_agent text DEFAULT NULL,
+            status enum('pending', 'approved', 'rejected', 'spam', 'trash') DEFAULT 'pending',
+            is_featured tinyint(1) DEFAULT 0,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY user_id (user_id),
+            KEY post_id (post_id),
+            KEY parent_id (parent_id),
+            KEY interaction_type (interaction_type),
+            KEY status (status),
+            KEY is_featured (is_featured),
+            KEY created_at (created_at)
+        ) $charset_collate;";
+        dbDelta($sql_user_interactions);
 
         // Table 14: Kata Wheel Prizes - Store prize configurations for each wheel
         $table_wheel_prizes = $wpdb->prefix . 'kata_wheel_prizes';
@@ -561,5 +618,31 @@ class KATA_SEO_Database {
         foreach ($tables as $table) {
             $wpdb->query("DROP TABLE IF EXISTS $table");
         }
+    }
+    
+    /**
+     * Verify that all required tables exist
+     * 
+     * @return bool True if all tables exist, false otherwise
+     */
+    public function verify_tables() {
+        global $wpdb;
+        
+        $required_tables = array(
+            $wpdb->prefix . 'kata_seo_schemas',
+            $wpdb->prefix . 'kata_seo_schema_stats',
+            $wpdb->prefix . 'kata_seo_schema_validation',
+            $wpdb->prefix . 'kata_seo_schema_templates',
+            $wpdb->prefix . 'kata_seo_schema_tracking'
+        );
+        
+        foreach ($required_tables as $table) {
+            $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$table'");
+            if ($table_exists !== $table) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 }

@@ -62,6 +62,8 @@ class KATA_SEO_Manager {
     private function includes() {
         // Core classes
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-database.php';
+        require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-sample-data.php';
+        require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-demo-content.php';
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-schema-generator.php';
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-editor-integration.php';
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-admin-settings.php';
@@ -155,6 +157,9 @@ class KATA_SEO_Manager {
         // Wheel management AJAX
         add_action('wp_ajax_kata_get_wheel_for_edit', array($this, 'ajax_get_wheel_for_edit'));
         
+        // Demo Content AJAX handler
+        add_action('wp_ajax_kata_generate_demo_content', array($this, 'ajax_generate_demo_content'));
+        
         // Shortcodes - need to be registered on init
         add_action('init', array($this, 'register_shortcodes'));
         
@@ -193,9 +198,13 @@ class KATA_SEO_Manager {
             // Initialize plugin data
             $this->initialize_default_schemas();
             
+            // ✨ TẠO DỮ LIỆU MẪU (26 schema types x 3 samples + 1 post + 1 page)
+            KATA_SEO_Sample_Data::generate_all_sample_data();
+            
             // Set activation success flag
             update_option('kata_seo_manager_activated', true);
             update_option('kata_seo_manager_activation_date', current_time('mysql'));
+            update_option('kata_seo_sample_data_created', true); // Flag để biết đã tạo sample data
             
             flush_rewrite_rules();
             
@@ -299,6 +308,16 @@ class KATA_SEO_Manager {
             array(),
             $version
         );
+        
+        // Schema Types CSS (if on schema-types page)
+        if ($hook === 'kata-seo_page_kata-seo-schema-types') {
+            wp_enqueue_style(
+                'kata-schema-types',
+                $plugin_url . 'assets/css/schema-types.css',
+                array('kata-seo-admin'),
+                $version
+            );
+        }
         
         // Admin JS
         wp_enqueue_script(
@@ -815,20 +834,18 @@ class KATA_SEO_Manager {
         $result = $wpdb->insert(
             $wpdb->prefix . 'kata_polls',
             array(
-                'post_id' => 0,
-                'poll_title' => $title,
-                'poll_description' => $description,
-                'poll_question' => $question,
-                'poll_options' => json_encode($options),
+                'title' => $title,
+                'description' => $description . "\n\nCâu hỏi: " . $question,
+                'options' => json_encode($options),
                 'total_votes' => 0,
-                'status' => 'active',
-                'show_results' => 'after_vote',
-                'allow_multiple' => 'no',
-                'require_login' => 'no',
+                'active' => 1,
+                'show_results' => 1,
+                'allow_multiple' => 0,
+                'require_login' => 0,
                 'created_at' => current_time('mysql'),
                 'updated_at' => current_time('mysql')
             ),
-            array('%d', '%s', '%s', '%s', '%s', '%d', '%s', '%s', '%s', '%s', '%s', '%s')
+            array('%s', '%s', '%s', '%d', '%d', '%d', '%d', '%d', '%s', '%s')
         );
         
         if ($result) {
@@ -861,19 +878,21 @@ class KATA_SEO_Manager {
             return;
         }
         
+        // Map status to active column
+        $active_value = ($status === 'active') ? 1 : 0;
+        
         global $wpdb;
         $result = $wpdb->update(
             $wpdb->prefix . 'kata_polls',
             array(
-                'poll_title' => $title,
-                'poll_description' => $description,
-                'poll_question' => $question,
-                'poll_options' => json_encode($options),
-                'status' => $status,
+                'title' => $title,
+                'description' => $description . "\n\nCâu hỏi: " . $question,
+                'options' => json_encode($options),
+                'active' => $active_value,
                 'updated_at' => current_time('mysql')
             ),
             array('id' => $poll_id),
-            array('%s', '%s', '%s', '%s', '%s', '%s'),
+            array('%s', '%s', '%s', '%d', '%s'),
             array('%d')
         );
         
@@ -918,12 +937,15 @@ class KATA_SEO_Manager {
         $poll_id = intval($_POST['poll_id']);
         $new_status = sanitize_text_field($_POST['new_status']);
         
+        // Map status strings to active column values
+        $active_value = ($new_status === 'active') ? 1 : 0;
+        
         global $wpdb;
         $result = $wpdb->update(
             $wpdb->prefix . 'kata_polls',
-            array('status' => $new_status, 'updated_at' => current_time('mysql')),
+            array('active' => $active_value, 'updated_at' => current_time('mysql')),
             array('id' => $poll_id),
-            array('%s', '%s'),
+            array('%d', '%s'),
             array('%d')
         );
         
@@ -6372,6 +6394,88 @@ class KATA_SEO_Manager {
             'wheel' => $wheel,
             'prizes' => $prizes
         ));
+    }
+    
+    /**
+     * AJAX: Generate demo content (admin only)
+     */
+    public function ajax_generate_demo_content() {
+        // Start output buffering to capture any stray output
+        if (ob_get_level()) {
+            ob_clean();
+        }
+        ob_start();
+        
+        // Clear any previous output and suppress errors
+        error_reporting(E_ERROR | E_PARSE);
+        
+        // Set proper headers
+        header('Content-Type: application/json');
+        
+        // Check nonce
+        if (!check_ajax_referer('kata_ajax_nonce', 'nonce', false)) {
+            ob_end_clean();
+            wp_send_json_error(array('message' => 'Security check failed'));
+            return;
+        }
+        
+        // Check admin permission
+        if (!current_user_can('manage_options')) {
+            ob_end_clean();
+            wp_send_json_error(array('message' => 'Unauthorized'));
+            return;
+        }
+        
+        try {
+            // Check if class exists
+            if (!class_exists('KATA_SEO_Demo_Content')) {
+                // Try to include the class file
+                $class_file = plugin_dir_path(__FILE__) . 'includes/class-demo-content.php';
+                if (file_exists($class_file)) {
+                    require_once $class_file;
+                }
+                
+                if (!class_exists('KATA_SEO_Demo_Content')) {
+                    ob_end_clean();
+                    wp_send_json_error(array(
+                        'message' => 'Demo Content class not found. Class file: ' . $class_file
+                    ));
+                    return;
+                }
+            }
+            
+            // Clear any output before generating content
+            $stray_output = ob_get_clean();
+            if (!empty($stray_output)) {
+                // Log stray output for debugging
+                error_log('KATA SEO Demo Content - Stray output detected: ' . $stray_output);
+            }
+            
+            // Generate all demo content
+            $results = KATA_SEO_Demo_Content::generate_all();
+            
+            if ($results['success']) {
+                wp_send_json_success($results);
+            } else {
+                wp_send_json_error($results);
+            }
+        } catch (Exception $e) {
+            ob_end_clean();
+            wp_send_json_error(array(
+                'message' => 'Lỗi: ' . $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ));
+        } catch (Error $e) {
+            ob_end_clean();
+            wp_send_json_error(array(
+                'message' => 'PHP Error: ' . $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ));
+        }
     }
 }
 

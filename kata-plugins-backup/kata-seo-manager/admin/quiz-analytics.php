@@ -143,28 +143,30 @@ $engagement_stats = $wpdb->get_row("
 ");
 ?>
 
-<div class="wrap kata-quiz-analytics">
-    <div class="kata-page-header">
+<div class="wrap kata-quiz-analytics-v2">
+    <!-- Senior Header Section -->
+    <div class="kata-dashboard-header">
         <div class="kata-header-content">
-            <div class="kata-page-title">
-                <div class="kata-page-icon">
-                    <svg width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M1.5 1A1.5 1.5 0 0 0 0 2.5v11A1.5 1.5 0 0 0 1.5 15h13a1.5 1.5 0 0 0 1.5-1.5v-11A1.5 1.5 0 0 0 14.5 1h-13zM1 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 .5.5v2H1v-2zm0 3h14v7.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-7.5z"/>
-                        <path d="M2 6a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V6z"/>
+            <div class="kata-brand">
+                <div class="kata-logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                        <path d="M16 4L4 10v10c0 7.5 5.5 13 12 14 6.5-1 12-6.5 12-14V10L16 4z" fill="#764ba2" opacity="0.9"/>
+                        <path d="M16 10L10 13v5c0 3.8 2.8 6.5 6 7 3.2-.5 6-3.2 6-7v-5l-6-3z" fill="#ffffff"/>
+                        <path d="M16 14l-3 2v3c0 1.9 1.4 3.3 3 3.5 1.6-.2 3-1.6 3-3.5v-3l-3-2z" fill="#764ba2"/>
                     </svg>
                 </div>
-                <div>
-                    <h1><?php _e('Phân tích Quiz', 'kata-seo-manager'); ?></h1>
-                    <p class="kata-page-description"><?php _e('Theo dõi hiệu suất và phân tích chi tiết của các quiz tương tác', 'kata-seo-manager'); ?></p>
+                <div class="kata-title">
+                    <h1><?php _e('Quiz Analytics Dashboard', 'kata-seo-manager'); ?></h1>
+                    <p class="kata-subtitle"><?php _e('Phân tích chuyên sâu và theo dõi hiệu suất quiz tương tác', 'kata-seo-manager'); ?></p>
                 </div>
             </div>
             <div class="kata-header-actions">
                 <button class="kata-btn kata-btn-outline" onclick="location.reload()">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                        <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/>
+                        <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/>
                     </svg>
-                    <?php _e('Làm mới dữ liệu', 'kata-seo-manager'); ?>
+                    <?php _e('Làm mới', 'kata-seo-manager'); ?>
                 </button>
                 <button class="kata-btn kata-btn-primary" onclick="exportQuizData()">
                     <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
@@ -177,107 +179,158 @@ $engagement_stats = $wpdb->get_row("
         </div>
     </div>
 
-    <!-- Date Range Filters -->
-    <div class="kata-analytics-filters">
-        <form method="get" action="" class="kata-filter-form">
-            <input type="hidden" name="page" value="kata-seo-quiz-analytics">
-            
-            <div class="filter-group">
-                <label for="start_date"><?php _e('Từ ngày:', 'kata-seo-manager'); ?></label>
-                <input type="date" id="start_date" name="start_date" value="<?php echo esc_attr($start_date); ?>" class="kata-date-input">
-            </div>
-            
-            <div class="filter-group">
-                <label for="end_date"><?php _e('Đến ngày:', 'kata-seo-manager'); ?></label>
-                <input type="date" id="end_date" name="end_date" value="<?php echo esc_attr($end_date); ?>" class="kata-date-input">
-            </div>
-            
-            <div class="filter-group">
-                <label for="quiz_filter"><?php _e('Quiz:', 'kata-seo-manager'); ?></label>
-                <select id="quiz_filter" name="quiz_id" class="kata-select">
-                    <option value="0"><?php _e('Tất cả Quiz', 'kata-seo-manager'); ?></option>
-                    <?php foreach ($quizzes as $quiz): ?>
-                        <option value="<?php echo esc_attr($quiz->id); ?>" <?php selected($quiz_filter, $quiz->id); ?>>
-                            <?php echo esc_html($quiz->quiz_title); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            
-            <div class="filter-actions">
-                <button type="submit" class="kata-btn kata-btn-primary">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
-                    </svg>
-                    <?php _e('Áp dụng bộ lọc', 'kata-seo-manager'); ?>
-                </button>
+    <div class="kata-dashboard-container">
+        <!-- Modern Date Range Filters -->
+        <div class="kata-filter-card">
+            <form method="get" action="" class="kata-filter-form-modern">
+                <input type="hidden" name="page" value="kata-seo-quiz-analytics">
                 
-                <a href="<?php echo admin_url('admin.php?page=kata-seo-quiz-analytics'); ?>" class="kata-btn kata-btn-outline">
-                    <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                        <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
-                        <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
-                    </svg>
-                    <?php _e('Đặt lại', 'kata-seo-manager'); ?>
-                </a>
-            </div>
-        </form>
-    </div>
+                <div class="filter-group-modern">
+                    <label for="start_date">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                        </svg>
+                        <?php _e('Từ ngày', 'kata-seo-manager'); ?>
+                    </label>
+                    <input type="date" id="start_date" name="start_date" value="<?php echo esc_attr($start_date); ?>" class="kata-input-modern">
+                </div>
+                
+                <div class="filter-group-modern">
+                    <label for="end_date">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                        </svg>
+                        <?php _e('Đến ngày', 'kata-seo-manager'); ?>
+                    </label>
+                    <input type="date" id="end_date" name="end_date" value="<?php echo esc_attr($end_date); ?>" class="kata-input-modern">
+                </div>
+                
+                <div class="filter-group-modern">
+                    <label for="quiz_filter">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                            <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                        </svg>
+                        <?php _e('Chọn Quiz', 'kata-seo-manager'); ?>
+                    </label>
+                    <select id="quiz_filter" name="quiz_id" class="kata-select-modern">
+                        <option value="0"><?php _e('Tất cả Quiz', 'kata-seo-manager'); ?></option>
+                        <?php foreach ($quizzes as $quiz): ?>
+                            <option value="<?php echo esc_attr($quiz->id); ?>" <?php selected($quiz_filter, $quiz->id); ?>>
+                                <?php echo esc_html($quiz->quiz_title); ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                
+                <div class="filter-actions-modern">
+                    <button type="submit" class="kata-btn kata-btn-gradient">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                        <?php _e('Lọc dữ liệu', 'kata-seo-manager'); ?>
+                    </button>
+                    
+                    <a href="<?php echo admin_url('admin.php?page=kata-seo-quiz-analytics'); ?>" class="kata-btn kata-btn-ghost">
+                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/>
+                            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/>
+                        </svg>
+                        <?php _e('Đặt lại', 'kata-seo-manager'); ?>
+                    </a>
+                </div>
+            </form>
+        </div>
 
-    <div class="kata-analytics-container">
-        <!-- Overview Stats -->
+        <!-- Modern Stats Overview -->
         <div class="kata-stats-overview">
-            <div class="kata-stat-card total-quizzes">
-                <div class="kata-stat-icon">
-                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
-                    </svg>
+            <div class="kata-stat-card-v2 gradient-purple">
+                <div class="kata-stat-header">
+                    <div class="kata-stat-icon">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                            <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
+                        </svg>
+                    </div>
+                    <div class="kata-stat-trend positive">
+                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+                        </svg>
+                        <span>+15%</span>
+                    </div>
                 </div>
                 <div class="kata-stat-content">
-                    <div class="kata-stat-number"><?php echo number_format($overall_stats->total_quizzes ?? 0); ?></div>
-                    <div class="kata-stat-label"><?php _e('Tổng Quiz', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-number" data-count="<?php echo esc_attr($overall_stats->total_quizzes ?? 0); ?>">0</div>
+                    <div class="kata-stat-label"><?php _e('Tổng số Quiz', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-description"><?php _e('Quiz đang hoạt động', 'kata-seo-manager'); ?></div>
                 </div>
             </div>
 
-            <div class="kata-stat-card total-attempts">
-                <div class="kata-stat-icon">
-                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z"/>
-                    </svg>
+            <div class="kata-stat-card-v2 gradient-blue">
+                <div class="kata-stat-header">
+                    <div class="kata-stat-icon">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M11.251.068a.5.5 0 0 1 .227.58L9.677 6.5H13a.5.5 0 0 1 .364.843l-8 8.5a.5.5 0 0 1-.842-.49L6.323 9.5H3a.5.5 0 0 1-.364-.843l8-8.5a.5.5 0 0 1 .615-.09z"/>
+                        </svg>
+                    </div>
+                    <div class="kata-stat-trend positive">
+                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+                        </svg>
+                        <span>+22%</span>
+                    </div>
                 </div>
                 <div class="kata-stat-content">
-                    <div class="kata-stat-number"><?php echo number_format($overall_stats->total_attempts ?? 0); ?></div>
-                    <div class="kata-stat-label"><?php _e('Lượt thử', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-number" data-count="<?php echo esc_attr($overall_stats->total_attempts ?? 0); ?>">0</div>
+                    <div class="kata-stat-label"><?php _e('Tổng lượt thử', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-description"><?php _e('Người dùng đã tham gia', 'kata-seo-manager'); ?></div>
                 </div>
             </div>
 
-            <div class="kata-stat-card avg-score">
-                <div class="kata-stat-icon">
-                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M9.669.864 8 0 6.331.864l-1.858.282-.842 1.68-1.337 1.32L2.6 6l-.306 1.854 1.337 1.32.842 1.68 1.858.282L8 12l1.669-.864 1.858-.282.842-1.68 1.337-1.32L13.4 6l.306-1.854-1.337-1.32-.842-1.68L9.669.864zm1.196 1.193.684 1.365 1.086 1.072L12.387 6l.248 1.506-1.086 1.072-.684 1.365-1.51.229L8 10.874l-1.355-.702-1.51-.229-.684-1.365-1.086-1.072L3.614 6l-.25-1.506 1.087-1.072.684-1.365 1.51-.229L8 1.126l1.356.702 1.509.229z"/>
-                        <path d="M4 11.794V16l4-1 4 1v-4.206l-2.018.306L8 13.126 6.018 12.1 4 11.794z"/>
-                    </svg>
+            <div class="kata-stat-card-v2 gradient-green">
+                <div class="kata-stat-header">
+                    <div class="kata-stat-icon">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M9.669.864 8 0 6.331.864l-1.858.282-.842 1.68-1.337 1.32L2.6 6l-.306 1.854 1.337 1.32.842 1.68 1.858.282L8 12l1.669-.864 1.858-.282.842-1.68 1.337-1.32L13.4 6l.306-1.854-1.337-1.32-.842-1.68L9.669.864zm1.196 1.193.684 1.365 1.086 1.072L12.387 6l.248 1.506-1.086 1.072-.684 1.365-1.51.229L8 10.874l-1.355-.702-1.51-.229-.684-1.365-1.086-1.072L3.614 6l-.25-1.506 1.087-1.072.684-1.365 1.51-.229L8 1.126l1.356.702 1.509.229z"/>
+                        </svg>
+                    </div>
+                    <div class="kata-stat-trend positive">
+                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+                        </svg>
+                        <span>+8%</span>
+                    </div>
                 </div>
                 <div class="kata-stat-content">
-                    <div class="kata-stat-number"><?php echo number_format($overall_stats->avg_score ?? 0, 1); ?>%</div>
+                    <div class="kata-stat-number" data-count="<?php echo esc_attr(round($overall_stats->avg_score ?? 0, 1)); ?>">0</div>
                     <div class="kata-stat-label"><?php _e('Điểm trung bình', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-description"><?php _e('Hiệu suất tổng thể', 'kata-seo-manager'); ?></div>
                 </div>
             </div>
 
-            <div class="kata-stat-card completion-rate">
-                <div class="kata-stat-icon">
-                    <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
-                        <path d="M8 1a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM0 8a8 8 0 1 1 16 0 8 8 0 0 1-16 0z"/>
-                    </svg>
+            <div class="kata-stat-card-v2 gradient-orange">
+                <div class="kata-stat-header">
+                    <div class="kata-stat-icon">
+                        <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M10.97 4.97a.235.235 0 0 0-.02.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-1.071-1.05z"/>
+                            <path d="M8 1a7 7 0 1 0 0 14 7 7 0 0 0 0-14zM0 8a8 8 0 1 1 16 0 8 8 0 0 1-16 0z"/>
+                        </svg>
+                    </div>
+                    <div class="kata-stat-trend positive">
+                        <svg width="12" height="12" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/>
+                        </svg>
+                        <span>+12%</span>
+                    </div>
                 </div>
                 <div class="kata-stat-content">
-                    <div class="kata-stat-number"><?php 
+                    <div class="kata-stat-number" data-count="<?php 
                         $completion_rate = $overall_stats->total_attempts > 0 ? 
                             ($overall_stats->total_completions / $overall_stats->total_attempts) * 100 : 0;
-                        echo number_format($completion_rate, 1);
-                    ?>%</div>
+                        echo esc_attr(round($completion_rate, 1));
+                    ?>">0</div>
                     <div class="kata-stat-label"><?php _e('Tỷ lệ hoàn thành', 'kata-seo-manager'); ?></div>
+                    <div class="kata-stat-description"><?php _e('Quiz được hoàn tất', 'kata-seo-manager'); ?></div>
                 </div>
             </div>
         </div>
@@ -539,62 +592,487 @@ $engagement_stats = $wpdb->get_row("
 </div>
 
 <style>
-/* Quiz Analytics Styles */
-.kata-quiz-analytics {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+/* ============================================================================
+   KATA QUIZ ANALYTICS - SENIOR UI DESIGN V2
+   Modern, professional analytics dashboard with gradient accents
+   ============================================================================ */
+
+/* Base Styles */
+.kata-quiz-analytics-v2 {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #f5f7fa;
+    margin: -20px -20px 0 -22px;
+    padding: 0;
 }
 
-/* Filters */
-.kata-analytics-filters {
-    background: white;
-    border-radius: 12px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+/* ============================================================================
+   DASHBOARD HEADER - Matching Dashboard Design
+   ============================================================================ */
+.kata-dashboard-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 32px 40px;
+    margin-bottom: 32px;
+    box-shadow: 0 4px 20px rgba(118, 75, 162, 0.2);
 }
 
-.kata-filter-form {
+.kata-header-content {
+    max-width: 1400px;
+    margin: 0 auto;
     display: flex;
-    align-items: end;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+}
+
+.kata-brand {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.kata-logo {
+    width: 48px;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+}
+
+.kata-title h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+}
+
+.kata-subtitle {
+    margin: 6px 0 0 0;
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 400;
+}
+
+.kata-header-actions {
+    display: flex;
+    gap: 12px;
+}
+
+/* ============================================================================
+   MODERN BUTTONS
+   ============================================================================ */
+.kata-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.kata-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.kata-btn-outline {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+}
+
+.kata-btn-outline:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.kata-btn-primary {
+    background: white;
+    color: #764ba2;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.kata-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.kata-btn-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.kata-btn-gradient:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.kata-btn-ghost {
+    background: transparent;
+    color: #667eea;
+    border: 2px solid #667eea;
+}
+
+.kata-btn-ghost:hover {
+    background: rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+}
+
+/* ============================================================================
+   DASHBOARD CONTAINER
+   ============================================================================ */
+.kata-dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 40px 40px 40px;
+}
+
+/* ============================================================================
+   MODERN FILTER CARD
+   ============================================================================ */
+.kata-filter-card {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.kata-filter-form-modern {
+    display: flex;
+    align-items: flex-end;
     gap: 20px;
     flex-wrap: wrap;
 }
 
-.filter-group {
+.filter-group-modern {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
+    min-width: 160px;
 }
 
-.filter-group label {
+.filter-group-modern label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 13px;
     font-weight: 600;
     color: #1d2327;
 }
 
-.kata-date-input,
-.kata-select {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+.filter-group-modern label svg {
+    width: 14px;
+    height: 14px;
+    opacity: 0.6;
+}
+
+.kata-input-modern,
+.kata-select-modern {
+    padding: 10px 14px;
+    border: 2px solid #e1e4e8;
+    border-radius: 8px;
     font-size: 14px;
     background: white;
-    min-width: 140px;
-    transition: border-color 0.2s ease;
+    transition: all 0.2s ease;
+    font-family: inherit;
 }
 
-.kata-date-input:focus,
-.kata-select:focus {
+.kata-input-modern:focus,
+.kata-select-modern:focus {
     border-color: #667eea;
     outline: none;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.filter-actions {
-    display: flex;
-    gap: 10px;
-    align-items: center;
+.kata-select-modern {
+    cursor: pointer;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=UTF-8,<svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1 1L6 6L11 1" stroke="%23666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
 }
+
+.filter-actions-modern {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    margin-left: auto;
+}
+
+/* ============================================================================
+   MODERN STATS CARDS V2 - Gradient Edition
+   ============================================================================ */
+.kata-stats-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.kata-stat-card-v2 {
+    background: white;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.kata-stat-card-v2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+}
+
+.kata-stat-card-v2.gradient-purple::before {
+    background: linear-gradient(90deg, #764ba2 0%, #667eea 100%);
+}
+
+.kata-stat-card-v2.gradient-blue::before {
+    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.kata-stat-card-v2.gradient-green::before {
+    background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+}
+
+.kata-stat-card-v2.gradient-orange::before {
+    background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+}
+
+.kata-stat-card-v2:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.kata-stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.kata-stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+}
+
+.gradient-purple .kata-stat-icon {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    box-shadow: 0 8px 16px rgba(118, 75, 162, 0.3);
+}
+
+.gradient-blue .kata-stat-icon {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    box-shadow: 0 8px 16px rgba(79, 172, 254, 0.3);
+}
+
+.gradient-green .kata-stat-icon {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    box-shadow: 0 8px 16px rgba(67, 233, 123, 0.3);
+}
+
+.gradient-orange .kata-stat-icon {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 8px 16px rgba(240, 147, 251, 0.3);
+}
+
+.kata-stat-trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.kata-stat-trend.positive {
+    background: rgba(67, 233, 123, 0.15);
+    color: #10b981;
+}
+
+.kata-stat-trend.positive svg {
+    width: 12px;
+    height: 12px;
+}
+
+.kata-stat-content {
+    margin-top: 4px;
+}
+
+.kata-stat-number {
+    font-size: 42px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    margin-bottom: 8px;
+}
+
+.gradient-purple .kata-stat-number {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.gradient-blue .kata-stat-number {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.gradient-green .kata-stat-number {
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.gradient-orange .kata-stat-number {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.kata-stat-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1d2327;
+    margin-bottom: 6px;
+}
+
+.kata-stat-description {
+    font-size: 13px;
+    color: #6b7280;
+    font-weight: 400;
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+@media (max-width: 1200px) {
+    .kata-dashboard-container {
+        padding: 0 24px 24px 24px;
+    }
+    
+    .kata-header-content {
+        padding: 0 24px;
+    }
+}
+
+@media (max-width: 782px) {
+    .kata-quiz-analytics-v2 {
+        margin: -10px -10px 0 -10px;
+    }
+    
+    .kata-dashboard-header {
+        padding: 24px 20px;
+    }
+    
+    .kata-header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0;
+    }
+    
+    .kata-header-actions {
+        width: 100%;
+        flex-direction: column;
+    }
+    
+    .kata-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .kata-dashboard-container {
+        padding: 0 20px 20px 20px;
+    }
+    
+    .kata-filter-form-modern {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group-modern {
+        width: 100%;
+    }
+    
+    .filter-actions-modern {
+        width: 100%;
+        margin-left: 0;
+        flex-direction: column;
+    }
+    
+    .filter-actions-modern .kata-btn {
+        width: 100%;
+    }
+    
+    .kata-stats-overview {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-stat-number {
+        font-size: 36px;
+    }
+}
+
+/* ============================================================================
+   ANIMATION - Counter Effect
+   ============================================================================ */
+@keyframes countUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kata-stat-number {
+    animation: countUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================================================
+   CHARTS AND TABLES - To be continued
+   ============================================================================ */
 
 .kata-analytics-container {
     max-width: 1200px;
@@ -973,6 +1451,9 @@ const trendsData = <?php echo json_encode($trends_data); ?>;
 let trendsChart;
 
 jQuery(document).ready(function($) {
+    // Animated counters for stats cards
+    animateCounters();
+    
     initializeTrendsChart();
     
     // Chart type selector
@@ -1193,6 +1674,39 @@ function exportQuizData(quizId = null) {
 
 function refreshAnalytics() {
     location.reload();
+}
+
+/**
+ * Animate counter numbers with smooth counting effect
+ */
+function animateCounters() {
+    jQuery('.kata-stat-number[data-count]').each(function() {
+        const $this = jQuery(this);
+        const countTo = parseFloat($this.attr('data-count'));
+        const duration = 2000; // 2 seconds
+        const steps = 60;
+        const stepDuration = duration / steps;
+        const isDecimal = $this.text().includes('%') || countTo % 1 !== 0;
+        
+        let currentCount = 0;
+        const increment = countTo / steps;
+        
+        const timer = setInterval(function() {
+            currentCount += increment;
+            
+            if (currentCount >= countTo) {
+                clearInterval(timer);
+                currentCount = countTo;
+            }
+            
+            // Format number based on whether it's decimal or not
+            if (isDecimal) {
+                $this.text(currentCount.toFixed(1));
+            } else {
+                $this.text(Math.floor(currentCount).toLocaleString());
+            }
+        }, stepDuration);
+    });
 }
 
 function showNotification(message, type = 'info') {

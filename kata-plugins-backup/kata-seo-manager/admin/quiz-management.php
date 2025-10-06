@@ -280,7 +280,7 @@ function handle_toggle_status($data) {
                         </th>
                         <td>
                             <?php 
-                            $config = $quiz_data ? json_decode($quiz_data->quiz_config, true) : array();
+                            $config = ($quiz_data && $quiz_data->quiz_config) ? json_decode($quiz_data->quiz_config, true) : array();
                             $timer = isset($config['timer']) ? $config['timer'] : 0;
                             ?>
                             <input type="number" id="timer" name="timer" value="<?php echo $timer; ?>" class="small-text" min="0">
@@ -330,7 +330,7 @@ function handle_toggle_status($data) {
                     $questions = array();
                     if ($quiz_data && $quiz_data->quiz_data) {
                         $quiz_parsed = json_decode($quiz_data->quiz_data, true);
-                        $questions = isset($quiz_parsed['questions']) ? $quiz_parsed['questions'] : array();
+                        $questions = ($quiz_parsed && isset($quiz_parsed['questions'])) ? $quiz_parsed['questions'] : array();
                     }
                     
                     if (empty($questions)) {
@@ -349,7 +349,7 @@ function handle_toggle_status($data) {
                                 </th>
                                 <td>
                                     <input type="text" name="questions[<?php echo $index; ?>][question]" 
-                                           value="<?php echo esc_attr($question['question']); ?>" 
+                                           value="<?php echo isset($question['question']) ? esc_attr($question['question']) : ''; ?>" 
                                            class="large-text" required>
                                 </td>
                             </tr>
@@ -368,7 +368,7 @@ function handle_toggle_status($data) {
                                             <label>
                                                 <input type="radio" name="questions[<?php echo $index; ?>][correct_answer]" 
                                                        value="<?php echo $opt_index; ?>" 
-                                                       <?php checked($question['correct_answer'], $opt_index); ?>>
+                                                       <?php checked(isset($question['correct_answer']) ? $question['correct_answer'] : 0, $opt_index); ?>>
                                                 <input type="text" name="questions[<?php echo $index; ?>][options][]" 
                                                        value="<?php echo esc_attr($option); ?>" 
                                                        placeholder="<?php printf(__('Đáp án %s', 'kata-seo-manager'), chr(65 + $opt_index)); ?>" 
@@ -390,7 +390,7 @@ function handle_toggle_status($data) {
                                 </th>
                                 <td>
                                     <textarea name="questions[<?php echo $index; ?>][explanation]" 
-                                              class="large-text" rows="3"><?php echo esc_textarea($question['explanation']); ?></textarea>
+                                              class="large-text" rows="3"><?php echo isset($question['explanation']) ? esc_textarea($question['explanation']) : ''; ?></textarea>
                                     <p class="description"><?php _e('Giải thích tại sao đáp án này đúng', 'kata-seo-manager'); ?></p>
                                 </td>
                             </tr>

@@ -14,24 +14,32 @@ if (!defined('ABSPATH')) {
 
 // Save settings
 if (isset($_POST['kata_seo_save_settings']) && check_admin_referer('kata_seo_settings_nonce')) {
+    // Sanitize and prepare settings
     $settings = array(
-        'enable_auto_schema' => isset($_POST['enable_auto_schema']),
+        'enable_auto_schema' => !empty($_POST['enable_auto_schema']),
         'default_schema_types' => isset($_POST['default_schema_types']) ? array_map('sanitize_text_field', $_POST['default_schema_types']) : array(),
-        'enable_editor_button' => isset($_POST['enable_editor_button']),
-        'enable_statistics' => isset($_POST['enable_statistics']),
-        'enable_shortcodes' => isset($_POST['enable_shortcodes']),
-        'enable_rest_api' => isset($_POST['enable_rest_api']),
-        'schema_validation' => isset($_POST['schema_validation']),
+        'enable_editor_button' => !empty($_POST['enable_editor_button']),
+        'enable_statistics' => !empty($_POST['enable_statistics']),
+        'enable_shortcodes' => !empty($_POST['enable_shortcodes']),
+        'enable_rest_api' => !empty($_POST['enable_rest_api']),
+        'schema_validation' => !empty($_POST['schema_validation']),
     );
     
-    update_option('kata_seo_manager_settings', $settings);
+    // Update the option
+    $updated = update_option('kata_seo_manager_settings', $settings);
     
-    echo '<div class="notice notice-success is-dismissible"><p>' . 
-         __('Settings saved successfully!', 'kata-seo-manager') . '</p></div>';
+    // Show success message
+    if ($updated || get_option('kata_seo_manager_settings') === $settings) {
+        echo '<div class="notice notice-success is-dismissible"><p>' . 
+             __('Settings saved successfully!', 'kata-seo-manager') . '</p></div>';
+    } else {
+        echo '<div class="notice notice-warning is-dismissible"><p>' . 
+             __('Settings unchanged or failed to save.', 'kata-seo-manager') . '</p></div>';
+    }
 }
 
-// Get current settings
-$settings = get_option('kata_seo_manager_settings', array(
+// Get current settings with proper defaults
+$default_settings = array(
     'enable_auto_schema' => true,
     'default_schema_types' => array('Article', 'Breadcrumb', 'WebPage'),
     'enable_editor_button' => true,
@@ -39,7 +47,9 @@ $settings = get_option('kata_seo_manager_settings', array(
     'enable_shortcodes' => true,
     'enable_rest_api' => false,
     'schema_validation' => true,
-));
+);
+
+$settings = wp_parse_args(get_option('kata_seo_manager_settings', array()), $default_settings);
 
 // Get all schema types
 $schema_types = array(
@@ -71,7 +81,7 @@ $schema_types = array(
                         </th>
                         <td>
                             <label class="kata-switch">
-                                <input type="checkbox" name="enable_auto_schema" id="enable_auto_schema" 
+                                <input type="checkbox" name="enable_auto_schema" id="enable_auto_schema" value="1"
                                        <?php checked($settings['enable_auto_schema'], true); ?>>
                                 <span class="kata-slider"></span>
                             </label>
@@ -89,7 +99,7 @@ $schema_types = array(
                         </th>
                         <td>
                             <label class="kata-switch">
-                                <input type="checkbox" name="enable_editor_button" id="enable_editor_button" 
+                                <input type="checkbox" name="enable_editor_button" id="enable_editor_button" value="1"
                                        <?php checked($settings['enable_editor_button'], true); ?>>
                                 <span class="kata-slider"></span>
                             </label>
@@ -107,7 +117,7 @@ $schema_types = array(
                         </th>
                         <td>
                             <label class="kata-switch">
-                                <input type="checkbox" name="enable_statistics" id="enable_statistics" 
+                                <input type="checkbox" name="enable_statistics" id="enable_statistics" value="1"
                                        <?php checked($settings['enable_statistics'], true); ?>>
                                 <span class="kata-slider"></span>
                             </label>
@@ -125,8 +135,8 @@ $schema_types = array(
                         </th>
                         <td>
                             <label class="kata-switch">
-                                <input type="checkbox" name="enable_shortcodes" id="enable_shortcodes" 
-                                       <?php checked($settings['enable_shortcodes'] ?? true, true); ?>>
+                                <input type="checkbox" name="enable_shortcodes" id="enable_shortcodes" value="1"
+                                       <?php checked($settings['enable_shortcodes'], true); ?>>
                                 <span class="kata-slider"></span>
                             </label>
                             <p class="description">
@@ -143,8 +153,8 @@ $schema_types = array(
                         </th>
                         <td>
                             <label class="kata-switch">
-                                <input type="checkbox" name="schema_validation" id="schema_validation" 
-                                       <?php checked($settings['schema_validation'] ?? true, true); ?>>
+                                <input type="checkbox" name="schema_validation" id="schema_validation" value="1"
+                                       <?php checked($settings['schema_validation'], true); ?>>
                                 <span class="kata-slider"></span>
                             </label>
                             <p class="description">
@@ -187,8 +197,8 @@ $schema_types = array(
                         </th>
                         <td>
                             <label class="kata-switch">
-                                <input type="checkbox" name="enable_rest_api" id="enable_rest_api" 
-                                       <?php checked($settings['enable_rest_api'] ?? false, true); ?>>
+                                <input type="checkbox" name="enable_rest_api" id="enable_rest_api" value="1"
+                                       <?php checked($settings['enable_rest_api'], true); ?>>
                                 <span class="kata-slider"></span>
                             </label>
                             <p class="description">

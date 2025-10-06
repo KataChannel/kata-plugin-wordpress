@@ -14,7 +14,7 @@ $selected_poll_id = isset($_GET['poll_id']) ? intval($_GET['poll_id']) : 0;
 $selected_poll = null;
 
 // Get all polls for dropdown
-$polls = $wpdb->get_results("SELECT id, poll_title FROM {$wpdb->prefix}kata_polls ORDER BY created_at DESC");
+$polls = $wpdb->get_results("SELECT id, title FROM {$wpdb->prefix}kata_polls ORDER BY created_at DESC");
 
 if ($selected_poll_id > 0) {
     $selected_poll = $wpdb->get_row($wpdb->prepare(
@@ -32,7 +32,7 @@ function get_poll_stats($poll_id = null) {
     $stats = array(
         'total_polls' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}kata_polls"),
         'total_votes' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}kata_poll_votes $where_clause"),
-        'active_polls' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}kata_polls WHERE status = 'active'"),
+        'active_polls' => $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->prefix}kata_polls WHERE active = 1"),
         'unique_voters' => $wpdb->get_var("SELECT COUNT(DISTINCT voter_ip) FROM {$wpdb->prefix}kata_poll_votes $where_clause")
     );
     
@@ -45,22 +45,23 @@ $stats = get_poll_stats($selected_poll_id);
 $vote_distribution = array();
 if ($selected_poll) {
     $votes = $wpdb->get_results($wpdb->prepare(
-        "SELECT option_index, option_text, COUNT(*) as vote_count 
+        "SELECT option_index, COUNT(*) as vote_count 
          FROM {$wpdb->prefix}kata_poll_votes 
          WHERE poll_id = %d 
-         GROUP BY option_index, option_text 
+         GROUP BY option_index 
          ORDER BY option_index",
         $selected_poll_id
     ));
     
-    $options = json_decode($selected_poll->poll_options, true);
+    $options = json_decode($selected_poll->options, true);
     $total_votes = array_sum(array_column($votes, 'vote_count'));
     
     foreach ($votes as $vote) {
         $percentage = $total_votes > 0 ? round(($vote->vote_count / $total_votes) * 100, 1) : 0;
+        $option_text = isset($options[$vote->option_index]) ? $options[$vote->option_index] : 'Unknown Option';
         $vote_distribution[] = array(
             'option_index' => $vote->option_index,
-            'option_text' => $vote->option_text,
+            'option_text' => $option_text,
             'vote_count' => $vote->vote_count,
             'percentage' => $percentage
         );
@@ -71,10 +72,10 @@ if ($selected_poll) {
 $recent_votes = array();
 if ($selected_poll_id > 0) {
     $recent_votes = $wpdb->get_results($wpdb->prepare(
-        "SELECT option_index, option_text, voter_ip, voted_at 
+        "SELECT option_index, voter_ip, created_at 
          FROM {$wpdb->prefix}kata_poll_votes 
          WHERE poll_id = %d 
-         ORDER BY voted_at DESC 
+         ORDER BY created_at DESC 
          LIMIT 50",
         $selected_poll_id
     ));
@@ -84,10 +85,10 @@ if ($selected_poll_id > 0) {
 $voting_trends = array();
 if ($selected_poll_id > 0) {
     $trends = $wpdb->get_results($wpdb->prepare(
-        "SELECT DATE(voted_at) as vote_date, COUNT(*) as daily_votes 
+        "SELECT DATE(created_at) as vote_date, COUNT(*) as daily_votes 
          FROM {$wpdb->prefix}kata_poll_votes 
-         WHERE poll_id = %d AND voted_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
-         GROUP BY DATE(voted_at) 
+         WHERE poll_id = %d AND created_at >= DATE_SUB(NOW(), INTERVAL 30 DAY)
+         GROUP BY DATE(created_at) 
          ORDER BY vote_date DESC",
         $selected_poll_id
     ));
@@ -111,7 +112,7 @@ if ($selected_poll_id > 0) {
                 <option value="">-- Chọn Poll để phân tích --</option>
                 <?php foreach ($polls as $poll): ?>
                     <option value="<?php echo $poll->id; ?>" <?php selected($selected_poll_id, $poll->id); ?>>
-                        ID <?php echo $poll->id; ?>: <?php echo esc_html($poll->poll_title); ?>
+                        ID <?php echo $poll->id; ?>: <?php echo esc_html($poll->title); ?>
                     </option>
                 <?php endforeach; ?>
             </select>
@@ -142,7 +143,7 @@ if ($selected_poll_id > 0) {
     
     <?php if ($selected_poll): ?>
         <div class="kata-poll-detailed-analytics">
-            <h2>Chi tiết Poll: <?php echo esc_html($selected_poll->poll_title); ?></h2>
+            <h2>Chi tiết Poll: <?php echo esc_html($selected_poll->title); ?></h2>
             
             <div class="kata-analytics-grid">
                 <div class="kata-vote-distribution">
@@ -175,7 +176,7 @@ if ($selected_poll_id > 0) {
                         </tr>
                         <tr>
                             <td><strong>Tiêu đề:</strong></td>
-                            <td><?php echo esc_html($selected_poll->poll_title); ?></td>
+                            <td><?php echo esc_html($selected_poll->title); ?></td>
                         </tr>
                         <tr>
                             <td><strong>Câu hỏi:</strong></td>
@@ -241,11 +242,16 @@ if ($selected_poll_id > 0) {
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach (array_slice($recent_votes, 0, 20) as $vote): ?>
+                            <?php 
+                            // Get poll options for display
+                            $poll_options = json_decode($selected_poll->options, true);
+                            foreach (array_slice($recent_votes, 0, 20) as $vote): 
+                                $option_text = isset($poll_options[$vote->option_index]) ? $poll_options[$vote->option_index] : 'Option ' . ($vote->option_index + 1);
+                            ?>
                                 <tr>
-                                    <td><?php echo esc_html($vote->option_text); ?></td>
+                                    <td><?php echo esc_html($option_text); ?></td>
                                     <td><?php echo esc_html($vote->voter_ip); ?></td>
-                                    <td><?php echo date('d/m/Y H:i:s', strtotime($vote->voted_at)); ?></td>
+                                    <td><?php echo date('d/m/Y H:i:s', strtotime($vote->created_at)); ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

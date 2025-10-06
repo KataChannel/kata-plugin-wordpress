@@ -83,9 +83,12 @@ jQuery(document).ready(function($) {
     }
     
     function loadWheelDataForEdit(wheelId) {
-        // Show loading state
+        // Show loading overlay
         openModal();
-        $('.kata-modal-body').html('<div style="text-align:center;padding:60px;"><span class="dashicons dashicons-update" style="font-size:48px;animation:spin 1s linear infinite;"></span><p>Đang tải dữ liệu...</p></div>');
+        
+        // Add loading overlay inside modal
+        const loadingOverlay = $('<div class="kata-loading-overlay" style="position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,255,255,0.95);display:flex;align-items:center;justify-content:center;z-index:10;"><div style="text-align:center;"><span class="dashicons dashicons-update" style="font-size:48px;animation:spin 1s linear infinite;color:#667eea;"></span><p style="margin-top:20px;font-size:16px;color:#666;">Đang tải dữ liệu...</p></div></div>');
+        $('.kata-modal-container').append(loadingOverlay);
         
         // AJAX load wheel data
         $.post(ajaxurl, {
@@ -93,38 +96,62 @@ jQuery(document).ready(function($) {
             wheel_id: wheelId,
             nonce: '<?php echo wp_create_nonce('kata_wheel_edit'); ?>'
         }, function(response) {
+            // Remove loading overlay
+            $('.kata-loading-overlay').fadeOut(200, function() { $(this).remove(); });
+            
             if (response.success) {
                 populateEditForm(response.data);
-                $('.kata-modal-body').html($('#wheelForm').parent().html());
                 $('#modalTitleText').text('✏️ Chỉnh Sửa Vòng Quay');
                 $('#submitBtnText').text('Cập nhật Vòng Quay');
             } else {
-                alert('❌ Lỗi: ' + response.data.message);
+                alert('❌ Lỗi: ' + (response.data && response.data.message ? response.data.message : 'Không thể tải dữ liệu'));
                 closeModal();
             }
-        }).fail(function() {
-            alert('❌ Không thể tải dữ liệu vòng quay');
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            $('.kata-loading-overlay').remove();
+            console.error('AJAX Error:', textStatus, errorThrown);
+            alert('❌ Không thể tải dữ liệu vòng quay. Vui lòng thử lại!');
             closeModal();
         });
     }
     
     function populateEditForm(data) {
+        // Set form action to update
         $('#formAction').val('update');
+        
+        // Add or update wheel_id hidden field
         if (!$('#wheelId').length) {
             $('#formAction').after('<input type="hidden" name="wheel_id" value="' + data.wheel.id + '" id="wheelId">');
         } else {
             $('#wheelId').val(data.wheel.id);
         }
         
+        // Populate basic fields
         $('#wheel_title').val(data.wheel.wheel_title);
         $('#wheel_description').val(data.wheel.wheel_description);
         $('#requirement').val(data.wheel.requirement);
         $('#max_spins_per_user').val(data.wheel.max_spins_per_user);
         $('#max_spins_per_day').val(data.wheel.max_spins_per_day);
         
-        if ($('#wheel_status').length) {
-            $('#wheel_status').val(data.wheel.status);
+        // Add or update status field
+        if (!$('#wheel_status').length) {
+            const statusField = `
+                <div class="form-group" id="status-field-group">
+                    <label for="wheel_status" class="form-label">
+                        <span class="dashicons dashicons-admin-settings"></span>
+                        Trạng thái
+                    </label>
+                    <select id="wheel_status" name="wheel_status" class="form-control">
+                        <option value="active">🟢 Hoạt động</option>
+                        <option value="inactive">🔴 Tạm dừng</option>
+                        <option value="scheduled">🟡 Đã lên lịch</option>
+                        <option value="expired">⚫ Hết hạn</option>
+                    </select>
+                </div>
+            `;
+            $('#max_spins_per_day').closest('.form-group').after(statusField);
         }
+        $('#wheel_status').val(data.wheel.status);
         
         // Populate prizes
         $('#prizesContainer').empty();
@@ -133,6 +160,7 @@ jQuery(document).ready(function($) {
                 addPrizeRow(index + 1, prize);
             });
         } else {
+            // Add minimum 6 default prizes if no prizes exist
             for (let i = 0; i < 6; i++) {
                 addPrizeRow(i + 1);
             }

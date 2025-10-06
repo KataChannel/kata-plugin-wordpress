@@ -895,4 +895,22 @@
     .prize-color { grid-area: color; width: 100%; }
     .remove-prize { grid-area: delete; }
 }
+
+/* ==================================================
+   ANIMATIONS
+   ================================================== */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 </style>

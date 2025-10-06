@@ -289,6 +289,27 @@ class KATA_SEO_Database {
         ) $charset_collate;";
         dbDelta($sql_polls);
 
+        // Table 12.6: Kata Poll Votes - Store individual poll votes
+        $table_poll_votes = $wpdb->prefix . 'kata_poll_votes';
+        $sql_poll_votes = "CREATE TABLE IF NOT EXISTS $table_poll_votes (
+            id bigint(20) NOT NULL AUTO_INCREMENT,
+            poll_id bigint(20) NOT NULL,
+            option_index int(11) NOT NULL,
+            voter_user_id bigint(20) DEFAULT NULL,
+            voter_ip varchar(100) DEFAULT NULL,
+            voter_name varchar(200) DEFAULT NULL,
+            voter_email varchar(200) DEFAULT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            PRIMARY KEY  (id),
+            KEY poll_id (poll_id),
+            KEY voter_user_id (voter_user_id),
+            KEY voter_ip (voter_ip),
+            KEY created_at (created_at),
+            KEY poll_voter (poll_id, voter_user_id),
+            KEY poll_ip (poll_id, voter_ip)
+        ) $charset_collate;";
+        dbDelta($sql_poll_votes);
+
         // Table 13: Kata Wheels - Store wheel configurations
         $table_wheels = $wpdb->prefix . 'kata_wheels';
         $sql_wheels = "CREATE TABLE IF NOT EXISTS $table_wheels (
@@ -612,7 +633,9 @@ class KATA_SEO_Database {
             $wpdb->prefix . 'kata_seo_schema_validation',
             $wpdb->prefix . 'kata_seo_schema_templates',
             $wpdb->prefix . 'kata_seo_schema_tracking',
-            $wpdb->prefix . 'kata_seo_activity_log'
+            $wpdb->prefix . 'kata_seo_activity_log',
+            $wpdb->prefix . 'kata_polls',
+            $wpdb->prefix . 'kata_poll_votes'
         );
         
         foreach ($tables as $table) {
@@ -633,7 +656,9 @@ class KATA_SEO_Database {
             $wpdb->prefix . 'kata_seo_schema_stats',
             $wpdb->prefix . 'kata_seo_schema_validation',
             $wpdb->prefix . 'kata_seo_schema_templates',
-            $wpdb->prefix . 'kata_seo_schema_tracking'
+            $wpdb->prefix . 'kata_seo_schema_tracking',
+            $wpdb->prefix . 'kata_polls',
+            $wpdb->prefix . 'kata_poll_votes'
         );
         
         foreach ($required_tables as $table) {

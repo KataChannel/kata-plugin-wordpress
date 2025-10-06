@@ -407,6 +407,245 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                         <small>✅ WebPage schema với breadcrumb navigation</small>
                     </div>
                 `
+            },
+
+            // === NEW SCHEMA TYPES (October 2025 Update) ===
+            
+            carousel: {
+                title: '🎠 Carousel Gallery',
+                shortcode: '[kata_carousel title="Portfolio Showcase 2025" images="https://example.com/project1.jpg,https://example.com/project2.jpg,https://example.com/project3.jpg,https://example.com/project4.jpg" captions="Website E-commerce,Mobile App Design,Brand Identity,Social Media Campaign" links="https://kata.com/project1,https://kata.com/project2,https://kata.com/project3,https://kata.com/project4" height="450px" auto_play="true" show_indicators="true" show_controls="true" transition_speed="4000"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>🎠 Carousel Gallery sẽ tạo:</h4>
+                        <div class="carousel-preview">
+                            <h3>Portfolio Showcase 2025</h3>
+                            <p>🖼️ <strong>4 slides:</strong> Website E-commerce, Mobile App Design, Brand Identity, Social Media Campaign</p>
+                            <p>⚡ Auto-play: 4s | 🎯 Navigation: Arrows + Indicators</p>
+                            <p>📱 Responsive design với JavaScript smooth transitions</p>
+                            <p>🔗 Clickable links cho từng project</p>
+                        </div>
+                        <small>✅ JSON-LD ItemList schema + Interactive gallery</small>
+                    </div>
+                `
+            },
+
+            dataset: {
+                title: '📊 Dataset Display',
+                shortcode: '[kata_dataset title="Báo Cáo Doanh Thu Q3 2025" description="Phân tích chi tiết doanh thu theo sản phẩm và khu vực trong quý 3 năm 2025" headers="Sản Phẩm|Doanh Thu (VND)|Tăng Trưởng|Khu Vực" data="WordPress Plugin|150,000,000|+25%|Việt Nam,SEO Service|320,000,000|+15%|Đông Nam Á,Web Design|180,000,000|+8%|Toàn Cầu,Training Course|95,000,000|+35%|Việt Nam" creator="KATA Analytics Team" date_published="2025-10-06" license="MIT License" keywords="doanh thu,báo cáo,Q3 2025,phân tích" format="table" show_search="true" show_export="true"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>📊 Dataset Display sẽ tạo:</h4>
+                        <div class="dataset-preview">
+                            <h3>Báo Cáo Doanh Thu Q3 2025</h3>
+                            <p>📋 <strong>Định dạng:</strong> Bảng 4 cột × 4 dòng dữ liệu</p>
+                            <p>🔍 <strong>Tính năng:</strong> Real-time search + CSV export</p>
+                            <p>👤 <strong>Tác giả:</strong> KATA Analytics Team | 📅 06/10/2025</p>
+                            <p>📈 <strong>Nội dung:</strong> WordPress Plugin (+25%), SEO Service (+15%)...</p>
+                        </div>
+                        <small>✅ Dataset schema + Interactive table với tìm kiếm</small>
+                    </div>
+                `
+            },
+
+            forum: {
+                title: '💬 Forum Discussion',
+                shortcode: '[kata_forum title="WordPress Developers Vietnam" description="Cộng đồng nhà phát triển WordPress tại Việt Nam - chia sẻ kiến thức, hỗ trợ kỹ thuật" topics="Cách tối ưu WP_Query cho hiệu suất|Minh Developer|42|2 giờ trước,Plugin security best practices 2025|Sarah Nguyen|28|5 giờ trước,Gutenberg custom blocks tutorial|Tech Master|67|1 ngày trước,WooCommerce hooks và filters|E-com Expert|35|3 giờ trước" moderator="KATA Team" category="Web Development" member_count="3,450" post_count="12,890" created_date="2020-03-15" show_stats="true" show_recent="true"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>💬 Forum Discussion sẽ tạo:</h4>
+                        <div class="forum-preview">
+                            <h3>WordPress Developers Vietnam</h3>
+                            <p>👥 <strong>Cộng đồng:</strong> 3,450 thành viên | 📝 12,890 bài viết</p>
+                            <p>🔥 <strong>Topic hot:</strong> WP_Query optimization (42 replies)</p>
+                            <p>👨‍💼 <strong>Điều hành:</strong> KATA Team | 🏷️ Web Development</p>
+                            <p>📊 <strong>Hoạt động:</strong> 4 chủ đề mới trong 24h</p>
+                        </div>
+                        <small>✅ DiscussionForumPosting schema + Community stats</small>
+                    </div>
+                `
+            },
+
+            eduqa: {
+                title: '🎓 Educational Q&A',
+                shortcode: '[kata_eduqa question="Làm thế nào để tối ưu hóa Core Web Vitals cho WordPress?" answer="Để tối ưu Core Web Vitals: 1) Sử dụng caching plugin (WP Rocket, W3 Total Cache), 2) Tối ưu hình ảnh (WebP format, lazy loading), 3) Minify CSS/JS, 4) Sử dụng CDN, 5) Chọn hosting tốt, 6) Tối ưu database, 7) Sử dụng AMP cho mobile" category="WordPress Performance" difficulty="intermediate" author="SEO Expert Pro" votes="89" date_asked="2025-10-01" date_answered="2025-10-02" tags="core web vitals,performance,wordpress,seo,optimization" related_questions="Cách tăng tốc WordPress 2025,Best caching plugins,Tối ưu hình ảnh WordPress" show_voting="true"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>🎓 Educational Q&A sẽ tạo:</h4>
+                        <div class="eduqa-preview">
+                            <h3>❓ Tối ưu Core Web Vitals cho WordPress?</h3>
+                            <p>👨‍🏫 <strong>Expert:</strong> SEO Expert Pro | 🟡 Trung bình</p>
+                            <p>👍 <strong>Votes:</strong> 89 upvotes | 📅 01-02/10/2025</p>
+                            <p>✅ <strong>Giải pháp:</strong> 7 bước tối ưu từ caching đến CDN</p>
+                            <p>🏷️ <strong>Tags:</strong> core web vitals, performance, wordpress...</p>
+                        </div>
+                        <small>✅ Question schema + Interactive voting system</small>
+                    </div>
+                `
+            },
+
+            employer_rating: {
+                title: '⭐ Employer Rating',
+                shortcode: '[kata_employer_rating company_name="KATA Digital Agency" overall_rating="4.6" work_life_balance="4.8" salary_benefits="4.2" career_opportunities="4.5" management="4.3" culture="4.7" total_reviews="186" recommend_percentage="92" recent_reviews="Môi trường làm việc tuyệt vời, đồng nghiệp hỗ trợ nhiệt tình|Nhân viên hiện tại|5,Dự án thú vị, học hỏi được nhiều điều mới|Developer Senior|4,Lương competitive, benefit tốt trong ngành|Marketing Executive|4,Leadership team có vision rõ ràng|Product Manager|5" company_size="50-100" industry="Digital Marketing & Web Development" show_breakdown="true" show_reviews="true"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>⭐ Employer Rating sẽ tạo:</h4>
+                        <div class="employer-preview">
+                            <h3>KATA Digital Agency</h3>
+                            <p>⭐ <strong>4.6/5</strong> (186 đánh giá) | 👍 92% khuyến nghị</p>
+                            <p>🏢 <strong>Quy mô:</strong> 50-100 nhân viên | 💼 Digital Marketing</p>
+                            <p>📊 <strong>Chi tiết:</strong> Work-life (4.8), Culture (4.7), Salary (4.2)</p>
+                            <p>💬 <strong>Reviews:</strong> "Môi trường tuyệt vời", "Dự án thú vị"...</p>
+                        </div>
+                        <small>✅ Organization schema + Rating breakdown charts</small>
+                    </div>
+                `
+            },
+
+            profile_page: {
+                title: '👤 Profile Page',
+                shortcode: '[kata_profile_page name="Nguyễn Minh Tuấn" job_title="Senior Full-Stack Developer & SEO Specialist" bio="Full-stack developer với 8+ năm kinh nghiệm phát triển web, chuyên sâu WordPress, React và Node.js. Founder của KATA SEO Tools và diễn giả tại nhiều sự kiện công nghệ." skills="WordPress Development,React.js,Node.js,PHP,JavaScript,SEO Optimization,Database Design,DevOps,UI/UX Design" experience="Senior Developer tại KATA Digital (2022-hiện tại)|Full-Stack Developer tại TechViet Solutions (2019-2022)|WordPress Developer tại Web Studio Pro (2017-2019)|Junior Developer tại StartupXYZ (2015-2017)" education="Thạc sĩ Công nghệ Thông tin - Đại học Bách Khoa TP.HCM (2015)|Cử nhân Khoa học Máy tính - Đại học Công nghệ (2013)" contact_email="tuannm@katadigital.com" contact_phone="+84 901 234 567" website="https://tuannguyen.dev" social_links="LinkedIn|https://linkedin.com/in/tuannguyen-dev,GitHub|https://github.com/tuannm-kata,Twitter|https://twitter.com/tuannm_dev" location="TP. Hồ Chí Minh, Việt Nam" languages="Tiếng Việt (Bản ngữ),English (Fluent),日本語 (Intermediate)" achievements="AWS Certified Solutions Architect|Published 25+ WordPress plugins on wp.org|Speaker tại WordCamp Vietnam 2024|Tech lead cho 15+ dự án enterprise|Contributor cho WordPress Core" show_contact="true" show_social="true"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>👤 Profile Page sẽ tạo:</h4>
+                        <div class="profile-preview">
+                            <h3>Nguyễn Minh Tuấn</h3>
+                            <p>💼 <strong>Senior Full-Stack Developer & SEO Specialist</strong></p>
+                            <p>🏆 <strong>Kinh nghiệm:</strong> 8+ năm | 📍 TP.HCM</p>
+                            <p>🛠️ <strong>Skills:</strong> WordPress, React, Node.js, SEO...</p>
+                            <p>🎯 <strong>Achievements:</strong> AWS Certified, 25+ plugins, Speaker WordCamp</p>
+                            <p>📞 <strong>Contact:</strong> Email, Phone, Website, Social links</p>
+                        </div>
+                        <small>✅ Person schema + Complete professional profile</small>
+                    </div>
+                `
+            },
+
+            // === ENHANCED EXISTING SCHEMAS ===
+
+            local_business: {
+                title: '🏢 Local Business (Enhanced)',
+                shortcode: '[kata_local_business name="KATA Digital Marketing Agency" address="123 Nguyễn Văn Cừ, Quận 1, TP.HCM" phone="+84 28 1234 5678" email="hello@katadigital.com" website="https://katadigital.com" hours="Thứ 2-6: 9:00-18:00, Thứ 7: 9:00-12:00" description="Agency chuyên cung cấp dịch vụ Digital Marketing và phát triển Website chuyên nghiệp tại TP.HCM" services="SEO Optimization,Google Ads,Social Media Marketing,Web Development" rating="4.8" review_count="127" price_range="$$"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>🏢 Enhanced Local Business sẽ tạo:</h4>
+                        <div class="business-preview">
+                            <h3>KATA Digital Marketing Agency</h3>
+                            <p>📍 123 Nguyễn Văn Cừ, Q1, TP.HCM | ☎️ +84 28 1234 5678</p>
+                            <p>⭐ 4.8/5 (127 reviews) | 💰 $$</p>
+                            <p>🕒 T2-6: 9:00-18:00, T7: 9:00-12:00</p>
+                            <p>🎯 SEO, Google Ads, Social Media, Web Dev</p>
+                        </div>
+                        <small>✅ LocalBusiness schema + Visual business card</small>
+                    </div>
+                `
+            },
+
+            job_posting: {
+                title: '💼 Job Posting (Enhanced)',
+                shortcode: '[kata_job_posting title="Senior WordPress Developer" company="KATA Digital Agency" location="TP. Hồ Chí Minh, Việt Nam" description="Tìm kiếm Senior WordPress Developer có kinh nghiệm 3+ năm để join team phát triển các dự án enterprise scale. Candidate sẽ làm việc với latest technologies và có cơ hội growth lên Tech Lead." salary="25-40 triệu VND/tháng" employment_type="FULL_TIME" date_posted="2025-10-06" requirements="3+ năm experience WordPress|Thành thạo PHP, JavaScript, MySQL|Kinh nghiệm với WooCommerce, Custom Post Types|Biết Git, Docker là plus" benefits="13th month salary|Premium health insurance|Flexible working time|Learning budget 10 triệu/năm|Team building quarterly|MacBook Pro provided"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>💼 Enhanced Job Posting sẽ tạo:</h4>
+                        <div class="job-preview">
+                            <h3>Senior WordPress Developer</h3>
+                            <p>🏢 KATA Digital Agency | 📍 TP.HCM</p>
+                            <p>💰 25-40 triệu VND/tháng | ⏰ Full-time</p>
+                            <p>📋 Requirements: 3+ năm WordPress, PHP, JavaScript...</p>
+                            <p>🎁 Benefits: 13th salary, Insurance, Flexible time...</p>
+                        </div>
+                        <small>✅ JobPosting schema + Professional job display</small>
+                    </div>
+                `
+            },
+
+            image_metadata: {
+                title: '🖼️ Image Metadata',
+                shortcode: '[kata_image_metadata url="https://katadigital.com/images/seo-infographic-2025.jpg" name="SEO Best Practices Infographic 2025" description="Infographic tổng hợp các best practices SEO mới nhất năm 2025" width="1200" height="1600" encoding_format="JPEG" size="2.3 MB" creator="KATA Design Team" date_created="2025-10-06" keywords="SEO,infographic,best practices,2025,digital marketing" location="KATA Studio, TP.HCM" camera_model="Canon EOS R5"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>🖼️ Image Metadata sẽ tạo:</h4>
+                        <div class="image-preview">
+                            <h3>SEO Best Practices Infographic 2025</h3>
+                            <p>📐 <strong>Size:</strong> 1200×1600px (2.3 MB) | 📷 Canon EOS R5</p>
+                            <p>👨‍🎨 <strong>Creator:</strong> KATA Design Team | 📅 06/10/2025</p>
+                            <p>📍 <strong>Location:</strong> KATA Studio, TP.HCM</p>
+                            <p>🏷️ <strong>Tags:</strong> SEO, infographic, best practices...</p>
+                        </div>
+                        <small>✅ ImageObject schema + Technical metadata display</small>
+                    </div>
+                `
+            },
+
+            math_solver: {
+                title: '🧮 Math Solver',
+                shortcode: '[kata_math_solver problem="Giải phương trình bậc hai: 2x² + 5x - 3 = 0" solution="x₁ = 0.5, x₂ = -3" steps="Áp dụng công thức nghiệm: x = [-b ± √(b²-4ac)] / 2a|Thay a=2, b=5, c=-3: x = [-5 ± √(25+24)] / 4|Tính: x = [-5 ± √49] / 4 = [-5 ± 7] / 4|Nghiệm: x₁ = 2/4 = 0.5 và x₂ = -12/4 = -3" category="Đại số" difficulty="intermediate" explanation="Phương trình bậc hai có 2 nghiệm phân biệt vì Δ = b² - 4ac = 49 > 0" formula="x = [-b ± √(b²-4ac)] / 2a"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>🧮 Math Solver sẽ tạo:</h4>
+                        <div class="math-preview">
+                            <h3>📝 Giải phương trình bậc hai: 2x² + 5x - 3 = 0</h3>
+                            <p>🎯 <strong>Chủ đề:</strong> Đại số | 🟡 Trung bình</p>
+                            <p>🧮 <strong>Công thức:</strong> x = [-b ± √(b²-4ac)] / 2a</p>
+                            <p>✅ <strong>Kết quả:</strong> x₁ = 0.5, x₂ = -3</p>
+                            <p>📋 <strong>4 bước giải:</strong> Từ công thức đến kết quả</p>
+                        </div>
+                        <small>✅ LearningResource schema + Step-by-step solution</small>
+                    </div>
+                `
+            },
+
+            practice_problem: {
+                title: '📚 Practice Problem',
+                shortcode: '[kata_practice_problem title="Kiểm Tra Kiến Thức WordPress Security" question="Phương pháp nào KHÔNG phải là best practice cho WordPress security?" options="Sử dụng strong passwords|Cập nhật WordPress thường xuyên|Disable WordPress admin|Install security plugins" correct_answer="C" explanation="Disable WordPress admin là không cần thiết và có thể gây khó khăn trong việc quản lý website. Các phương pháp khác đều là best practices quan trọng." category="WordPress Security" difficulty="intermediate" points="15" time_limit="2" hints="Nghĩ về tính thực tế và khả năng quản lý website"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>📚 Practice Problem sẽ tạo:</h4>
+                        <div class="practice-preview">
+                            <h3>Kiểm Tra Kiến Thức WordPress Security</h3>
+                            <p>🎯 <strong>Câu hỏi:</strong> Phương pháp nào KHÔNG phải là best practice?</p>
+                            <p>🟡 <strong>Độ khó:</strong> Trung bình | ⭐ 15 điểm | ⏱️ 2 phút</p>
+                            <p>📝 <strong>4 lựa chọn:</strong> A, B, C, D với interactive selection</p>
+                            <p>💡 <strong>Hints:</strong> Available | ✅ Instant feedback</p>
+                        </div>
+                        <small>✅ LearningResource schema + Interactive quiz</small>
+                    </div>
+                `
+            },
+
+            sitelinks: {
+                title: '🔗 Site Links',
+                shortcode: '[kata_sitelinks title="KATA SEO Tools - Site Navigation" description="Điều hướng nhanh đến các trang quan trọng của KATA SEO Tools" links="Trang chủ|https://katadigital.com|Trang chủ chính của website,Hướng dẫn|https://katadigital.com/guide|Hướng dẫn sử dụng chi tiết,Tải plugin|https://katadigital.com/download|Download plugin miễn phí,Hỗ trợ|https://katadigital.com/support|Trung tâm hỗ trợ 24/7,Blog|https://katadigital.com/blog|Bài viết về SEO và WordPress,Liên hệ|https://katadigital.com/contact|Thông tin liên hệ" site_name="KATA SEO Tools" breadcrumb="Home > WordPress > SEO Tools > KATA" style="grid" show_descriptions="true"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>🔗 Site Links sẽ tạo:</h4>
+                        <div class="sitelinks-preview">
+                            <h3>KATA SEO Tools - Site Navigation</h3>
+                            <p>🔗 <strong>6 liên kết chính:</strong> Trang chủ, Hướng dẫn, Tải plugin, Hỗ trợ, Blog, Liên hệ</p>
+                            <p>🍞 <strong>Breadcrumb:</strong> Home > WordPress > SEO Tools > KATA</p>
+                            <p>🎨 <strong>Style:</strong> Grid layout với descriptions</p>
+                            <p>🏢 <strong>Site:</strong> KATA SEO Tools</p>
+                        </div>
+                        <small>✅ SiteNavigationElement schema + Visual navigation</small>
+                    </div>
+                `
+            },
+
+            speakable: {
+                title: '🔊 Speakable Content',
+                shortcode: '[kata_speakable title="5 Tips SEO Cho Voice Search 2025" content="Voice search đang ngày càng phổ biến. Để tối ưu cho voice search: 1) Tập trung vào long-tail keywords, 2) Tối ưu cho câu hỏi tự nhiên, 3) Cải thiện tốc độ trang, 4) Sử dụng structured data, 5) Tối ưu cho local SEO. Đây là xu hướng quan trọng mà mọi website cần chú ý." summary="5 chiến lược SEO quan trọng để tối ưu website cho voice search trong năm 2025" reading_time="3" language="vi" voice_type="text-to-speech" css_selector=".voice-content,.main-content" xpath="//article//p"]',
+                preview: `
+                    <div class="kata-preview-box">
+                        <h4>🔊 Speakable Content sẽ tạo:</h4>
+                        <div class="speakable-preview">
+                            <h3>5 Tips SEO Cho Voice Search 2025</h3>
+                            <p>🗣️ <strong>Content:</strong> Tối ưu cho voice search với 5 tips</p>
+                            <p>⏱️ <strong>Reading time:</strong> 3 phút | 🇻🇳 Tiếng Việt</p>
+                            <p>🤖 <strong>Voice type:</strong> Text-to-speech</p>
+                            <p>🎯 <strong>Selectors:</strong> CSS + XPath cho voice assistants</p>
+                        </div>
+                        <small>✅ SpeakableSpecification schema + Voice optimization</small>
+                    </div>
+                `
             }
         };
 

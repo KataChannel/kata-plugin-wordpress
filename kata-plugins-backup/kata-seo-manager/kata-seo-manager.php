@@ -1181,6 +1181,12 @@ class KATA_SEO_Manager {
         add_shortcode('kata_practice_problem', array($this, 'render_practice_problem'));
         add_shortcode('kata_sitelinks', array($this, 'render_sitelinks'));
         add_shortcode('kata_speakable', array($this, 'render_speakable'));
+        add_shortcode('kata_carousel', array($this, 'render_carousel'));
+        add_shortcode('kata_dataset', array($this, 'render_dataset'));
+        add_shortcode('kata_forum', array($this, 'render_forum'));
+        add_shortcode('kata_eduqa', array($this, 'render_eduqa'));
+        add_shortcode('kata_employer_rating', array($this, 'render_employer_rating'));
+        add_shortcode('kata_profile_page', array($this, 'render_profile_page'));
         
         // Additional schema shortcodes
         add_shortcode('kata_review', array($this, 'render_review'));
@@ -4807,6 +4813,1413 @@ class KATA_SEO_Manager {
             
             $output .= '</div>'; // .kata-schema-content
             $output .= '</div>'; // .kata-speakable-container
+        }
+        
+        return $output;
+    }
+
+    public function render_carousel($atts) {
+        $atts = shortcode_atts(array(
+            'title' => '',
+            'images' => '',
+            'captions' => '',
+            'links' => '',
+            'height' => '400px',
+            'auto_play' => 'false',
+            'show_indicators' => 'true',
+            'show_controls' => 'true',
+            'transition_speed' => '3000',
+            'show_frontend' => 'true'
+        ), $atts, 'kata_carousel');
+        
+        if (empty($atts['images'])) {
+            return '<div class="kata-schema-error kata-carousel-error">
+                <span class="dashicons dashicons-warning"></span>
+                Danh sách hình ảnh carousel không được để trống.
+            </div>';
+        }
+        
+        // Parse images and related data
+        $images_array = explode(',', $atts['images']);
+        $captions_array = !empty($atts['captions']) ? explode(',', $atts['captions']) : array();
+        $links_array = !empty($atts['links']) ? explode(',', $atts['links']) : array();
+        
+        // Generate unique ID for this carousel
+        $carousel_id = 'kata-carousel-' . uniqid();
+        
+        // Build schema data (using ItemList for the carousel)
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'ItemList',
+            'name' => !empty($atts['title']) ? $atts['title'] : 'Carousel Gallery',
+            'numberOfItems' => count($images_array),
+            'itemListElement' => array()
+        );
+        
+        foreach ($images_array as $index => $image_url) {
+            $schema['itemListElement'][] = array(
+                '@type' => 'ImageObject',
+                'position' => $index + 1,
+                'url' => trim($image_url),
+                'name' => isset($captions_array[$index]) ? trim($captions_array[$index]) : 'Image ' . ($index + 1)
+            );
+        }
+        
+        $output = '';
+        
+        // Add JSON-LD schema
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        
+        // Add frontend visual display (if enabled)
+        if ($atts['show_frontend'] !== 'false') {
+            $output .= '<div class="kata-schema-container kata-carousel-container" itemscope itemtype="https://schema.org/ItemList">';
+            $output .= '<div class="kata-schema-header">';
+            $output .= '<span class="kata-schema-icon dashicons dashicons-images-alt2"></span>';
+            $output .= '<span class="kata-schema-type">Carousel Gallery</span>';
+            $output .= '</div>';
+            
+            $output .= '<div class="kata-schema-content">';
+            
+            // Title
+            if (!empty($atts['title'])) {
+                $output .= '<h3 class="kata-carousel-title" itemprop="name">' . esc_html($atts['title']) . '</h3>';
+            }
+            
+            // Carousel container
+            $output .= '<div class="kata-carousel-wrapper" data-carousel-id="' . esc_attr($carousel_id) . '" data-auto-play="' . esc_attr($atts['auto_play']) . '" data-speed="' . esc_attr($atts['transition_speed']) . '">';
+            $output .= '<div class="kata-carousel-container" id="' . esc_attr($carousel_id) . '" style="height: ' . esc_attr($atts['height']) . ';">';
+            
+            // Carousel slides
+            $output .= '<div class="kata-carousel-slides">';
+            foreach ($images_array as $index => $image_url) {
+                $is_active = ($index === 0) ? ' active' : '';
+                $caption = isset($captions_array[$index]) ? trim($captions_array[$index]) : '';
+                $link = isset($links_array[$index]) ? trim($links_array[$index]) : '';
+                
+                $output .= '<div class="kata-carousel-slide' . $is_active . '" data-slide="' . $index . '" itemprop="itemListElement" itemscope itemtype="https://schema.org/ImageObject">';
+                
+                if (!empty($link)) {
+                    $output .= '<a href="' . esc_url($link) . '" class="kata-slide-link">';
+                }
+                
+                $output .= '<img src="' . esc_url(trim($image_url)) . '" alt="' . esc_attr($caption) . '" class="kata-carousel-image" itemprop="url" loading="lazy" />';
+                $output .= '<meta itemprop="position" content="' . ($index + 1) . '">';
+                
+                if (!empty($caption)) {
+                    $output .= '<div class="kata-carousel-caption" itemprop="name">';
+                    $output .= '<p>' . esc_html($caption) . '</p>';
+                    $output .= '</div>';
+                }
+                
+                if (!empty($link)) {
+                    $output .= '</a>';
+                }
+                
+                $output .= '</div>';
+            }
+            $output .= '</div>'; // .kata-carousel-slides
+            
+            // Navigation controls
+            if ($atts['show_controls'] !== 'false') {
+                $output .= '<button class="kata-carousel-control kata-carousel-prev" onclick="kataCarouselPrev(\'' . esc_js($carousel_id) . '\')" aria-label="Previous slide">';
+                $output .= '<span class="dashicons dashicons-arrow-left-alt2"></span>';
+                $output .= '</button>';
+                $output .= '<button class="kata-carousel-control kata-carousel-next" onclick="kataCarouselNext(\'' . esc_js($carousel_id) . '\')" aria-label="Next slide">';
+                $output .= '<span class="dashicons dashicons-arrow-right-alt2"></span>';
+                $output .= '</button>';
+            }
+            
+            $output .= '</div>'; // .kata-carousel-container
+            
+            // Indicators
+            if ($atts['show_indicators'] !== 'false') {
+                $output .= '<div class="kata-carousel-indicators">';
+                foreach ($images_array as $index => $image_url) {
+                    $is_active = ($index === 0) ? ' active' : '';
+                    $output .= '<button class="kata-carousel-indicator' . $is_active . '" onclick="kataCarouselGoTo(\'' . esc_js($carousel_id) . '\', ' . $index . ')" aria-label="Go to slide ' . ($index + 1) . '" data-slide="' . $index . '"></button>';
+                }
+                $output .= '</div>';
+            }
+            
+            $output .= '</div>'; // .kata-carousel-wrapper
+            
+            // Carousel info
+            $output .= '<div class="kata-carousel-info">';
+            $output .= '<span class="kata-carousel-counter"><span class="current-slide">1</span> / ' . count($images_array) . '</span>';
+            $output .= '<span class="kata-carousel-meta" itemprop="numberOfItems" content="' . count($images_array) . '">(' . count($images_array) . ' ảnh)</span>';
+            $output .= '</div>';
+            
+            $output .= '</div>'; // .kata-schema-content
+            $output .= '</div>'; // .kata-carousel-container
+            
+            // Add JavaScript for carousel functionality
+            $output .= '<script>
+            let kataCarousels = kataCarousels || {};
+            
+            function kataInitCarousel(carouselId) {
+                if (kataCarousels[carouselId]) return;
+                
+                kataCarousels[carouselId] = {
+                    currentSlide: 0,
+                    totalSlides: document.querySelectorAll("#" + carouselId + " .kata-carousel-slide").length,
+                    autoPlay: false,
+                    intervalId: null
+                };
+                
+                const wrapper = document.querySelector(`[data-carousel-id="${carouselId}"]`);
+                const autoPlay = wrapper.getAttribute("data-auto-play") === "true";
+                const speed = parseInt(wrapper.getAttribute("data-speed")) || 3000;
+                
+                if (autoPlay) {
+                    kataCarousels[carouselId].autoPlay = true;
+                    kataCarousels[carouselId].intervalId = setInterval(() => {
+                        kataCarouselNext(carouselId);
+                    }, speed);
+                }
+            }
+            
+            function kataCarouselNext(carouselId) {
+                const carousel = kataCarousels[carouselId];
+                carousel.currentSlide = (carousel.currentSlide + 1) % carousel.totalSlides;
+                kataUpdateCarousel(carouselId);
+            }
+            
+            function kataCarouselPrev(carouselId) {
+                const carousel = kataCarousels[carouselId];
+                carousel.currentSlide = (carousel.currentSlide - 1 + carousel.totalSlides) % carousel.totalSlides;
+                kataUpdateCarousel(carouselId);
+            }
+            
+            function kataCarouselGoTo(carouselId, slideIndex) {
+                const carousel = kataCarousels[carouselId];
+                carousel.currentSlide = slideIndex;
+                kataUpdateCarousel(carouselId);
+            }
+            
+            function kataUpdateCarousel(carouselId) {
+                const carousel = kataCarousels[carouselId];
+                const slides = document.querySelectorAll("#" + carouselId + " .kata-carousel-slide");
+                const indicators = document.querySelectorAll(`[data-carousel-id="${carouselId}"] .kata-carousel-indicator`);
+                const counter = document.querySelector(`[data-carousel-id="${carouselId}"] .current-slide`);
+                
+                slides.forEach((slide, index) => {
+                    slide.classList.toggle("active", index === carousel.currentSlide);
+                });
+                
+                indicators.forEach((indicator, index) => {
+                    indicator.classList.toggle("active", index === carousel.currentSlide);
+                });
+                
+                if (counter) {
+                    counter.textContent = carousel.currentSlide + 1;
+                }
+            }
+            
+            // Initialize carousel when DOM is ready
+            document.addEventListener("DOMContentLoaded", function() {
+                kataInitCarousel("' . esc_js($carousel_id) . '");
+            });
+            </script>';
+        }
+        
+        return $output;
+    }
+
+    public function render_dataset($atts) {
+        $atts = shortcode_atts(array(
+            'title' => '',
+            'description' => '',
+            'data' => '',
+            'headers' => '',
+            'source' => '',
+            'license' => '',
+            'keywords' => '',
+            'creator' => '',
+            'date_published' => '',
+            'format' => 'table', // table, list, grid
+            'show_search' => 'true',
+            'show_export' => 'true',
+            'show_frontend' => 'true'
+        ), $atts, 'kata_dataset');
+        
+        if (empty($atts['data'])) {
+            return '<div class="kata-schema-error kata-dataset-error">
+                <span class="dashicons dashicons-warning"></span>
+                Dữ liệu dataset không được để trống.
+            </div>';
+        }
+        
+        // Parse data (format: "row1col1|row1col2|row1col3,row2col1|row2col2|row2col3")
+        $data_rows = explode(',', $atts['data']);
+        $parsed_data = array();
+        
+        foreach ($data_rows as $row) {
+            $columns = explode('|', trim($row));
+            if (!empty($columns)) {
+                $parsed_data[] = array_map('trim', $columns);
+            }
+        }
+        
+        // Parse headers if provided
+        $headers = array();
+        if (!empty($atts['headers'])) {
+            $headers = array_map('trim', explode('|', $atts['headers']));
+        }
+        
+        if (empty($parsed_data)) {
+            return '<div class="kata-schema-error kata-dataset-error">
+                <span class="dashicons dashicons-warning"></span>
+                Định dạng dữ liệu không hợp lệ. Sử dụng: "col1|col2|col3,row1col1|row1col2|row1col3"
+            </div>';
+        }
+        
+        // Generate unique ID for this dataset
+        $dataset_id = 'kata-dataset-' . uniqid();
+        
+        // Build schema data
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Dataset',
+            'name' => !empty($atts['title']) ? $atts['title'] : 'Dataset',
+            'description' => !empty($atts['description']) ? $atts['description'] : 'Data collection'
+        );
+        
+        if (!empty($atts['creator'])) {
+            $schema['creator'] = array(
+                '@type' => 'Person',
+                'name' => $atts['creator']
+            );
+        }
+        
+        if (!empty($atts['date_published'])) {
+            $schema['datePublished'] = $atts['date_published'];
+        }
+        
+        if (!empty($atts['keywords'])) {
+            $schema['keywords'] = $atts['keywords'];
+        }
+        
+        if (!empty($atts['license'])) {
+            $schema['license'] = $atts['license'];
+        }
+        
+        if (!empty($atts['source'])) {
+            $schema['url'] = $atts['source'];
+        }
+        
+        $output = '';
+        
+        // Add JSON-LD schema
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        
+        // Add frontend visual display (if enabled)
+        if ($atts['show_frontend'] !== 'false') {
+            $output .= '<div class="kata-schema-container kata-dataset-container" itemscope itemtype="https://schema.org/Dataset" id="' . esc_attr($dataset_id) . '">';
+            $output .= '<div class="kata-schema-header">';
+            $output .= '<span class="kata-schema-icon dashicons dashicons-chart-bar"></span>';
+            $output .= '<span class="kata-schema-type">Dataset</span>';
+            $output .= '</div>';
+            
+            $output .= '<div class="kata-schema-content">';
+            
+            // Title
+            if (!empty($atts['title'])) {
+                $output .= '<h3 class="kata-dataset-title" itemprop="name">' . esc_html($atts['title']) . '</h3>';
+            }
+            
+            // Description
+            if (!empty($atts['description'])) {
+                $output .= '<div class="kata-dataset-description" itemprop="description">';
+                $output .= '<p>' . esc_html($atts['description']) . '</p>';
+                $output .= '</div>';
+            }
+            
+            // Dataset metadata
+            $output .= '<div class="kata-dataset-metadata">';
+            
+            if (!empty($atts['creator'])) {
+                $output .= '<div class="kata-metadata-item" itemprop="creator" itemscope itemtype="https://schema.org/Person">';
+                $output .= '<span class="dashicons dashicons-admin-users"></span>';
+                $output .= '<span class="kata-metadata-label">Tác giả:</span>';
+                $output .= '<span class="kata-metadata-value" itemprop="name">' . esc_html($atts['creator']) . '</span>';
+                $output .= '</div>';
+            }
+            
+            if (!empty($atts['date_published'])) {
+                $output .= '<div class="kata-metadata-item" itemprop="datePublished">';
+                $output .= '<span class="dashicons dashicons-calendar-alt"></span>';
+                $output .= '<span class="kata-metadata-label">Ngày xuất bản:</span>';
+                $output .= '<span class="kata-metadata-value">' . esc_html(date('d/m/Y', strtotime($atts['date_published']))) . '</span>';
+                $output .= '</div>';
+            }
+            
+            if (!empty($atts['license'])) {
+                $output .= '<div class="kata-metadata-item" itemprop="license">';
+                $output .= '<span class="dashicons dashicons-admin-network"></span>';
+                $output .= '<span class="kata-metadata-label">Giấy phép:</span>';
+                $output .= '<span class="kata-metadata-value">' . esc_html($atts['license']) . '</span>';
+                $output .= '</div>';
+            }
+            
+            $output .= '<div class="kata-metadata-item">';
+            $output .= '<span class="dashicons dashicons-database-view"></span>';
+            $output .= '<span class="kata-metadata-label">Số dòng:</span>';
+            $output .= '<span class="kata-metadata-value">' . count($parsed_data) . '</span>';
+            $output .= '</div>';
+            
+            $output .= '</div>'; // .kata-dataset-metadata
+            
+            // Dataset controls
+            if ($atts['show_search'] !== 'false' || $atts['show_export'] !== 'false') {
+                $output .= '<div class="kata-dataset-controls">';
+                
+                if ($atts['show_search'] !== 'false') {
+                    $output .= '<div class="kata-dataset-search">';
+                    $output .= '<input type="text" placeholder="Tìm kiếm trong dataset..." onkeyup="kataFilterDataset(\'' . esc_js($dataset_id) . '\', this.value)" class="kata-search-input">';
+                    $output .= '<span class="dashicons dashicons-search"></span>';
+                    $output .= '</div>';
+                }
+                
+                if ($atts['show_export'] !== 'false') {
+                    $output .= '<div class="kata-dataset-export">';
+                    $output .= '<button onclick="kataExportDataset(\'' . esc_js($dataset_id) . '\')" class="kata-export-btn">';
+                    $output .= '<span class="dashicons dashicons-download"></span> Xuất CSV';
+                    $output .= '</button>';
+                    $output .= '</div>';
+                }
+                
+                $output .= '</div>'; // .kata-dataset-controls
+            }
+            
+            // Dataset display
+            if ($atts['format'] === 'table') {
+                $output .= '<div class="kata-dataset-table-wrapper">';
+                $output .= '<table class="kata-dataset-table">';
+                
+                // Headers
+                if (!empty($headers)) {
+                    $output .= '<thead><tr>';
+                    foreach ($headers as $header) {
+                        $output .= '<th>' . esc_html($header) . '</th>';
+                    }
+                    $output .= '</tr></thead>';
+                }
+                
+                // Data rows
+                $output .= '<tbody>';
+                foreach ($parsed_data as $row_index => $row_data) {
+                    $output .= '<tr data-row="' . $row_index . '">';
+                    foreach ($row_data as $cell_data) {
+                        $output .= '<td>' . esc_html($cell_data) . '</td>';
+                    }
+                    $output .= '</tr>';
+                }
+                $output .= '</tbody>';
+                
+                $output .= '</table>';
+                $output .= '</div>'; // .kata-dataset-table-wrapper
+                
+            } elseif ($atts['format'] === 'grid') {
+                $output .= '<div class="kata-dataset-grid">';
+                foreach ($parsed_data as $row_index => $row_data) {
+                    $output .= '<div class="kata-dataset-card" data-row="' . $row_index . '">';
+                    foreach ($row_data as $col_index => $cell_data) {
+                        $header_label = isset($headers[$col_index]) ? $headers[$col_index] : 'Cột ' . ($col_index + 1);
+                        $output .= '<div class="kata-dataset-field">';
+                        $output .= '<span class="kata-field-label">' . esc_html($header_label) . ':</span>';
+                        $output .= '<span class="kata-field-value">' . esc_html($cell_data) . '</span>';
+                        $output .= '</div>';
+                    }
+                    $output .= '</div>';
+                }
+                $output .= '</div>'; // .kata-dataset-grid
+                
+            } else { // list format
+                $output .= '<div class="kata-dataset-list">';
+                foreach ($parsed_data as $row_index => $row_data) {
+                    $output .= '<div class="kata-dataset-item" data-row="' . $row_index . '">';
+                    $output .= '<div class="kata-item-header">Dòng ' . ($row_index + 1) . '</div>';
+                    $output .= '<div class="kata-item-content">';
+                    foreach ($row_data as $col_index => $cell_data) {
+                        $header_label = isset($headers[$col_index]) ? $headers[$col_index] : 'Cột ' . ($col_index + 1);
+                        $output .= '<span class="kata-item-field">';
+                        $output .= '<strong>' . esc_html($header_label) . ':</strong> ' . esc_html($cell_data);
+                        $output .= '</span>';
+                    }
+                    $output .= '</div>';
+                    $output .= '</div>';
+                }
+                $output .= '</div>'; // .kata-dataset-list
+            }
+            
+            // Keywords
+            if (!empty($atts['keywords'])) {
+                $output .= '<div class="kata-dataset-keywords" itemprop="keywords">';
+                $output .= '<h4>Từ khóa</h4>';
+                $keywords_array = explode(',', $atts['keywords']);
+                $output .= '<div class="kata-keywords-list">';
+                foreach ($keywords_array as $keyword) {
+                    $output .= '<span class="kata-keyword-tag">' . esc_html(trim($keyword)) . '</span>';
+                }
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+            
+            // Source link
+            if (!empty($atts['source'])) {
+                $output .= '<div class="kata-dataset-source" itemprop="url">';
+                $output .= '<span class="dashicons dashicons-admin-links"></span>';
+                $output .= '<a href="' . esc_url($atts['source']) . '" target="_blank" rel="noopener">Nguồn dữ liệu</a>';
+                $output .= '</div>';
+            }
+            
+            $output .= '</div>'; // .kata-schema-content
+            $output .= '</div>'; // .kata-dataset-container
+            
+            // Add JavaScript for dataset functionality
+            $output .= '<script>
+            function kataFilterDataset(datasetId, searchTerm) {
+                const container = document.getElementById(datasetId);
+                const rows = container.querySelectorAll("[data-row]");
+                const searchLower = searchTerm.toLowerCase();
+                
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(searchLower) ? "" : "none";
+                });
+            }
+            
+            function kataExportDataset(datasetId) {
+                const container = document.getElementById(datasetId);
+                const table = container.querySelector(".kata-dataset-table");
+                
+                if (!table) {
+                    alert("Chỉ hỗ trợ xuất định dạng bảng");
+                    return;
+                }
+                
+                let csvContent = "";
+                const rows = table.querySelectorAll("tr:not([style*=\"display: none\"])");
+                
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll("td, th");
+                    const rowData = Array.from(cells).map(cell => 
+                        \'"$\{cell.textContent.replace(/"/g, \'""\')\}"\').join(",");
+                    csvContent += rowData + "\\n";
+                });
+                
+                const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                const link = document.createElement("a");
+                const url = URL.createObjectURL(blob);
+                link.setAttribute("href", url);
+                link.setAttribute("download", "dataset.csv");
+                link.style.visibility = "hidden";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            </script>';
+        }
+        
+        return $output;
+    }
+
+    public function render_forum($atts) {
+        $atts = shortcode_atts(array(
+            'title' => '',
+            'description' => '',
+            'topics' => '',
+            'moderator' => '',
+            'category' => '',
+            'member_count' => '',
+            'post_count' => '',
+            'created_date' => '',
+            'show_stats' => 'true',
+            'show_recent' => 'true',
+            'show_frontend' => 'true'
+        ), $atts, 'kata_forum');
+        
+        if (empty($atts['title'])) {
+            return '<div class="kata-schema-error kata-forum-error">
+                <span class="dashicons dashicons-warning"></span>
+                Tiêu đề diễn đàn không được để trống.
+            </div>';
+        }
+        
+        // Parse topics (format: "Topic1|Author1|Replies1|LastPost1,Topic2|Author2|Replies2|LastPost2")
+        $topics_array = array();
+        if (!empty($atts['topics'])) {
+            $topics_parts = explode(',', $atts['topics']);
+            foreach ($topics_parts as $topic_part) {
+                $topic_details = explode('|', trim($topic_part));
+                if (count($topic_details) >= 2) {
+                    $topics_array[] = array(
+                        'title' => trim($topic_details[0]),
+                        'author' => trim($topic_details[1]),
+                        'replies' => isset($topic_details[2]) ? intval($topic_details[2]) : 0,
+                        'last_post' => isset($topic_details[3]) ? trim($topic_details[3]) : ''
+                    );
+                }
+            }
+        }
+        
+        // Generate unique ID
+        $forum_id = 'kata-forum-' . uniqid();
+        
+        // Build schema data
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'DiscussionForumPosting',
+            'name' => $atts['title'],
+            'description' => !empty($atts['description']) ? $atts['description'] : $atts['title']
+        );
+        
+        if (!empty($atts['moderator'])) {
+            $schema['moderator'] = array(
+                '@type' => 'Person',
+                'name' => $atts['moderator']
+            );
+        }
+        
+        if (!empty($atts['created_date'])) {
+            $schema['dateCreated'] = $atts['created_date'];
+        }
+        
+        if (!empty($atts['category'])) {
+            $schema['about'] = array(
+                '@type' => 'Thing',
+                'name' => $atts['category']
+            );
+        }
+        
+        $output = '';
+        
+        // Add JSON-LD schema
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        
+        // Add frontend visual display (if enabled)
+        if ($atts['show_frontend'] !== 'false') {
+            $output .= '<div class="kata-schema-container kata-forum-container" itemscope itemtype="https://schema.org/DiscussionForumPosting" id="' . esc_attr($forum_id) . '">';
+            $output .= '<div class="kata-schema-header">';
+            $output .= '<span class="kata-schema-icon dashicons dashicons-format-chat"></span>';
+            $output .= '<span class="kata-schema-type">Diễn đàn thảo luận</span>';
+            $output .= '</div>';
+            
+            $output .= '<div class="kata-schema-content">';
+            
+            // Forum title
+            $output .= '<h3 class="kata-forum-title" itemprop="name">' . esc_html($atts['title']) . '</h3>';
+            
+            // Forum description 
+            if (!empty($atts['description'])) {
+                $output .= '<div class="kata-forum-description" itemprop="description">';
+                $output .= '<p>' . esc_html($atts['description']) . '</p>';
+                $output .= '</div>';
+            }
+            
+            // Forum metadata
+            if (!empty($atts['category']) || !empty($atts['moderator']) || !empty($atts['created_date'])) {
+                $output .= '<div class="kata-forum-metadata">';
+                
+                if (!empty($atts['category'])) {
+                    $output .= '<div class="kata-metadata-item" itemprop="about" itemscope itemtype="https://schema.org/Thing">';
+                    $output .= '<span class="dashicons dashicons-category"></span>';
+                    $output .= '<span class="kata-metadata-label">Danh mục:</span>';
+                    $output .= '<span class="kata-metadata-value" itemprop="name">' . esc_html($atts['category']) . '</span>';
+                    $output .= '</div>';
+                }
+                
+                if (!empty($atts['moderator'])) {
+                    $output .= '<div class="kata-metadata-item" itemprop="moderator" itemscope itemtype="https://schema.org/Person">';
+                    $output .= '<span class="dashicons dashicons-admin-users"></span>';
+                    $output .= '<span class="kata-metadata-label">Điều hành:</span>';
+                    $output .= '<span class="kata-metadata-value" itemprop="name">' . esc_html($atts['moderator']) . '</span>';
+                    $output .= '</div>';
+                }
+                
+                if (!empty($atts['created_date'])) {
+                    $output .= '<div class="kata-metadata-item" itemprop="dateCreated">';
+                    $output .= '<span class="dashicons dashicons-calendar-alt"></span>';
+                    $output .= '<span class="kata-metadata-label">Ngày tạo:</span>';
+                    $output .= '<span class="kata-metadata-value">' . esc_html(date('d/m/Y', strtotime($atts['created_date']))) . '</span>';
+                    $output .= '</div>';
+                }
+                
+                $output .= '</div>'; // .kata-forum-metadata
+            }
+            
+            // Forum statistics
+            if ($atts['show_stats'] !== 'false' && (!empty($atts['member_count']) || !empty($atts['post_count']))) {
+                $output .= '<div class="kata-forum-stats">';
+                $output .= '<h4>📊 Thống kê</h4>';
+                $output .= '<div class="kata-stats-grid">';
+                
+                if (!empty($atts['member_count'])) {
+                    $output .= '<div class="kata-stat-item">';
+                    $output .= '<span class="kata-stat-number">' . esc_html($atts['member_count']) . '</span>';
+                    $output .= '<span class="kata-stat-label">Thành viên</span>';
+                    $output .= '</div>';
+                }
+                
+                if (!empty($atts['post_count'])) {
+                    $output .= '<div class="kata-stat-item">';
+                    $output .= '<span class="kata-stat-number">' . esc_html($atts['post_count']) . '</span>';
+                    $output .= '<span class="kata-stat-label">Bài viết</span>';
+                    $output .= '</div>';
+                }
+                
+                if (!empty($topics_array)) {
+                    $output .= '<div class="kata-stat-item">';
+                    $output .= '<span class="kata-stat-number">' . count($topics_array) . '</span>';
+                    $output .= '<span class="kata-stat-label">Chủ đề</span>';
+                    $output .= '</div>';
+                }
+                
+                $output .= '</div>'; // .kata-stats-grid
+                $output .= '</div>'; // .kata-forum-stats
+            }
+            
+            // Recent topics
+            if ($atts['show_recent'] !== 'false' && !empty($topics_array)) {
+                $output .= '<div class="kata-forum-topics">';
+                $output .= '<h4>💬 Chủ đề gần đây</h4>';
+                $output .= '<div class="kata-topics-list">';
+                
+                foreach ($topics_array as $topic) {
+                    $output .= '<div class="kata-topic-item">';
+                    $output .= '<div class="kata-topic-header">';
+                    $output .= '<span class="kata-topic-icon dashicons dashicons-format-chat"></span>';
+                    $output .= '<span class="kata-topic-title">' . esc_html($topic['title']) . '</span>';
+                    $output .= '</div>';
+                    
+                    $output .= '<div class="kata-topic-meta">';
+                    $output .= '<span class="kata-topic-author">';
+                    $output .= '<span class="dashicons dashicons-admin-users"></span>';
+                    $output .= 'Bởi: ' . esc_html($topic['author']);
+                    $output .= '</span>';
+                    
+                    if ($topic['replies'] > 0) {
+                        $output .= '<span class="kata-topic-replies">';
+                        $output .= '<span class="dashicons dashicons-format-chat"></span>';
+                        $output .= $topic['replies'] . ' trả lời';
+                        $output .= '</span>';
+                    }
+                    
+                    if (!empty($topic['last_post'])) {
+                        $output .= '<span class="kata-topic-last-post">';
+                        $output .= '<span class="dashicons dashicons-clock"></span>';
+                        $output .= 'Cập nhật: ' . esc_html($topic['last_post']);
+                        $output .= '</span>';
+                    }
+                    
+                    $output .= '</div>'; // .kata-topic-meta
+                    $output .= '</div>'; // .kata-topic-item
+                }
+                
+                $output .= '</div>'; // .kata-topics-list
+                $output .= '</div>'; // .kata-forum-topics
+            }
+            
+            $output .= '</div>'; // .kata-schema-content
+            $output .= '</div>'; // .kata-forum-container
+        }
+        
+        return $output;
+    }
+
+    public function render_eduqa($atts) {
+        $atts = shortcode_atts(array(
+            'question' => '',
+            'answer' => '',
+            'category' => '',
+            'difficulty' => '',
+            'author' => '',
+            'votes' => '',
+            'date_asked' => '',
+            'date_answered' => '',
+            'tags' => '',
+            'related_questions' => '',
+            'show_voting' => 'true',
+            'show_frontend' => 'true'
+        ), $atts, 'kata_eduqa');
+        
+        if (empty($atts['question'])) {
+            return '<div class="kata-schema-error kata-eduqa-error">
+                <span class="dashicons dashicons-warning"></span>
+                Câu hỏi giáo dục không được để trống.
+            </div>';
+        }
+        
+        // Generate unique ID
+        $qa_id = 'kata-eduqa-' . uniqid();
+        
+        // Build schema data
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Question',
+            'name' => $atts['question'],
+            'text' => $atts['question']
+        );
+        
+        if (!empty($atts['author'])) {
+            $schema['author'] = array(
+                '@type' => 'Person',
+                'name' => $atts['author']
+            );
+        }
+        
+        if (!empty($atts['date_asked'])) {
+            $schema['dateCreated'] = $atts['date_asked'];
+        }
+        
+        if (!empty($atts['category'])) {
+            $schema['about'] = array(
+                '@type' => 'Thing',
+                'name' => $atts['category']
+            );
+        }
+        
+        // Add answer if provided
+        if (!empty($atts['answer'])) {
+            $schema['acceptedAnswer'] = array(
+                '@type' => 'Answer',
+                'text' => $atts['answer']
+            );
+            
+            if (!empty($atts['date_answered'])) {
+                $schema['acceptedAnswer']['dateCreated'] = $atts['date_answered'];
+            }
+        }
+        
+        $output = '';
+        
+        // Add JSON-LD schema
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        
+        // Add frontend visual display (if enabled)
+        if ($atts['show_frontend'] !== 'false') {
+            $output .= '<div class="kata-schema-container kata-eduqa-container" itemscope itemtype="https://schema.org/Question" id="' . esc_attr($qa_id) . '">';
+            $output .= '<div class="kata-schema-header">';
+            $output .= '<span class="kata-schema-icon dashicons dashicons-editor-help"></span>';
+            $output .= '<span class="kata-schema-type">Hỏi đáp giáo dục</span>';
+            $output .= '</div>';
+            
+            $output .= '<div class="kata-schema-content">';
+            
+            // Question section
+            $output .= '<div class="kata-eduqa-question">';
+            $output .= '<h3 class="kata-question-title">❓ Câu hỏi</h3>';
+            $output .= '<div class="kata-question-content" itemprop="text">' . wp_kses_post(nl2br($atts['question'])) . '</div>';
+            $output .= '</div>';
+            
+            // Question metadata
+            $output .= '<div class="kata-eduqa-metadata">';
+            
+            if (!empty($atts['author'])) {
+                $output .= '<div class="kata-metadata-item" itemprop="author" itemscope itemtype="https://schema.org/Person">';
+                $output .= '<span class="dashicons dashicons-admin-users"></span>';
+                $output .= '<span class="kata-metadata-label">Người hỏi:</span>';
+                $output .= '<span class="kata-metadata-value" itemprop="name">' . esc_html($atts['author']) . '</span>';
+                $output .= '</div>';
+            }
+            
+            if (!empty($atts['category'])) {
+                $output .= '<div class="kata-metadata-item" itemprop="about" itemscope itemtype="https://schema.org/Thing">';
+                $output .= '<span class="dashicons dashicons-category"></span>';
+                $output .= '<span class="kata-metadata-label">Danh mục:</span>';
+                $output .= '<span class="kata-metadata-value" itemprop="name">' . esc_html($atts['category']) . '</span>';
+                $output .= '</div>';
+            }
+            
+            if (!empty($atts['difficulty'])) {
+                $difficulty_levels = array(
+                    'beginner' => '🟢 Cơ bản',
+                    'intermediate' => '🟡 Trung bình',
+                    'advanced' => '🔴 Nâng cao',
+                    'expert' => '🟣 Chuyên gia'
+                );
+                $difficulty_text = isset($difficulty_levels[$atts['difficulty']]) ? $difficulty_levels[$atts['difficulty']] : $atts['difficulty'];
+                
+                $output .= '<div class="kata-metadata-item">';
+                $output .= '<span class="dashicons dashicons-awards"></span>';
+                $output .= '<span class="kata-metadata-label">Độ khó:</span>';
+                $output .= '<span class="kata-metadata-value">' . esc_html($difficulty_text) . '</span>';
+                $output .= '</div>';
+            }
+            
+            if (!empty($atts['date_asked'])) {
+                $output .= '<div class="kata-metadata-item" itemprop="dateCreated">';
+                $output .= '<span class="dashicons dashicons-calendar-alt"></span>';
+                $output .= '<span class="kata-metadata-label">Ngày hỏi:</span>';
+                $output .= '<span class="kata-metadata-value">' . esc_html(date('d/m/Y', strtotime($atts['date_asked']))) . '</span>';
+                $output .= '</div>';
+            }
+            
+            $output .= '</div>'; // .kata-eduqa-metadata
+            
+            // Voting section
+            if ($atts['show_voting'] !== 'false') {
+                $votes = !empty($atts['votes']) ? intval($atts['votes']) : 0;
+                $output .= '<div class="kata-eduqa-voting">';
+                $output .= '<div class="kata-vote-controls">';
+                $output .= '<button class="kata-vote-btn kata-vote-up" onclick="kataVoteQuestion(\'' . esc_js($qa_id) . '\', 1)" title="Hữu ích">';
+                $output .= '<span class="dashicons dashicons-thumbs-up"></span>';
+                $output .= '</button>';
+                $output .= '<span class="kata-vote-count">' . $votes . '</span>';
+                $output .= '<button class="kata-vote-btn kata-vote-down" onclick="kataVoteQuestion(\'' . esc_js($qa_id) . '\', -1)" title="Không hữu ích">';
+                $output .= '<span class="dashicons dashicons-thumbs-down"></span>';
+                $output .= '</button>';
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+            
+            // Answer section
+            if (!empty($atts['answer'])) {
+                $output .= '<div class="kata-eduqa-answer" itemprop="acceptedAnswer" itemscope itemtype="https://schema.org/Answer">';
+                $output .= '<h4 class="kata-answer-title">✅ Trả lời</h4>';
+                $output .= '<div class="kata-answer-content" itemprop="text">' . wp_kses_post(nl2br($atts['answer'])) . '</div>';
+                
+                if (!empty($atts['date_answered'])) {
+                    $output .= '<div class="kata-answer-meta">';
+                    $output .= '<span class="dashicons dashicons-clock"></span>';
+                    $output .= '<span itemprop="dateCreated">Trả lời ngày: ' . esc_html(date('d/m/Y', strtotime($atts['date_answered']))) . '</span>';
+                    $output .= '</div>';
+                }
+                
+                $output .= '</div>'; // .kata-eduqa-answer
+            }
+            
+            // Tags
+            if (!empty($atts['tags'])) {
+                $output .= '<div class="kata-eduqa-tags">';
+                $output .= '<h4>Thẻ</h4>';
+                $tags_array = explode(',', $atts['tags']);
+                $output .= '<div class="kata-tags-list">';
+                foreach ($tags_array as $tag) {
+                    $output .= '<span class="kata-tag-item">' . esc_html(trim($tag)) . '</span>';
+                }
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+            
+            // Related questions
+            if (!empty($atts['related_questions'])) {
+                $output .= '<div class="kata-eduqa-related">';
+                $output .= '<h4>Câu hỏi liên quan</h4>';
+                $related_array = explode(',', $atts['related_questions']);
+                $output .= '<ul class="kata-related-list">';
+                foreach ($related_array as $related) {
+                    $output .= '<li><a href="#" class="kata-related-link">' . esc_html(trim($related)) . '</a></li>';
+                }
+                $output .= '</ul>';
+                $output .= '</div>';
+            }
+            
+            $output .= '</div>'; // .kata-schema-content
+            $output .= '</div>'; // .kata-eduqa-container
+            
+            // Add JavaScript for voting
+            $output .= '<script>
+            function kataVoteQuestion(qaId, vote) {
+                const container = document.getElementById(qaId);
+                const countElement = container.querySelector(".kata-vote-count");
+                let currentCount = parseInt(countElement.textContent) || 0;
+                
+                // Simple vote simulation (in real implementation, this would be AJAX)
+                currentCount += vote;
+                countElement.textContent = currentCount;
+                
+                // Visual feedback
+                const voteBtn = vote > 0 ? container.querySelector(".kata-vote-up") : container.querySelector(".kata-vote-down");
+                voteBtn.classList.add("voted");
+                
+                setTimeout(() => {
+                    voteBtn.classList.remove("voted");
+                }, 1000);
+            }
+            </script>';
+        }
+        
+        return $output;
+    }
+
+    public function render_employer_rating($atts) {
+        $atts = shortcode_atts(array(
+            'company_name' => '',
+            'overall_rating' => '',
+            'work_life_balance' => '',
+            'salary_benefits' => '',
+            'career_opportunities' => '',
+            'management' => '',
+            'culture' => '',
+            'total_reviews' => '',
+            'recommend_percentage' => '',
+            'recent_reviews' => '',
+            'company_size' => '',
+            'industry' => '',
+            'show_breakdown' => 'true',
+            'show_reviews' => 'true',
+            'show_frontend' => 'true'
+        ), $atts, 'kata_employer_rating');
+        
+        if (empty($atts['company_name'])) {
+            return '<div class="kata-schema-error kata-employer-rating-error">
+                <span class="dashicons dashicons-warning"></span>
+                Tên công ty không được để trống.
+            </div>';
+        }
+        
+        // Generate unique ID
+        $rating_id = 'kata-employer-rating-' . uniqid();
+        
+        // Build schema data (using Organization with aggregateRating)
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => $atts['company_name']
+        );
+        
+        if (!empty($atts['overall_rating'])) {
+            $schema['aggregateRating'] = array(
+                '@type' => 'AggregateRating',
+                'ratingValue' => $atts['overall_rating'],
+                'bestRating' => '5',
+                'worstRating' => '1'
+            );
+            
+            if (!empty($atts['total_reviews'])) {
+                $schema['aggregateRating']['reviewCount'] = $atts['total_reviews'];
+            }
+        }
+        
+        if (!empty($atts['industry'])) {
+            $schema['industry'] = $atts['industry'];
+        }
+        
+        if (!empty($atts['company_size'])) {
+            $schema['numberOfEmployees'] = $atts['company_size'];
+        }
+        
+        $output = '';
+        
+        // Add JSON-LD schema
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        
+        // Add frontend visual display (if enabled)
+        if ($atts['show_frontend'] !== 'false') {
+            $output .= '<div class="kata-schema-container kata-employer-rating-container" itemscope itemtype="https://schema.org/Organization" id="' . esc_attr($rating_id) . '">';
+            $output .= '<div class="kata-schema-header">';
+            $output .= '<span class="kata-schema-icon dashicons dashicons-star-filled"></span>';
+            $output .= '<span class="kata-schema-type">Đánh giá nhà tuyển dụng</span>';
+            $output .= '</div>';
+            
+            $output .= '<div class="kata-schema-content">';
+            
+            // Company header
+            $output .= '<div class="kata-employer-header">';
+            $output .= '<h3 class="kata-company-name" itemprop="name">' . esc_html($atts['company_name']) . '</h3>';
+            
+            // Overall rating
+            if (!empty($atts['overall_rating'])) {
+                $rating = floatval($atts['overall_rating']);
+                $output .= '<div class="kata-overall-rating" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">';
+                $output .= '<div class="kata-rating-display">';
+                $output .= '<span class="kata-rating-value" itemprop="ratingValue">' . number_format($rating, 1) . '</span>';
+                $output .= '<div class="kata-rating-stars">';
+                
+                // Generate star display
+                for ($i = 1; $i <= 5; $i++) {
+                    if ($i <= $rating) {
+                        $output .= '<span class="kata-star filled">★</span>';
+                    } elseif ($i - 0.5 <= $rating) {
+                        $output .= '<span class="kata-star half">★</span>';
+                    } else {
+                        $output .= '<span class="kata-star empty">☆</span>';
+                    }
+                }
+                
+                $output .= '</div>';
+                $output .= '<meta itemprop="bestRating" content="5">';
+                $output .= '<meta itemprop="worstRating" content="1">';
+                
+                if (!empty($atts['total_reviews'])) {
+                    $output .= '<span class="kata-review-count" itemprop="reviewCount">(' . esc_html($atts['total_reviews']) . ' đánh giá)</span>';
+                }
+                
+                $output .= '</div>'; // .kata-rating-display
+                $output .= '</div>'; // .kata-overall-rating
+            }
+            
+            $output .= '</div>'; // .kata-employer-header
+            
+            // Company info
+            if (!empty($atts['industry']) || !empty($atts['company_size']) || !empty($atts['recommend_percentage'])) {
+                $output .= '<div class="kata-company-info">';
+                
+                if (!empty($atts['industry'])) {
+                    $output .= '<div class="kata-info-item" itemprop="industry">';
+                    $output .= '<span class="dashicons dashicons-building"></span>';
+                    $output .= '<span class="kata-info-label">Ngành:</span>';
+                    $output .= '<span class="kata-info-value">' . esc_html($atts['industry']) . '</span>';
+                    $output .= '</div>';
+                }
+                
+                if (!empty($atts['company_size'])) {
+                    $output .= '<div class="kata-info-item" itemprop="numberOfEmployees">';
+                    $output .= '<span class="dashicons dashicons-groups"></span>';
+                    $output .= '<span class="kata-info-label">Quy mô:</span>';
+                    $output .= '<span class="kata-info-value">' . esc_html($atts['company_size']) . ' nhân viên</span>';
+                    $output .= '</div>';
+                }
+                
+                if (!empty($atts['recommend_percentage'])) {
+                    $output .= '<div class="kata-info-item">';
+                    $output .= '<span class="dashicons dashicons-thumbs-up"></span>';
+                    $output .= '<span class="kata-info-label">Khuyến nghị:</span>';
+                    $output .= '<span class="kata-info-value">' . esc_html($atts['recommend_percentage']) . '%</span>';
+                    $output .= '</div>';
+                }
+                
+                $output .= '</div>'; // .kata-company-info
+            }
+            
+            // Rating breakdown
+            if ($atts['show_breakdown'] !== 'false') {
+                $breakdown_items = array(
+                    'work_life_balance' => 'Cân bằng công việc-cuộc sống',
+                    'salary_benefits' => 'Lương & phúc lợi',
+                    'career_opportunities' => 'Cơ hội thăng tiến',
+                    'management' => 'Quản lý',
+                    'culture' => 'Văn hóa công ty'
+                );
+                
+                $has_breakdown = false;
+                foreach ($breakdown_items as $key => $label) {
+                    if (!empty($atts[$key])) {
+                        $has_breakdown = true;
+                        break;
+                    }
+                }
+                
+                if ($has_breakdown) {
+                    $output .= '<div class="kata-rating-breakdown">';
+                    $output .= '<h4>📈 Chi tiết đánh giá</h4>';
+                    $output .= '<div class="kata-breakdown-list">';
+                    
+                    foreach ($breakdown_items as $key => $label) {
+                        if (!empty($atts[$key])) {
+                            $rating = floatval($atts[$key]);
+                            $percentage = ($rating / 5) * 100;
+                            
+                            $output .= '<div class="kata-breakdown-item">';
+                            $output .= '<div class="kata-breakdown-header">';
+                            $output .= '<span class="kata-breakdown-label">' . esc_html($label) . '</span>';
+                            $output .= '<span class="kata-breakdown-value">' . number_format($rating, 1) . '</span>';
+                            $output .= '</div>';
+                            $output .= '<div class="kata-breakdown-bar">';
+                            $output .= '<div class="kata-breakdown-fill" style="width: ' . esc_attr($percentage) . '%"></div>';
+                            $output .= '</div>';
+                            $output .= '</div>';
+                        }
+                    }
+                    
+                    $output .= '</div>'; // .kata-breakdown-list
+                    $output .= '</div>'; // .kata-rating-breakdown
+                }
+            }
+            
+            // Recent reviews
+            if ($atts['show_reviews'] !== 'false' && !empty($atts['recent_reviews'])) {
+                $output .= '<div class="kata-recent-reviews">';
+                $output .= '<h4>💬 Đánh giá gần đây</h4>';
+                
+                // Parse reviews (format: "Review1|Author1|Rating1,Review2|Author2|Rating2")
+                $reviews_array = explode(',', $atts['recent_reviews']);
+                $output .= '<div class="kata-reviews-list">';
+                
+                foreach ($reviews_array as $review) {
+                    $review_parts = explode('|', trim($review));
+                    if (count($review_parts) >= 2) {
+                        $review_text = trim($review_parts[0]);
+                        $review_author = trim($review_parts[1]);
+                        $review_rating = isset($review_parts[2]) ? floatval($review_parts[2]) : 0;
+                        
+                        $output .= '<div class="kata-review-item">';
+                        $output .= '<div class="kata-review-header">';
+                        $output .= '<span class="kata-review-author">' . esc_html($review_author) . '</span>';
+                        
+                        if ($review_rating > 0) {
+                            $output .= '<div class="kata-review-rating">';
+                            for ($i = 1; $i <= 5; $i++) {
+                                if ($i <= $review_rating) {
+                                    $output .= '<span class="kata-star filled">★</span>';
+                                } else {
+                                    $output .= '<span class="kata-star empty">☆</span>';
+                                }
+                            }
+                            $output .= '</div>';
+                        }
+                        
+                        $output .= '</div>';
+                        $output .= '<div class="kata-review-text">' . esc_html($review_text) . '</div>';
+                        $output .= '</div>';
+                    }
+                }
+                
+                $output .= '</div>'; // .kata-reviews-list
+                $output .= '</div>'; // .kata-recent-reviews
+            }
+            
+            $output .= '</div>'; // .kata-schema-content
+            $output .= '</div>'; // .kata-employer-rating-container
+        }
+        
+        return $output;
+    }
+
+    public function render_profile_page($atts) {
+        $atts = shortcode_atts(array(
+            'name' => '',
+            'job_title' => '',
+            'bio' => '',
+            'skills' => '',
+            'experience' => '',
+            'education' => '',
+            'contact_email' => '',
+            'contact_phone' => '',
+            'website' => '',
+            'social_links' => '',
+            'location' => '',
+            'languages' => '',
+            'achievements' => '',
+            'show_contact' => 'true',
+            'show_social' => 'true',
+            'show_frontend' => 'true'
+        ), $atts, 'kata_profile_page');
+        
+        if (empty($atts['name'])) {
+            return '<div class="kata-schema-error kata-profile-error">
+                <span class="dashicons dashicons-warning"></span>
+                Tên người dùng không được để trống.
+            </div>';
+        }
+        
+        // Generate unique ID
+        $profile_id = 'kata-profile-' . uniqid();
+        
+        // Build schema data
+        $schema = array(
+            '@context' => 'https://schema.org',
+            '@type' => 'Person',
+            'name' => $atts['name']
+        );
+        
+        if (!empty($atts['job_title'])) {
+            $schema['jobTitle'] = $atts['job_title'];
+        }
+        
+        if (!empty($atts['bio'])) {
+            $schema['description'] = $atts['bio'];
+        }
+        
+        if (!empty($atts['contact_email'])) {
+            $schema['email'] = $atts['contact_email'];
+        }
+        
+        if (!empty($atts['contact_phone'])) {
+            $schema['telephone'] = $atts['contact_phone'];
+        }
+        
+        if (!empty($atts['website'])) {
+            $schema['url'] = $atts['website'];
+        }
+        
+        if (!empty($atts['location'])) {
+            $schema['address'] = array(
+                '@type' => 'PostalAddress',
+                'addressLocality' => $atts['location']
+            );
+        }
+        
+        $output = '';
+        
+        // Add JSON-LD schema
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
+        
+        // Add frontend visual display (if enabled)
+        if ($atts['show_frontend'] !== 'false') {
+            $output .= '<div class="kata-schema-container kata-profile-container" itemscope itemtype="https://schema.org/Person" id="' . esc_attr($profile_id) . '">';
+            $output .= '<div class="kata-schema-header">';
+            $output .= '<span class="kata-schema-icon dashicons dashicons-admin-users"></span>';
+            $output .= '<span class="kata-schema-type">Hồ sơ cá nhân</span>';
+            $output .= '</div>';
+            
+            $output .= '<div class="kata-schema-content">';
+            
+            // Profile header
+            $output .= '<div class="kata-profile-header">';
+            $output .= '<div class="kata-profile-avatar">';
+            $output .= '<span class="kata-avatar-placeholder dashicons dashicons-admin-users"></span>';
+            $output .= '</div>';
+            $output .= '<div class="kata-profile-info">';
+            $output .= '<h3 class="kata-profile-name" itemprop="name">' . esc_html($atts['name']) . '</h3>';
+            
+            if (!empty($atts['job_title'])) {
+                $output .= '<div class="kata-profile-title" itemprop="jobTitle">' . esc_html($atts['job_title']) . '</div>';
+            }
+            
+            if (!empty($atts['location'])) {
+                $output .= '<div class="kata-profile-location" itemprop="address" itemscope itemtype="https://schema.org/PostalAddress">';
+                $output .= '<span class="dashicons dashicons-location-alt"></span>';
+                $output .= '<span itemprop="addressLocality">' . esc_html($atts['location']) . '</span>';
+                $output .= '</div>';
+            }
+            
+            $output .= '</div>'; // .kata-profile-info
+            $output .= '</div>'; // .kata-profile-header
+            
+            // Bio
+            if (!empty($atts['bio'])) {
+                $output .= '<div class="kata-profile-bio" itemprop="description">';
+                $output .= '<h4>📝 Giới thiệu</h4>';
+                $output .= '<p>' . wp_kses_post(nl2br($atts['bio'])) . '</p>';
+                $output .= '</div>';
+            }
+            
+            // Skills
+            if (!empty($atts['skills'])) {
+                $output .= '<div class="kata-profile-skills">';
+                $output .= '<h4>🛠️ Kỹ năng</h4>';
+                $skills_array = explode(',', $atts['skills']);
+                $output .= '<div class="kata-skills-list">';
+                foreach ($skills_array as $skill) {
+                    $output .= '<span class="kata-skill-tag">' . esc_html(trim($skill)) . '</span>';
+                }
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+            
+            // Experience
+            if (!empty($atts['experience'])) {
+                $output .= '<div class="kata-profile-experience">';
+                $output .= '<h4>💼 Kinh nghiệm</h4>';
+                $experience_array = explode('|', $atts['experience']);
+                $output .= '<div class="kata-experience-list">';
+                foreach ($experience_array as $exp) {
+                    $output .= '<div class="kata-experience-item">' . esc_html(trim($exp)) . '</div>';
+                }
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+            
+            // Education
+            if (!empty($atts['education'])) {
+                $output .= '<div class="kata-profile-education">';
+                $output .= '<h4>🎓 Học vấn</h4>';
+                $education_array = explode('|', $atts['education']);
+                $output .= '<div class="kata-education-list">';
+                foreach ($education_array as $edu) {
+                    $output .= '<div class="kata-education-item">' . esc_html(trim($edu)) . '</div>';
+                }
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+            
+            // Languages
+            if (!empty($atts['languages'])) {
+                $output .= '<div class="kata-profile-languages">';
+                $output .= '<h4>🌍 Ngôn ngữ</h4>';
+                $languages_array = explode(',', $atts['languages']);
+                $output .= '<div class="kata-languages-list">';
+                foreach ($languages_array as $lang) {
+                    $output .= '<span class="kata-language-tag">' . esc_html(trim($lang)) . '</span>';
+                }
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+            
+            // Achievements
+            if (!empty($atts['achievements'])) {
+                $output .= '<div class="kata-profile-achievements">';
+                $output .= '<h4>🏆 Thành tựu</h4>';
+                $achievements_array = explode('|', $atts['achievements']);
+                $output .= '<ul class="kata-achievements-list">';
+                foreach ($achievements_array as $achievement) {
+                    $output .= '<li>' . esc_html(trim($achievement)) . '</li>';
+                }
+                $output .= '</ul>';
+                $output .= '</div>';
+            }
+            
+            // Contact info
+            if ($atts['show_contact'] !== 'false' && (!empty($atts['contact_email']) || !empty($atts['contact_phone']) || !empty($atts['website']))) {
+                $output .= '<div class="kata-profile-contact">';
+                $output .= '<h4>📞 Liên hệ</h4>';
+                $output .= '<div class="kata-contact-list">';
+                
+                if (!empty($atts['contact_email'])) {
+                    $output .= '<div class="kata-contact-item" itemprop="email">';
+                    $output .= '<span class="dashicons dashicons-email-alt"></span>';
+                    $output .= '<a href="mailto:' . esc_attr($atts['contact_email']) . '">' . esc_html($atts['contact_email']) . '</a>';
+                    $output .= '</div>';
+                }
+                
+                if (!empty($atts['contact_phone'])) {
+                    $output .= '<div class="kata-contact-item" itemprop="telephone">';
+                    $output .= '<span class="dashicons dashicons-phone"></span>';
+                    $output .= '<a href="tel:' . esc_attr($atts['contact_phone']) . '">' . esc_html($atts['contact_phone']) . '</a>';
+                    $output .= '</div>';
+                }
+                
+                if (!empty($atts['website'])) {
+                    $output .= '<div class="kata-contact-item" itemprop="url">';
+                    $output .= '<span class="dashicons dashicons-admin-site-alt3"></span>';
+                    $output .= '<a href="' . esc_url($atts['website']) . '" target="_blank" rel="noopener">' . esc_html($atts['website']) . '</a>';
+                    $output .= '</div>';
+                }
+                
+                $output .= '</div>'; // .kata-contact-list
+                $output .= '</div>'; // .kata-profile-contact
+            }
+            
+            // Social links
+            if ($atts['show_social'] !== 'false' && !empty($atts['social_links'])) {
+                $output .= '<div class="kata-profile-social">';
+                $output .= '<h4>🌎 Mạng xã hội</h4>';
+                
+                // Parse social links (format: "Platform1|URL1,Platform2|URL2")
+                $social_array = explode(',', $atts['social_links']);
+                $output .= '<div class="kata-social-list">';
+                
+                foreach ($social_array as $social) {
+                    $social_parts = explode('|', trim($social));
+                    if (count($social_parts) >= 2) {
+                        $platform = trim($social_parts[0]);
+                        $url = trim($social_parts[1]);
+                        
+                        // Choose appropriate icon
+                        $icon_class = 'dashicons-admin-links';
+                        if (stripos($platform, 'facebook') !== false) {
+                            $icon_class = 'dashicons-facebook';
+                        } elseif (stripos($platform, 'twitter') !== false) {
+                            $icon_class = 'dashicons-twitter';
+                        } elseif (stripos($platform, 'linkedin') !== false) {
+                            $icon_class = 'dashicons-linkedin';
+                        }
+                        
+                        $output .= '<a href="' . esc_url($url) . '" class="kata-social-link" target="_blank" rel="noopener" title="' . esc_attr($platform) . '">';
+                        $output .= '<span class="dashicons ' . $icon_class . '"></span>';
+                        $output .= '<span>' . esc_html($platform) . '</span>';
+                        $output .= '</a>';
+                    }
+                }
+                
+                $output .= '</div>'; // .kata-social-list
+                $output .= '</div>'; // .kata-profile-social
+            }
+            
+            $output .= '</div>'; // .kata-schema-content
+            $output .= '</div>'; // .kata-profile-container
         }
         
         return $output;

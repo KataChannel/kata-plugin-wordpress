@@ -158,8 +158,8 @@ include_once(__DIR__ . '/poll-management-scripts.php');
                     </div>
                     
                     <div class="poll-card-body">
-                        <h3 class="poll-title"><?php echo esc_html($poll->poll_title); ?></h3>
-                        <p class="poll-question"><?php echo esc_html(wp_trim_words($poll->poll_question, 15)); ?></p>
+                        <h3 class="poll-title"><?php echo esc_html($poll->title); ?></h3>
+                        <p class="poll-question"><?php echo esc_html(wp_trim_words($poll->description, 15)); ?></p>
                         
                         <div class="poll-meta">
                             <div class="meta-item">

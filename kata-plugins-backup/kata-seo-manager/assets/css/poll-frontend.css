@@ -1,0 +1,525 @@
+/**
+ * Poll Frontend Styles
+ * 
+ * @package KATA_SEO_Manager
+ * @since 1.0.0
+ */
+
+/* =================================================================
+   POLL CONTAINER & LAYOUT
+   ================================================================= */
+
+.kata-poll-container {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    max-width: 600px;
+    transition: all 0.3s ease;
+}
+
+.kata-poll-container:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+/* Modern Style Variant */
+.kata-poll-modern {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+}
+
+.kata-poll-modern .kata-poll-title {
+    color: #fff;
+}
+
+.kata-poll-modern .kata-poll-description {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+/* Minimal Style Variant */
+.kata-poll-minimal {
+    background: transparent;
+    border: 2px solid #f0f0f0;
+    box-shadow: none;
+}
+
+.kata-poll-minimal:hover {
+    border-color: #667eea;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Colorful Style Variant */
+.kata-poll-colorful {
+    background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+}
+
+/* =================================================================
+   POLL HEADER & TITLE
+   ================================================================= */
+
+.kata-poll-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0 0 15px 0;
+    line-height: 1.3;
+    text-align: center;
+}
+
+.kata-poll-description {
+    font-size: 16px;
+    color: #6c757d;
+    line-height: 1.6;
+    margin: 0 0 25px 0;
+    text-align: center;
+}
+
+/* =================================================================
+   POLL FORM & OPTIONS
+   ================================================================= */
+
+.kata-poll-form {
+    margin: 0;
+}
+
+.kata-poll-option {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    margin: 0 0 12px 0;
+    background: #f8f9fa;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-weight: 500;
+    color: #495057;
+    position: relative;
+    overflow: hidden;
+}
+
+.kata-poll-option:hover {
+    background: #e9ecef;
+    border-color: #667eea;
+    transform: translateX(3px);
+}
+
+.kata-poll-option:last-of-type {
+    margin-bottom: 25px;
+}
+
+.kata-poll-option input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    margin: 0 15px 0 0;
+    accent-color: #667eea;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+}
+
+.kata-poll-option input[type="radio"]:checked + span {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.kata-poll-option::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s;
+    z-index: 1;
+}
+
+.kata-poll-option:hover::before {
+    left: 100%;
+}
+
+/* Checked state */
+.kata-poll-option:has(input[type="radio"]:checked) {
+    background: #667eea;
+    color: #fff;
+    border-color: #5a6fd8;
+    transform: translateX(5px);
+}
+
+.kata-poll-option:has(input[type="radio"]:checked) input[type="radio"] {
+    accent-color: #fff;
+}
+
+/* =================================================================
+   POLL SUBMIT BUTTON
+   ================================================================= */
+
+.kata-poll-submit {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    border: none;
+    padding: 15px 40px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 0 auto;
+    min-width: 160px;
+    position: relative;
+    overflow: hidden;
+}
+
+.kata-poll-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.kata-poll-submit:active {
+    transform: translateY(0);
+}
+
+.kata-poll-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.kata-poll-submit::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.kata-poll-submit:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* =================================================================
+   POLL RESULTS DISPLAY
+   ================================================================= */
+
+.kata-poll-results {
+    margin-top: 25px;
+    animation: slideIn 0.5s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kata-poll-result-item {
+    margin: 0 0 20px 0;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+    position: relative;
+    overflow: hidden;
+}
+
+.kata-poll-result-item:last-child {
+    margin-bottom: 0;
+}
+
+.kata-poll-option-text {
+    display: block;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+
+.kata-poll-votes {
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.kata-poll-progress-bar {
+    width: 100%;
+    height: 12px;
+    background: #e9ecef;
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 12px 0;
+    position: relative;
+}
+
+.kata-poll-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 6px;
+    transition: width 0.8s ease;
+    position: relative;
+}
+
+.kata-poll-progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+}
+
+.kata-poll-percentage {
+    position: absolute;
+    right: 0;
+    top: -25px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #667eea;
+}
+
+.kata-poll-total {
+    text-align: center;
+    margin: 25px 0 0 0;
+    padding: 15px 0;
+    border-top: 2px solid #f0f0f0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #495057;
+}
+
+/* =================================================================
+   POLL STATES
+   ================================================================= */
+
+.kata-poll-loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.kata-poll-loading .kata-poll-submit::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid transparent;
+    border-top: 2px solid #fff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.kata-poll-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+    font-style: italic;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 2px dashed #dee2e6;
+}
+
+.kata-poll-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c2c7;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.kata-poll-success {
+    background: #d1e7dd;
+    color: #0a3622;
+    border: 1px solid #a3cfbb;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    margin: 20px 0;
+    animation: successPulse 0.5s ease;
+}
+
+@keyframes successPulse {
+    0% { transform: scale(0.95); opacity: 0; }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* =================================================================
+   RESPONSIVE DESIGN
+   ================================================================= */
+
+@media (max-width: 768px) {
+    .kata-poll-container {
+        margin: 15px 0;
+        padding: 20px;
+        border-radius: 8px;
+    }
+    
+    .kata-poll-title {
+        font-size: 20px;
+        margin-bottom: 12px;
+    }
+    
+    .kata-poll-description {
+        font-size: 14px;
+        margin-bottom: 20px;
+    }
+    
+    .kata-poll-option {
+        padding: 12px 15px;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    .kata-poll-option input[type="radio"] {
+        width: 18px;
+        height: 18px;
+        margin-right: 12px;
+    }
+    
+    .kata-poll-submit {
+        padding: 12px 30px;
+        font-size: 14px;
+        min-width: 140px;
+    }
+    
+    .kata-poll-result-item {
+        padding: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .kata-poll-option-text {
+        font-size: 14px;
+    }
+    
+    .kata-poll-total {
+        font-size: 14px;
+        margin-top: 20px;
+        padding-top: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .kata-poll-container {
+        padding: 15px;
+        margin: 10px 0;
+    }
+    
+    .kata-poll-title {
+        font-size: 18px;
+    }
+    
+    .kata-poll-option {
+        padding: 10px 12px;
+        font-size: 13px;
+    }
+    
+    .kata-poll-submit {
+        padding: 10px 25px;
+        font-size: 13px;
+        min-width: 120px;
+    }
+}
+
+/* =================================================================
+   DARK MODE SUPPORT (Optional)
+   ================================================================= */
+
+@media (prefers-color-scheme: dark) {
+    .kata-poll-container {
+        background: #2c3e50;
+        border-color: #34495e;
+        color: #ecf0f1;
+    }
+    
+    .kata-poll-title {
+        color: #ecf0f1;
+    }
+    
+    .kata-poll-description {
+        color: #bdc3c7;
+    }
+    
+    .kata-poll-option {
+        background: #34495e;
+        color: #ecf0f1;
+    }
+    
+    .kata-poll-option:hover {
+        background: #3d566e;
+    }
+    
+    .kata-poll-result-item {
+        background: #34495e;
+        color: #ecf0f1;
+    }
+    
+    .kata-poll-option-text {
+        color: #ecf0f1;
+    }
+    
+    .kata-poll-votes {
+        color: #bdc3c7;
+    }
+    
+    .kata-poll-total {
+        color: #ecf0f1;
+        border-top-color: #34495e;
+    }
+}
+
+/* =================================================================
+   PRINT STYLES
+   ================================================================= */
+
+@media print {
+    .kata-poll-container {
+        box-shadow: none;
+        border: 1px solid #ccc;
+        background: #fff !important;
+        color: #000 !important;
+    }
+    
+    .kata-poll-submit {
+        display: none;
+    }
+    
+    .kata-poll-progress::after {
+        display: none;
+    }
+}

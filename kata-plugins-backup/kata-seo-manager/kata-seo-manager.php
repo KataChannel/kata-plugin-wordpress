@@ -2850,7 +2850,7 @@ class KATA_SEO_Manager {
                 return '<div class="kata-poll-empty">Không tìm thấy cuộc bình chọn.</div>';
             }
             
-            $options = !empty($poll->poll_options) ? json_decode($poll->poll_options, true) : array();
+            $options = !empty($poll->options) ? json_decode($poll->options, true) : array();
             $poll_id = 'kata-poll-' . $poll->id;
             
             // Get current vote counts
@@ -2865,10 +2865,10 @@ class KATA_SEO_Manager {
             ));
             
             $output = '<div id="' . $poll_id . '" class="kata-poll-container kata-poll-' . esc_attr($atts['style']) . '" data-poll-id="' . $poll->id . '">';
-            $output .= '<h3 class="kata-poll-title">' . esc_html($poll->poll_title) . '</h3>';
+            $output .= '<h3 class="kata-poll-title">' . esc_html($poll->title) . '</h3>';
             
-            if (!empty($poll->poll_description)) {
-                $output .= '<p class="kata-poll-description">' . esc_html($poll->poll_description) . '</p>';
+            if (!empty($poll->description)) {
+                $output .= '<p class="kata-poll-description">' . esc_html($poll->description) . '</p>';
             }
             
             // Check if user has already voted
@@ -5850,7 +5850,7 @@ class KATA_SEO_Manager {
         }
         
         // Get option text from poll options
-        $poll_options = json_decode($poll->poll_options, true);
+        $poll_options = json_decode($poll->options, true);
         $option_text = isset($poll_options[$option_value]) ? $poll_options[$option_value] : '';
         
         // Insert vote
@@ -5905,7 +5905,7 @@ class KATA_SEO_Manager {
             wp_send_json_error('Không tìm thấy cuộc bình chọn.');
         }
         
-        $options = json_decode($poll->poll_options, true);
+        $options = json_decode($poll->options, true);
         
         // Get vote counts
         $vote_counts = $wpdb->get_results($wpdb->prepare(
@@ -5970,8 +5970,8 @@ class KATA_SEO_Manager {
         
         // Parse options
         $options = array();
-        if (!empty($poll->poll_options)) {
-            $options = json_decode($poll->poll_options, true);
+        if (!empty($poll->options)) {
+            $options = json_decode($poll->options, true);
             if (!is_array($options)) {
                 $options = array();
             }

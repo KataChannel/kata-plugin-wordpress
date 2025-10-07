@@ -3118,7 +3118,28 @@ class KATA_SEO_Manager {
             'url' => '',
             'thumbnail' => '',
             'duration' => '',
-            'upload_date' => ''
+            'upload_date' => '',
+            
+            // MODE 1: Schema Filtering
+            'schema_fields' => '',
+            'hide_description' => '',
+            'hide_thumbnailurl' => '',
+            'hide_duration' => '',
+            'hide_uploaddate' => '',
+            'show_description' => '',
+            'show_thumbnailurl' => '',
+            'show_duration' => '',
+            'show_uploaddate' => '',
+            
+            // MODE 2: Content Display
+            'hide_content_title' => '',
+            'hide_content_description' => '',
+            'hide_content_thumbnail' => '',
+            'hide_content_video' => '',
+            'show_content_title' => '',
+            'show_content_description' => '',
+            'show_content_thumbnail' => '',
+            'show_content_video' => ''
         ), $atts, 'kata_video');
         
         if (empty($atts['title']) || empty($atts['url'])) {
@@ -3145,15 +3166,53 @@ class KATA_SEO_Manager {
             $schema['uploadDate'] = $atts['upload_date'];
         }
         
+        // MODE 1: Apply schema filtering
+        $custom_props = KATA_Schema_Customizer::parse_schema_attributes($atts, 'video');
+        if (!empty($custom_props)) {
+            $schema = KATA_Schema_Customizer::filter_schema_output($schema, $custom_props);
+        }
+        
+        // MODE 2: Helper function for content visibility
+        $should_show_content = function($field_name) use ($atts) {
+            $show_key = 'show_content_' . $field_name;
+            $hide_key = 'hide_content_' . $field_name;
+            
+            if (!empty($atts[$show_key]) && $atts[$show_key] === 'true') {
+                return true;
+            }
+            if (!empty($atts[$hide_key]) && $atts[$hide_key] === 'true') {
+                return false;
+            }
+            return true; // Default: show all
+        };
+        
         $output = '<div class="kata-video-container">';
-        $output .= '<h3>' . esc_html($atts['title']) . '</h3>';
-        if (!empty($atts['description'])) {
+        
+        if ($should_show_content('title')) {
+            $output .= '<h3>' . esc_html($atts['title']) . '</h3>';
+        }
+        
+        if ($should_show_content('description') && !empty($atts['description'])) {
             $output .= '<p>' . esc_html($atts['description']) . '</p>';
         }
-        $output .= '<video controls>';
-        $output .= '<source src="' . esc_url($atts['url']) . '">';
-        $output .= 'Trình duyệt của bạn không hỗ trợ video.';
-        $output .= '</video>';
+        
+        if ($should_show_content('thumbnail') && !empty($atts['thumbnail'])) {
+            $output .= '<div class="kata-video-thumbnail">';
+            $output .= '<img src="' . esc_url($atts['thumbnail']) . '" alt="' . esc_attr($atts['title']) . '" />';
+            $output .= '</div>';
+        }
+        
+        if ($should_show_content('video')) {
+            $output .= '<video controls';
+            if (!empty($atts['thumbnail'])) {
+                $output .= ' poster="' . esc_url($atts['thumbnail']) . '"';
+            }
+            $output .= '>';
+            $output .= '<source src="' . esc_url($atts['url']) . '">';
+            $output .= 'Trình duyệt của bạn không hỗ trợ video.';
+            $output .= '</video>';
+        }
+        
         $output .= '</div>';
         
         $this->store_shortcode_schema($schema, 'VideoObject'); // Schema stored for <head> output
@@ -3167,7 +3226,17 @@ class KATA_SEO_Manager {
             'title' => 'Quiz',
             'description' => '',
             'style' => 'default',
-            'show_results' => 'true'
+            'show_results' => 'true',
+            
+            // MODE 2: Content Display (quiz is interactive UI)
+            'hide_content_title' => '',
+            'hide_content_description' => '',
+            'hide_content_questions' => '',
+            'hide_content_results' => '',
+            'show_content_title' => '',
+            'show_content_description' => '',
+            'show_content_questions' => '',
+            'show_content_results' => ''
         ), $atts, 'kata_quiz');
         
         global $kata_quiz_questions;
@@ -3216,38 +3285,57 @@ class KATA_SEO_Manager {
             return '<div class="kata-quiz-empty">Không có câu hỏi quiz nào được tìm thấy.</div>';
         }
         
+        // MODE 2: Helper function for content visibility
+        $should_show_content = function($field_name) use ($atts) {
+            $show_key = 'show_content_' . $field_name;
+            $hide_key = 'hide_content_' . $field_name;
+            
+            if (!empty($atts[$show_key]) && $atts[$show_key] === 'true') {
+                return true;
+            }
+            if (!empty($atts[$hide_key]) && $atts[$hide_key] === 'true') {
+                return false;
+            }
+            return true; // Default: show all
+        };
+        
         $quiz_id = 'kata-quiz-' . uniqid();
         
         $output = '<div id="' . $quiz_id . '" class="kata-quiz-container kata-quiz-' . esc_attr($atts['style']) . '">';
-        $output .= '<h3 class="kata-quiz-title">' . esc_html($atts['title']) . '</h3>';
         
-        if (!empty($atts['description'])) {
+        if ($should_show_content('title')) {
+            $output .= '<h3 class="kata-quiz-title">' . esc_html($atts['title']) . '</h3>';
+        }
+        
+        if ($should_show_content('description') && !empty($atts['description'])) {
             $output .= '<p class="kata-quiz-description">' . esc_html($atts['description']) . '</p>';
         }
         
-        $output .= '<form class="kata-quiz-form">';
-        foreach ($kata_quiz_questions as $index => $question) {
-            $output .= '<div class="kata-quiz-question" data-question="' . $index . '">';
-            $output .= '<h4>' . esc_html($question['question']) . '</h4>';
-            
-            if (!empty($question['options'])) {
-                foreach ($question['options'] as $opt_index => $option) {
-                    $input_id = $quiz_id . '-q' . $index . '-opt' . $opt_index;
-                    $output .= '<label for="' . $input_id . '">';
-                    $output .= '<input type="radio" id="' . $input_id . '" name="question_' . $index . '" value="' . $opt_index . '">';
-                    $output .= esc_html($option);
-                    $output .= '</label>';
+        if ($should_show_content('questions')) {
+            $output .= '<form class="kata-quiz-form">';
+            foreach ($kata_quiz_questions as $index => $question) {
+                $output .= '<div class="kata-quiz-question" data-question="' . $index . '">';
+                $output .= '<h4>' . esc_html($question['question']) . '</h4>';
+                
+                if (!empty($question['options'])) {
+                    foreach ($question['options'] as $opt_index => $option) {
+                        $input_id = $quiz_id . '-q' . $index . '-opt' . $opt_index;
+                        $output .= '<label for="' . $input_id . '">';
+                        $output .= '<input type="radio" id="' . $input_id . '" name="question_' . $index . '" value="' . $opt_index . '">';
+                        $output .= esc_html($option);
+                        $output .= '</label>';
+                    }
                 }
+                $output .= '</div>';
             }
-            $output .= '</div>';
+            
+            if ($should_show_content('results') && $atts['show_results'] === 'true') {
+                $output .= '<button type="button" class="kata-quiz-submit" onclick="kataSubmitQuiz(\'' . $quiz_id . '\')">Xem Kết Quả</button>';
+                $output .= '<div class="kata-quiz-results" style="display:none;"></div>';
+            }
+            
+            $output .= '</form>';
         }
-        
-        if ($atts['show_results'] === 'true') {
-            $output .= '<button type="button" class="kata-quiz-submit" onclick="kataSubmitQuiz(\'' . $quiz_id . '\')">Xem Kết Quả</button>';
-            $output .= '<div class="kata-quiz-results" style="display:none;"></div>';
-        }
-        
-        $output .= '</form>';
         
         // Add JavaScript data for quiz scoring
         $js_var_name = str_replace('-', '_', $quiz_id) . '_questions';
@@ -3305,7 +3393,17 @@ class KATA_SEO_Manager {
             'title' => 'Bình Chọn',
             'description' => '',
             'style' => 'default',
-            'show_results' => 'false'
+            'show_results' => 'false',
+            
+            // MODE 2: Content Display (poll is interactive UI)
+            'hide_content_title' => '',
+            'hide_content_description' => '',
+            'hide_content_options' => '',
+            'hide_content_results' => '',
+            'show_content_title' => '',
+            'show_content_description' => '',
+            'show_content_options' => '',
+            'show_content_results' => ''
         ), $atts, 'kata_poll');
         
         // If poll ID is provided, get from database
@@ -3334,10 +3432,27 @@ class KATA_SEO_Manager {
                 $poll->id
             ));
             
-            $output = '<div id="' . $poll_id . '" class="kata-poll-container kata-poll-' . esc_attr($atts['style']) . '" data-poll-id="' . $poll->id . '">';
-            $output .= '<h3 class="kata-poll-title">' . esc_html($poll->title) . '</h3>';
+            // MODE 2: Helper function for content visibility
+            $should_show_content = function($field_name) use ($atts) {
+                $show_key = 'show_content_' . $field_name;
+                $hide_key = 'hide_content_' . $field_name;
+                
+                if (!empty($atts[$show_key]) && $atts[$show_key] === 'true') {
+                    return true;
+                }
+                if (!empty($atts[$hide_key]) && $atts[$hide_key] === 'true') {
+                    return false;
+                }
+                return true; // Default: show all
+            };
             
-            if (!empty($poll->description)) {
+            $output = '<div id="' . $poll_id . '" class="kata-poll-container kata-poll-' . esc_attr($atts['style']) . '" data-poll-id="' . $poll->id . '">';
+            
+            if ($should_show_content('title')) {
+                $output .= '<h3 class="kata-poll-title">' . esc_html($poll->title) . '</h3>';
+            }
+            
+            if ($should_show_content('description') && !empty($poll->description)) {
                 $output .= '<p class="kata-poll-description">' . esc_html($poll->description) . '</p>';
             }
             
@@ -3533,7 +3648,17 @@ class KATA_SEO_Manager {
         // Parse and validate attributes
         $atts = shortcode_atts(array(
             'id' => 0,
-            'style' => 'default' // 'default' or 'simple'
+            'style' => 'default', // 'default' or 'simple'
+            
+            // MODE 2: Content Display (wheel is interactive UI)
+            'hide_content_title' => '',
+            'hide_content_wheel' => '',
+            'hide_content_button' => '',
+            'hide_content_result' => '',
+            'show_content_title' => '',
+            'show_content_wheel' => '',
+            'show_content_button' => '',
+            'show_content_result' => ''
         ), $atts, 'kata_wheel');
         
         $wheel_id = intval($atts['id']);
@@ -3971,30 +4096,57 @@ class KATA_SEO_Manager {
             'max_stars' => '5',
             'current_rating' => '0',
             'allow_rating' => 'true',
-            'show_average' => 'true'
+            'show_average' => 'true',
+            
+            // MODE 2: Content Display (rating is primarily UI, schema optional)
+            'hide_content_title' => '',
+            'hide_content_stars' => '',
+            'hide_content_average' => '',
+            'show_content_title' => '',
+            'show_content_stars' => '',
+            'show_content_average' => ''
         ), $atts, 'kata_rating');
         
         $rating_id = 'kata-rating-' . uniqid();
         $max_stars = intval($atts['max_stars']);
         $current_rating = floatval($atts['current_rating']);
         
+        // MODE 2: Helper function for content visibility
+        $should_show_content = function($field_name) use ($atts) {
+            $show_key = 'show_content_' . $field_name;
+            $hide_key = 'hide_content_' . $field_name;
+            
+            if (!empty($atts[$show_key]) && $atts[$show_key] === 'true') {
+                return true;
+            }
+            if (!empty($atts[$hide_key]) && $atts[$hide_key] === 'true') {
+                return false;
+            }
+            return true; // Default: show all
+        };
+        
         $output = '<div id="' . $rating_id . '" class="kata-rating-container">';
-        $output .= '<h4 class="kata-rating-title">' . esc_html($atts['title']) . '</h4>';
         
-        $output .= '<div class="kata-rating-stars" data-rating="' . $current_rating . '" data-max="' . $max_stars . '"';
-        if ($atts['allow_rating'] === 'true') {
-            $output .= ' onclick="kataSetRating(\'' . $rating_id . '\', event)"';
-        }
-        $output .= '>';
-        
-        for ($i = 1; $i <= $max_stars; $i++) {
-            $filled = ($i <= $current_rating) ? 'filled' : '';
-            $output .= '<span class="kata-rating-star ' . $filled . '" data-star="' . $i . '">★</span>';
+        if ($should_show_content('title')) {
+            $output .= '<h4 class="kata-rating-title">' . esc_html($atts['title']) . '</h4>';
         }
         
-        $output .= '</div>';
+        if ($should_show_content('stars')) {
+            $output .= '<div class="kata-rating-stars" data-rating="' . $current_rating . '" data-max="' . $max_stars . '"';
+            if ($atts['allow_rating'] === 'true') {
+                $output .= ' onclick="kataSetRating(\'' . $rating_id . '\', event)"';
+            }
+            $output .= '>';
+            
+            for ($i = 1; $i <= $max_stars; $i++) {
+                $filled = ($i <= $current_rating) ? 'filled' : '';
+                $output .= '<span class="kata-rating-star ' . $filled . '" data-star="' . $i . '">★</span>';
+            }
+            
+            $output .= '</div>';
+        }
         
-        if ($atts['show_average'] === 'true') {
+        if ($should_show_content('average') && $atts['show_average'] === 'true') {
             $output .= '<div class="kata-rating-average">';
             $output .= '<span class="kata-rating-score">' . number_format($current_rating, 1) . '</span>';
             $output .= '<span class="kata-rating-max">/' . $max_stars . '</span>';
@@ -4014,7 +4166,33 @@ class KATA_SEO_Manager {
             'description' => '',
             'address' => '',
             'phone' => '',
-            'email' => ''
+            'email' => '',
+            'show_content' => 'false', // Default: schema only
+            
+            // MODE 1: Schema Filtering
+            'schema_fields' => '',
+            'hide_url' => '',
+            'hide_logo' => '',
+            'hide_description' => '',
+            'hide_address' => '',
+            'hide_telephone' => '',
+            'hide_email' => '',
+            'show_url' => '',
+            'show_logo' => '',
+            'show_description' => '',
+            'show_address' => '',
+            'show_telephone' => '',
+            'show_email' => '',
+            
+            // MODE 2: Content Display
+            'hide_content_name' => '',
+            'hide_content_logo' => '',
+            'hide_content_description' => '',
+            'hide_content_contact' => '',
+            'show_content_name' => '',
+            'show_content_logo' => '',
+            'show_content_description' => '',
+            'show_content_contact' => ''
         ), $atts, 'kata_organization');
         
         if (empty($atts['name'])) {
@@ -4046,7 +4224,66 @@ class KATA_SEO_Manager {
             $schema['email'] = $atts['email'];
         }
         
-        $output = ''; // HTML only, schema stored separately
+        // MODE 1: Apply schema filtering
+        $custom_props = KATA_Schema_Customizer::parse_schema_attributes($atts, 'organization');
+        if (!empty($custom_props)) {
+            $schema = KATA_Schema_Customizer::filter_schema_output($schema, $custom_props);
+        }
+        
+        // MODE 2: Helper function for content visibility
+        $should_show_content = function($field_name) use ($atts) {
+            $show_key = 'show_content_' . $field_name;
+            $hide_key = 'hide_content_' . $field_name;
+            
+            if (!empty($atts[$show_key]) && $atts[$show_key] === 'true') {
+                return true;
+            }
+            if (!empty($atts[$hide_key]) && $atts[$hide_key] === 'true') {
+                return false;
+            }
+            return ($atts['show_content'] === 'true'); // Default based on show_content
+        };
+        
+        $output = '';
+        
+        // Optional HTML output
+        if ($atts['show_content'] === 'true') {
+            $output .= '<div class="kata-organization-container">';
+            
+            if ($should_show_content('logo') && !empty($atts['logo'])) {
+                $output .= '<div class="kata-organization-logo">';
+                $output .= '<img src="' . esc_url($atts['logo']) . '" alt="' . esc_attr($atts['name']) . '" />';
+                $output .= '</div>';
+            }
+            
+            if ($should_show_content('name')) {
+                $output .= '<h3 class="kata-organization-name">' . esc_html($atts['name']) . '</h3>';
+            }
+            
+            if ($should_show_content('description') && !empty($atts['description'])) {
+                $output .= '<p class="kata-organization-description">' . esc_html($atts['description']) . '</p>';
+            }
+            
+            if ($should_show_content('contact')) {
+                $output .= '<div class="kata-organization-contact">';
+                if (!empty($atts['address'])) {
+                    $output .= '<div class="kata-contact-item">📍 ' . esc_html($atts['address']) . '</div>';
+                }
+                if (!empty($atts['phone'])) {
+                    $output .= '<div class="kata-contact-item">📞 <a href="tel:' . esc_attr($atts['phone']) . '">' . esc_html($atts['phone']) . '</a></div>';
+                }
+                if (!empty($atts['email'])) {
+                    $output .= '<div class="kata-contact-item">✉️ <a href="mailto:' . esc_attr($atts['email']) . '">' . esc_html($atts['email']) . '</a></div>';
+                }
+                if (!empty($atts['url'])) {
+                    $output .= '<div class="kata-contact-item">🌐 <a href="' . esc_url($atts['url']) . '" target="_blank">' . esc_html($atts['url']) . '</a></div>';
+                }
+                $output .= '</div>';
+            }
+            
+            $output .= '</div>';
+        }
+        
         $this->store_shortcode_schema($schema, 'Organization'); // Schema stored for <head> output
         
         return $output;
@@ -4063,7 +4300,40 @@ class KATA_SEO_Manager {
             'price_range' => '',
             'description' => '',
             'image' => '',
-            'show_frontend' => 'true'  // Control whether to show frontend UI
+            'show_frontend' => 'true',  // Control whether to show frontend UI
+            
+            // MODE 1: Schema Filtering
+            'schema_fields' => '',
+            'hide_address' => '',
+            'hide_telephone' => '',
+            'hide_url' => '',
+            'hide_openinghours' => '',
+            'hide_pricerange' => '',
+            'hide_description' => '',
+            'hide_image' => '',
+            'show_address' => '',
+            'show_telephone' => '',
+            'show_url' => '',
+            'show_openinghours' => '',
+            'show_pricerange' => '',
+            'show_description' => '',
+            'show_image' => '',
+            
+            // MODE 2: Content Display
+            'hide_content_name' => '',
+            'hide_content_address' => '',
+            'hide_content_phone' => '',
+            'hide_content_hours' => '',
+            'hide_content_price' => '',
+            'hide_content_description' => '',
+            'hide_content_image' => '',
+            'show_content_name' => '',
+            'show_content_address' => '',
+            'show_content_phone' => '',
+            'show_content_hours' => '',
+            'show_content_price' => '',
+            'show_content_description' => '',
+            'show_content_image' => ''
         ), $atts, 'kata_localbusiness');
         
         if (empty($atts['name'])) {
@@ -4102,6 +4372,26 @@ class KATA_SEO_Manager {
             $schema['image'] = $atts['image'];
         }
         
+        // MODE 1: Apply schema filtering
+        $custom_props = KATA_Schema_Customizer::parse_schema_attributes($atts, 'localbusiness');
+        if (!empty($custom_props)) {
+            $schema = KATA_Schema_Customizer::filter_schema_output($schema, $custom_props);
+        }
+        
+        // MODE 2: Helper function for content visibility
+        $should_show_content = function($field_name) use ($atts) {
+            $show_key = 'show_content_' . $field_name;
+            $hide_key = 'hide_content_' . $field_name;
+            
+            if (!empty($atts[$show_key]) && $atts[$show_key] === 'true') {
+                return true;
+            }
+            if (!empty($atts[$hide_key]) && $atts[$hide_key] === 'true') {
+                return false;
+            }
+            return true; // Default: show all
+        };
+        
         $output = '';
         
         // Add JSON-LD schema
@@ -4118,38 +4408,47 @@ class KATA_SEO_Manager {
             $output .= '<div class="kata-schema-content">';
             
             // Business name
-            $output .= '<h3 class="kata-localbusiness-name" itemprop="name">' . esc_html($atts['name']) . '</h3>';
+            if ($should_show_content('name')) {
+                $output .= '<h3 class="kata-localbusiness-name" itemprop="name">' . esc_html($atts['name']) . '</h3>';
+            }
+            
+            // Image
+            if ($should_show_content('image') && !empty($atts['image'])) {
+                $output .= '<div class="kata-localbusiness-image">';
+                $output .= '<img src="' . esc_url($atts['image']) . '" alt="' . esc_attr($atts['name']) . '" itemprop="image" />';
+                $output .= '</div>';
+            }
             
             // Description
-            if (!empty($atts['description'])) {
+            if ($should_show_content('description') && !empty($atts['description'])) {
                 $output .= '<p class="kata-localbusiness-description" itemprop="description">' . esc_html($atts['description']) . '</p>';
             }
             
             // Business details
             $output .= '<div class="kata-localbusiness-details">';
             
-            if (!empty($atts['address'])) {
+            if ($should_show_content('address') && !empty($atts['address'])) {
                 $output .= '<div class="kata-localbusiness-address" itemprop="address">';
                 $output .= '<span class="dashicons dashicons-location"></span>';
                 $output .= '<span>' . esc_html($atts['address']) . '</span>';
                 $output .= '</div>';
             }
             
-            if (!empty($atts['phone'])) {
+            if ($should_show_content('phone') && !empty($atts['phone'])) {
                 $output .= '<div class="kata-localbusiness-phone" itemprop="telephone">';
                 $output .= '<span class="dashicons dashicons-phone"></span>';
                 $output .= '<a href="tel:' . esc_attr($atts['phone']) . '">' . esc_html($atts['phone']) . '</a>';
                 $output .= '</div>';
             }
             
-            if (!empty($atts['hours'])) {
+            if ($should_show_content('hours') && !empty($atts['hours'])) {
                 $output .= '<div class="kata-localbusiness-hours" itemprop="openingHours">';
                 $output .= '<span class="dashicons dashicons-clock"></span>';
                 $output .= '<span>' . esc_html($atts['hours']) . '</span>';
                 $output .= '</div>';
             }
             
-            if (!empty($atts['price_range'])) {
+            if ($should_show_content('price') && !empty($atts['price_range'])) {
                 $output .= '<div class="kata-localbusiness-price" itemprop="priceRange">';
                 $output .= '<span class="dashicons dashicons-money-alt"></span>';
                 $output .= '<span>' . esc_html($atts['price_range']) . '</span>';
@@ -4184,7 +4483,42 @@ class KATA_SEO_Manager {
             'date_posted' => '',
             'requirements' => '',
             'benefits' => '',
-            'show_frontend' => 'true'
+            'show_frontend' => 'true',
+            
+            // MODE 1: Schema Filtering
+            'schema_fields' => '',
+            'hide_hiringorganization' => '',
+            'hide_joblocation' => '',
+            'hide_description' => '',
+            'hide_basesalary' => '',
+            'hide_employmenttype' => '',
+            'hide_dateposted' => '',
+            'show_hiringorganization' => '',
+            'show_joblocation' => '',
+            'show_description' => '',
+            'show_basesalary' => '',
+            'show_employmenttype' => '',
+            'show_dateposted' => '',
+            
+            // MODE 2: Content Display
+            'hide_content_title' => '',
+            'hide_content_company' => '',
+            'hide_content_location' => '',
+            'hide_content_description' => '',
+            'hide_content_salary' => '',
+            'hide_content_type' => '',
+            'hide_content_date' => '',
+            'hide_content_requirements' => '',
+            'hide_content_benefits' => '',
+            'show_content_title' => '',
+            'show_content_company' => '',
+            'show_content_location' => '',
+            'show_content_description' => '',
+            'show_content_salary' => '',
+            'show_content_type' => '',
+            'show_content_date' => '',
+            'show_content_requirements' => '',
+            'show_content_benefits' => ''
         ), $atts, 'kata_jobposting');
         
         if (empty($atts['title']) || empty($atts['company'])) {
@@ -4227,6 +4561,26 @@ class KATA_SEO_Manager {
             $schema['datePosted'] = $atts['date_posted'];
         }
         
+        // MODE 1: Apply schema filtering
+        $custom_props = KATA_Schema_Customizer::parse_schema_attributes($atts, 'jobposting');
+        if (!empty($custom_props)) {
+            $schema = KATA_Schema_Customizer::filter_schema_output($schema, $custom_props);
+        }
+        
+        // MODE 2: Helper function for content visibility
+        $should_show_content = function($field_name) use ($atts) {
+            $show_key = 'show_content_' . $field_name;
+            $hide_key = 'hide_content_' . $field_name;
+            
+            if (!empty($atts[$show_key]) && $atts[$show_key] === 'true') {
+                return true;
+            }
+            if (!empty($atts[$hide_key]) && $atts[$hide_key] === 'true') {
+                return false;
+            }
+            return true; // Default: show all
+        };
+        
         $output = '';
         
         // Add JSON-LD schema
@@ -4243,18 +4597,22 @@ class KATA_SEO_Manager {
             $output .= '<div class="kata-schema-content">';
             
             // Job title
-            $output .= '<h3 class="kata-jobposting-title" itemprop="title">' . esc_html($atts['title']) . '</h3>';
+            if ($should_show_content('title')) {
+                $output .= '<h3 class="kata-jobposting-title" itemprop="title">' . esc_html($atts['title']) . '</h3>';
+            }
             
             // Company info
-            $output .= '<div class="kata-jobposting-company" itemprop="hiringOrganization" itemscope itemtype="https://schema.org/Organization">';
-            $output .= '<span class="dashicons dashicons-building"></span>';
-            $output .= '<span itemprop="name">' . esc_html($atts['company']) . '</span>';
-            $output .= '</div>';
+            if ($should_show_content('company')) {
+                $output .= '<div class="kata-jobposting-company" itemprop="hiringOrganization" itemscope itemtype="https://schema.org/Organization">';
+                $output .= '<span class="dashicons dashicons-building"></span>';
+                $output .= '<span itemprop="name">' . esc_html($atts['company']) . '</span>';
+                $output .= '</div>';
+            }
             
             // Job details
             $output .= '<div class="kata-jobposting-details">';
             
-            if (!empty($atts['location'])) {
+            if ($should_show_content('location') && !empty($atts['location'])) {
                 $output .= '<div class="kata-jobposting-location" itemprop="jobLocation" itemscope itemtype="https://schema.org/Place">';
                 $output .= '<span class="dashicons dashicons-location-alt"></span>';
                 $output .= '<span itemprop="address">' . esc_html($atts['location']) . '</span>';
@@ -4277,14 +4635,29 @@ class KATA_SEO_Manager {
                 $output .= '</div>';
             }
             
-            if (!empty($atts['salary'])) {
+            if ($should_show_content('salary') && !empty($atts['salary'])) {
                 $output .= '<div class="kata-jobposting-salary" itemprop="baseSalary" itemscope itemtype="https://schema.org/MonetaryAmount">';
                 $output .= '<span class="dashicons dashicons-money-alt"></span>';
                 $output .= '<span itemprop="value">' . esc_html($atts['salary']) . '</span>';
                 $output .= '</div>';
             }
             
-            if (!empty($atts['date_posted'])) {
+            if ($should_show_content('type') && !empty($atts['employment_type'])) {
+                $employment_types = array(
+                    'FULL_TIME' => 'Toàn thời gian',
+                    'PART_TIME' => 'Bán thời gian',
+                    'CONTRACTOR' => 'Hợp đồng',
+                    'TEMPORARY' => 'Tạm thời',
+                    'INTERN' => 'Thực tập'
+                );
+                $type_text = $employment_types[$atts['employment_type']] ?? $atts['employment_type'];
+                $output .= '<div class="kata-jobposting-type" itemprop="employmentType">';
+                $output .= '<span class="dashicons dashicons-businessman"></span>';
+                $output .= '<span>' . esc_html($type_text) . '</span>';
+                $output .= '</div>';
+            }
+            
+            if ($should_show_content('date') && !empty($atts['date_posted'])) {
                 $output .= '<div class="kata-jobposting-date" itemprop="datePosted">';
                 $output .= '<span class="dashicons dashicons-calendar"></span>';
                 $output .= '<span>Đăng ngày: ' . esc_html(date('d/m/Y', strtotime($atts['date_posted']))) . '</span>';
@@ -4294,7 +4667,7 @@ class KATA_SEO_Manager {
             $output .= '</div>'; // .kata-jobposting-details
             
             // Job description
-            if (!empty($atts['description'])) {
+            if ($should_show_content('description') && !empty($atts['description'])) {
                 $output .= '<div class="kata-jobposting-description" itemprop="description">';
                 $output .= '<h4>Mô tả công việc:</h4>';
                 $output .= '<p>' . wp_kses_post(nl2br($atts['description'])) . '</p>';
@@ -4302,7 +4675,7 @@ class KATA_SEO_Manager {
             }
             
             // Requirements
-            if (!empty($atts['requirements'])) {
+            if ($should_show_content('requirements') && !empty($atts['requirements'])) {
                 $output .= '<div class="kata-jobposting-requirements">';
                 $output .= '<h4>Yêu cầu:</h4>';
                 $output .= '<p>' . wp_kses_post(nl2br($atts['requirements'])) . '</p>';
@@ -4310,7 +4683,7 @@ class KATA_SEO_Manager {
             }
             
             // Benefits
-            if (!empty($atts['benefits'])) {
+            if ($should_show_content('benefits') && !empty($atts['benefits'])) {
                 $output .= '<div class="kata-jobposting-benefits">';
                 $output .= '<h4>Phúc lợi:</h4>';
                 $output .= '<p>' . wp_kses_post(nl2br($atts['benefits'])) . '</p>';
@@ -6933,7 +7306,58 @@ class KATA_SEO_Manager {
             'rating_count' => '',
             'enrollment_count' => '',
             'show_content' => 'true',
-            'show_schema' => 'true'
+            'show_schema' => 'true',
+            
+            // MODE 1: Schema Filtering
+            'schema_fields' => '',
+            'hide_description' => '',
+            'hide_provider' => '',
+            'hide_instructor' => '',
+            'hide_offers' => '',
+            'hide_timerequired' => '',
+            'hide_coursemode' => '',
+            'hide_educationallevel' => '',
+            'hide_inlanguage' => '',
+            'hide_about' => '',
+            'hide_teaches' => '',
+            'hide_coursererequisites' => '',
+            'hide_image' => '',
+            'hide_aggregaterating' => '',
+            'show_description' => '',
+            'show_provider' => '',
+            'show_instructor' => '',
+            'show_offers' => '',
+            'show_timerequired' => '',
+            'show_coursemode' => '',
+            'show_educationallevel' => '',
+            'show_inlanguage' => '',
+            'show_about' => '',
+            'show_teaches' => '',
+            'show_coursererequisites' => '',
+            'show_image' => '',
+            'show_aggregaterating' => '',
+            
+            // MODE 2: Content Display
+            'hide_content_title' => '',
+            'hide_content_description' => '',
+            'hide_content_image' => '',
+            'hide_content_provider' => '',
+            'hide_content_instructor' => '',
+            'hide_content_meta' => '',
+            'hide_content_price' => '',
+            'hide_content_skills' => '',
+            'hide_content_requirements' => '',
+            'hide_content_button' => '',
+            'show_content_title' => '',
+            'show_content_description' => '',
+            'show_content_image' => '',
+            'show_content_provider' => '',
+            'show_content_instructor' => '',
+            'show_content_meta' => '',
+            'show_content_price' => '',
+            'show_content_skills' => '',
+            'show_content_requirements' => '',
+            'show_content_button' => ''
         ), $atts, 'kata_course');
         
         if (empty($atts['name'])) {
@@ -7005,54 +7429,126 @@ class KATA_SEO_Manager {
             );
         }
         
+        // MODE 1: Apply schema filtering
+        $custom_props = KATA_Schema_Customizer::parse_schema_attributes($atts, 'course');
+        if (!empty($custom_props)) {
+            $schema = KATA_Schema_Customizer::filter_schema_output($schema, $custom_props);
+        }
+        
+        // MODE 2: Helper function for content visibility
+        $should_show_content = function($field_name) use ($atts) {
+            $show_key = 'show_content_' . $field_name;
+            $hide_key = 'hide_content_' . $field_name;
+            
+            if (!empty($atts[$show_key]) && $atts[$show_key] === 'true') {
+                return true;
+            }
+            if (!empty($atts[$hide_key]) && $atts[$hide_key] === 'true') {
+                return false;
+            }
+            return true; // Default: show all
+        };
+        
         $output = '';
         
         if ($atts['show_content'] === 'true') {
             $output .= '<div id="' . $course_id . '" class="kata-course-container">';
-            $output .= '<h2 class="kata-course-title">📚 ' . esc_html($atts['name']) . '</h2>';
             
-            if (!empty($atts['description'])) {
+            if ($should_show_content('title')) {
+                $output .= '<h2 class="kata-course-title">📚 ' . esc_html($atts['name']) . '</h2>';
+            }
+            
+            if ($should_show_content('description') && !empty($atts['description'])) {
                 $output .= '<p class="kata-course-description">' . esc_html($atts['description']) . '</p>';
             }
             
-            $output .= '<div class="kata-course-details">';
-            if (!empty($atts['provider'])) {
-                $output .= '<div class="kata-detail">Nhà cung cấp: <strong>' . esc_html($atts['provider']) . '</strong></div>';
+            if ($should_show_content('image') && !empty($atts['image'])) {
+                $output .= '<div class="kata-course-image">';
+                $output .= '<img src="' . esc_url($atts['image']) . '" alt="' . esc_attr($atts['name']) . '" />';
+                $output .= '</div>';
             }
-            if (!empty($atts['instructor'])) {
-                $output .= '<div class="kata-detail">Giảng viên: <strong>' . esc_html($atts['instructor']) . '</strong></div>';
-            }
-            if (!empty($atts['duration'])) {
-                $output .= '<div class="kata-detail">Thời lượng: <strong>' . esc_html($atts['duration']) . '</strong></div>';
-            }
-            if (!empty($atts['level'])) {
-                $level_text = array(
-                    'beginner' => '🟢 Cơ bản',
-                    'intermediate' => '🟡 Trung cấp',
-                    'advanced' => '🔴 Nâng cao'
-                );
-                $output .= '<div class="kata-detail">Trình độ: <strong>' . ($level_text[$atts['level']] ?? $atts['level']) . '</strong></div>';
-            }
-            if (!empty($atts['price'])) {
-                $formatted_price = ($atts['price'] === '0') ? 'Miễn phí' : number_format($atts['price'], 0, ',', '.') . ' ' . $atts['currency'];
-                $output .= '<div class="kata-detail">Học phí: <strong>' . $formatted_price . '</strong></div>';
-            }
-            $output .= '</div>';
             
-            if (!empty($atts['skills'])) {
+            if ($should_show_content('provider') || $should_show_content('instructor') || $should_show_content('meta')) {
+                $output .= '<div class="kata-course-details">';
+                if ($should_show_content('provider') && !empty($atts['provider'])) {
+                    $output .= '<div class="kata-detail">Nhà cung cấp: <strong>' . esc_html($atts['provider']) . '</strong></div>';
+                }
+                if ($should_show_content('instructor') && !empty($atts['instructor'])) {
+                    $output .= '<div class="kata-detail">Giảng viên: <strong>' . esc_html($atts['instructor']) . '</strong></div>';
+                }
+                if ($should_show_content('meta')) {
+                    if (!empty($atts['duration'])) {
+                        $output .= '<div class="kata-detail">Thời lượng: <strong>' . esc_html($atts['duration']) . '</strong></div>';
+                    }
+                    if (!empty($atts['level'])) {
+                        $level_text = array(
+                            'beginner' => '🟢 Cơ bản',
+                            'intermediate' => '🟡 Trung cấp',
+                            'advanced' => '🔴 Nâng cao'
+                        );
+                        $output .= '<div class="kata-detail">Trình độ: <strong>' . ($level_text[$atts['level']] ?? $atts['level']) . '</strong></div>';
+                    }
+                    if (!empty($atts['course_mode'])) {
+                        $mode_text = array(
+                            'online' => '💻 Trực tuyến',
+                            'offline' => '🏢 Trực tiếp',
+                            'blended' => '🔀 Kết hợp'
+                        );
+                        $output .= '<div class="kata-detail">Hình thức: <strong>' . ($mode_text[$atts['course_mode']] ?? $atts['course_mode']) . '</strong></div>';
+                    }
+                    if (!empty($atts['enrollment_count'])) {
+                        $output .= '<div class="kata-detail">👥 Học viên: <strong>' . number_format($atts['enrollment_count']) . '</strong></div>';
+                    }
+                    if (!empty($atts['rating_value'])) {
+                        $output .= '<div class="kata-detail">⭐ Đánh giá: <strong>' . $atts['rating_value'] . '/5</strong>';
+                        if (!empty($atts['rating_count'])) {
+                            $output .= ' (' . number_format($atts['rating_count']) . ' lượt)';
+                        }
+                        $output .= '</div>';
+                    }
+                }
+                $output .= '</div>'; // Close kata-course-details
+            }
+            
+            if ($should_show_content('price') && !empty($atts['price'])) {
+                $formatted_price = ($atts['price'] === '0') ? 'Miễn phí' : number_format($atts['price'], 0, ',', '.') . ' ' . $atts['currency'];
+                $output .= '<div class="kata-course-price">';
+                $output .= '<h3>💰 Học Phí</h3>';
+                $output .= '<div class="kata-price-amount">' . $formatted_price . '</div>';
+                $output .= '</div>';
+            }
+            
+            if ($should_show_content('skills') && !empty($atts['skills'])) {
                 $skills = array_map('trim', explode(',', $atts['skills']));
-                $output .= '<div class="kata-course-skills"><h4>🎯 Kỹ năng học được:</h4><ul>';
+                $output .= '<div class="kata-course-skills">';
+                $output .= '<h4>🎯 Kỹ Năng Học Được:</h4>';
+                $output .= '<ul>';
                 foreach ($skills as $skill) {
                     $output .= '<li>' . esc_html($skill) . '</li>';
                 }
-                $output .= '</ul></div>';
+                $output .= '</ul>';
+                $output .= '</div>';
             }
             
-            if (!empty($atts['url'])) {
-                $output .= '<div class="kata-course-action"><a href="' . esc_url($atts['url']) . '" class="kata-enroll-button" target="_blank">📝 Đăng Ký Học</a></div>';
+            if ($should_show_content('requirements') && !empty($atts['requirements'])) {
+                $requirements = array_map('trim', explode(',', $atts['requirements']));
+                $output .= '<div class="kata-course-requirements">';
+                $output .= '<h4>📋 Yêu Cầu:</h4>';
+                $output .= '<ul>';
+                foreach ($requirements as $req) {
+                    $output .= '<li>' . esc_html($req) . '</li>';
+                }
+                $output .= '</ul>';
+                $output .= '</div>';
             }
             
-            $output .= '</div>';
+            if ($should_show_content('button') && !empty($atts['url'])) {
+                $output .= '<div class="kata-course-action">';
+                $output .= '<a href="' . esc_url($atts['url']) . '" class="kata-enroll-button" target="_blank">📝 Đăng Ký Học</a>';
+                $output .= '</div>';
+            }
+            
+            $output .= '</div>'; // Close kata-course-container
         }
         
         if ($atts['show_schema'] === 'true') {

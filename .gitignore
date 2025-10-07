@@ -12,7 +12,7 @@
 !.gitignore
 
 # Allow README.md if exists
-!README.md
+#!README.md
 
 !autogit.sh
 
@@ -112,7 +112,7 @@ setup*.sh
 
 # Documentation files (project specific)
 # *.md
-!README.md
+#!README.md
 
 # Other project files
 cgi-bin/

@@ -109,7 +109,7 @@ setup*.sh
 autogit.sh
 
 # Documentation files (project specific)
-*.md
+# *.md
 !README.md
 
 # Other project files

@@ -12,7 +12,10 @@
 !.gitignore
 
 # Allow README.md if exists
-#!README.md
+!README.md
+
+# Allow all .md files
+!*.md
 
 !autogit.sh
 
@@ -111,11 +114,12 @@ setup*.sh
 # autogit.sh
 
 # Documentation files (project specific)
-# *.md
-#!README.md
+# *.md - REMOVED to allow .md files
+!README.md
 
 # Other project files
 cgi-bin/
 .well-known/
 phpinfo.php
 dmca-validation.html
+

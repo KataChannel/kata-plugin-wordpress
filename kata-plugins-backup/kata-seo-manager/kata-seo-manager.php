@@ -137,6 +137,9 @@ class KATA_SEO_Manager {
         add_action('wp_ajax_kata_load_user_interactions', array($this, 'ajax_load_user_interactions'));
         add_action('wp_ajax_nopriv_kata_load_user_interactions', array($this, 'ajax_load_user_interactions'));
         
+        // Demo content management
+        add_action('wp_ajax_kata_delete_demo_content', array($this, 'ajax_delete_demo_content'));
+        
         // Poll AJAX handlers
         add_action('wp_ajax_kata_submit_poll_vote', array($this, 'ajax_submit_poll_vote'));
         add_action('wp_ajax_nopriv_kata_submit_poll_vote', array($this, 'ajax_submit_poll_vote'));
@@ -975,36 +978,101 @@ class KATA_SEO_Manager {
     /**
      * Output schema markup
      */
+    /**
+     * Output schema markup in <head>
+     * Renders schemas from both database table and post meta
+     */
     public function output_schema_markup() {
         if (!is_singular()) {
             return;
         }
         
-        global $post;
-        $schemas = get_post_meta($post->ID, '_kata_seo_schemas', true);
-        
-        if (empty($schemas) || !is_array($schemas)) {
-            return;
-        }
-        
+        global $post, $wpdb;
+        $output_schemas = array();
         $generator = new KATA_SEO_Schema_Generator();
         
-        foreach ($schemas as $schema_data) {
-            $result = $generator->generate($schema_data['type'], $schema_data['data']);
-            
-            // Handle both array return and direct schema
-            $schema_markup = null;
-            if (is_array($result) && isset($result['schema'])) {
-                $schema_markup = $result['schema'];
-            } elseif (is_array($result) && !isset($result['errors'])) {
-                $schema_markup = $result;
+        // SOURCE 1: Get schemas from post meta (legacy support)
+        $post_meta_schemas = get_post_meta($post->ID, '_kata_seo_schemas', true);
+        if (!empty($post_meta_schemas) && is_array($post_meta_schemas)) {
+            foreach ($post_meta_schemas as $schema_data) {
+                $result = $generator->generate($schema_data['type'], $schema_data['data']);
+                
+                // Handle both array return and direct schema
+                $schema_markup = null;
+                if (is_array($result) && isset($result['schema'])) {
+                    $schema_markup = $result['schema'];
+                } elseif (is_array($result) && !isset($result['errors'])) {
+                    $schema_markup = $result;
+                }
+                
+                if ($schema_markup && !is_wp_error($schema_markup)) {
+                    $output_schemas[] = $schema_markup;
+                }
             }
+        }
+        
+        // SOURCE 2: Get schemas from database table (new system)
+        $table_name = $wpdb->prefix . 'kata_schemas';
+        if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name) {
+            $current_post_type = get_post_type();
+            $current_post_id = get_the_ID();
             
-            if ($schema_markup && !is_wp_error($schema_markup)) {
+            // Get all active schemas
+            $db_schemas = $wpdb->get_results("SELECT * FROM $table_name WHERE status = 'active' ORDER BY id ASC");
+            
+            if (!empty($db_schemas)) {
+                foreach ($db_schemas as $schema) {
+                    $schema_data = json_decode($schema->schema_data, true);
+                    if (empty($schema_data)) {
+                        continue;
+                    }
+                    
+                    // Check if schema should be output on current page
+                    $should_output = false;
+                    
+                    // Check auto-insert by post type
+                    if (isset($schema_data['auto_insert']) && $schema_data['auto_insert']) {
+                        if (isset($schema_data['post_types']) && is_array($schema_data['post_types'])) {
+                            if (in_array($current_post_type, $schema_data['post_types'])) {
+                                $should_output = true;
+                            }
+                        }
+                    }
+                    
+                    // Check specific post assignment
+                    if (!$should_output && isset($schema_data['assigned_posts']) && is_array($schema_data['assigned_posts'])) {
+                        if (in_array($current_post_id, $schema_data['assigned_posts'])) {
+                            $should_output = true;
+                        }
+                    }
+                    
+                    if ($should_output) {
+                        $result = $generator->generate($schema->schema_type, $schema_data);
+                        
+                        $schema_markup = null;
+                        if (is_array($result) && isset($result['schema'])) {
+                            $schema_markup = $result['schema'];
+                        } elseif (is_array($result) && !isset($result['errors'])) {
+                            $schema_markup = $result;
+                        }
+                        
+                        if ($schema_markup && !is_wp_error($schema_markup)) {
+                            $output_schemas[] = $schema_markup;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // OUTPUT all collected schemas
+        if (!empty($output_schemas)) {
+            echo "\n<!-- KATA SEO Schema Markup -->\n";
+            foreach ($output_schemas as $schema_markup) {
                 echo '<script type="application/ld+json">' . "\n";
                 echo json_encode($schema_markup, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
                 echo "\n" . '</script>' . "\n";
             }
+            echo "<!-- /KATA SEO Schema Markup -->\n\n";
         }
     }
     
@@ -9001,8 +9069,14 @@ class KATA_SEO_Manager {
                 error_log('KATA SEO Demo Content - Stray output detected: ' . $stray_output);
             }
             
+            // Restart output buffering for clean JSON response
+            ob_start();
+            
             // Generate all demo content
             $results = KATA_SEO_Demo_Content::generate_all();
+            
+            // Clean any remaining output
+            ob_end_clean();
             
             if ($results['success']) {
                 wp_send_json_success($results);
@@ -9024,6 +9098,107 @@ class KATA_SEO_Manager {
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => $e->getTraceAsString()
+            ));
+        }
+    }
+    
+    /**
+     * AJAX: Delete demo content (admin only)
+     */
+    public function ajax_delete_demo_content() {
+        // Start output buffering
+        if (ob_get_level()) {
+            ob_clean();
+        }
+        ob_start();
+        
+        // Set headers
+        header('Content-Type: application/json');
+        
+        // Check nonce
+        if (!check_ajax_referer('kata_ajax_nonce', 'nonce', false)) {
+            ob_end_clean();
+            wp_send_json_error(array('message' => 'Security check failed'));
+            return;
+        }
+        
+        // Check admin permission
+        if (!current_user_can('manage_options')) {
+            ob_end_clean();
+            wp_send_json_error(array('message' => 'Unauthorized'));
+            return;
+        }
+        
+        try {
+            global $wpdb;
+            
+            $deleted_counts = array(
+                'schemas' => 0,
+                'user_interactions' => 0,
+                'polls' => 0,
+                'poll_votes' => 0,
+                'wheels' => 0,
+                'wheel_prizes' => 0,
+                'wheel_spins' => 0
+            );
+            
+            // Delete schemas with demo flag
+            $result = $wpdb->query(
+                "DELETE FROM {$wpdb->prefix}kata_schemas WHERE is_demo = 1"
+            );
+            $deleted_counts['schemas'] = $result ? $result : 0;
+            
+            // Delete user interactions (all demo data)
+            $result = $wpdb->query(
+                "DELETE FROM {$wpdb->prefix}kata_user_interactions WHERE 1=1"
+            );
+            $deleted_counts['user_interactions'] = $result ? $result : 0;
+            
+            // Delete poll votes first (foreign key)
+            $result = $wpdb->query(
+                "DELETE FROM {$wpdb->prefix}kata_poll_votes WHERE poll_id IN (SELECT id FROM {$wpdb->prefix}kata_polls WHERE is_demo = 1)"
+            );
+            $deleted_counts['poll_votes'] = $result ? $result : 0;
+            
+            // Delete polls with demo flag
+            $result = $wpdb->query(
+                "DELETE FROM {$wpdb->prefix}kata_polls WHERE is_demo = 1"
+            );
+            $deleted_counts['polls'] = $result ? $result : 0;
+            
+            // Delete wheel spins first
+            $result = $wpdb->query(
+                "DELETE FROM {$wpdb->prefix}kata_wheel_spins WHERE wheel_id IN (SELECT id FROM {$wpdb->prefix}kata_wheels WHERE is_demo = 1)"
+            );
+            $deleted_counts['wheel_spins'] = $result ? $result : 0;
+            
+            // Delete wheel prizes
+            $result = $wpdb->query(
+                "DELETE FROM {$wpdb->prefix}kata_wheel_prizes WHERE wheel_id IN (SELECT id FROM {$wpdb->prefix}kata_wheels WHERE is_demo = 1)"
+            );
+            $deleted_counts['wheel_prizes'] = $result ? $result : 0;
+            
+            // Delete wheels with demo flag
+            $result = $wpdb->query(
+                "DELETE FROM {$wpdb->prefix}kata_wheels WHERE is_demo = 1"
+            );
+            $deleted_counts['wheels'] = $result ? $result : 0;
+            
+            // Clear any output
+            ob_end_clean();
+            
+            wp_send_json_success(array(
+                'message' => 'Đã xóa dữ liệu mẫu thành công!',
+                'deleted' => $deleted_counts,
+                'total' => array_sum($deleted_counts)
+            ));
+            
+        } catch (Exception $e) {
+            ob_end_clean();
+            wp_send_json_error(array(
+                'message' => 'Lỗi: ' . $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ));
         }
     }

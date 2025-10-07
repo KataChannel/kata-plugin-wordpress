@@ -341,3 +341,150 @@
         max-height: 95vh;
     }
 }
+
+/* ========================================
+   QUICK ACTIONS CARD
+   ======================================== */
+
+.kata-quick-actions-card {
+    margin-bottom: 24px;
+}
+
+.kata-quick-actions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kata-quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+}
+
+.kata-quick-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.kata-quick-action-btn:hover::before {
+    left: 100%;
+}
+
+.kata-quick-action-btn:hover {
+    border-color: #2563eb;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    transform: translateY(-2px);
+}
+
+.kata-quick-action-btn:active {
+    transform: translateY(0);
+}
+
+.kata-quick-action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.kata-quick-action-btn.kata-danger {
+    border-color: #fee2e2;
+}
+
+.kata-quick-action-btn.kata-danger:hover {
+    border-color: #dc2626;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+}
+
+.kata-quick-action-btn.kata-danger .kata-quick-action-icon {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #dc2626;
+}
+
+.kata-quick-action-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    border-radius: 10px;
+    color: #2563eb;
+}
+
+.kata-quick-action-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.kata-quick-action-content {
+    flex: 1;
+}
+
+.kata-quick-action-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.kata-quick-action-desc {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* Spinner for loading state */
+.kata-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(37, 99, 235, 0.1);
+    border-radius: 50%;
+    border-top-color: #2563eb;
+    animation: kata-spin 0.8s linear infinite;
+}
+
+@keyframes kata-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Quick Actions */
+@media (max-width: 782px) {
+    .kata-quick-action-btn {
+        padding: 14px;
+    }
+    
+    .kata-quick-action-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .kata-quick-action-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .kata-quick-action-title {
+        font-size: 13px;
+    }
+    
+    .kata-quick-action-desc {
+        font-size: 11px;
+    }
+}

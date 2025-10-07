@@ -330,6 +330,119 @@
     // Initialize on document ready
     $(document).ready(function() {
         KataSEO.init();
+        
+        // Quick Actions: Generate Demo Content
+        $('#kata-generate-demo-btn').on('click', function(e) {
+            e.preventDefault();
+            
+            var $btn = $(this);
+            var originalHtml = $btn.html();
+            
+            if (!confirm('Bạn có chắc muốn tạo dữ liệu mẫu?\n\nĐiều này sẽ tạo:\n- 26 schema types mẫu\n- 5 polls mẫu\n- 3 wheels mẫu\n- User interactions mẫu')) {
+                return;
+            }
+            
+            // Disable button and show loading
+            $btn.prop('disabled', true).html(
+                '<div class="kata-quick-action-icon"><div class="kata-spinner"></div></div>' +
+                '<div class="kata-quick-action-content">' +
+                '<div class="kata-quick-action-title">Đang tạo...</div>' +
+                '<div class="kata-quick-action-desc">Vui lòng đợi</div>' +
+                '</div>'
+            );
+            
+            $.ajax({
+                url: kata_ajax.url,
+                type: 'POST',
+                data: {
+                    action: 'kata_generate_demo_content',
+                    nonce: kata_ajax.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('✅ Tạo dữ liệu mẫu thành công!\n\n' +
+                              'Schemas: ' + (response.data.schemas_created || 0) + '\n' +
+                              'Polls: ' + (response.data.polls_created || 0) + '\n' +
+                              'Wheels: ' + (response.data.wheels_created || 0) + '\n' +
+                              'User Interactions: ' + (response.data.interactions_created || 0));
+                        location.reload();
+                    } else {
+                        alert('❌ Lỗi: ' + (response.data.message || 'Không thể tạo dữ liệu mẫu'));
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', {xhr, status, error});
+                    var errorMsg = 'Lỗi kết nối';
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        errorMsg = response.data?.message || errorMsg;
+                    } catch(e) {
+                        errorMsg = 'Parse error: ' + xhr.responseText.substring(0, 200);
+                    }
+                    alert('❌ ' + errorMsg);
+                    $btn.prop('disabled', false).html(originalHtml);
+                }
+            });
+        });
+        
+        // Quick Actions: Delete Demo Content
+        $('#kata-delete-demo-btn').on('click', function(e) {
+            e.preventDefault();
+            
+            var $btn = $(this);
+            var originalHtml = $btn.html();
+            
+            if (!confirm('⚠️ CẢNH BÁO: Bạn có chắc muốn XÓA tất cả dữ liệu mẫu?\n\nĐiều này sẽ xóa:\n- Tất cả schemas demo\n- Tất cả polls demo\n- Tất cả wheels demo\n- Tất cả user interactions\n\nHành động này KHÔNG THỂ HOÀN TÁC!')) {
+                return;
+            }
+            
+            // Double confirm
+            if (!confirm('Xác nhận lần 2: Bạn THỰC SỰ muốn xóa tất cả dữ liệu mẫu?')) {
+                return;
+            }
+            
+            // Disable button and show loading
+            $btn.prop('disabled', true).html(
+                '<div class="kata-quick-action-icon"><div class="kata-spinner"></div></div>' +
+                '<div class="kata-quick-action-content">' +
+                '<div class="kata-quick-action-title">Đang xóa...</div>' +
+                '<div class="kata-quick-action-desc">Vui lòng đợi</div>' +
+                '</div>'
+            );
+            
+            $.ajax({
+                url: kata_ajax.url,
+                type: 'POST',
+                data: {
+                    action: 'kata_delete_demo_content',
+                    nonce: kata_ajax.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        var deleted = response.data.deleted || {};
+                        alert('✅ Xóa dữ liệu mẫu thành công!\n\n' +
+                              'Schemas: ' + (deleted.schemas || 0) + '\n' +
+                              'Polls: ' + (deleted.polls || 0) + '\n' +
+                              'Poll Votes: ' + (deleted.poll_votes || 0) + '\n' +
+                              'Wheels: ' + (deleted.wheels || 0) + '\n' +
+                              'Wheel Prizes: ' + (deleted.wheel_prizes || 0) + '\n' +
+                              'Wheel Spins: ' + (deleted.wheel_spins || 0) + '\n' +
+                              'User Interactions: ' + (deleted.user_interactions || 0) + '\n\n' +
+                              'Tổng cộng: ' + (response.data.total || 0) + ' records');
+                        location.reload();
+                    } else {
+                        alert('❌ Lỗi: ' + (response.data.message || 'Không thể xóa dữ liệu mẫu'));
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('AJAX Error:', {xhr, status, error});
+                    alert('❌ Lỗi kết nối: ' + error);
+                    $btn.prop('disabled', false).html(originalHtml);
+                }
+            });
+        });
     });
     
 })(jQuery);

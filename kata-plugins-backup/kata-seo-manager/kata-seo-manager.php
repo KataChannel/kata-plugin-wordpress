@@ -118,6 +118,9 @@ class KATA_SEO_Manager {
         register_activation_hook(__FILE__, array($this, 'activate'));
         register_deactivation_hook(__FILE__, array($this, 'deactivate'));
         
+        // Initialize Admin UI for Schema Customization
+        KATA_Schema_Admin_UI::init();
+        
         // Admin menu
         add_action('admin_menu', array($this, 'add_admin_menu'));
         

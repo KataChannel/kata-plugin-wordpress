@@ -108,7 +108,7 @@ test*.php
 # Development scripts
 fix*.sh
 setup*.sh
-autogit.sh
+# autogit.sh
 
 # Documentation files (project specific)
 # *.md

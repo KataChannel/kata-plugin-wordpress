@@ -115,11 +115,6 @@ class KataSchema_Generator {
         // Get enabled schema types
         $enabled_schemas = get_option('kata_schema_enabled_schemas', array('article', 'breadcrumb'));
         
-        // Ensure $enabled_schemas is an array
-        if (!is_array($enabled_schemas)) {
-            $enabled_schemas = array('article', 'breadcrumb');
-        }
-        
         foreach ($enabled_schemas as $schema_type) {
             if ($this->should_generate_schema($schema_type)) {
                 $schema = $this->generate_schema(null, $schema_type);

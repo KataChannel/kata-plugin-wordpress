@@ -47,11 +47,6 @@ class KataSchemaMarkup {
     private $schema_generator;
     
     /**
-     * Generator instance (compatibility)
-     */
-    public $generator;
-    
-    /**
      * Get instance
      */
     public static function get_instance() {
@@ -143,56 +138,41 @@ class KataSchemaMarkup {
         
         // Schema templates table
         $table_name = $wpdb->prefix . 'kata_schema_templates';
+        $sql = "CREATE TABLE $table_name (
+            id int(11) NOT NULL AUTO_INCREMENT,
+            name varchar(255) NOT NULL,
+            type varchar(100) NOT NULL,
+            schema_data longtext NOT NULL,
+            post_types text,
+            conditions text,
+            status varchar(20) DEFAULT 'active',
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            KEY type (type),
+            KEY status (status),
+            KEY post_types (post_types(100))
+        ) $charset_collate;";
         
-        // Check if table exists first
-        if ($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
-            $sql = "CREATE TABLE $table_name (
-                id int(11) NOT NULL AUTO_INCREMENT,
-                name varchar(255) NOT NULL,
-                type varchar(100) NOT NULL,
-                schema_data longtext NOT NULL,
-                post_types text,
-                conditions text,
-                status varchar(20) DEFAULT 'active',
-                created_at datetime DEFAULT CURRENT_TIMESTAMP,
-                updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY (id),
-                KEY type (type),
-                KEY status (status),
-                KEY post_types (post_types(100))
-            ) $charset_collate;";
-            
-            require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-            dbDelta($sql);
-        }
+        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+        dbDelta($sql);
         
         // Schema cache table for performance
         $cache_table = $wpdb->prefix . 'kata_schema_cache';
+        $cache_sql = "CREATE TABLE $cache_table (
+            id int(11) NOT NULL AUTO_INCREMENT,
+            post_id int(11) NOT NULL,
+            schema_type varchar(100) NOT NULL,
+            schema_json longtext NOT NULL,
+            hash varchar(32) NOT NULL,
+            created_at datetime DEFAULT CURRENT_TIMESTAMP,
+            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            PRIMARY KEY (id),
+            UNIQUE KEY post_schema (post_id, schema_type),
+            KEY hash (hash)
+        ) $charset_collate;";
         
-        // Check if cache table exists first
-        if ($wpdb->get_var("SHOW TABLES LIKE '$cache_table'") != $cache_table) {
-            $cache_sql = "CREATE TABLE $cache_table (
-                id int(11) NOT NULL AUTO_INCREMENT,
-                post_id int(11) NOT NULL,
-                schema_type varchar(100) NOT NULL,
-                schema_json longtext NOT NULL,
-                hash varchar(32) NOT NULL,
-                created_at datetime DEFAULT CURRENT_TIMESTAMP,
-                updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY (id),
-                UNIQUE KEY post_schema (post_id, schema_type),
-                KEY hash (hash)
-            ) $charset_collate;";
-            
-            dbDelta($cache_sql);
-        }
-        
-        // Log table creation results for debugging
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            $templates_exists = $wpdb->get_var("SHOW TABLES LIKE '$table_name'") == $table_name;
-            $cache_exists = $wpdb->get_var("SHOW TABLES LIKE '$cache_table'") == $cache_table;
-            error_log("Kata Schema Tables - Templates: " . ($templates_exists ? 'OK' : 'FAILED') . ", Cache: " . ($cache_exists ? 'OK' : 'FAILED'));
-        }
+        dbDelta($cache_sql);
     }
     
     /**
@@ -329,9 +309,6 @@ class KataSchemaMarkup {
         // Initialize schema generator
         $this->schema_generator = new KataSchema_Generator();
         
-        // Add compatibility for older property name
-        $this->generator = $this->schema_generator;
-        
         // Initialize admin if in admin area
         if (is_admin()) {
             new KataSchema_Admin();
@@ -454,34 +431,8 @@ class KataSchemaMarkup {
      * Render meta box
      */
     public function render_meta_box($post) {
-        // Get current post meta values
-        $schema_enabled = get_post_meta($post->ID, '_kata_schema_enabled', true);
-        $schema_type = get_post_meta($post->ID, '_kata_schema_type', true);
-        $custom_schema = get_post_meta($post->ID, '_kata_custom_schema', true);
-        
-        // Set defaults if empty
-        if (empty($schema_type)) {
-            $schema_type = 'Article';
-        }
-        
-        // Get schema types from generator
-        if (isset($this->schema_generator)) {
-            $schema_types = $this->schema_generator->get_schema_types();
-        } else {
-            $schema_types = array();
-        }
-        
-        // Get generated schema data for preview
-        $schema_data = '';
-        if ($schema_enabled && isset($this->schema_generator)) {
-            $generated_schema = $this->schema_generator->generate_schema($post->ID, $schema_type);
-            if ($generated_schema) {
-                $schema_data = wp_json_encode($generated_schema, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-            }
-        }
-        
         // Include meta box template
-        include KATA_SCHEMA_PLUGIN_PATH . 'templates/admin/post-metabox.php';
+        include KATA_SCHEMA_PLUGIN_PATH . 'templates/meta-box.php';
     }
     
     /**

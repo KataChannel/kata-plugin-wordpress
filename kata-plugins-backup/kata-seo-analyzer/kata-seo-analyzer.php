@@ -518,14 +518,9 @@ class KataSEOAnalyzer {
             return;
         }
         
-        // Prevent infinite loops - don't auto-analyze if we're already in an analysis
-        if (defined('KATA_SEO_ANALYZING') && KATA_SEO_ANALYZING) {
-            return;
-        }
-        
-        // Auto-analyze on save (scheduled to avoid recursion)
+        // Auto-analyze on save
         if (get_option('kata_seo_auto_analyze', true)) {
-            wp_schedule_single_event(time() + 5, 'kata_seo_analyze_post', array($post_id));
+            $this->analyzer->analyzePost($post_id);
         }
     }
     

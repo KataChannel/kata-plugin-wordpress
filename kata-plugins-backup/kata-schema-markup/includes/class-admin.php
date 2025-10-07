@@ -267,83 +267,8 @@ class KataSchema_Admin {
      * Dashboard page
      */
     public function admin_dashboard_page() {
-        try {
-            $stats = $this->get_dashboard_stats();
-            include dirname(__FILE__) . '/../templates/admin/dashboard.php';
-        } catch (Exception $e) {
-            echo '<div class="notice notice-error"><p>';
-            echo '<strong>' . __('Dashboard Error:', 'kata-schema-markup') . '</strong> ';
-            echo esc_html($e->getMessage());
-            echo '</p><p>';
-            echo __('Trying to fix database tables...', 'kata-schema-markup');
-            echo '</p></div>';
-            
-            // Try to fix the issue
-            $this->fix_dashboard_issues();
-            
-            // Show basic dashboard without stats
-            $stats = $this->get_fallback_stats();
-            include dirname(__FILE__) . '/../templates/admin/dashboard.php';
-        }
-    }
-    
-    /**
-     * Fix dashboard issues
-     */
-    private function fix_dashboard_issues() {
-        global $wpdb;
-        
-        // Check and create missing tables
-        $cache_table = $wpdb->prefix . 'kata_schema_cache';
-        $templates_table = $wpdb->prefix . 'kata_schema_templates';
-        
-        $cache_exists = $wpdb->get_var("SHOW TABLES LIKE '$cache_table'") === $cache_table;
-        $templates_exists = $wpdb->get_var("SHOW TABLES LIKE '$templates_table'") === $templates_table;
-        
-        if (!$cache_exists) {
-            $this->create_cache_table_if_missing();
-        }
-        
-        if (!$templates_exists) {
-            $this->create_templates_table_if_missing();
-        }
-        
-        // Set admin notice
-        add_action('admin_notices', function() {
-            echo '<div class="notice notice-success is-dismissible">';
-            echo '<p>' . __('Database tables have been checked and created if missing.', 'kata-schema-markup') . '</p>';
-            echo '</div>';
-        });
-    }
-    
-    /**
-     * Create templates table if missing
-     */
-    private function create_templates_table_if_missing() {
-        global $wpdb;
-        
-        $charset_collate = $wpdb->get_charset_collate();
-        $table_name = $wpdb->prefix . 'kata_schema_templates';
-        
-        $sql = "CREATE TABLE $table_name (
-            id int(11) NOT NULL AUTO_INCREMENT,
-            name varchar(255) NOT NULL,
-            type varchar(100) NOT NULL,
-            description text,
-            schema_data longtext NOT NULL,
-            post_types text,
-            conditions text,
-            status varchar(20) DEFAULT 'active',
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY (id),
-            KEY type (type),
-            KEY status (status),
-            KEY post_types (post_types(100))
-        ) $charset_collate;";
-        
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($sql);
+        $stats = $this->get_dashboard_stats();
+        include dirname(__FILE__) . '/../templates/admin/dashboard.php';
     }
     
     /**
@@ -391,97 +316,45 @@ class KataSchema_Admin {
     }
     
     /**
-     * Get dashboard statistics
+     * Get dashboard stats
      */
     private function get_dashboard_stats() {
         global $wpdb;
         
         $stats = array();
         
-        try {
-            // Total posts with schema
-            $stats['posts_with_schema'] = $wpdb->get_var(
-                "SELECT COUNT(*) FROM {$wpdb->postmeta} 
-                 WHERE meta_key = '_kata_schema_enabled' AND meta_value = '1'"
-            );
-            
-            // Schema types usage
-            $stats['schema_types'] = $wpdb->get_results(
-                "SELECT meta_value as type, COUNT(*) as count 
-                 FROM {$wpdb->postmeta} 
-                 WHERE meta_key = '_kata_schema_type' 
-                 GROUP BY meta_value 
-                 ORDER BY count DESC"
-            );
-            
-            // Cache stats - with table existence check
-            $cache_table = $wpdb->prefix . 'kata_schema_cache';
-            $table_exists = $wpdb->get_var("SHOW TABLES LIKE '$cache_table'") === $cache_table;
-            
-            if ($table_exists) {
-                $stats['cached_schemas'] = $wpdb->get_var("SELECT COUNT(*) FROM $cache_table");
-            } else {
-                $stats['cached_schemas'] = 0;
-                // Try to create table if it doesn't exist
-                $this->create_cache_table_if_missing();
-            }
-            
-            // Recent activity
-            $stats['recent_posts'] = $wpdb->get_results(
-                "SELECT p.ID, p.post_title, p.post_type, pm.meta_value as schema_type
-                 FROM {$wpdb->posts} p
-                 LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_kata_schema_type'
-                 LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_kata_schema_enabled'
-                 WHERE pm2.meta_value = '1'
-                 AND p.post_status = 'publish'
-                 ORDER BY p.post_modified DESC
-                 LIMIT 10"
-            );
-            
-        } catch (Exception $e) {
-            error_log('Kata Schema Dashboard Stats Error: ' . $e->getMessage());
-            return $this->get_fallback_stats();
-        }
+        // Total posts with schema
+        $stats['posts_with_schema'] = $wpdb->get_var(
+            "SELECT COUNT(*) FROM {$wpdb->postmeta} 
+             WHERE meta_key = '_kata_schema_enabled' AND meta_value = '1'"
+        );
+        
+        // Schema types usage
+        $stats['schema_types'] = $wpdb->get_results(
+            "SELECT meta_value as type, COUNT(*) as count 
+             FROM {$wpdb->postmeta} 
+             WHERE meta_key = '_kata_schema_type' 
+             GROUP BY meta_value 
+             ORDER BY count DESC"
+        );
+        
+        // Cache stats
+        $cache_table = $wpdb->prefix . 'kata_schema_cache';
+        $stats['cached_schemas'] = $wpdb->get_var("SELECT COUNT(*) FROM $cache_table");
+        
+        // Recent activity
+        $stats['recent_posts'] = $wpdb->get_results(
+            "SELECT p.ID, p.post_title, p.post_type, pm.meta_value as schema_type
+             FROM {$wpdb->posts} p
+             LEFT JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id AND pm.meta_key = '_kata_schema_type'
+             LEFT JOIN {$wpdb->postmeta} pm2 ON p.ID = pm2.post_id AND pm2.meta_key = '_kata_schema_enabled'
+             WHERE pm2.meta_value = '1'
+             AND p.post_status = 'publish'
+             ORDER BY p.post_modified DESC
+             LIMIT 10"
+        );
         
         return $stats;
-    }
-    
-    /**
-     * Get fallback stats when database queries fail
-     */
-    private function get_fallback_stats() {
-        return array(
-            'posts_with_schema' => 0,
-            'schema_types' => array(),
-            'cached_schemas' => 0,
-            'recent_posts' => array()
-        );
-    }
-    
-    /**
-     * Create cache table if missing
-     */
-    private function create_cache_table_if_missing() {
-        global $wpdb;
-        
-        $charset_collate = $wpdb->get_charset_collate();
-        $cache_table = $wpdb->prefix . 'kata_schema_cache';
-        
-        $cache_sql = "CREATE TABLE $cache_table (
-            id int(11) NOT NULL AUTO_INCREMENT,
-            post_id int(11) NOT NULL,
-            schema_type varchar(100) NOT NULL,
-            schema_json longtext NOT NULL,
-            hash varchar(32) NOT NULL,
-            created_at datetime DEFAULT CURRENT_TIMESTAMP,
-            updated_at datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-            PRIMARY KEY (id),
-            UNIQUE KEY post_schema (post_id, schema_type),
-            KEY hash (hash)
-        ) $charset_collate;";
-        
-        require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-        dbDelta($cache_sql);
     }
     
     /**

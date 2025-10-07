@@ -68,26 +68,8 @@ class KataSEO_Analyzer {
      * Analyze a post comprehensively
      */
     public function analyzePost($post_id, $analysis_type = 'content') {
-        // Multiple layers of recursion prevention
-        static $analyzing_posts = array();
-        
-        // Check if we're already analyzing this specific post
-        if (isset($analyzing_posts[$post_id])) {
-            return false;
-        }
-        
-        // Prevent infinite loops during analysis
-        if (defined('KATA_SEO_ANALYZING') && KATA_SEO_ANALYZING) {
-            return false;
-        }
-        
-        // Set flags to prevent recursion
-        define('KATA_SEO_ANALYZING', true);
-        $analyzing_posts[$post_id] = true;
-        
         $post = get_post($post_id);
         if (!$post) {
-            unset($analyzing_posts[$post_id]);
             return new WP_Error('invalid_post', __('Invalid post ID', 'kata-seo-analyzer'));
         }
         
@@ -116,26 +98,9 @@ class KataSEO_Analyzer {
         // Save results to database
         $this->saveAnalysisResults($post_id, $analysis_type, $score, $results);
         
-        // Update post meta (remove actions temporarily to prevent recursion)
-        $removed_actions = array();
-        
-        // Remove save_post actions to prevent infinite loops
-        global $wp_filter;
-        if (isset($wp_filter['save_post'])) {
-            $removed_actions = $wp_filter['save_post']->callbacks;
-            $wp_filter['save_post']->callbacks = array();
-        }
-        
+        // Update post meta
         update_post_meta($post_id, '_kata_seo_score', $score);
         update_post_meta($post_id, '_kata_seo_last_analysis', current_time('mysql'));
-        
-        // Restore the actions
-        if (isset($wp_filter['save_post']) && !empty($removed_actions)) {
-            $wp_filter['save_post']->callbacks = $removed_actions;
-        }
-        
-        // Clean up flags
-        unset($analyzing_posts[$post_id]);
         
         return array(
             'score' => $score,
@@ -150,17 +115,9 @@ class KataSEO_Analyzer {
     private function analyzeContent($post) {
         $analysis = array();
         
-        // Store current shortcodes and temporarily remove them to prevent recursion
-        global $shortcode_tags;
-        $original_shortcodes = $shortcode_tags;
-        $shortcode_tags = array(); // Temporarily disable all shortcodes
-        
         $content = $post->post_content;
         $title = $post->post_title;
         $excerpt = $post->post_excerpt;
-        
-        // Strip shortcodes from content safely without processing them
-        $content = strip_shortcodes($content);
         
         // Get SEO meta data (support for popular SEO plugins)
         $seo_title = $this->getSEOTitle($post);
@@ -211,9 +168,6 @@ class KataSEO_Analyzer {
         
         // 15. Schema Markup
         $analysis['schema_markup'] = $this->analyzeSchemaMarkup($post);
-        
-        // Restore original shortcodes
-        $shortcode_tags = $original_shortcodes;
         
         return $analysis;
     }

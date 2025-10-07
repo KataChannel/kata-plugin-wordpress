@@ -11,12 +11,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-// Use schema types from passed variable or fallback to generator
-if (!isset($schema_types) && isset($this->generator)) {
-    $schema_types = $this->generator->get_schema_types();
-} elseif (!isset($schema_types)) {
-    $schema_types = array();
-}
+$schema_types = $this->generator->get_schema_types();
 ?>
 
 <div id="kata-schema-metabox">

@@ -10,35 +10,6 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-
-// Ensure stats array exists and has required keys
-if (!isset($stats) || !is_array($stats)) {
-    $stats = array(
-        'posts_with_schema' => 0,
-        'schema_types' => array(),
-        'cached_schemas' => 0,
-        'recent_posts' => array()
-    );
-}
-
-// Set defaults for missing keys
-$stats = wp_parse_args($stats, array(
-    'posts_with_schema' => 0,
-    'schema_types' => array(),
-    'cached_schemas' => 0,
-    'recent_posts' => array()
-));
-
-// Chart colors for schema types
-$chart_colors = array(
-    '#0073aa', '#00a32a', '#d63638', '#ffb900',
-    '#826eb4', '#ea4335', '#fbbc04', '#34a853'
-);
-
-function get_chart_color_for_type($type, $index = 0) {
-    global $chart_colors;
-    return isset($chart_colors[$index]) ? $chart_colors[$index] : $chart_colors[0];
-}
 ?>
 
 <div class="wrap kata-schema-dashboard">
@@ -51,7 +22,7 @@ function get_chart_color_for_type($type, $index = 0) {
                 <span class="dashicons dashicons-admin-post"></span>
             </div>
             <div class="stat-content">
-                <h3><?php echo number_format(intval($stats['posts_with_schema'])); ?></h3>
+                <h3><?php echo number_format($stats['posts_with_schema']); ?></h3>
                 <p><?php _e('Posts with Schema', 'kata-schema-markup'); ?></p>
             </div>
         </div>
@@ -61,7 +32,7 @@ function get_chart_color_for_type($type, $index = 0) {
                 <span class="dashicons dashicons-category"></span>
             </div>
             <div class="stat-content">
-                <h3><?php echo count((array)$stats['schema_types']); ?></h3>
+                <h3><?php echo count($stats['schema_types']); ?></h3>
                 <p><?php _e('Schema Types Used', 'kata-schema-markup'); ?></p>
             </div>
         </div>
@@ -71,7 +42,7 @@ function get_chart_color_for_type($type, $index = 0) {
                 <span class="dashicons dashicons-performance"></span>
             </div>
             <div class="stat-content">
-                <h3><?php echo number_format(intval($stats['cached_schemas'])); ?></h3>
+                <h3><?php echo number_format($stats['cached_schemas']); ?></h3>
                 <p><?php _e('Cached Schemas', 'kata-schema-markup'); ?></p>
             </div>
         </div>
@@ -99,9 +70,9 @@ function get_chart_color_for_type($type, $index = 0) {
                     </div>
                     
                     <div class="kata-schema-chart-legend">
-                        <?php foreach ($stats['schema_types'] as $index => $type_data): ?>
+                        <?php foreach ($stats['schema_types'] as $type_data): ?>
                             <div class="legend-item">
-                                <span class="legend-color" style="background-color: <?php echo get_chart_color_for_type($type_data->type, $index); ?>"></span>
+                                <span class="legend-color" style="background-color: <?php echo $this->get_chart_color($type_data->type); ?>"></span>
                                 <span class="legend-label"><?php echo esc_html(ucfirst($type_data->type)); ?></span>
                                 <span class="legend-count"><?php echo number_format($type_data->count); ?></span>
                             </div>
@@ -703,3 +674,13 @@ jQuery(document).ready(function($) {
     }
 });
 </script>
+
+<?php
+// Helper method for chart colors
+if (!method_exists($this, 'get_chart_color')) {
+    echo '<script>
+    // Add chart color method if not exists
+    var chartColors = ["#0073aa", "#00a32a", "#d63638", "#ffb900", "#826eb4", "#ea4335", "#fbbc04", "#34a853"];
+    </script>';
+}
+?>

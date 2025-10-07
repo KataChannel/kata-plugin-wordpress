@@ -14,6 +14,8 @@
 # Allow README.md if exists
 !README.md
 
+!autogit.sh
+
 # =================================================================
 # Additional ignores within kata-plugins-backup (if needed)
 # =================================================================

@@ -2531,7 +2531,7 @@ class KATA_SEO_Manager {
         
         // Add JSON-LD Schema
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'Recipe'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
         
         return $output;
@@ -2818,7 +2818,7 @@ class KATA_SEO_Manager {
         $output .= '</video>';
         $output .= '</div>';
         
-        $this->store_shortcode_schema($schema, 'VideoObject'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         return $output;
     }
@@ -3708,8 +3708,7 @@ class KATA_SEO_Manager {
             $schema['email'] = $atts['email'];
         }
         
-        $output = ''; // HTML only, schema stored separately
-        $this->store_shortcode_schema($schema, 'Organization'); // Schema stored for <head> output
+        $output = '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         return $output;
     }
@@ -3767,7 +3766,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'LocalBusiness'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -3892,7 +3891,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'JobPosting'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -4055,7 +4054,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'ImageObject'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -4226,7 +4225,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'MathSolver'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -4384,7 +4383,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'PracticeProblem'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -4637,7 +4636,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'SiteNavigationElement'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -4800,7 +4799,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'WebPage'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -4987,7 +4986,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'ItemList'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -5229,7 +5228,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'Dataset'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -5514,7 +5513,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'DiscussionForumPosting'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -5713,7 +5712,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'Question'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -5922,7 +5921,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'EmployerAggregateRating'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -6163,7 +6162,7 @@ class KATA_SEO_Manager {
         $output = '';
         
         // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'ProfilePage'); // Schema stored for <head> output
+        $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -6428,7 +6427,7 @@ class KATA_SEO_Manager {
         }
         
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'Review'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
         
         return $output;
@@ -6568,7 +6567,7 @@ class KATA_SEO_Manager {
         }
         
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'Movie'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
         
         return $output;
@@ -6718,7 +6717,7 @@ class KATA_SEO_Manager {
         }
         
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'Course'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
         
         return $output;
@@ -6844,7 +6843,7 @@ class KATA_SEO_Manager {
         }
         
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'SoftwareApplication'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
         
         return $output;
@@ -6992,7 +6991,7 @@ class KATA_SEO_Manager {
         }
         
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'Book'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
         
         return $output;
@@ -7109,7 +7108,7 @@ class KATA_SEO_Manager {
         }
         
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'WebPage'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
         
         return $output;
@@ -7193,7 +7192,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'Person'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;
@@ -7257,7 +7256,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'Service'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;
@@ -7326,7 +7325,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'Vehicle'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;
@@ -7389,7 +7388,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'RealEstateListing'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;
@@ -7456,7 +7455,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'Restaurant'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;
@@ -7517,7 +7516,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'MedicalOrganization'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;
@@ -7583,7 +7582,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'CreativeWork'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;
@@ -7647,7 +7646,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'VideoObject'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;
@@ -7711,7 +7710,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'NewsArticle'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;
@@ -7777,7 +7776,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'BlogPosting'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;
@@ -7839,7 +7838,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'WebSite'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;
@@ -7895,7 +7894,7 @@ class KATA_SEO_Manager {
         }
 
         if ($atts['show_schema'] === 'true') {
-            $this->store_shortcode_schema($schema, 'BreadcrumbList'); // Schema stored for <head> output
+            $output .= '<script type="application/ld+json">' . wp_json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '</script>';
         }
 
         return $output;

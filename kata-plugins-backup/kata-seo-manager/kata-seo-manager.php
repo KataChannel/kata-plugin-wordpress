@@ -4714,7 +4714,57 @@ class KATA_SEO_Manager {
             'keywords' => '',
             'location' => '',
             'camera_model' => '',
-            'show_frontend' => 'true'
+            'show_frontend' => 'true',
+            'show_schema' => 'true',
+            
+            // MODE 1: Schema Filtering (filter JSON-LD output)
+            'schema_fields' => '', // "field1,field2,-field3"
+            'hide_name' => '',
+            'hide_description' => '',
+            'hide_width' => '',
+            'hide_height' => '',
+            'hide_encodingFormat' => '',
+            'hide_contentSize' => '',
+            'hide_creator' => '',
+            'hide_dateCreated' => '',
+            'hide_keywords' => '',
+            'hide_contentLocation' => '',
+            'show_name' => '',
+            'show_description' => '',
+            'show_width' => '',
+            'show_height' => '',
+            'show_encodingFormat' => '',
+            'show_contentSize' => '',
+            'show_creator' => '',
+            'show_dateCreated' => '',
+            'show_keywords' => '',
+            'show_contentLocation' => '',
+            
+            // MODE 2: Content Display (hide HTML elements)
+            'hide_content_preview' => '',
+            'hide_content_name' => '',
+            'hide_content_description' => '',
+            'hide_content_technical' => '',
+            'hide_content_size' => '',
+            'hide_content_dimensions' => '',
+            'hide_content_format' => '',
+            'hide_content_camera' => '',
+            'hide_content_creator' => '',
+            'hide_content_date' => '',
+            'hide_content_location' => '',
+            'hide_content_keywords' => '',
+            'show_content_preview' => '',
+            'show_content_name' => '',
+            'show_content_description' => '',
+            'show_content_technical' => '',
+            'show_content_size' => '',
+            'show_content_dimensions' => '',
+            'show_content_format' => '',
+            'show_content_camera' => '',
+            'show_content_creator' => '',
+            'show_content_date' => '',
+            'show_content_location' => '',
+            'show_content_keywords' => ''
         ), $atts, 'kata_image_metadata');
         
         if (empty($atts['url'])) {
@@ -4768,8 +4818,35 @@ class KATA_SEO_Manager {
         
         $output = '';
         
-        // Add JSON-LD schema
-        $this->store_shortcode_schema($schema, 'ImageObject'); // Schema stored for <head> output
+        // Store schema for output in <head> instead of inline
+        if ($atts['show_schema'] === 'true') {
+            // Parse schema customization attributes
+            $custom_props = KATA_Schema_Customizer::parse_schema_attributes($atts, 'image');
+            
+            // Filter schema based on customization settings
+            $schema = KATA_Schema_Customizer::filter_schema_output($schema, $custom_props);
+            
+            $this->store_shortcode_schema($schema, 'ImageObject');
+        }
+        
+        // MODE 2: Helper function for content visibility
+        $should_show_content = function($field_name) use ($atts) {
+            $hide_key = 'hide_content_' . $field_name;
+            $show_key = 'show_content_' . $field_name;
+            
+            // If show_X is specified, use it (explicit show takes precedence)
+            if (isset($atts[$show_key]) && $atts[$show_key] !== '') {
+                return $atts[$show_key] === 'true' || $atts[$show_key] === '1';
+            }
+            
+            // If hide_X is specified, invert it
+            if (isset($atts[$hide_key]) && $atts[$hide_key] !== '') {
+                return !($atts[$hide_key] === 'true' || $atts[$hide_key] === '1');
+            }
+            
+            // Default: show all content
+            return true;
+        };
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
@@ -4781,70 +4858,81 @@ class KATA_SEO_Manager {
             
             $output .= '<div class="kata-schema-content">';
             
-            // Image preview
-            $output .= '<div class="kata-image-preview">';
-            $output .= '<img src="' . esc_url($atts['url']) . '" alt="' . esc_attr($atts['name']) . '" itemprop="url" class="kata-image-thumbnail" loading="lazy" />';
-            $output .= '</div>';
+            // Image preview (check hide_content_preview)
+            if ($should_show_content('preview')) {
+                $output .= '<div class="kata-image-preview">';
+                $output .= '<img src="' . esc_url($atts['url']) . '" alt="' . esc_attr($atts['name']) . '" itemprop="url" class="kata-image-thumbnail" loading="lazy" />';
+                $output .= '</div>';
+            }
             
             // Image metadata
             $output .= '<div class="kata-image-metadata">';
             
-            if (!empty($atts['name'])) {
+            // Name (check hide_content_name)
+            if (!empty($atts['name']) && $should_show_content('name')) {
                 $output .= '<h3 class="kata-image-name" itemprop="name">' . esc_html($atts['name']) . '</h3>';
             }
             
-            if (!empty($atts['description'])) {
+            // Description (check hide_content_description)
+            if (!empty($atts['description']) && $should_show_content('description')) {
                 $output .= '<div class="kata-image-description" itemprop="description">';
                 $output .= '<p>' . esc_html($atts['description']) . '</p>';
                 $output .= '</div>';
             }
             
-            // Technical details
-            $output .= '<div class="kata-image-technical-details">';
-            $output .= '<h4>Chi tiết kỹ thuật</h4>';
-            $output .= '<div class="kata-metadata-grid">';
-            
-            if (!empty($atts['width']) && !empty($atts['height'])) {
-                $output .= '<div class="kata-metadata-item">';
-                $output .= '<span class="dashicons dashicons-image-crop"></span>';
-                $output .= '<span class="kata-metadata-label">Kích thước:</span>';
-                $output .= '<span class="kata-metadata-value" itemprop="width">' . esc_html($atts['width']) . '</span> × ';
-                $output .= '<span class="kata-metadata-value" itemprop="height">' . esc_html($atts['height']) . '</span> px';
-                $output .= '</div>';
+            // Technical details (check hide_content_technical)
+            if ($should_show_content('technical')) {
+                $output .= '<div class="kata-image-technical-details">';
+                $output .= '<h4>Chi tiết kỹ thuật</h4>';
+                $output .= '<div class="kata-metadata-grid">';
+                
+                // Dimensions (check hide_content_dimensions)
+                if (!empty($atts['width']) && !empty($atts['height']) && $should_show_content('dimensions')) {
+                    $output .= '<div class="kata-metadata-item">';
+                    $output .= '<span class="dashicons dashicons-image-crop"></span>';
+                    $output .= '<span class="kata-metadata-label">Kích thước:</span>';
+                    $output .= '<span class="kata-metadata-value" itemprop="width">' . esc_html($atts['width']) . '</span> × ';
+                    $output .= '<span class="kata-metadata-value" itemprop="height">' . esc_html($atts['height']) . '</span> px';
+                    $output .= '</div>';
+                }
+                
+                // Size (check hide_content_size)
+                if (!empty($atts['size']) && $should_show_content('size')) {
+                    $output .= '<div class="kata-metadata-item">';
+                    $output .= '<span class="dashicons dashicons-media-document"></span>';
+                    $output .= '<span class="kata-metadata-label">Dung lượng:</span>';
+                    $output .= '<span class="kata-metadata-value" itemprop="contentSize">' . esc_html($atts['size']) . '</span>';
+                    $output .= '</div>';
+                }
+                
+                // Format (check hide_content_format)
+                if (!empty($atts['encoding_format']) && $should_show_content('format')) {
+                    $output .= '<div class="kata-metadata-item">';
+                    $output .= '<span class="dashicons dashicons-media-code"></span>';
+                    $output .= '<span class="kata-metadata-label">Định dạng:</span>';
+                    $output .= '<span class="kata-metadata-value" itemprop="encodingFormat">' . esc_html(strtoupper($atts['encoding_format'])) . '</span>';
+                    $output .= '</div>';
+                }
+                
+                // Camera (check hide_content_camera)
+                if (!empty($atts['camera_model']) && $should_show_content('camera')) {
+                    $output .= '<div class="kata-metadata-item">';
+                    $output .= '<span class="dashicons dashicons-camera"></span>';
+                    $output .= '<span class="kata-metadata-label">Thiết bị:</span>';
+                    $output .= '<span class="kata-metadata-value">' . esc_html($atts['camera_model']) . '</span>';
+                    $output .= '</div>';
+                }
+                
+                $output .= '</div>'; // .kata-metadata-grid
+                $output .= '</div>'; // .kata-image-technical-details
             }
-            
-            if (!empty($atts['size'])) {
-                $output .= '<div class="kata-metadata-item">';
-                $output .= '<span class="dashicons dashicons-media-document"></span>';
-                $output .= '<span class="kata-metadata-label">Dung lượng:</span>';
-                $output .= '<span class="kata-metadata-value" itemprop="contentSize">' . esc_html($atts['size']) . '</span>';
-                $output .= '</div>';
-            }
-            
-            if (!empty($atts['encoding_format'])) {
-                $output .= '<div class="kata-metadata-item">';
-                $output .= '<span class="dashicons dashicons-media-code"></span>';
-                $output .= '<span class="kata-metadata-label">Định dạng:</span>';
-                $output .= '<span class="kata-metadata-value" itemprop="encodingFormat">' . esc_html(strtoupper($atts['encoding_format'])) . '</span>';
-                $output .= '</div>';
-            }
-            
-            if (!empty($atts['camera_model'])) {
-                $output .= '<div class="kata-metadata-item">';
-                $output .= '<span class="dashicons dashicons-camera"></span>';
-                $output .= '<span class="kata-metadata-label">Thiết bị:</span>';
-                $output .= '<span class="kata-metadata-value">' . esc_html($atts['camera_model']) . '</span>';
-                $output .= '</div>';
-            }
-            
-            $output .= '</div>'; // .kata-metadata-grid
-            $output .= '</div>'; // .kata-image-technical-details
             
             // Creator and date info
             if (!empty($atts['creator']) || !empty($atts['date_created']) || !empty($atts['location'])) {
                 $output .= '<div class="kata-image-info">';
                 
-                if (!empty($atts['creator'])) {
+                // Creator (check hide_content_creator)
+                if (!empty($atts['creator']) && $should_show_content('creator')) {
                     $output .= '<div class="kata-metadata-item" itemprop="creator" itemscope itemtype="https://schema.org/Person">';
                     $output .= '<span class="dashicons dashicons-admin-users"></span>';
                     $output .= '<span class="kata-metadata-label">Tác giả:</span>';
@@ -4852,7 +4940,8 @@ class KATA_SEO_Manager {
                     $output .= '</div>';
                 }
                 
-                if (!empty($atts['date_created'])) {
+                // Date (check hide_content_date)
+                if (!empty($atts['date_created']) && $should_show_content('date')) {
                     $output .= '<div class="kata-metadata-item">';
                     $output .= '<span class="dashicons dashicons-calendar-alt"></span>';
                     $output .= '<span class="kata-metadata-label">Ngày tạo:</span>';
@@ -4860,7 +4949,8 @@ class KATA_SEO_Manager {
                     $output .= '</div>';
                 }
                 
-                if (!empty($atts['location'])) {
+                // Location (check hide_content_location)
+                if (!empty($atts['location']) && $should_show_content('location')) {
                     $output .= '<div class="kata-metadata-item" itemprop="contentLocation" itemscope itemtype="https://schema.org/Place">';
                     $output .= '<span class="dashicons dashicons-location-alt"></span>';
                     $output .= '<span class="kata-metadata-label">Vị trí:</span>';
@@ -4871,8 +4961,8 @@ class KATA_SEO_Manager {
                 $output .= '</div>'; // .kata-image-info
             }
             
-            // Keywords/Tags
-            if (!empty($atts['keywords'])) {
+            // Keywords/Tags (check hide_content_keywords)
+            if (!empty($atts['keywords']) && $should_show_content('keywords')) {
                 $output .= '<div class="kata-image-keywords">';
                 $output .= '<h4>Từ khóa</h4>';
                 $keywords_array = explode(',', $atts['keywords']);

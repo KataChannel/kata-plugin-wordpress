@@ -809,6 +809,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
         // Function to show preview and insert schema
         function showPreviewAndInsert(key) {
             var contentFields = {
+                // Schema types with MODE 2 content visibility controls
                 article: ['title', 'author', 'category', 'tags', 'excerpt', 'reading_time', 'word_count', 'date', 'image'],
                 recipe: ['name', 'description', 'image', 'ingredients', 'instructions', 'time', 'nutrition', 'rating'],
                 product: ['name', 'description', 'image', 'price', 'brand', 'category', 'availability', 'rating', 'features'],
@@ -817,8 +818,25 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                 video: ['title', 'description', 'thumbnail', 'video'],
                 organization: ['name', 'logo', 'description', 'contact'],
                 localbusiness: ['name', 'address', 'phone', 'hours', 'price', 'description', 'image'],
+                local_business: ['name', 'address', 'contact', 'hours', 'description', 'services', 'rating'],
                 jobposting: ['title', 'company', 'location', 'description', 'salary', 'type', 'date', 'requirements', 'benefits'],
-                image_metadata: ['preview', 'name', 'description', 'technical', 'size', 'dimensions', 'format', 'camera', 'creator', 'date', 'location', 'keywords']
+                job_posting: ['title', 'company', 'location', 'description', 'salary', 'requirements', 'benefits'],
+                image_metadata: ['preview', 'name', 'description', 'technical', 'size', 'dimensions', 'format', 'camera', 'creator', 'date', 'location', 'keywords'],
+                course: ['name', 'description', 'provider', 'instructor', 'price', 'duration', 'level', 'skills'],
+                software: ['name', 'description', 'version', 'operating_system', 'category', 'price', 'size'],
+                book: ['name', 'author', 'description', 'publisher', 'date', 'pages', 'genre', 'isbn'],
+                movie: ['name', 'description', 'director', 'actor', 'genre', 'duration', 'release', 'rating'],
+                webpage: ['name', 'description', 'keywords', 'breadcrumb'],
+                carousel: ['title', 'images', 'captions', 'links', 'controls', 'indicators'],
+                dataset: ['title', 'description', 'headers', 'data', 'creator', 'date', 'license', 'keywords'],
+                forum: ['title', 'description', 'topics', 'moderator', 'category', 'stats'],
+                eduqa: ['question', 'answer', 'category', 'difficulty', 'author', 'tags', 'related'],
+                employer_rating: ['company', 'rating', 'breakdown', 'reviews', 'size', 'industry'],
+                profile_page: ['name', 'title', 'bio', 'skills', 'experience', 'education', 'contact', 'social', 'achievements'],
+                math_solver: ['problem', 'solution', 'steps', 'category', 'difficulty', 'explanation', 'formula'],
+                practice_problem: ['title', 'question', 'options', 'answer', 'explanation', 'category', 'difficulty', 'hints'],
+                sitelinks: ['title', 'description', 'links', 'breadcrumb', 'site'],
+                speakable: ['title', 'content', 'summary', 'language', 'voice_type']
             };
             
             var fields = contentFields[key] || [];

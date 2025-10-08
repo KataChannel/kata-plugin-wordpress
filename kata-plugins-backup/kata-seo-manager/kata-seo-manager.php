@@ -326,15 +326,7 @@ class KATA_SEO_Manager {
         $version = KATA_SEO_MANAGER_VERSION;
         
         // Enqueue TinyMCE helper scripts cho post editor
-        if (in_array($hook, array('post.php', 'post-new.php'))) {
-            // Schema builder dialog CSS
-            wp_enqueue_style(
-                'kata-schema-builder-dialog',
-                $plugin_url . 'assets/css/schema-builder-dialog.css',
-                array(),
-                $version
-            );
-            
+        if (in_array($hook, array('post.php', 'post-new.php'))) {            
             // Schema attributes config
             wp_enqueue_script(
                 'kata-schema-attributes',

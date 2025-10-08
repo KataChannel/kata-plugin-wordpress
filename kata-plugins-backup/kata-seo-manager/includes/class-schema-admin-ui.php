@@ -18,7 +18,7 @@ class KATA_Schema_Admin_UI {
      * Initialize admin UI
      */
     public static function init() {
-        add_action('admin_menu', array(__CLASS__, 'add_admin_page'));
+        add_action('admin_menu', array(__CLASS__, 'add_admin_page'), 20); // Priority 20 to run after main menu
         add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_scripts'));
         add_action('wp_ajax_kata_save_schema_preset', array(__CLASS__, 'save_preset'));
         add_action('wp_ajax_kata_load_schema_preset', array(__CLASS__, 'load_preset'));
@@ -51,34 +51,12 @@ class KATA_Schema_Admin_UI {
         // Enqueue CSS
         wp_enqueue_style(
             'kata-schema-admin-ui',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/css/schema-admin-ui.css',
-            array(),
-            '1.1.0'
-        );
-        
-        // Enqueue JavaScript
-        wp_enqueue_script(
-            'kata-schema-admin-ui',
-            plugin_dir_url(dirname(__FILE__)) . 'assets/js/schema-admin-ui.js',
-            array('jquery'),
-            '1.1.0',
-            true
-        );
-        
-        // Pass data to JavaScript
-        wp_localize_script('kata-schema-admin-ui', 'kataSchemaAdmin', array(
-            'ajaxUrl' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('kata_schema_admin'),
-            'defaultProperties' => self::get_default_properties()
-        ));
-        
-        wp_enqueue_style(
-            'kata-schema-admin-ui',
             KATA_SEO_MANAGER_PLUGIN_URL . 'assets/css/schema-admin-ui.css',
             array(),
             KATA_SEO_MANAGER_VERSION
         );
         
+        // Enqueue JavaScript
         wp_enqueue_script(
             'kata-schema-admin-ui',
             KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/schema-admin-ui.js',
@@ -87,6 +65,7 @@ class KATA_Schema_Admin_UI {
             true
         );
         
+        // Pass data to JavaScript
         wp_localize_script('kata-schema-admin-ui', 'kataSchemaAdmin', array(
             'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce' => wp_create_nonce('kata_schema_admin_nonce'),

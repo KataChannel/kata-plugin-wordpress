@@ -7474,7 +7474,7 @@ class KATA_SEO_Manager {
             if ($should_show_content('provider') || $should_show_content('instructor') || $should_show_content('meta')) {
                 $output .= '<div class="kata-course-details">';
                 if ($should_show_content('provider') && !empty($atts['provider'])) {
-                    $output .= '<div class="kata-detail">Nhà cung cấp: <strong>' . esc_html($atts['provider']) . '</strong></div>';
+                    $output .= '<div class="kata-detail">Đơn Vị: <strong>' . esc_html($atts['provider']) . '</strong></div>';
                 }
                 if ($should_show_content('instructor') && !empty($atts['instructor'])) {
                     $output .= '<div class="kata-detail">Giảng viên: <strong>' . esc_html($atts['instructor']) . '</strong></div>';
@@ -7493,11 +7493,11 @@ class KATA_SEO_Manager {
                     }
                     if (!empty($atts['course_mode'])) {
                         $mode_text = array(
-                            'online' => '💻 Trực tuyến',
-                            'offline' => '🏢 Trực tiếp',
+                            'online' => '💻 Online',
+                            'offline' => '🏢 Offline',
                             'blended' => '🔀 Kết hợp'
                         );
-                        $output .= '<div class="kata-detail">Hình thức: <strong>' . ($mode_text[$atts['course_mode']] ?? $atts['course_mode']) . '</strong></div>';
+                        $output .= '<div class="kata-detail">Hình thức : <strong>' . ($mode_text[$atts['course_mode']] ?? $atts['course_mode']) . '</strong></div>';
                     }
                     if (!empty($atts['enrollment_count'])) {
                         $output .= '<div class="kata-detail">👥 Học viên: <strong>' . number_format($atts['enrollment_count']) . '</strong></div>';

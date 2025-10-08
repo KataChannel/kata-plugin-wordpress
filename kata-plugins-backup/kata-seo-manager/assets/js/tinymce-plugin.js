@@ -824,6 +824,38 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             var fields = contentFields[key] || [];
             var checkboxesHTML = '';
             
+            // Define update function globally before dialog opens
+            window['kataUpdatePreview_' + key] = function() {
+                var baseShortcode = templates[key].shortcode;
+                var checkedBoxes = document.querySelectorAll('#show_content_' + key + ' .kata-content-checkbox:checked');
+                var checkedFields = [];
+                
+                checkedBoxes.forEach(function(cb) {
+                    checkedFields.push(cb.getAttribute('data-field'));
+                });
+                
+                var modifiedShortcode = baseShortcode;
+                
+                if (checkedFields.length > 0) {
+                    checkedFields.forEach(function(field) {
+                        // Remove hide_content_X="true"
+                        var hidePattern = new RegExp('hide_content_' + field + '="true"\\s*', 'g');
+                        modifiedShortcode = modifiedShortcode.replace(hidePattern, '');
+                        
+                        // Add show_content_X="true" if not exists
+                        if (modifiedShortcode.indexOf('show_content_' + field) === -1) {
+                            modifiedShortcode = modifiedShortcode.replace(/]$/, ' show_content_' + field + '="true"]');
+                        }
+                    });
+                }
+                
+                // Update preview textarea
+                var previewEl = document.getElementById('shortcode_preview_' + key);
+                if (previewEl) {
+                    previewEl.value = modifiedShortcode;
+                }
+            };
+            
             if (fields.length > 0) {
                 checkboxesHTML = `
                     <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 12px; margin: 12px 0;">
@@ -833,7 +865,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                         <p style="margin: 0 0 10px 0; font-size: 12px; color: #856404;">
                             Chọn các phần tử muốn HIỆN trên giao diện. Mặc định: TẤT CẢ BỊ ẨN (hide_content_*="true")
                         </p>
-                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-height: 150px; overflow-y: auto; padding: 8px; background: white; border-radius: 3px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-height: 200px; overflow-y: auto; padding: 8px; background: white; border-radius: 3px;">
                             ${fields.map(function(field) {
                                 return `
                                     <label style="display: flex; align-items: center; cursor: pointer; padding: 4px; font-size: 12px;">
@@ -842,7 +874,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                                data-field="${field}"
                                                class="kata-content-checkbox"
                                                style="margin-right: 6px;"
-                                               onchange="updateShortcodePreview_${key}(this)">
+                                               onchange="if(window.kataUpdatePreview_${key}) window.kataUpdatePreview_${key}(); this.nextElementSibling.style.fontWeight = this.checked ? 'bold' : 'normal';">
                                         <span style="color: #495057;">Hiện: ${field}</span>
                                     </label>
                                 `;
@@ -850,12 +882,12 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                         </div>
                         <div style="margin-top: 8px; padding: 6px; background: #e7f3ff; border-radius: 3px;">
                             <button type="button" 
-                                    onclick="document.querySelectorAll('#show_content_${key} .kata-content-checkbox').forEach(function(cb){cb.checked=true; cb.nextElementSibling.style.fontWeight='bold';}); if(window.updateShortcodePreview_${key}) updateShortcodePreview_${key}(document.querySelector('#show_content_${key} .kata-content-checkbox'));"
+                                    onclick="var cbs = document.querySelectorAll('#show_content_${key} .kata-content-checkbox'); cbs.forEach(function(cb){cb.checked=true; cb.nextElementSibling.style.fontWeight='bold';}); if(window.kataUpdatePreview_${key}) window.kataUpdatePreview_${key}();"
                                     style="font-size: 11px; padding: 4px 8px; margin-right: 6px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
                                 ✅ Chọn tất cả
                             </button>
                             <button type="button"
-                                    onclick="document.querySelectorAll('#show_content_${key} .kata-content-checkbox').forEach(function(cb){cb.checked=false; cb.nextElementSibling.style.fontWeight='normal';}); if(window.updateShortcodePreview_${key}) updateShortcodePreview_${key}(document.querySelector('#show_content_${key} .kata-content-checkbox'));"
+                                    onclick="var cbs = document.querySelectorAll('#show_content_${key} .kata-content-checkbox'); cbs.forEach(function(cb){cb.checked=false; cb.nextElementSibling.style.fontWeight='normal';}); if(window.kataUpdatePreview_${key}) window.kataUpdatePreview_${key}();"
                                     style="font-size: 11px; padding: 4px 8px; background: #6c757d; color: white; border: none; border-radius: 3px; cursor: pointer;">
                                 ❌ Bỏ chọn tất cả
                             </button>
@@ -866,15 +898,15 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             
             editor.windowManager.open({
                 title: templates[key].title + ' - Xem Trước & Chèn',
-                width: Math.min(700, window.innerWidth - 40),
-                height: Math.min(750, window.innerHeight - 40),
+                width: Math.min(window.innerWidth * 0.95, 1400),
+                height: Math.min(window.innerHeight * 0.95, 900),
                 resizable: true,
                 maximizable: true,
                 body: [
                     {
                         type: 'container',
                         html: `
-                            <div id="show_content_${key}" style="padding: 15px; height: calc(100vh - 180px); max-height: 650px; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; box-sizing: border-box;">
+                            <div id="show_content_${key}" style="padding: 15px; height: calc(100vh - 180px); max-height: 800px; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; box-sizing: border-box;">
                                 <div style="margin-bottom: 15px;">
                                     <h3 style="color: #23282d; margin: 0 0 12px 0; font-size: 18px;">${templates[key].title}</h3>
                                     <div style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">
@@ -886,7 +918,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                 
                                 <div style="background: #f8f9fa; border-radius: 4px; padding: 12px; margin: 12px 0;">
                                     <h4 style="margin: 0 0 8px 0; color: #495057; font-size: 14px;">📝 Shortcode sẽ được chèn:</h4>
-                                    <textarea id="shortcode_preview_${key}" readonly style="width: 100%; height: 100px; font-family: monospace; font-size: 11px; border: 1px solid #ced4da; border-radius: 3px; padding: 8px; background: white; box-sizing: border-box; resize: vertical;">${templates[key].shortcode}</textarea>
+                                    <textarea id="shortcode_preview_${key}" readonly style="width: 100%; height: 150px; font-family: monospace; font-size: 11px; border: 1px solid #ced4da; border-radius: 3px; padding: 8px; background: white; box-sizing: border-box; resize: vertical;">${templates[key].shortcode}</textarea>
                                 </div>
                                 
                                 <div style="background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; padding: 8px;">
@@ -894,76 +926,21 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                         ℹ️ <strong>Thông tin:</strong> Sau khi chèn, có thể chỉnh sửa thuộc tính trong editor. JSON-LD schema tự động tạo khi publish.
                                     </p>
                                 </div>
-                                
-                                <script>
-                                    // Real-time shortcode preview update
-                                    window.updateShortcodePreview_${key} = function(checkbox) {
-                                        var baseShortcode = ${JSON.stringify(templates[key].shortcode)};
-                                        var checkedBoxes = document.querySelectorAll('#show_content_${key} .kata-content-checkbox:checked');
-                                        var checkedFields = [];
-                                        
-                                        checkedBoxes.forEach(function(cb) {
-                                            checkedFields.push(cb.getAttribute('data-field'));
-                                        });
-                                        
-                                        var modifiedShortcode = baseShortcode;
-                                        
-                                        if (checkedFields.length > 0) {
-                                            checkedFields.forEach(function(field) {
-                                                // Remove hide_content_X="true"
-                                                var hidePattern = new RegExp('hide_content_' + field + '="true"\\\\s*', 'g');
-                                                modifiedShortcode = modifiedShortcode.replace(hidePattern, '');
-                                                
-                                                // Add show_content_X="true" if not exists
-                                                if (modifiedShortcode.indexOf('show_content_' + field) === -1) {
-                                                    modifiedShortcode = modifiedShortcode.replace(/]$/, ' show_content_' + field + '="true"]');
-                                                }
-                                            });
-                                        }
-                                        
-                                        // Update preview textarea
-                                        document.getElementById('shortcode_preview_${key}').value = modifiedShortcode;
-                                        
-                                        // Update label style
-                                        checkbox.nextElementSibling.style.fontWeight = checkbox.checked ? 'bold' : 'normal';
-                                    };
-                                </script>
                             </div>
                         `
                     }
                 ],
                 buttons: [
                     {
-                        text: 'Chèn với Dialog Tùy Chỉnh',
+                        text: '✅ Chèn Shortcode',
                         classes: 'widget btn primary',
-                        onclick: function() {
-                            // Close selector dialog
-                            this.parent().parent().close();
-                            
-                            // Open schema builder dialog
-                            if (window.KataSchemaBuilder) {
-                                KataSchemaBuilder.openDialog(editor, key);
-                            } else {
-                                // Fallback: chèn trực tiếp nếu dialog chưa load
-                                editor.insertContent('\n' + templates[key].shortcode + '\n');
-                                editor.notificationManager.open({
-                                    text: `✅ Đã chèn ${templates[key].title} thành công!`,
-                                    type: 'success',
-                                    timeout: 3000
-                                });
-                            }
-                        }
-                    },
-                    {
-                        text: 'Chèn Nhanh (Mẫu Đầy Đủ)',
-                        classes: 'widget btn',
                         onclick: function() {
                             // Get base shortcode
                             var shortcode = templates[key].shortcode;
                             
                             // Get checked content fields
                             var checkedFields = [];
-                            var checkboxes = document.querySelectorAll('#show_content_' + key + ' input[type="checkbox"]:checked');
+                            var checkboxes = document.querySelectorAll('#show_content_' + key + ' .kata-content-checkbox:checked');
                             
                             if (checkboxes.length > 0) {
                                 checkboxes.forEach(function(cb) {
@@ -991,7 +968,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                             
                             // Show success notification
                             editor.notificationManager.open({
-                                text: `✅ Đã chèn ${templates[key].title} với ${checkedFields.length > 0 ? checkedFields.length + ' content fields' : 'tất cả thuộc tính'}!`,
+                                text: `✅ Đã chèn ${templates[key].title} ${checkedFields.length > 0 ? 'với ' + checkedFields.length + ' fields hiển thị' : 'thành công'}!`,
                                 type: 'success',
                                 timeout: 3000
                             });

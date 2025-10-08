@@ -1,0 +1,770 @@
+/**
+ * KATA User Interaction Styles
+ * 
+ * CSS styles for user interaction forms and displays
+ * 
+ * @package KATA_SEO_Manager
+ */
+
+/* ==========================================================================
+   Container & Layout
+   ========================================================================== */
+
+.kata-user-interaction-container {
+    max-width: 100%;
+    margin: 30px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.kata-interaction-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 25px 0;
+    color: #2c3e50;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 10px;
+}
+
+/* ==========================================================================
+   Form Styles
+   ========================================================================== */
+
+.kata-interaction-form-container {
+    background: #ffffff;
+    border: 1px solid #e1e8ed;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.kata-interaction-form h4 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 25px 0 15px 0;
+    color: #34495e;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kata-form-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.kata-form-group {
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.kata-form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.kata-form-group .required {
+    color: #e74c3c;
+}
+
+.kata-form-group input[type="text"],
+.kata-form-group input[type="email"],
+.kata-form-group input[type="url"],
+.kata-form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e1e8ed;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.kata-form-group input:focus,
+.kata-form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.kata-form-group input.kata-field-error,
+.kata-form-group textarea.kata-field-error {
+    border-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+.kata-form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ==========================================================================
+   Rating Styles
+   ========================================================================== */
+
+.kata-rating-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.kata-rating-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.kata-rating-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.kata-rating-group label {
+    font-weight: 500;
+    color: #495057;
+    margin: 0;
+    flex: 1;
+}
+
+.kata-star-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+}
+
+.kata-star {
+    font-size: 24px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    opacity: 0.3;
+}
+
+.kata-star:hover,
+.kata-star.kata-star-hover {
+    transform: scale(1.1);
+    opacity: 0.7;
+}
+
+.kata-star.kata-star-active {
+    opacity: 1;
+    color: #f39c12;
+    text-shadow: 0 0 5px rgba(243, 156, 18, 0.5);
+}
+
+.kata-star.kata-star-inactive {
+    opacity: 0.3;
+}
+
+.kata-rating-feedback {
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2c3e50;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 10;
+    animation: kata-fade-in 0.3s ease;
+}
+
+.kata-rating-feedback::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #2c3e50;
+}
+
+/* ==========================================================================
+   Submit Button
+   ========================================================================== */
+
+.kata-form-actions {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.kata-submit-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.kata-submit-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #1f4e79);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+}
+
+.kata-submit-btn:active {
+    transform: translateY(0);
+}
+
+.kata-submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.kata-submit-loading {
+    display: none;
+}
+
+/* ==========================================================================
+   Messages
+   ========================================================================== */
+
+.kata-message {
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    animation: kata-slide-down 0.4s ease;
+}
+
+.kata-message-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.kata-message-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+/* ==========================================================================
+   Interactions List
+   ========================================================================== */
+
+.kata-interaction-list-container {
+    background: #ffffff;
+    border: 1px solid #e1e8ed;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.kata-interactions-summary {
+    background: #f8f9fa;
+    padding: 25px 30px;
+    border-bottom: 1px solid #e1e8ed;
+}
+
+.kata-interactions-summary h4 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    color: #2c3e50;
+}
+
+.kata-rating-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.kata-rating-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.kata-rating-number {
+    font-size: 32px;
+    font-weight: 700;
+    color: #f39c12;
+}
+
+.kata-rating-stars {
+    display: flex;
+    gap: 2px;
+}
+
+.kata-rating-count {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+.kata-positive-rate {
+    background: #28a745;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* ==========================================================================
+   Interaction Items
+   ========================================================================== */
+
+.kata-interactions-items {
+    max-height: 600px;
+    overflow-y: auto;
+}
+
+.kata-interaction-item {
+    padding: 25px 30px;
+    border-bottom: 1px solid #f1f3f4;
+    transition: background-color 0.2s ease;
+}
+
+.kata-interaction-item:hover {
+    background: #fafbfc;
+}
+
+.kata-interaction-item:last-child {
+    border-bottom: none;
+}
+
+.kata-interaction-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.kata-user-name {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.kata-interaction-date {
+    color: #6c757d;
+    font-size: 13px;
+    margin-left: 10px;
+}
+
+.kata-interaction-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kata-rating-value {
+    font-weight: 600;
+    color: #f39c12;
+    font-size: 14px;
+}
+
+.kata-star-full {
+    color: #f39c12;
+    opacity: 1;
+}
+
+.kata-star-half {
+    color: #f39c12;
+    opacity: 0.7;
+}
+
+.kata-star-empty {
+    color: #dee2e6;
+    opacity: 1;
+}
+
+/* ==========================================================================
+   Content Sections
+   ========================================================================== */
+
+.kata-review-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 12px 0;
+}
+
+.kata-review-content {
+    color: #495057;
+    margin-bottom: 15px;
+    line-height: 1.7;
+}
+
+.kata-review-proscons {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 6px;
+    margin: 15px 0;
+}
+
+.kata-pros {
+    margin-bottom: 10px;
+    color: #28a745;
+}
+
+.kata-cons {
+    color: #dc3545;
+}
+
+.kata-comment-content {
+    color: #495057;
+    font-style: italic;
+    margin: 15px 0;
+    padding: 15px;
+    background: #f1f8ff;
+    border-left: 4px solid #3498db;
+    border-radius: 0 6px 6px 0;
+}
+
+/* ==========================================================================
+   Actions & Replies
+   ========================================================================== */
+
+.kata-interaction-actions {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #f1f3f4;
+}
+
+.kata-reply-btn {
+    background: transparent;
+    color: #3498db;
+    border: 1px solid #3498db;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.kata-reply-btn:hover {
+    background: #3498db;
+    color: white;
+}
+
+.kata-reply-form {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 15px;
+}
+
+.kata-reply-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.kata-reply-submit {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.kata-reply-submit:hover {
+    background: #218838;
+}
+
+.kata-reply-cancel {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.kata-reply-cancel:hover {
+    background: #5a6268;
+}
+
+/* ==========================================================================
+   No Interactions
+   ========================================================================== */
+
+.kata-no-interactions {
+    text-align: center;
+    padding: 60px 30px;
+    color: #6c757d;
+}
+
+.kata-no-interactions p {
+    font-size: 16px;
+    margin: 0;
+}
+
+/* ==========================================================================
+   Pagination
+   ========================================================================== */
+
+.kata-pagination {
+    padding: 20px 30px;
+    text-align: center;
+    background: #f8f9fa;
+    border-top: 1px solid #e1e8ed;
+}
+
+.kata-pagination-links {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.kata-page-link {
+    padding: 10px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    color: #3498db;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.kata-page-link:hover {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.kata-page-link.current {
+    background: #3498db;
+    color: white;
+    border-color: #3498db;
+}
+
+.kata-load-more-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+}
+
+.kata-load-more-btn:hover {
+    background: #5a6268;
+}
+
+/* ==========================================================================
+   Style Variations
+   ========================================================================== */
+
+/* Card Style */
+.kata-style-card .kata-interaction-form-container {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    border: none;
+}
+
+.kata-style-card .kata-interaction-list-container {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+    border: none;
+}
+
+/* Minimal Style */
+.kata-style-minimal .kata-interaction-form-container {
+    border: 1px dashed #dee2e6;
+    box-shadow: none;
+}
+
+.kata-style-minimal .kata-interaction-list-container {
+    border: 1px dashed #dee2e6;
+    box-shadow: none;
+}
+
+.kata-style-minimal .kata-submit-btn {
+    background: #495057;
+    border-radius: 4px;
+}
+
+.kata-style-minimal .kata-submit-btn:hover {
+    background: #343a40;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .kata-user-interaction-container {
+        margin: 20px 0;
+    }
+    
+    .kata-interaction-form-container,
+    .kata-interactions-summary {
+        padding: 20px;
+    }
+    
+    .kata-interaction-item {
+        padding: 20px;
+    }
+    
+    .kata-form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .kata-interaction-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    
+    .kata-rating-summary {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .kata-rating-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .kata-star {
+        font-size: 20px;
+    }
+    
+    .kata-pagination-links {
+        justify-content: center;
+    }
+    
+    .kata-reply-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .kata-interaction-title {
+        font-size: 20px;
+    }
+    
+    .kata-interaction-form-container {
+        padding: 15px;
+    }
+    
+    .kata-interaction-item {
+        padding: 15px;
+    }
+    
+    .kata-submit-btn {
+        width: 100%;
+        padding: 15px;
+    }
+    
+    .kata-interactions-items {
+        max-height: 400px;
+    }
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+
+@keyframes kata-fade-in {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+@keyframes kata-slide-down {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes kata-pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
+.kata-submit-btn:focus,
+.kata-reply-btn:focus,
+.kata-page-link:focus {
+    outline: 2px solid #3498db;
+    outline-offset: 2px;
+}
+
+.kata-star:focus {
+    outline: 2px solid #f39c12;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+/* Reduced motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+    .kata-star,
+    .kata-submit-btn,
+    .kata-reply-btn,
+    .kata-page-link {
+        transition: none;
+    }
+    
+    .kata-rating-feedback,
+    .kata-message {
+        animation: none;
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .kata-interaction-form-container,
+    .kata-interaction-list-container {
+        border: 2px solid #000;
+    }
+    
+    .kata-submit-btn {
+        background: #000;
+        border: 2px solid #000;
+    }
+    
+    .kata-star-full {
+        color: #000;
+    }
+}

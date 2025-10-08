@@ -1,0 +1,258 @@
+/* KATA SEO Manager - TinyMCE Editor Styles */
+
+/* Main dropdown button */
+.mce-btn .mce-ico-dashicon.dashicons-chart-line {
+    font-family: 'dashicons';
+    font-size: 16px;
+    color: #0073aa;
+}
+
+/* Menu items styling */
+.mce-menu .mce-menu-item .mce-text {
+    font-size: 13px;
+    padding: 8px 12px;
+}
+
+/* Notification styles */
+.kata-notification {
+    position: fixed;
+    top: 32px;
+    right: 20px;
+    padding: 12px 24px;
+    border-radius: 6px;
+    color: white;
+    font-weight: 500;
+    z-index: 999999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideInRight 0.3s ease-out;
+}
+
+.kata-notification-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.kata-notification-error {
+    background: linear-gradient(135deg, #dc3545, #e74c3c);
+}
+
+.kata-notification-warning {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: #212529;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Preview box styles for TinyMCE */
+.kata-seo-preview {
+    border: 2px dashed #0073aa;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    position: relative;
+}
+
+.kata-seo-preview::before {
+    content: '📊 KATA SEO Manager';
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    background: #0073aa;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.kata-seo-preview h4 {
+    color: #0073aa;
+    margin: 0 0 8px 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.kata-seo-preview p {
+    margin: 4px 0;
+    color: #495057;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.kata-seo-preview small {
+    display: block;
+    margin-top: 8px;
+    color: #28a745;
+    font-weight: 500;
+    font-size: 12px;
+}
+
+/* FAQ specific preview */
+.faq-preview {
+    background: white;
+    border-radius: 6px;
+    padding: 12px;
+    margin: 8px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.faq-preview p {
+    margin: 6px 0;
+    font-size: 13px;
+}
+
+.faq-preview strong {
+    color: #0073aa;
+}
+
+.faq-preview hr {
+    border: none;
+    border-top: 1px solid #dee2e6;
+    margin: 8px 0;
+}
+
+/* Dialog styles */
+.mce-window .mce-container-body {
+    background: #f8f9fa;
+}
+
+.mce-window .mce-title {
+    color: #0073aa;
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .kata-notification {
+        right: 10px;
+        left: 10px;
+        top: 46px;
+    }
+    
+    .kata-seo-preview {
+        padding: 12px;
+        margin: 12px 0;
+    }
+}
+
+/* Admin editor enhancements */
+.wp-editor-container .kata-seo-preview {
+    border-style: solid;
+    border-width: 1px;
+    border-color: #ddd;
+}
+
+.wp-editor-container .kata-seo-preview:hover {
+    border-color: #0073aa;
+    box-shadow: 0 0 8px rgba(0,115,170,0.1);
+}
+
+/* Shortcode highlighting in editor */
+.mce-content-body [data-kata-shortcode] {
+    background: rgba(0,115,170,0.1);
+    border: 1px dashed #0073aa;
+    border-radius: 4px;
+    padding: 2px 4px;
+    margin: 0 2px;
+}
+
+.mce-content-body [data-kata-shortcode]:hover {
+    background: rgba(0,115,170,0.2);
+}
+
+/* Button states */
+.mce-btn.mce-active .mce-ico-dashicon {
+    color: #005177;
+}
+
+.mce-btn:hover .mce-ico-dashicon {
+    color: #005177;
+}
+
+/* Menu dropdown styling */
+.mce-menu-item:hover {
+    background: #f0f8ff;
+}
+
+.mce-menu-item-normal.mce-active {
+    background: #e3f2fd;
+}
+
+/* Loading states */
+.kata-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.kata-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #0073aa;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Success indicators */
+.kata-success-indicator {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: #28a745;
+    border-radius: 50%;
+    position: relative;
+    margin-right: 8px;
+}
+
+.kata-success-indicator::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+/* Schema type badges */
+.kata-schema-badge {
+    display: inline-block;
+    background: #0073aa;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    margin: 2px 4px 2px 0;
+}
+
+.kata-schema-badge.faq { background: #28a745; }
+.kata-schema-badge.quiz { background: #ffc107; color: #212529; }
+.kata-schema-badge.poll { background: #6f42c1; }
+.kata-schema-badge.form { background: #fd7e14; }
+.kata-schema-badge.wheel { background: #e83e8c; }
+.kata-schema-badge.rating { background: #20c997; }
+.kata-schema-badge.product { background: #dc3545; }
+.kata-schema-badge.recipe { background: #6610f2; }

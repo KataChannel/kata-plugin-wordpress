@@ -1,10 +1,10 @@
 /**
  * KATA Schema Builder Dialog
- * Professional modal interface for schema attribute selection
- * Optimized for responsive design and better UX
+ * Professional fullscreen modal with collapsible sections
+ * Default: Hide all attributes, show sample values
  * 
  * @package KATA SEO Manager
- * @version 2.0.4
+ * @version 2.1.0
  * @author KATA Team
  * @license MIT
  */
@@ -12,9 +12,9 @@
 (function(window, tinymce) {
     'use strict';
 
-    // Constants - Responsive sizing
-    var DIALOG_WIDTH = Math.min(window.innerWidth * 0.9, 900);
-    var DIALOG_HEIGHT = Math.min(window.innerHeight * 0.85, 650);
+    // Constants - Fullscreen sizing
+    var DIALOG_WIDTH = Math.min(window.innerWidth * 0.95, 1200);
+    var DIALOG_HEIGHT = Math.min(window.innerHeight * 0.95, 800);
     
     /**
      * KATA Schema Builder - Main Class
@@ -66,7 +66,7 @@
         },
 
         /**
-         * Make dialog responsive by adding custom classes
+         * Make dialog responsive by adding custom classes and interactions
          * @private
          */
         _makeDialogResponsive: function() {
@@ -76,6 +76,7 @@
                     var dialog = document.querySelector('.mce-window');
                     if (dialog) {
                         dialog.classList.add('kata-schema-dialog');
+                        dialog.classList.add('kata-fullscreen-mode');
                         
                         // Add responsive wrapper to checkbox sections
                         var checkboxes = dialog.querySelectorAll('.mce-checkbox');
@@ -83,11 +84,112 @@
                         
                         // Add scroll wrapper if content is too tall
                         self._addScrollWrapper(dialog);
+                        
+                        // Setup collapsible sections
+                        self._setupCollapsibleSections(dialog);
+                        
+                        // Setup quick select buttons
+                        self._setupQuickSelectButtons(dialog);
                     }
                 } catch (e) {
                     console.warn('[KATA] Could not apply responsive styling:', e);
                 }
             }, 100);
+        },
+        
+        /**
+         * Setup collapsible sections functionality
+         * @private
+         */
+        _setupCollapsibleSections: function(dialog) {
+            var headers = dialog.querySelectorAll('.kata-section-header');
+            
+            for (var i = 0; i < headers.length; i++) {
+                (function(header) {
+                    header.addEventListener('click', function() {
+                        var parent = header.parentElement;
+                        var contents = [];
+                        var sibling = header.nextElementSibling;
+                        
+                        // Collect all content elements until next header
+                        while (sibling && !sibling.classList.contains('kata-section-header')) {
+                            if (sibling.classList.contains('kata-section-content') || 
+                                sibling.classList.contains('mce-formitem')) {
+                                contents.push(sibling);
+                            }
+                            sibling = sibling.nextElementSibling;
+                        }
+                        
+                        // Toggle visibility
+                        var isCollapsed = header.classList.contains('kata-collapsed');
+                        
+                        if (isCollapsed) {
+                            header.classList.remove('kata-collapsed');
+                            header.textContent = header.textContent.replace('▶', '▼');
+                            for (var j = 0; j < contents.length; j++) {
+                                contents[j].style.display = '';
+                            }
+                        } else {
+                            header.classList.add('kata-collapsed');
+                            header.textContent = header.textContent.replace('▼', '▶');
+                            for (var j = 0; j < contents.length; j++) {
+                                contents[j].style.display = 'none';
+                            }
+                        }
+                    });
+                })(headers[i]);
+            }
+        },
+        
+        /**
+         * Setup quick select buttons functionality
+         * @private
+         */
+        _setupQuickSelectButtons: function(dialog) {
+            var quickButtons = dialog.querySelectorAll('.kata-quick-select');
+            
+            for (var i = 0; i < quickButtons.length; i++) {
+                (function(button) {
+                    button.addEventListener('click', function(e) {
+                        var clickX = e.offsetX;
+                        var buttonWidth = button.offsetWidth;
+                        
+                        // Determine which action based on click position
+                        var action = '';
+                        if (clickX < buttonWidth / 3) {
+                            action = 'all';
+                        } else if (clickX < buttonWidth * 2 / 3) {
+                            action = 'none';
+                        } else {
+                            action = 'toggle';
+                        }
+                        
+                        // Find checkboxes in this section
+                        var parent = button.parentElement;
+                        var checkboxes = [];
+                        var sibling = button.nextElementSibling;
+                        
+                        while (sibling && !sibling.classList.contains('kata-section-header')) {
+                            var checkbox = sibling.querySelector('input[type="checkbox"]');
+                            if (checkbox) {
+                                checkboxes.push(checkbox);
+                            }
+                            sibling = sibling.nextElementSibling;
+                        }
+                        
+                        // Apply action
+                        for (var j = 0; j < checkboxes.length; j++) {
+                            if (action === 'all') {
+                                checkboxes[j].checked = true;
+                            } else if (action === 'none') {
+                                checkboxes[j].checked = false;
+                            } else if (action === 'toggle') {
+                                checkboxes[j].checked = !checkboxes[j].checked;
+                            }
+                        }
+                    });
+                })(quickButtons[i]);
+            }
         },
         
         /**
@@ -249,8 +351,8 @@
         _createHeaderLabel: function(config) {
             return {
                 type: 'label',
-                text: '💡 Điền thông tin và chọn thuộc tính. Các trường (*) là bắt buộc.',
-                style: 'background: #fff9e6; border: 1px solid #ffde8a; border-radius: 4px; padding: 8px 10px; margin-bottom: 12px; color: #856404; font-size: 13px; display: block;'
+                text: '💡 Mặc định: TẤT CẢ thuộc tính bị ẨN. Chọn checkbox để HIỂN THỊ. Click tiêu đề section để thu gọn/mở rộng.',
+                style: 'background: linear-gradient(135deg, #fff9e6 0%, #fff5d6 100%); border: 1px solid #ffde8a; border-left: 4px solid #f0b429; border-radius: 6px; padding: 12px 14px; margin-bottom: 16px; color: #856404; font-size: 13px; display: block; font-weight: 600; line-height: 1.6;'
             };
         },
 
@@ -273,21 +375,22 @@
         _createFooterLabel: function() {
             return {
                 type: 'label',
-                text: '✨ Bỏ chọn checkbox = thêm thuộc tính hide_* vào shortcode',
-                style: 'background: #e7f3f8; border: 1px solid #b3d9ea; border-radius: 4px; padding: 6px 10px; margin-top: 12px; color: #004a5d; font-size: 12px; display: block;'
+                text: '✨ Mặc định: Tất cả ẨN (hide_* = true). Chọn checkbox = HIỆN (show_* = true). Giá trị mẫu được điền sẵn.',
+                style: 'background: linear-gradient(135deg, #e7f3f8 0%, #d6ebf5 100%); border: 1px solid #b3d9ea; border-radius: 6px; padding: 10px 14px; margin-top: 16px; color: #004a5d; font-size: 12px; display: block; font-weight: 500;'
             };
         },
 
         /**
-         * Add section with separator and header
+         * Add section with separator, header and collapsible functionality
          * @private
          */
         _addSection: function(items, title, fields, description) {
-            // Section title
+            // Section title with collapse indicator
             items.push({
                 type: 'label',
-                text: title,
-                style: 'background: linear-gradient(135deg, #0073aa 0%, #005a87 100%); color: white; padding: 8px 12px; margin: 16px 0 8px 0; border-radius: 4px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block;'
+                text: title + ' ▼',
+                style: 'background: linear-gradient(135deg, #0073aa 0%, #005a87 100%); color: white; padding: 10px 14px; margin: 16px 0 8px 0; border-radius: 6px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block; cursor: pointer; user-select: none;',
+                classes: 'kata-section-header kata-collapsible'
             });
 
             // Section description (optional)
@@ -295,13 +398,25 @@
                 items.push({
                     type: 'label',
                     text: description,
-                    style: 'font-size: 12px; color: #666; font-style: italic; margin-bottom: 8px; display: block; padding-left: 4px;'
+                    style: 'font-size: 12px; color: #666; font-style: italic; margin-bottom: 10px; display: block; padding-left: 4px;',
+                    classes: 'kata-section-content'
                 });
             }
 
-            // Add fields
+            // Quick select buttons
+            items.push({
+                type: 'label',
+                text: '⚡ Nhanh: [Chọn tất cả] [Bỏ chọn tất cả] [Đảo ngược]',
+                style: 'background: #f0f7fc; padding: 8px 12px; margin-bottom: 8px; border-radius: 4px; font-size: 12px; color: #0073aa; display: block; cursor: pointer;',
+                classes: 'kata-quick-select kata-section-content'
+            });
+
+            // Add fields with section-content class
             for (var i = 0; i < fields.length; i++) {
-                items.push(fields[i]);
+                var field = fields[i];
+                if (!field.classes) field.classes = '';
+                field.classes += ' kata-section-content';
+                items.push(field);
             }
         },
 
@@ -350,6 +465,7 @@
 
         /**
          * Build checkbox group with common pattern
+         * DEFAULT: All checkboxes UNCHECKED (hide by default)
          * @private
          */
         _buildCheckboxGroup: function(fields, prefix, indent) {
@@ -361,7 +477,7 @@
                     type: 'checkbox',
                     name: prefix + field,
                     label: indent + field,
-                    checked: true,
+                    checked: false, // DEFAULT: UNCHECKED = HIDE
                     style: 'margin: 4px 0;'
                 });
             }

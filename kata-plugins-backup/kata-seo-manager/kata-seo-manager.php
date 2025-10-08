@@ -3,7 +3,7 @@
  * Plugin Name: KATA SEO Manager
  * Plugin URI: https://katachannel.com/kata-seo-manager
  * Description: Complete SEO Schema Manager with 26 Schema Types - Manage, configure, and track all KATA SEO features with Google-compliant Schema Markup
- * Version: 1.0.0
+ * Version: 2.1.2
  * Author: KATA Channel
  * Author URI: https://katachannel.com
  * License: GPL v2 or later
@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('KATA_SEO_MANAGER_VERSION', '1.0.0');
+define('KATA_SEO_MANAGER_VERSION', '2.1.2');
 define('KATA_SEO_MANAGER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('KATA_SEO_MANAGER_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('KATA_SEO_MANAGER_PLUGIN_FILE', __FILE__);
@@ -4886,12 +4886,7 @@ class KATA_SEO_Manager {
         
         // Add frontend visual display (if enabled)
         if ($atts['show_frontend'] !== 'false') {
-            $output .= '<div class="kata-schema-container kata-image-metadata-container" itemscope itemtype="https://schema.org/ImageObject">';
-            $output .= '<div class="kata-schema-header">';
-            $output .= '<span class="kata-schema-icon dashicons dashicons-format-image"></span>';
-            $output .= '<span class="kata-schema-type">Thông tin hình ảnh</span>';
-            $output .= '</div>';
-            
+            $output .= '<div class="kata-schema-container kata-image-metadata-container" itemscope itemtype="https://schema.org/ImageObject">';            
             $output .= '<div class="kata-schema-content">';
             
             // Image preview (check hide_content_preview)

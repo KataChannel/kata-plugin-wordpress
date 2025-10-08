@@ -36,7 +36,7 @@
 
             article: {
                 title: '📝 Article Schema',
-                shortcode: '[kata_article title="5 Bí Quyết Thành Công Trong Kinh Doanh" author="Nguyễn Văn A" category="Kinh Doanh" tags="thành công, kinh doanh, khởi nghiệp" excerpt="Khám phá 5 bí quyết quan trọng giúp bạn thành công trong lĩnh vực kinh doanh từ những chuyên gia hàng đầu." reading_time="5" word_count="1200" show_schema="true" show_frontend="true" show_content_title="true" show_content_author="true" show_content_category="true" show_content_tags="true" show_content_excerpt="true" show_content_reading_time="true" show_content_word_count="true"]',
+                shortcode: '[kata_article title="5 Bí Quyết Thành Công Trong Kinh Doanh" author="Nguyễn Văn A" category="Kinh Doanh" tags="thành công, kinh doanh, khởi nghiệp" excerpt="Khám phá 5 bí quyết quan trọng giúp bạn thành công trong lĩnh vực kinh doanh từ những chuyên gia hàng đầu." reading_time="5" word_count="1200" show_schema="true" show_frontend="true" hide_content_title="true" hide_content_author="true" hide_content_category="true" hide_content_tags="true" hide_content_excerpt="true" hide_content_reading_time="true" hide_content_word_count="true" hide_content_date="true" hide_content_image="true"]',
                 preview: `
                     <div class="kata-preview-box">
                         <h4>📝 Article Schema sẽ tạo:</h4>
@@ -59,7 +59,7 @@
 
             recipe: {
                 title: '🍳 Recipe Schema',
-                shortcode: '[kata_recipe name="Phở Bò Hà Nội" description="Món phở bò truyền thống của Hà Nội với nước dùng trong vắt, thơm ngon" ingredients="500g xương bò|200g thịt bò|1 củ hành tây|Gia vị phở" instructions="Luộc xương bò 2 tiếng|Thái thịt bò mỏng|Trần bánh phở|Múc nước dùng ra tô" prep_time="30M" cook_time="2H" servings="4" calories="450" show_schema="true" show_frontend="true" show_content_name="true" show_content_description="true" show_content_ingredients="true" show_content_instructions="true" show_content_time="true" show_content_nutrition="true"]',
+                shortcode: '[kata_recipe name="Phở Bò Hà Nội" description="Món phở bò truyền thống của Hà Nội với nước dùng trong vắt, thơm ngon" ingredients="500g xương bò|200g thịt bò|1 củ hành tây|Gia vị phở" instructions="Luộc xương bò 2 tiếng|Thái thịt bò mỏng|Trần bánh phở|Múc nước dùng ra tô" prep_time="30M" cook_time="2H" servings="4" calories="450" show_schema="true" show_content="true" hide_content_name="true" hide_content_description="true" hide_content_image="true" hide_content_ingredients="true" hide_content_instructions="true" hide_content_time="true" hide_content_nutrition="true" hide_content_rating="true"]',
                 preview: `
                     <div class="kata-preview-box">
                         <h4>🍳 Recipe Schema sẽ tạo:</h4>
@@ -82,7 +82,7 @@
 
             product: {
                 title: '🛍️ Product Schema',
-                shortcode: '[kata_product name="iPhone 15 Pro Max" description="Điện thoại thông minh cao cấp với chip A17 Pro và camera 48MP" price="29990000" currency="VND" brand="Apple" availability="InStock" rating_value="4.8" rating_count="1250" category="Điện thoại" show_schema="true" show_frontend="true" show_content_name="true" show_content_description="true" show_content_price="true" show_content_brand="true" show_content_availability="true" show_content_rating="true"]',
+                shortcode: '[kata_product name="iPhone 15 Pro Max" description="Điện thoại thông minh cao cấp với chip A17 Pro và camera 48MP" price="29990000" currency="VND" brand="Apple" availability="InStock" rating_value="4.8" rating_count="1250" category="Điện thoại" show_schema="true" show_content="true" hide_content_name="true" hide_content_description="true" hide_content_image="true" hide_content_price="true" hide_content_brand="true" hide_content_category="true" hide_content_availability="true" hide_content_rating="true" hide_content_features="true"]',
                 preview: `
                     <div class="kata-preview-box">
                         <h4>🛍️ Product Schema sẽ tạo:</h4>
@@ -105,7 +105,7 @@
 
             event: {
                 title: '📅 Event Schema',
-                shortcode: '[kata_event name="Hội thảo Digital Marketing 2025" description="Hội thảo về xu hướng Digital Marketing mới nhất năm 2025" start_date="2025-11-15T09:00" end_date="2025-11-15T17:00" location="Khách sạn Lotte, Hà Nội" organizer="Marketing Vietnam" price="500000" currency="VND" show_schema="true" show_frontend="true" show_content_name="true" show_content_description="true" show_content_date="true" show_content_location="true" show_content_organizer="true" show_content_price="true"]',
+                shortcode: '[kata_event name="Hội thảo Digital Marketing 2025" description="Hội thảo về xu hướng Digital Marketing mới nhất năm 2025" start_date="2025-11-15T09:00" end_date="2025-11-15T17:00" location="Khách sạn Lotte, Hà Nội" organizer="Marketing Vietnam" price="500000" currency="VND" show_schema="true" show_content="true" hide_content_name="true" hide_content_description="true" hide_content_date="true" hide_content_time="true" hide_content_location="true" hide_content_organizer="true" hide_content_price="true" hide_content_image="true" hide_content_status="true"]',
                 preview: `
                     <div class="kata-preview-box">
                         <h4>📅 Event Schema sẽ tạo:</h4>
@@ -128,7 +128,7 @@
 
             howto: {
                 title: '📋 HowTo Schema',
-                shortcode: '[kata_howto name="Cách Tạo Website WordPress" description="Hướng dẫn chi tiết cách tạo website WordPress từ A đến Z" steps="Mua hosting và domain|Cài đặt WordPress|Chọn theme phù hợp|Tùy chỉnh giao diện|Thêm nội dung" tools="Hosting|Domain|WordPress theme" prep_time="1H" perform_time="3H" difficulty="Trung bình" show_schema="true" show_frontend="true" show_content_name="true" show_content_description="true" show_content_steps="true" show_content_tools="true" show_content_time="true" show_content_difficulty="true"]',
+                shortcode: '[kata_howto name="Cách Tạo Website WordPress" description="Hướng dẫn chi tiết cách tạo website WordPress từ A đến Z" steps="Mua hosting và domain|Cài đặt WordPress|Chọn theme phù hợp|Tùy chỉnh giao diện|Thêm nội dung" tools="Hosting|Domain|WordPress theme" prep_time="1H" perform_time="3H" difficulty="Trung bình" show_schema="true" show_frontend="true" hide_content_name="true" hide_content_description="true" hide_content_image="true" hide_content_steps="true" hide_content_tools="true" hide_content_time="true" hide_content_difficulty="true" hide_content_cost="true"]',
                 preview: `
                     <div class="kata-preview-box">
                         <h4>📋 HowTo Schema sẽ tạo:</h4>
@@ -808,17 +808,73 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
 
         // Function to show preview and insert schema
         function showPreviewAndInsert(key) {
+            var contentFields = {
+                article: ['title', 'author', 'category', 'tags', 'excerpt', 'reading_time', 'word_count', 'date', 'image'],
+                recipe: ['name', 'description', 'image', 'ingredients', 'instructions', 'time', 'nutrition', 'rating'],
+                product: ['name', 'description', 'image', 'price', 'brand', 'category', 'availability', 'rating', 'features'],
+                event: ['name', 'description', 'date', 'time', 'location', 'organizer', 'price', 'image', 'status'],
+                howto: ['name', 'description', 'image', 'steps', 'tools', 'time', 'difficulty', 'cost'],
+                video: ['title', 'description', 'thumbnail', 'video'],
+                organization: ['name', 'logo', 'description', 'contact'],
+                localbusiness: ['name', 'address', 'phone', 'hours', 'price', 'description', 'image'],
+                jobposting: ['title', 'company', 'location', 'description', 'salary', 'type', 'date', 'requirements', 'benefits'],
+                image_metadata: ['preview', 'name', 'description', 'technical', 'size', 'dimensions', 'format', 'camera', 'creator', 'date', 'location', 'keywords']
+            };
+            
+            var fields = contentFields[key] || [];
+            var checkboxesHTML = '';
+            
+            if (fields.length > 0) {
+                checkboxesHTML = `
+                    <div style="background: #fff3cd; border: 1px solid #ffc107; border-radius: 4px; padding: 12px; margin: 12px 0;">
+                        <h4 style="margin: 0 0 10px 0; color: #856404; font-size: 14px;">
+                            🎨 MODE 2: Tùy chỉnh hiển thị Content (hide_content_*, show_content_*)
+                        </h4>
+                        <p style="margin: 0 0 10px 0; font-size: 12px; color: #856404;">
+                            Chọn các phần tử muốn HIỆN trên giao diện. Mặc định: TẤT CẢ BỊ ẨN (hide_content_*="true")
+                        </p>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; max-height: 150px; overflow-y: auto; padding: 8px; background: white; border-radius: 3px;">
+                            ${fields.map(function(field) {
+                                return `
+                                    <label style="display: flex; align-items: center; cursor: pointer; padding: 4px; font-size: 12px;">
+                                        <input type="checkbox" 
+                                               id="show_content_${field}" 
+                                               data-field="${field}"
+                                               class="kata-content-checkbox"
+                                               style="margin-right: 6px;"
+                                               onchange="updateShortcodePreview_${key}(this)">
+                                        <span style="color: #495057;">Hiện: ${field}</span>
+                                    </label>
+                                `;
+                            }).join('')}
+                        </div>
+                        <div style="margin-top: 8px; padding: 6px; background: #e7f3ff; border-radius: 3px;">
+                            <button type="button" 
+                                    onclick="document.querySelectorAll('#show_content_${key} .kata-content-checkbox').forEach(function(cb){cb.checked=true; cb.nextElementSibling.style.fontWeight='bold';}); if(window.updateShortcodePreview_${key}) updateShortcodePreview_${key}(document.querySelector('#show_content_${key} .kata-content-checkbox'));"
+                                    style="font-size: 11px; padding: 4px 8px; margin-right: 6px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                                ✅ Chọn tất cả
+                            </button>
+                            <button type="button"
+                                    onclick="document.querySelectorAll('#show_content_${key} .kata-content-checkbox').forEach(function(cb){cb.checked=false; cb.nextElementSibling.style.fontWeight='normal';}); if(window.updateShortcodePreview_${key}) updateShortcodePreview_${key}(document.querySelector('#show_content_${key} .kata-content-checkbox'));"
+                                    style="font-size: 11px; padding: 4px 8px; background: #6c757d; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                                ❌ Bỏ chọn tất cả
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+            
             editor.windowManager.open({
                 title: templates[key].title + ' - Xem Trước & Chèn',
                 width: Math.min(700, window.innerWidth - 40),
-                height: Math.min(650, window.innerHeight - 40),
+                height: Math.min(750, window.innerHeight - 40),
                 resizable: true,
                 maximizable: true,
                 body: [
                     {
                         type: 'container',
                         html: `
-                            <div style="padding: 15px; height: calc(100vh - 180px); max-height: 550px; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; box-sizing: border-box;">
+                            <div id="show_content_${key}" style="padding: 15px; height: calc(100vh - 180px); max-height: 650px; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; box-sizing: border-box;">
                                 <div style="margin-bottom: 15px;">
                                     <h3 style="color: #23282d; margin: 0 0 12px 0; font-size: 18px;">${templates[key].title}</h3>
                                     <div style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">
@@ -826,9 +882,11 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                     </div>
                                 </div>
                                 
+                                ${checkboxesHTML}
+                                
                                 <div style="background: #f8f9fa; border-radius: 4px; padding: 12px; margin: 12px 0;">
                                     <h4 style="margin: 0 0 8px 0; color: #495057; font-size: 14px;">📝 Shortcode sẽ được chèn:</h4>
-                                    <textarea readonly style="width: 100%; height: 100px; font-family: monospace; font-size: 11px; border: 1px solid #ced4da; border-radius: 3px; padding: 8px; background: white; box-sizing: border-box; resize: vertical;">${templates[key].shortcode}</textarea>
+                                    <textarea id="shortcode_preview_${key}" readonly style="width: 100%; height: 100px; font-family: monospace; font-size: 11px; border: 1px solid #ced4da; border-radius: 3px; padding: 8px; background: white; box-sizing: border-box; resize: vertical;">${templates[key].shortcode}</textarea>
                                 </div>
                                 
                                 <div style="background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; padding: 8px;">
@@ -836,6 +894,40 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                         ℹ️ <strong>Thông tin:</strong> Sau khi chèn, có thể chỉnh sửa thuộc tính trong editor. JSON-LD schema tự động tạo khi publish.
                                     </p>
                                 </div>
+                                
+                                <script>
+                                    // Real-time shortcode preview update
+                                    window.updateShortcodePreview_${key} = function(checkbox) {
+                                        var baseShortcode = ${JSON.stringify(templates[key].shortcode)};
+                                        var checkedBoxes = document.querySelectorAll('#show_content_${key} .kata-content-checkbox:checked');
+                                        var checkedFields = [];
+                                        
+                                        checkedBoxes.forEach(function(cb) {
+                                            checkedFields.push(cb.getAttribute('data-field'));
+                                        });
+                                        
+                                        var modifiedShortcode = baseShortcode;
+                                        
+                                        if (checkedFields.length > 0) {
+                                            checkedFields.forEach(function(field) {
+                                                // Remove hide_content_X="true"
+                                                var hidePattern = new RegExp('hide_content_' + field + '="true"\\\\s*', 'g');
+                                                modifiedShortcode = modifiedShortcode.replace(hidePattern, '');
+                                                
+                                                // Add show_content_X="true" if not exists
+                                                if (modifiedShortcode.indexOf('show_content_' + field) === -1) {
+                                                    modifiedShortcode = modifiedShortcode.replace(/]$/, ' show_content_' + field + '="true"]');
+                                                }
+                                            });
+                                        }
+                                        
+                                        // Update preview textarea
+                                        document.getElementById('shortcode_preview_${key}').value = modifiedShortcode;
+                                        
+                                        // Update label style
+                                        checkbox.nextElementSibling.style.fontWeight = checkbox.checked ? 'bold' : 'normal';
+                                    };
+                                </script>
                             </div>
                         `
                     }
@@ -866,15 +958,40 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                         text: 'Chèn Nhanh (Mẫu Đầy Đủ)',
                         classes: 'widget btn',
                         onclick: function() {
-                            // Insert shortcode with all attributes
-                            editor.insertContent('\n' + templates[key].shortcode + '\n');
+                            // Get base shortcode
+                            var shortcode = templates[key].shortcode;
+                            
+                            // Get checked content fields
+                            var checkedFields = [];
+                            var checkboxes = document.querySelectorAll('#show_content_' + key + ' input[type="checkbox"]:checked');
+                            
+                            if (checkboxes.length > 0) {
+                                checkboxes.forEach(function(cb) {
+                                    checkedFields.push(cb.getAttribute('data-field'));
+                                });
+                                
+                                // Replace hide_content_* with show_content_* for checked fields
+                                checkedFields.forEach(function(field) {
+                                    // Remove hide_content_X="true"
+                                    var hidePattern = new RegExp('hide_content_' + field + '="true"\\s*', 'g');
+                                    shortcode = shortcode.replace(hidePattern, '');
+                                    
+                                    // Add show_content_X="true" if not exists
+                                    if (shortcode.indexOf('show_content_' + field) === -1) {
+                                        shortcode = shortcode.replace(/]$/, ' show_content_' + field + '="true"]');
+                                    }
+                                });
+                            }
+                            
+                            // Insert modified shortcode
+                            editor.insertContent('\n' + shortcode + '\n');
                             
                             // Close dialog
                             this.parent().parent().close();
                             
                             // Show success notification
                             editor.notificationManager.open({
-                                text: `✅ Đã chèn ${templates[key].title} với tất cả thuộc tính!`,
+                                text: `✅ Đã chèn ${templates[key].title} với ${checkedFields.length > 0 ? checkedFields.length + ' content fields' : 'tất cả thuộc tính'}!`,
                                 type: 'success',
                                 timeout: 3000
                             });

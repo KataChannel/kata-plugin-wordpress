@@ -10,7 +10,7 @@
                 title: '📝 FAQ Schema',
                 shortcode: `[kata_faq]
 [kata_faq_item question="KATA SEO Manager có miễn phí không?" answer="KATA SEO Manager hoàn toàn miễn phí và mã nguồn mở. Bạn có thể sử dụng cho bất kỳ dự án WordPress nào."]
-[kata_faq_item question="Plugin hỗ trợ bao nhiều loại Schema?" answer="Plugin hỗ trợ 26+ loại Schema markup bao gồm Article, Product, Recipe, Event, FAQ, LocalBusiness và nhiều loại khác."]
+[kata_faq_item question="Plugin hỗ trợ bao nhiều loại Schema?" answer="Plugin hỗ trợ 21 loại Schema markup bao gồm Article, Product, Recipe, Event, FAQ, LocalBusiness, Video, Organization, Rating, Breadcrumb, Book, Movie, Review, NewsArticle, BlogPosting và nhiều loại khác với full customization."]
 [kata_faq_item question="Có tương thích với Gutenberg không?" answer="Có, plugin hoạt động tốt với cả Classic Editor và Gutenberg Block Editor."]
 [/kata_faq]`,
                 preview: `
@@ -32,7 +32,7 @@
                             <p style="margin: 8px 0; color: #6b7280;"><strong>A:</strong> KATA SEO Manager hoàn toàn miễn phí...</p>
                             <hr style="margin: 12px 0; border: none; border-top: 1px solid #e5e7eb;">
                             <p style="margin: 8px 0;"><strong>Q:</strong> Plugin hỗ trợ bao nhiều loại Schema?</p>
-                            <p style="margin: 8px 0; color: #6b7280;"><strong>A:</strong> Plugin hỗ trợ 26+ loại Schema markup...</p>
+                            <p style="margin: 8px 0; color: #6b7280;"><strong>A:</strong> Plugin hỗ trợ 21 loại Schema markup với full customization...</p>
                         </div>
                         <small style="display: block; margin-top: 12px; color: #059669;">✅ JSON-LD Schema tự động được tạo cho Google</small>
                         <hr style="margin:12px 0; border:none; border-top:1px solid #e5e7eb;">
@@ -847,7 +847,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                     flex-shrink: 0;
                                 ">
                                     <h2 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 600;">KATA SEO Manager</h2>
-                                    <p style="margin: 0; opacity: 0.95; font-size: 14px;">Chọn schema template để chèn vào nội dung - 26+ loại schema hỗ trợ SEO</p>
+                                    <p style="margin: 0; opacity: 0.95; font-size: 14px;">Chọn schema template để chèn vào nội dung - 21 loại schema hỗ trợ SEO</p>
                                 </div>
                                 
                                 <!-- Main Content Area -->
@@ -888,7 +888,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                                 onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
                                             />
                                             <p style="margin: 8px 0 0 0; font-size: 12px; color: #6b7280;">
-                                                💡 Gõ để lọc nhanh - Hỗ trợ 26+ schema types
+                                                💡 Gõ để lọc nhanh - Hỗ trợ 21 schema types
                                             </p>
                                         </div>
                                         
@@ -1063,6 +1063,79 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                         image_metadata: {
                                             schema: ['url', 'name', 'creator'],
                                             content: ['preview', 'name', 'description', 'technical', 'size', 'dimensions', 'format', 'camera', 'creator', 'date', 'location', 'keywords']
+                                        },
+                                        // === NEW SCHEMAS - October 2025 ===
+                                        quiz: {
+                                            schema: ['title', 'questions'],
+                                            content: ['title', 'description', 'questions', 'results', 'statistics']
+                                        },
+                                        poll: {
+                                            schema: ['id', 'title', 'options'],
+                                            content: ['title', 'options', 'results', 'vote_count', 'chart']
+                                        },
+                                        wheel: {
+                                            schema: ['title', 'prizes'],
+                                            content: ['title', 'requirement', 'prizes', 'animation', 'result']
+                                        },
+                                        form: {
+                                            schema: ['title', 'fields'],
+                                            content: ['title', 'description', 'fields', 'submit_button', 'success_message']
+                                        },
+                                        user_interaction: {
+                                            schema: ['type', 'ratings'],
+                                            content: ['form', 'list', 'ratings', 'comments', 'statistics']
+                                        },
+                                        movie: {
+                                            schema: ['name', 'director', 'actor', 'genre', 'duration'],
+                                            content: ['name', 'description', 'director', 'actor', 'genre', 'duration', 'release_date', 'rating', 'trailer']
+                                        },
+                                        software: {
+                                            schema: ['name', 'version', 'operating_system', 'price'],
+                                            content: ['name', 'description', 'version', 'os', 'category', 'price', 'size', 'features']
+                                        },
+                                        webpage: {
+                                            schema: ['name', 'description', 'breadcrumb'],
+                                            content: ['name', 'description', 'breadcrumb', 'keywords', 'metadata']
+                                        },
+                                        carousel: {
+                                            schema: ['title', 'images'],
+                                            content: ['title', 'images', 'captions', 'navigation', 'autoplay']
+                                        },
+                                        dataset: {
+                                            schema: ['title', 'data', 'headers'],
+                                            content: ['title', 'description', 'table', 'search', 'export', 'statistics']
+                                        },
+                                        forum: {
+                                            schema: ['title', 'topics'],
+                                            content: ['title', 'description', 'topics', 'moderator', 'stats', 'members']
+                                        },
+                                        eduqa: {
+                                            schema: ['question', 'answer', 'category'],
+                                            content: ['question', 'answer', 'author', 'votes', 'tags', 'related', 'date']
+                                        },
+                                        employer_rating: {
+                                            schema: ['company_name', 'overall_rating', 'review_count'],
+                                            content: ['company', 'ratings', 'breakdown', 'reviews', 'recommend', 'statistics']
+                                        },
+                                        profile_page: {
+                                            schema: ['name', 'job_title', 'skills'],
+                                            content: ['name', 'title', 'bio', 'skills', 'experience', 'education', 'contact', 'social', 'achievements']
+                                        },
+                                        math_solver: {
+                                            schema: ['problem', 'solution'],
+                                            content: ['problem', 'solution', 'steps', 'formula', 'explanation', 'category']
+                                        },
+                                        practice_problem: {
+                                            schema: ['question', 'correct_answer'],
+                                            content: ['question', 'options', 'answer', 'explanation', 'hints', 'points', 'timer']
+                                        },
+                                        sitelinks: {
+                                            schema: ['title', 'links'],
+                                            content: ['title', 'description', 'links', 'breadcrumb', 'navigation']
+                                        },
+                                        speakable: {
+                                            schema: ['title', 'content'],
+                                            content: ['title', 'content', 'summary', 'voice_settings', 'selectors']
                                         }
                                     };
                                     

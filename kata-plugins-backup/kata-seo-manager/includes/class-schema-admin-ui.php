@@ -99,7 +99,8 @@ class KATA_Schema_Admin_UI {
             'wheel' => __('Wheel/Game', 'kata-seo-manager'),
             'course' => __('Course', 'kata-seo-manager'),
             'localbusiness' => __('Local Business', 'kata-seo-manager'),
-            'jobposting' => __('Job Posting', 'kata-seo-manager')
+            'jobposting' => __('Job Posting', 'kata-seo-manager'),
+            'dynamic' => __('Dynamic (Custom JSON-LD)', 'kata-seo-manager')
         );
     }
     

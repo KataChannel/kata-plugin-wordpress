@@ -1425,6 +1425,7 @@ class KATA_SEO_Manager {
         add_shortcode('kata_wheel', array($this, 'render_wheel'));
         add_shortcode('kata_rating', array($this, 'render_rating'));
         add_shortcode('kata_organization', array($this, 'render_organization'));
+        add_shortcode('kata_dynamic', array($this, 'render_dynamic'));
         add_shortcode('kata_localbusiness', array($this, 'render_localbusiness'));
         add_shortcode('kata_local_business', array($this, 'render_localbusiness')); // Alternative name
         add_shortcode('kata_jobposting', array($this, 'render_jobposting'));
@@ -4293,6 +4294,7 @@ class KATA_SEO_Manager {
 
     public function render_organization($atts) {
         $atts = shortcode_atts(array(
+            // Core attributes
             'name' => '',
             'url' => '',
             'logo' => '',
@@ -4300,9 +4302,25 @@ class KATA_SEO_Manager {
             'address' => '',
             'phone' => '',
             'email' => '',
-            'show_content' => 'false', // Default: schema only
+            'founding_date' => '',
+            'founder' => '',
+            'number_of_employees' => '',
+            'slogan' => '',
+            'contact_point' => '',
+            'same_as' => '', // Social media profiles (comma separated)
+            'area_served' => '', // Geographic area
+            'award' => '', // Awards and recognitions
+            'image' => '', // Additional images
+            'legal_name' => '',
+            'tax_id' => '',
+            'duns' => '', // Dun & Bradstreet number
+            'iso_6523_code' => '',
             
-            // MODE 1: Schema Filtering
+            // Display control
+            'show_schema' => 'true',    // Control schema output
+            'show_frontend' => 'false', // Control frontend display (default: schema only)
+            
+            // MODE 1: Schema Filtering (hide_*/show_* for JSON-LD)
             'schema_fields' => '',
             'hide_url' => '',
             'hide_logo' => '',
@@ -4310,51 +4328,169 @@ class KATA_SEO_Manager {
             'hide_address' => '',
             'hide_telephone' => '',
             'hide_email' => '',
+            'hide_foundingDate' => '',
+            'hide_founder' => '',
+            'hide_numberOfEmployees' => '',
+            'hide_slogan' => '',
+            'hide_contactPoint' => '',
+            'hide_sameAs' => '',
+            'hide_areaServed' => '',
+            'hide_award' => '',
             'show_url' => '',
             'show_logo' => '',
             'show_description' => '',
             'show_address' => '',
             'show_telephone' => '',
             'show_email' => '',
+            'show_foundingDate' => '',
+            'show_founder' => '',
+            'show_numberOfEmployees' => '',
+            'show_slogan' => '',
+            'show_contactPoint' => '',
+            'show_sameAs' => '',
+            'show_areaServed' => '',
+            'show_award' => '',
             
-            // MODE 2: Content Display
+            // MODE 2: Content Display (hide_content_*/show_content_* for HTML output)
             'hide_content_name' => '',
             'hide_content_logo' => '',
             'hide_content_description' => '',
             'hide_content_contact' => '',
+            'hide_content_info' => '',
+            'hide_content_social' => '',
+            'hide_content_awards' => '',
+            'hide_content_address' => '',
+            'hide_content_employees' => '',
+            'hide_content_slogan' => '',
             'show_content_name' => '',
             'show_content_logo' => '',
             'show_content_description' => '',
-            'show_content_contact' => ''
+            'show_content_contact' => '',
+            'show_content_info' => '',
+            'show_content_social' => '',
+            'show_content_awards' => '',
+            'show_content_address' => '',
+            'show_content_employees' => '',
+            'show_content_slogan' => ''
         ), $atts, 'kata_organization');
         
         if (empty($atts['name'])) {
-            return '<div class="kata-organization-error">Tên tổ chức không được để trống.</div>';
+            return '<div class="kata-organization-error">❌ Tên tổ chức không được để trống.</div>';
         }
         
+        // Build comprehensive Organization schema
         $schema = array(
             '@context' => 'https://schema.org',
             '@type' => 'Organization',
             'name' => $atts['name']
         );
         
+        // Core properties
         if (!empty($atts['url'])) {
             $schema['url'] = $atts['url'];
         }
         if (!empty($atts['logo'])) {
-            $schema['logo'] = $atts['logo'];
+            $schema['logo'] = array(
+                '@type' => 'ImageObject',
+                'url' => $atts['logo']
+            );
         }
         if (!empty($atts['description'])) {
             $schema['description'] = $atts['description'];
         }
-        if (!empty($atts['address'])) {
-            $schema['address'] = $atts['address'];
+        if (!empty($atts['slogan'])) {
+            $schema['slogan'] = $atts['slogan'];
         }
+        
+        // Contact information
         if (!empty($atts['phone'])) {
             $schema['telephone'] = $atts['phone'];
         }
         if (!empty($atts['email'])) {
             $schema['email'] = $atts['email'];
+        }
+        
+        // Address - PostalAddress schema
+        if (!empty($atts['address'])) {
+            $schema['address'] = array(
+                '@type' => 'PostalAddress',
+                'streetAddress' => $atts['address']
+            );
+        }
+        
+        // Founding information
+        if (!empty($atts['founding_date'])) {
+            $schema['foundingDate'] = $atts['founding_date'];
+        }
+        if (!empty($atts['founder'])) {
+            $schema['founder'] = array(
+                '@type' => 'Person',
+                'name' => $atts['founder']
+            );
+        }
+        
+        // Organization details
+        if (!empty($atts['number_of_employees'])) {
+            $schema['numberOfEmployees'] = $atts['number_of_employees'];
+        }
+        if (!empty($atts['legal_name'])) {
+            $schema['legalName'] = $atts['legal_name'];
+        }
+        if (!empty($atts['tax_id'])) {
+            $schema['taxID'] = $atts['tax_id'];
+        }
+        if (!empty($atts['duns'])) {
+            $schema['duns'] = $atts['duns'];
+        }
+        if (!empty($atts['iso_6523_code'])) {
+            $schema['iso6523Code'] = $atts['iso_6523_code'];
+        }
+        
+        // Contact point (Customer service, etc.)
+        if (!empty($atts['contact_point'])) {
+            $contact_parts = explode('|', $atts['contact_point']);
+            $schema['contactPoint'] = array(
+                '@type' => 'ContactPoint',
+                'contactType' => isset($contact_parts[0]) ? $contact_parts[0] : 'Customer Service',
+                'telephone' => isset($contact_parts[1]) ? $contact_parts[1] : $atts['phone'],
+                'email' => isset($contact_parts[2]) ? $contact_parts[2] : $atts['email']
+            );
+        }
+        
+        // Social media profiles
+        if (!empty($atts['same_as'])) {
+            $social_profiles = array_map('trim', explode(',', $atts['same_as']));
+            $schema['sameAs'] = $social_profiles;
+        }
+        
+        // Geographic coverage
+        if (!empty($atts['area_served'])) {
+            $areas = array_map('trim', explode(',', $atts['area_served']));
+            if (count($areas) === 1) {
+                $schema['areaServed'] = $areas[0];
+            } else {
+                $schema['areaServed'] = $areas;
+            }
+        }
+        
+        // Awards and recognitions
+        if (!empty($atts['award'])) {
+            $awards = array_map('trim', explode(',', $atts['award']));
+            if (count($awards) === 1) {
+                $schema['award'] = $awards[0];
+            } else {
+                $schema['award'] = $awards;
+            }
+        }
+        
+        // Additional images
+        if (!empty($atts['image'])) {
+            $images = array_map('trim', explode(',', $atts['image']));
+            if (count($images) === 1) {
+                $schema['image'] = $images[0];
+            } else {
+                $schema['image'] = $images;
+            }
         }
         
         // MODE 1: Apply schema filtering
@@ -4374,50 +4510,621 @@ class KATA_SEO_Manager {
             if (!empty($atts[$hide_key]) && $atts[$hide_key] === 'true') {
                 return false;
             }
-            return ($atts['show_content'] === 'true'); // Default based on show_content
+            return ($atts['show_frontend'] === 'true'); // Default based on show_frontend
         };
         
         $output = '';
         
-        // Optional HTML output
-        if ($atts['show_content'] === 'true') {
-            $output .= '<div class="kata-organization-container">';
+        // Enhanced HTML output with comprehensive information
+        if ($atts['show_frontend'] === 'true') {
+            $output .= '<div class="kata-organization-container" itemscope itemtype="https://schema.org/Organization">';
             
+            // Logo section
             if ($should_show_content('logo') && !empty($atts['logo'])) {
                 $output .= '<div class="kata-organization-logo">';
-                $output .= '<img src="' . esc_url($atts['logo']) . '" alt="' . esc_attr($atts['name']) . '" />';
+                $output .= '<img src="' . esc_url($atts['logo']) . '" alt="' . esc_attr($atts['name']) . ' Logo" itemprop="logo" />';
                 $output .= '</div>';
             }
             
+            // Name and slogan
             if ($should_show_content('name')) {
-                $output .= '<h3 class="kata-organization-name">' . esc_html($atts['name']) . '</h3>';
+                $output .= '<h3 class="kata-organization-name" itemprop="name">' . esc_html($atts['name']) . '</h3>';
+                if ($should_show_content('slogan') && !empty($atts['slogan'])) {
+                    $output .= '<p class="kata-organization-slogan" itemprop="slogan"><em>"' . esc_html($atts['slogan']) . '"</em></p>';
+                }
             }
             
+            // Description
             if ($should_show_content('description') && !empty($atts['description'])) {
-                $output .= '<p class="kata-organization-description">' . esc_html($atts['description']) . '</p>';
+                $output .= '<div class="kata-organization-description" itemprop="description">';
+                $output .= '<p>' . esc_html($atts['description']) . '</p>';
+                $output .= '</div>';
             }
             
+            // Organization info grid
+            if ($should_show_content('info')) {
+                $info_items = array();
+                
+                if (!empty($atts['founding_date'])) {
+                    $info_items[] = '<div class="kata-info-item">📅 <strong>Ngày thành lập:</strong> ' . esc_html(date('d/m/Y', strtotime($atts['founding_date']))) . '</div>';
+                }
+                if (!empty($atts['founder'])) {
+                    $info_items[] = '<div class="kata-info-item">👤 <strong>Người sáng lập:</strong> ' . esc_html($atts['founder']) . '</div>';
+                }
+                if ($should_show_content('employees') && !empty($atts['number_of_employees'])) {
+                    $info_items[] = '<div class="kata-info-item">👥 <strong>Nhân viên:</strong> ' . esc_html($atts['number_of_employees']) . ' người</div>';
+                }
+                if (!empty($atts['area_served'])) {
+                    $info_items[] = '<div class="kata-info-item">🌍 <strong>Khu vực phục vụ:</strong> ' . esc_html($atts['area_served']) . '</div>';
+                }
+                
+                if (!empty($info_items)) {
+                    $output .= '<div class="kata-organization-info">';
+                    $output .= implode('', $info_items);
+                    $output .= '</div>';
+                }
+            }
+            
+            // Contact information
             if ($should_show_content('contact')) {
-                $output .= '<div class="kata-organization-contact">';
-                if (!empty($atts['address'])) {
-                    $output .= '<div class="kata-contact-item">📍 ' . esc_html($atts['address']) . '</div>';
+                $contact_items = array();
+                
+                if ($should_show_content('address') && !empty($atts['address'])) {
+                    $contact_items[] = '<div class="kata-contact-item" itemprop="address">📍 ' . esc_html($atts['address']) . '</div>';
                 }
                 if (!empty($atts['phone'])) {
-                    $output .= '<div class="kata-contact-item">📞 <a href="tel:' . esc_attr($atts['phone']) . '">' . esc_html($atts['phone']) . '</a></div>';
+                    $contact_items[] = '<div class="kata-contact-item">📞 <a href="tel:' . esc_attr($atts['phone']) . '" itemprop="telephone">' . esc_html($atts['phone']) . '</a></div>';
                 }
                 if (!empty($atts['email'])) {
-                    $output .= '<div class="kata-contact-item">✉️ <a href="mailto:' . esc_attr($atts['email']) . '">' . esc_html($atts['email']) . '</a></div>';
+                    $contact_items[] = '<div class="kata-contact-item">✉️ <a href="mailto:' . esc_attr($atts['email']) . '" itemprop="email">' . esc_html($atts['email']) . '</a></div>';
                 }
                 if (!empty($atts['url'])) {
-                    $output .= '<div class="kata-contact-item">🌐 <a href="' . esc_url($atts['url']) . '" target="_blank">' . esc_html($atts['url']) . '</a></div>';
+                    $contact_items[] = '<div class="kata-contact-item">🌐 <a href="' . esc_url($atts['url']) . '" target="_blank" itemprop="url" rel="noopener">' . esc_html($atts['url']) . '</a></div>';
                 }
+                
+                if (!empty($contact_items)) {
+                    $output .= '<div class="kata-organization-contact">';
+                    $output .= '<h4>Thông tin liên hệ</h4>';
+                    $output .= implode('', $contact_items);
+                    $output .= '</div>';
+                }
+            }
+            
+            // Social media profiles
+            if ($should_show_content('social') && !empty($atts['same_as'])) {
+                $social_profiles = array_map('trim', explode(',', $atts['same_as']));
+                $output .= '<div class="kata-organization-social">';
+                $output .= '<h4>Mạng xã hội</h4>';
+                $output .= '<div class="kata-social-links">';
+                foreach ($social_profiles as $profile_url) {
+                    $platform = '';
+                    if (strpos($profile_url, 'facebook.com') !== false) $platform = 'Facebook';
+                    elseif (strpos($profile_url, 'twitter.com') !== false || strpos($profile_url, 'x.com') !== false) $platform = 'Twitter/X';
+                    elseif (strpos($profile_url, 'linkedin.com') !== false) $platform = 'LinkedIn';
+                    elseif (strpos($profile_url, 'instagram.com') !== false) $platform = 'Instagram';
+                    elseif (strpos($profile_url, 'youtube.com') !== false) $platform = 'YouTube';
+                    else $platform = 'Social';
+                    
+                    $output .= '<a href="' . esc_url($profile_url) . '" target="_blank" class="kata-social-link" rel="noopener" itemprop="sameAs">';
+                    $output .= '🔗 ' . esc_html($platform);
+                    $output .= '</a>';
+                }
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+            
+            // Awards and recognitions
+            if ($should_show_content('awards') && !empty($atts['award'])) {
+                $awards = array_map('trim', explode(',', $atts['award']));
+                $output .= '<div class="kata-organization-awards">';
+                $output .= '<h4>Giải thưởng & Chứng nhận</h4>';
+                $output .= '<ul class="kata-awards-list">';
+                foreach ($awards as $award) {
+                    $output .= '<li itemprop="award">🏆 ' . esc_html($award) . '</li>';
+                }
+                $output .= '</ul>';
                 $output .= '</div>';
             }
             
             $output .= '</div>';
+            
+            // Add inline CSS for better presentation
+            $output .= '<style>
+                .kata-organization-container {
+                    max-width: 800px;
+                    margin: 20px auto;
+                    padding: 30px;
+                    background: #ffffff;
+                    border-radius: 12px;
+                    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                }
+                .kata-organization-logo {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                .kata-organization-logo img {
+                    max-width: 200px;
+                    height: auto;
+                }
+                .kata-organization-name {
+                    font-size: 28px;
+                    font-weight: 700;
+                    color: #1a1a1a;
+                    margin: 0 0 10px 0;
+                    text-align: center;
+                }
+                .kata-organization-slogan {
+                    text-align: center;
+                    font-size: 16px;
+                    color: #667eea;
+                    margin: 0 0 20px 0;
+                }
+                .kata-organization-description {
+                    margin: 20px 0;
+                    padding: 15px;
+                    background: #f8f9fa;
+                    border-left: 4px solid #667eea;
+                    border-radius: 4px;
+                }
+                .kata-organization-description p {
+                    margin: 0;
+                    line-height: 1.6;
+                    color: #444;
+                }
+                .kata-organization-info {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 12px;
+                    margin: 20px 0;
+                }
+                .kata-info-item {
+                    padding: 12px;
+                    background: #f0f8ff;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    color: #333;
+                }
+                .kata-organization-contact {
+                    margin: 25px 0;
+                    padding: 20px;
+                    background: #fffbeb;
+                    border-radius: 8px;
+                }
+                .kata-organization-contact h4 {
+                    margin: 0 0 15px 0;
+                    font-size: 18px;
+                    color: #1a1a1a;
+                }
+                .kata-contact-item {
+                    padding: 8px 0;
+                    font-size: 15px;
+                    color: #444;
+                }
+                .kata-contact-item a {
+                    color: #0073aa;
+                    text-decoration: none;
+                }
+                .kata-contact-item a:hover {
+                    text-decoration: underline;
+                }
+                .kata-organization-social {
+                    margin: 25px 0;
+                }
+                .kata-organization-social h4 {
+                    margin: 0 0 15px 0;
+                    font-size: 18px;
+                    color: #1a1a1a;
+                }
+                .kata-social-links {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                }
+                .kata-social-link {
+                    padding: 8px 16px;
+                    background: #667eea;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 20px;
+                    font-size: 14px;
+                    transition: all 0.3s;
+                }
+                .kata-social-link:hover {
+                    background: #5568d3;
+                    transform: translateY(-2px);
+                }
+                .kata-organization-awards {
+                    margin: 25px 0;
+                    padding: 20px;
+                    background: #f0fff4;
+                    border-radius: 8px;
+                }
+                .kata-organization-awards h4 {
+                    margin: 0 0 15px 0;
+                    font-size: 18px;
+                    color: #1a1a1a;
+                }
+                .kata-awards-list {
+                    list-style: none;
+                    padding: 0;
+                    margin: 0;
+                }
+                .kata-awards-list li {
+                    padding: 8px 0;
+                    font-size: 15px;
+                    color: #059669;
+                }
+                .kata-organization-error {
+                    padding: 15px;
+                    background: #fee;
+                    border: 1px solid #fcc;
+                    border-radius: 4px;
+                    color: #c33;
+                }
+            </style>';
         }
         
-        $this->store_shortcode_schema($schema, 'Organization'); // Schema stored for <head> output
+        // Store schema for <head> output if enabled
+        if ($atts['show_schema'] === 'true') {
+            $this->store_shortcode_schema($schema, 'Organization');
+        }
+        
+        return $output;
+    }
+
+    /**
+     * Render Dynamic Schema
+     * 
+     * Cho phép user tự nhập JSON-LD code tùy chỉnh
+     * 
+     * @param array $atts Shortcode attributes
+     * @return string HTML + JSON-LD output
+     */
+    public function render_dynamic($atts) {
+        $atts = shortcode_atts(array(
+            // Core attributes
+            'json_code' => '',           // JSON-LD code (required)
+            'schema_type' => '',         // Schema @type (auto-detect if empty)
+            'schema_name' => '',         // Schema name for display
+            'description' => '',         // Schema description
+            
+            // Validation & Formatting
+            'validate' => 'true',        // Validate JSON syntax
+            'pretty_print' => 'false',   // Format JSON with indentation
+            'minify' => 'false',         // Remove whitespace
+            'auto_context' => 'true',    // Auto-add @context if missing
+            'escape_quotes' => 'false',  // Escape double quotes
+            
+            // Display controls
+            'show_schema' => 'true',     // Show JSON-LD in <script> tag
+            'show_frontend' => 'false',  // Show visual representation
+            'show_raw' => 'false',       // Show raw JSON in <pre> tag
+            'show_info' => 'false',      // Show schema info box
+            
+            // MODE 1: Schema filtering (not applicable for dynamic)
+            'schema_fields' => '',
+            
+            // MODE 2: Content display controls
+            'hide_content_info' => 'false',
+            'hide_content_raw' => 'false',
+            'hide_content_formatted' => 'false',
+            'show_content_info' => 'false',
+            'show_content_raw' => 'false',
+            'show_content_formatted' => 'false',
+            
+            // Advanced
+            'wrapper_class' => '',       // Custom CSS class for wrapper
+            'error_display' => 'true',   // Show validation errors
+        ), $atts, 'kata_dynamic');
+        
+        $output = '';
+        $json_code = trim($atts['json_code']);
+        
+        // Validate that json_code is provided
+        if (empty($json_code)) {
+            if ($atts['error_display'] === 'true') {
+                return '<div class="kata-dynamic-error" style="padding: 15px; background: #fee; border-left: 4px solid #c00; color: #c00; margin: 20px 0;">
+                    <strong>⚠️ Dynamic Schema Error:</strong> Attribute <code>json_code</code> is required.
+                    <br><small>Example: <code>[kata_dynamic json_code=\'{"@context":"https://schema.org","@type":"WebSite","name":"Example"}\']</code></small>
+                </div>';
+            }
+            return '';
+        }
+        
+        // Decode HTML entities if needed
+        $json_code = html_entity_decode($json_code, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        
+        // Escape quotes if requested
+        if ($atts['escape_quotes'] === 'true') {
+            $json_code = str_replace('"', '\"', $json_code);
+        }
+        
+        // Parse JSON
+        $schema_data = json_decode($json_code, true);
+        $json_error = json_last_error();
+        
+        // Validate JSON syntax
+        if ($atts['validate'] === 'true' && $json_error !== JSON_ERROR_NONE) {
+            if ($atts['error_display'] === 'true') {
+                $error_messages = array(
+                    JSON_ERROR_DEPTH => 'Maximum stack depth exceeded',
+                    JSON_ERROR_STATE_MISMATCH => 'Invalid or malformed JSON',
+                    JSON_ERROR_CTRL_CHAR => 'Unexpected control character found',
+                    JSON_ERROR_SYNTAX => 'Syntax error, malformed JSON',
+                    JSON_ERROR_UTF8 => 'Malformed UTF-8 characters'
+                );
+                $error_msg = isset($error_messages[$json_error]) ? $error_messages[$json_error] : 'Unknown JSON error';
+                
+                return '<div class="kata-dynamic-error" style="padding: 15px; background: #fee; border-left: 4px solid #c00; color: #c00; margin: 20px 0;">
+                    <strong>⚠️ JSON Validation Error:</strong> ' . esc_html($error_msg) . '
+                    <br><small>Please check your JSON syntax. Use a JSON validator tool if needed.</small>
+                    <pre style="background: #fff; padding: 10px; margin-top: 10px; overflow-x: auto;">' . esc_html($json_code) . '</pre>
+                </div>';
+            }
+            return '';
+        }
+        
+        // Auto-add @context if missing
+        if ($atts['auto_context'] === 'true' && is_array($schema_data)) {
+            if (!isset($schema_data['@context'])) {
+                $schema_data['@context'] = 'https://schema.org';
+            }
+        }
+        
+        // Auto-detect schema type
+        $detected_type = '';
+        if (is_array($schema_data) && isset($schema_data['@type'])) {
+            $detected_type = $schema_data['@type'];
+        }
+        
+        $schema_type = !empty($atts['schema_type']) ? $atts['schema_type'] : $detected_type;
+        $schema_name = !empty($atts['schema_name']) ? $atts['schema_name'] : ($schema_type ?: 'Custom Schema');
+        
+        // Re-encode JSON with formatting options
+        $json_options = 0;
+        if ($atts['pretty_print'] === 'true') {
+            $json_options |= JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+        } else if ($atts['minify'] === 'true') {
+            $json_options = 0; // No formatting
+        } else {
+            $json_options = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+        }
+        
+        $final_json = is_array($schema_data) ? json_encode($schema_data, $json_options) : $json_code;
+        
+        // Dual-mode visibility logic
+        $should_show_content = function($field_name) use ($atts) {
+            $show_key = 'show_content_' . $field_name;
+            $hide_key = 'hide_content_' . $field_name;
+            
+            if (!empty($atts[$show_key]) && $atts[$show_key] === 'true') {
+                return true;
+            }
+            if (!empty($atts[$hide_key]) && $atts[$hide_key] === 'true') {
+                return false;
+            }
+            return ($atts['show_frontend'] === 'true');
+        };
+        
+        // MODE 1: Output JSON-LD Schema
+        if ($atts['show_schema'] === 'true') {
+            $output .= '<script type="application/ld+json">' . "\n";
+            $output .= $final_json . "\n";
+            $output .= '</script>' . "\n";
+        }
+        
+        // MODE 2: Frontend Display
+        if ($atts['show_frontend'] === 'true' || $atts['show_raw'] === 'true' || $atts['show_info'] === 'true') {
+            $wrapper_class = !empty($atts['wrapper_class']) ? ' ' . esc_attr($atts['wrapper_class']) : '';
+            
+            $output .= '<div class="kata-dynamic-container' . $wrapper_class . '" itemscope>';
+            
+            // Schema Info Box
+            if (($atts['show_info'] === 'true' || $should_show_content('info')) && !($atts['hide_content_info'] === 'true')) {
+                $output .= '<div class="kata-dynamic-info">';
+                $output .= '<h3>📋 ' . esc_html($schema_name) . '</h3>';
+                
+                if (!empty($atts['description'])) {
+                    $output .= '<p class="schema-description">' . esc_html($atts['description']) . '</p>';
+                }
+                
+                $output .= '<div class="schema-meta">';
+                $output .= '<span class="meta-item"><strong>Type:</strong> ' . esc_html($schema_type ?: 'Custom') . '</span>';
+                
+                if (is_array($schema_data)) {
+                    $property_count = count($schema_data);
+                    $output .= '<span class="meta-item"><strong>Properties:</strong> ' . $property_count . '</span>';
+                }
+                
+                $output .= '<span class="meta-item"><strong>Format:</strong> JSON-LD</span>';
+                $output .= '</div>';
+                $output .= '</div>';
+            }
+            
+            // Raw JSON Display
+            if (($atts['show_raw'] === 'true' || $should_show_content('raw')) && !($atts['hide_content_raw'] === 'true')) {
+                $formatted_json = is_array($schema_data) 
+                    ? json_encode($schema_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)
+                    : $json_code;
+                
+                $output .= '<div class="kata-dynamic-raw">';
+                $output .= '<h4>💻 JSON-LD Code:</h4>';
+                $output .= '<pre class="json-code"><code>' . esc_html($formatted_json) . '</code></pre>';
+                $output .= '</div>';
+            }
+            
+            // Formatted Property Display
+            if (is_array($schema_data) && ($should_show_content('formatted') && !($atts['hide_content_formatted'] === 'true'))) {
+                $output .= '<div class="kata-dynamic-formatted">';
+                $output .= '<h4>📊 Schema Properties:</h4>';
+                $output .= '<table class="schema-properties">';
+                $output .= '<thead><tr><th>Property</th><th>Value</th></tr></thead>';
+                $output .= '<tbody>';
+                
+                foreach ($schema_data as $key => $value) {
+                    if ($key === '@context') continue; // Skip context in table
+                    
+                    $output .= '<tr>';
+                    $output .= '<td class="property-name"><code>' . esc_html($key) . '</code></td>';
+                    $output .= '<td class="property-value">';
+                    
+                    if (is_array($value)) {
+                        $output .= '<pre>' . esc_html(json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)) . '</pre>';
+                    } else if (is_bool($value)) {
+                        $output .= '<span class="bool-value">' . ($value ? 'true' : 'false') . '</span>';
+                    } else if (is_numeric($value)) {
+                        $output .= '<span class="num-value">' . esc_html($value) . '</span>';
+                    } else {
+                        $output .= esc_html($value);
+                    }
+                    
+                    $output .= '</td>';
+                    $output .= '</tr>';
+                }
+                
+                $output .= '</tbody>';
+                $output .= '</table>';
+                $output .= '</div>';
+            }
+            
+            // CSS Styling
+            $output .= '<style>
+                .kata-dynamic-container {
+                    max-width: 900px;
+                    margin: 30px auto;
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                }
+                .kata-dynamic-info {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    color: #ffffff;
+                    padding: 25px;
+                    border-radius: 12px;
+                    margin-bottom: 20px;
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                }
+                .kata-dynamic-info h3 {
+                    margin: 0 0 15px 0;
+                    font-size: 24px;
+                    font-weight: 600;
+                }
+                .kata-dynamic-info .schema-description {
+                    margin: 0 0 20px 0;
+                    font-size: 16px;
+                    line-height: 1.6;
+                    opacity: 0.95;
+                }
+                .schema-meta {
+                    display: flex;
+                    gap: 20px;
+                    flex-wrap: wrap;
+                    font-size: 14px;
+                    opacity: 0.9;
+                }
+                .meta-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                }
+                .kata-dynamic-raw {
+                    background: #f8f9fa;
+                    padding: 20px;
+                    border-radius: 8px;
+                    margin-bottom: 20px;
+                    border: 1px solid #dee2e6;
+                }
+                .kata-dynamic-raw h4 {
+                    margin: 0 0 15px 0;
+                    color: #495057;
+                    font-size: 18px;
+                }
+                .json-code {
+                    background: #1e1e1e;
+                    color: #d4d4d4;
+                    padding: 20px;
+                    border-radius: 6px;
+                    overflow-x: auto;
+                    font-family: "Consolas", "Monaco", "Courier New", monospace;
+                    font-size: 14px;
+                    line-height: 1.6;
+                    margin: 0;
+                }
+                .json-code code {
+                    color: #d4d4d4;
+                }
+                .kata-dynamic-formatted {
+                    background: #ffffff;
+                    padding: 20px;
+                    border-radius: 8px;
+                    border: 1px solid #dee2e6;
+                }
+                .kata-dynamic-formatted h4 {
+                    margin: 0 0 15px 0;
+                    color: #495057;
+                    font-size: 18px;
+                }
+                .schema-properties {
+                    width: 100%;
+                    border-collapse: collapse;
+                    font-size: 14px;
+                }
+                .schema-properties th,
+                .schema-properties td {
+                    padding: 12px 15px;
+                    text-align: left;
+                    border-bottom: 1px solid #dee2e6;
+                }
+                .schema-properties th {
+                    background: #f8f9fa;
+                    font-weight: 600;
+                    color: #495057;
+                }
+                .schema-properties tr:last-child td {
+                    border-bottom: none;
+                }
+                .property-name {
+                    width: 30%;
+                    font-weight: 500;
+                }
+                .property-name code {
+                    background: #e9ecef;
+                    padding: 4px 8px;
+                    border-radius: 4px;
+                    color: #d63384;
+                    font-size: 13px;
+                }
+                .property-value {
+                    word-break: break-word;
+                }
+                .property-value pre {
+                    background: #f8f9fa;
+                    padding: 10px;
+                    border-radius: 4px;
+                    margin: 0;
+                    font-size: 12px;
+                    overflow-x: auto;
+                }
+                .bool-value {
+                    color: #0d6efd;
+                    font-weight: 500;
+                }
+                .num-value {
+                    color: #198754;
+                    font-weight: 500;
+                }
+                .kata-dynamic-error {
+                    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                }
+                .kata-dynamic-error code {
+                    background: #fff;
+                    padding: 2px 6px;
+                    border-radius: 3px;
+                    font-size: 13px;
+                }
+            </style>';
+            
+            $output .= '</div>';
+        }
         
         return $output;
     }

@@ -348,6 +348,16 @@ class KATA_Schema_Customizer {
             'comment' => false,
             'blogSection' => false,
             'keywords' => false
+        ),
+        'dynamic' => array(
+            '@context' => true,
+            '@type' => true,
+            'json_code' => true,
+            'validate' => false,
+            'pretty_print' => false,
+            'minify' => false,
+            'escape_quotes' => false,
+            'auto_context' => false
         )
     );
     

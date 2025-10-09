@@ -774,6 +774,75 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                         <small>✅ SpeakableSpecification schema + Voice optimization</small>
                     </div>
                 `
+            },
+
+            dynamic: {
+                title: '⚡ Dynamic Schema (Custom JSON-LD)',
+                shortcode: `[kata_dynamic json_code='{"@context":"https://schema.org","@type":"WebSite","name":"Example.com","url":"https://www.example.com/"}' show_schema="true" show_frontend="false"]`,
+                preview: `
+                    <div class="kata-preview-box" style="
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                    ">
+                        <h4 style="color: white; margin: 0 0 16px 0;">⚡ Dynamic Schema - Tự thêm code JSON-LD tùy chỉnh</h4>
+                        <div class="dynamic-preview" style="
+                            background: rgba(255,255,255,0.1);
+                            backdrop-filter: blur(10px);
+                            padding: 16px;
+                            border-radius: 6px;
+                            border: 1px solid rgba(255,255,255,0.2);
+                        ">
+                            <p style="margin: 8px 0; font-size: 14px;"><strong>🎯 Công dụng:</strong> Cho phép bạn tự thêm BẤT KỲ loại schema nào bằng JSON-LD</p>
+                            <p style="margin: 8px 0; font-size: 14px;"><strong>📝 Ví dụ:</strong> WebSite, Organization, Person, Event, hoặc bất kỳ @type nào</p>
+                            <p style="margin: 8px 0; font-size: 14px;"><strong>✅ Tính năng:</strong> JSON validation, pretty print, minify, auto @context</p>
+                            <p style="margin: 8px 0; font-size: 14px;"><strong>🎨 Display:</strong> Hiển thị schema info, raw JSON, property table</p>
+                        </div>
+                        <hr style="margin: 16px 0; border: none; border-top: 1px solid rgba(255,255,255,0.2);">
+                        <small style="display: block; color: rgba(255,255,255,0.9); line-height: 1.7; font-size: 13px;">
+                            <strong>📚 Cách sử dụng:</strong><br>
+                            1. <strong>json_code</strong> - JSON-LD code (bắt buộc)<br>
+                            2. <strong>validate="true"</strong> - Kiểm tra syntax JSON<br>
+                            3. <strong>show_schema="true"</strong> - Output JSON-LD script tag<br>
+                            4. <strong>show_frontend="false"</strong> - Ẩn/hiện visual display<br>
+                            5. <strong>show_raw="true"</strong> - Hiển thị JSON code<br>
+                            6. <strong>show_info="true"</strong> - Hiển thị schema info box<br>
+                            7. <strong>pretty_print="true"</strong> - Format JSON đẹp<br>
+                            8. <strong>auto_context="true"</strong> - Tự thêm @context nếu thiếu
+                        </small>
+                        <hr style="margin: 16px 0; border: none; border-top: 1px solid rgba(255,255,255,0.2);">
+                        <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 6px; margin-top: 12px;">
+                            <p style="margin: 0 0 8px 0; font-weight: 600; font-size: 13px;">💡 Ví dụ WebSite Schema:</p>
+                            <pre style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 4px; margin: 0; font-size: 12px; overflow-x: auto; line-height: 1.6; color: #e0e0e0;">{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "example.com",
+  "url": "https://www.example.com/"
+}</pre>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 6px; margin-top: 12px;">
+                            <p style="margin: 0 0 8px 0; font-weight: 600; font-size: 13px;">💡 Ví dụ Person Schema:</p>
+                            <pre style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 4px; margin: 0; font-size: 12px; overflow-x: auto; line-height: 1.6; color: #e0e0e0;">{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Nguyễn Văn A",
+  "jobTitle": "SEO Specialist",
+  "email": "contact@example.com",
+  "url": "https://example.com/author/nguyen-van-a"
+}</pre>
+                        </div>
+                        <hr style="margin: 16px 0; border: none; border-top: 1px solid rgba(255,255,255,0.2);">
+                        <small style="display: block; color: rgba(255,255,255,0.95); font-size: 13px; line-height: 1.6;">
+                            <strong>🎯 Use Cases:</strong><br>
+                            • Testing custom schema types chưa có trong plugin<br>
+                            • Import schema từ Google Structured Data Tool<br>
+                            • Prototype schema mới trước khi code vào plugin<br>
+                            • Override schema cho specific pages với custom data<br>
+                            • Combine multiple @type trong một schema object
+                        </small>
+                    </div>
+                `
             }
         };
 

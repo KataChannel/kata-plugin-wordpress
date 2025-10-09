@@ -846,29 +846,121 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             }
         };
 
-        // Helper function để tính toán modal size responsive
-        function getModalSize(baseWidth, baseHeight) {
-            const screenWidth = window.innerWidth || document.documentElement.clientWidth || 800;
-            const screenHeight = window.innerHeight || document.documentElement.clientHeight || 600;
+        // ========================================
+        // RESPONSIVE HELPER FUNCTIONS
+        // ========================================
+        
+        // Detect device type and screen size
+        function getDeviceInfo() {
+            const width = window.innerWidth || document.documentElement.clientWidth || 800;
+            const height = window.innerHeight || document.documentElement.clientHeight || 600;
             
-            const width = Math.min(baseWidth, screenWidth - 40);
-            const height = Math.min(baseHeight, screenHeight - 40);
+            return {
+                width: width,
+                height: height,
+                isMobile: width < 768,
+                isTablet: width >= 768 && width < 1024,
+                isDesktop: width >= 1024,
+                isSmallScreen: width < 1200,
+                isLargeScreen: width >= 1200,
+                orientation: width > height ? 'landscape' : 'portrait'
+            };
+        }
+        
+        // Calculate responsive modal size with breakpoints
+        function getModalSize(baseWidth, baseHeight, options) {
+            options = options || {};
+            const device = getDeviceInfo();
+            const margin = options.margin || (device.isMobile ? 20 : 40);
+            const minWidth = options.minWidth || (device.isMobile ? 300 : 400);
+            const minHeight = options.minHeight || (device.isMobile ? 250 : 300);
+            
+            let width, height;
+            
+            // Responsive width based on device
+            if (device.isMobile) {
+                // Mobile: 95% width for better UX
+                width = Math.floor(device.width * 0.95);
+            } else if (device.isTablet) {
+                // Tablet: 90% width or max 900px
+                width = Math.min(Math.floor(device.width * 0.90), 900);
+            } else {
+                // Desktop: Use baseWidth but respect screen limits
+                width = Math.min(baseWidth, device.width - margin * 2);
+            }
+            
+            // Responsive height based on device
+            if (device.isMobile) {
+                // Mobile: 90% height to avoid keyboard issues
+                height = Math.floor(device.height * 0.90);
+            } else if (device.isTablet) {
+                // Tablet: 85% height
+                height = Math.min(Math.floor(device.height * 0.85), 800);
+            } else {
+                // Desktop: Use baseHeight but respect screen limits
+                height = Math.min(baseHeight, device.height - margin * 2);
+            }
             
             // Ensure minimum size
+            width = Math.max(width, minWidth);
+            height = Math.max(height, minHeight);
+            
+            // Ensure modal doesn't exceed viewport
+            width = Math.min(width, device.width - 10);
+            height = Math.min(height, device.height - 10);
+            
             return {
-                width: Math.max(width, 400),
-                height: Math.max(height, 300)
+                width: width,
+                height: height,
+                device: device,
+                margin: margin,
+                // Additional responsive flags
+                useCompactLayout: device.isMobile,
+                useTwoColumn: device.isDesktop && !device.isSmallScreen,
+                fontSize: device.isMobile ? '13px' : '14px',
+                padding: device.isMobile ? '12px' : '20px'
+            };
+        }
+        
+        // Get responsive grid columns
+        function getGridColumns() {
+            const device = getDeviceInfo();
+            if (device.isMobile) return 1;
+            if (device.isTablet) return 2;
+            return device.isSmallScreen ? 2 : 3;
+        }
+        
+        // Get responsive font sizes
+        function getFontSizes() {
+            const device = getDeviceInfo();
+            return {
+                h1: device.isMobile ? '20px' : '24px',
+                h2: device.isMobile ? '18px' : '20px',
+                h3: device.isMobile ? '16px' : '18px',
+                h4: device.isMobile ? '14px' : '16px',
+                body: device.isMobile ? '13px' : '14px',
+                small: device.isMobile ? '11px' : '12px'
             };
         }
 
-        // Tạo modal selection cho schema templates
+        // Tạo modal selection cho schema templates - RESPONSIVE
         function openSchemaSelector() {
+            const responsive = getModalSize(1600, 1000, { margin: 40 });
+            const fonts = getFontSizes();
+            const device = responsive.device;
+            
+            // Responsive grid layout
+            const gridCols = device.isMobile ? '1' : (device.isTablet ? '2' : '3');
+            const leftPanelWidth = device.isMobile ? '100%' : (device.isTablet ? '350px' : '420px');
+            const headerPadding = device.isMobile ? '16px 20px' : '24px 32px';
+            const contentPadding = device.isMobile ? '16px' : '24px 32px';
+            
             const schemaOptions = Object.keys(templates).map(key => `
                 <div class="kata-schema-option" data-key="${key}" style="
                     border: 1px solid #ddd; 
                     border-radius: 8px; 
-                    padding: 16px; 
-                    margin: 10px 0; 
+                    padding: ${device.isMobile ? '12px' : '16px'}; 
+                    margin: ${device.isMobile ? '8px 0' : '10px 0'}; 
                     cursor: pointer; 
                     transition: all 0.3s ease;
                     background: #ffffff;
@@ -877,19 +969,19 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
                 " onmouseover="this.style.borderColor='#0073aa'; this.style.background='#f0f8ff'; this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 8px rgba(0,115,170,0.15)';" 
                    onmouseout="this.style.borderColor='#ddd'; this.style.background='#ffffff'; this.style.transform='translateX(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.05)';">
-                    <h4 style="margin: 0 0 8px 0; color: #23282d; font-size: 15px; font-weight: 600;">${templates[key].title}</h4>
-                    <p style="margin: 0; font-size: 12px; color: #666; line-height: 1.4; word-break: break-word;">
-                        ${templates[key].shortcode.length > 100 ? templates[key].shortcode.substring(0, 100) + '...' : templates[key].shortcode}
+                    <h4 style="margin: 0 0 8px 0; color: #23282d; font-size: ${fonts.h4}; font-weight: 600;">${templates[key].title}</h4>
+                    <p style="margin: 0; font-size: ${fonts.small}; color: #666; line-height: 1.4; word-break: break-word;">
+                        ${templates[key].shortcode.length > (device.isMobile ? 60 : 100) ? templates[key].shortcode.substring(0, device.isMobile ? 60 : 100) + '...' : templates[key].shortcode}
                     </p>
                 </div>
             `).join('');
 
             editor.windowManager.open({
                 title: '🏷️ KATA SEO Manager - Chọn Schema Template',
-                width: window.innerWidth,
-                height: window.innerHeight,
-                resizable: false,
-                maximizable: false,
+                width: responsive.width,
+                height: responsive.height,
+                resizable: !device.isMobile,
+                maximizable: !device.isMobile,
                 inline: false,
                 body: [
                     {
@@ -911,44 +1003,46 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                 <div style="
                                     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                                     color: white;
-                                    padding: 24px 32px;
+                                    padding: ${headerPadding};
                                     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
                                     flex-shrink: 0;
                                 ">
-                                    <h2 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 600;">KATA SEO Manager</h2>
-                                    <p style="margin: 0; opacity: 0.95; font-size: 14px;">Chọn schema template để chèn vào nội dung - 21 loại schema hỗ trợ SEO</p>
+                                    <h2 style="margin: 0 0 ${device.isMobile ? '6px' : '8px'} 0; font-size: ${fonts.h2}; font-weight: 600;">KATA SEO Manager</h2>
+                                    <p style="margin: 0; opacity: 0.95; font-size: ${fonts.body};">Chọn schema template để chèn vào nội dung - 21 loại schema hỗ trợ SEO</p>
                                 </div>
                                 
-                                <!-- Main Content Area -->
+                                <!-- Main Content Area - Responsive -->
                                 <div style="
                                     flex: 1;
                                     display: flex;
+                                    flex-direction: ${device.isMobile ? 'column' : 'row'};
                                     overflow: hidden;
-                                    padding: 24px 32px;
-                                    gap: 24px;
+                                    padding: ${contentPadding};
+                                    gap: ${device.isMobile ? '16px' : '24px'};
                                 ">
                                     <!-- Left Panel - Schema List -->
                                     <div style="
-                                        flex: 0 0 420px;
+                                        flex: ${device.isMobile ? '1' : '0 0 ' + leftPanelWidth};
                                         display: flex;
                                         flex-direction: column;
                                         background: white;
                                         border-radius: 12px;
                                         box-shadow: 0 2px 8px rgba(0,0,0,0.08);
                                         overflow: hidden;
+                                        ${device.isMobile ? 'max-height: 40%;' : ''}
                                     ">
                                         <!-- Search Box -->
-                                        <div style="padding: 20px; border-bottom: 1px solid #e5e7eb; flex-shrink: 0;">
+                                        <div style="padding: ${device.isMobile ? '16px' : '20px'}; border-bottom: 1px solid #e5e7eb; flex-shrink: 0;">
                                             <input 
                                                 type="text" 
                                                 id="kata-schema-search" 
-                                                placeholder="🔍 Tìm kiếm schema (FAQ, Article, Product, LocalBusiness...)" 
+                                                placeholder="🔍 ${device.isMobile ? 'Tìm schema...' : 'Tìm kiếm schema (FAQ, Article, Product...)'}" 
                                                 style="
                                                     width: 100%;
-                                                    padding: 12px 16px;
+                                                    padding: ${device.isMobile ? '10px 14px' : '12px 16px'};
                                                     border: 2px solid #e5e7eb;
                                                     border-radius: 8px;
-                                                    font-size: 14px;
+                                                    font-size: ${fonts.body};
                                                     box-sizing: border-box;
                                                     transition: all 0.3s;
                                                     outline: none;
@@ -956,31 +1050,31 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                                 onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102,126,234,0.1)'"
                                                 onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
                                             />
-                                            <p style="margin: 8px 0 0 0; font-size: 12px; color: #6b7280;">
+                                            ${device.isMobile ? '' : `<p style="margin: 8px 0 0 0; font-size: ${fonts.small}; color: #6b7280;">
                                                 💡 Gõ để lọc nhanh - Hỗ trợ 21 schema types
-                                            </p>
+                                            </p>`}
                                         </div>
                                         
                                         <!-- Schema List -->
                                         <div id="kata-schema-list" style="
                                             flex: 1;
                                             overflow-y: auto;
-                                            padding: 16px;
+                                            padding: ${device.isMobile ? '12px' : '16px'};
                                         ">
                                             ${schemaOptions}
                                         </div>
                                         
-                                        <!-- Footer Note -->
+                                        ${device.isMobile ? '' : `<!-- Footer Note -->
                                         <div style="
                                             padding: 16px 20px;
                                             background: #fffbeb;
                                             border-top: 1px solid #fef3c7;
                                             flex-shrink: 0;
                                         ">
-                                            <p style="margin: 0; font-size: 12px; color: #92400e; line-height: 1.5;">
+                                            <p style="margin: 0; font-size: ${fonts.small}; color: #92400e; line-height: 1.5;">
                                                 💡 <strong>Tip:</strong> Click vào schema để xem preview và tùy chọn content
                                             </p>
-                                        </div>
+                                        </div>`}
                                     </div>
                                     
                                     <!-- Right Panel - Preview & Info -->
@@ -992,10 +1086,11 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                         border-radius: 12px;
                                         box-shadow: 0 2px 8px rgba(0,0,0,0.08);
                                         overflow: hidden;
+                                        ${device.isMobile ? 'min-height: 300px;' : ''}
                                     ">
                                         <div id="kata-preview-panel" style="
                                             flex: 1;
-                                            padding: 32px;
+                                            padding: ${device.isMobile ? '20px' : '32px'};
                                             overflow-y: auto;
                                             display: flex;
                                             align-items: center;
@@ -1004,9 +1099,9 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                             color: #9ca3af;
                                         ">
                                             <div>
-                                                <div style="font-size: 64px; margin-bottom: 16px;">📋</div>
-                                                <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #6b7280;">Chọn một schema bên trái</h3>
-                                                <p style="margin: 0; font-size: 14px;">Preview và tùy chọn sẽ hiển thị ở đây</p>
+                                                <div style="font-size: ${device.isMobile ? '48px' : '64px'}; margin-bottom: ${device.isMobile ? '12px' : '16px'};">📋</div>
+                                                <h3 style="margin: 0 0 8px 0; font-size: ${fonts.h3}; color: #6b7280;">Chọn một schema bên trái</h3>
+                                                <p style="margin: 0; font-size: ${fonts.body};">Preview và tùy chọn sẽ hiển thị ở đây</p>
                                             </div>
                                         </div>
                                     </div>
@@ -1607,8 +1702,12 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             });
         }
 
-        // Function to show preview and insert schema
+        // Function to show preview and insert schema - RESPONSIVE
         function showPreviewAndInsert(key) {
+            const responsive = getModalSize(1400, 900, { margin: 20 });
+            const fonts = getFontSizes();
+            const device = responsive.device;
+            
             var contentFields = {
                 // Schema types with MODE 2 content visibility controls
                 article: ['title', 'author', 'category', 'tags', 'excerpt', 'reading_time', 'word_count', 'date', 'image'],
@@ -1717,32 +1816,32 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             
             editor.windowManager.open({
                 title: templates[key].title + ' - Xem Trước & Chèn',
-                width: Math.min(window.innerWidth * 0.95, 1400),
-                height: Math.min(window.innerHeight * 0.95, 900),
-                resizable: true,
-                maximizable: true,
+                width: responsive.width,
+                height: responsive.height,
+                resizable: !device.isMobile,
+                maximizable: !device.isMobile,
                 body: [
                     {
                         type: 'container',
                         html: `
-                            <div id="show_content_${key}" style="padding: 15px; height: 80vh !important; max-height: 80vh !important; width: 80vw !important; max-width: 80vw !important; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; box-sizing: border-box;">
-                                <div style="margin-bottom: 15px;">
-                                    <h3 style="color: #23282d; margin: 0 0 12px 0; font-size: 18px;">${templates[key].title}</h3>
-                                    <div style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">
+                            <div id="show_content_${key}" style="padding: ${responsive.padding}; height: ${device.isMobile ? '100%' : '80vh'}; max-height: 100%; width: 100%; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; box-sizing: border-box;">
+                                <div style="margin-bottom: ${device.isMobile ? '12px' : '15px'};">
+                                    <h3 style="color: #23282d; margin: 0 0 12px 0; font-size: ${fonts.h3};">${templates[key].title}</h3>
+                                    <div style="max-height: ${device.isMobile ? '150px' : '200px'}; overflow-y: auto; margin-bottom: ${device.isMobile ? '12px' : '15px'};">
                                         ${templates[key].preview}
                                     </div>
                                 </div>
                                 
                                 ${checkboxesHTML}
                                 
-                                <div style="background: #f8f9fa; border-radius: 4px; padding: 12px; margin: 12px 0;">
-                                    <h4 style="margin: 0 0 8px 0; color: #495057; font-size: 14px;">📝 Shortcode sẽ được chèn:</h4>
-                                    <textarea id="shortcode_preview_${key}" readonly style="width: 100%; height: 150px; font-family: monospace; font-size: 11px; border: 1px solid #ced4da; border-radius: 3px; padding: 8px; background: white; box-sizing: border-box; resize: vertical;">${templates[key].shortcode}</textarea>
+                                <div style="background: #f8f9fa; border-radius: 4px; padding: ${device.isMobile ? '10px' : '12px'}; margin: 12px 0;">
+                                    <h4 style="margin: 0 0 8px 0; color: #495057; font-size: ${fonts.h4};">📝 Shortcode sẽ được chèn:</h4>
+                                    <textarea id="shortcode_preview_${key}" readonly style="width: 100%; height: ${device.isMobile ? '120px' : '150px'}; font-family: monospace; font-size: ${device.isMobile ? '10px' : '11px'}; border: 1px solid #ced4da; border-radius: 3px; padding: 8px; background: white; box-sizing: border-box; resize: vertical;">${templates[key].shortcode}</textarea>
                                 </div>
                                 
-                                <div style="background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; padding: 8px;">
-                                    <p style="margin: 0; font-size: 12px; color: #0c5460; line-height: 1.4;">
-                                        ℹ️ <strong>Thông tin:</strong> Sau khi chèn, có thể chỉnh sửa thuộc tính trong editor. JSON-LD schema tự động tạo khi publish.
+                                <div style="background: #d1ecf1; border: 1px solid #bee5eb; border-radius: 4px; padding: ${device.isMobile ? '6px' : '8px'};">
+                                    <p style="margin: 0; font-size: ${fonts.small}; color: #0c5460; line-height: 1.4;">
+                                        ℹ️ <strong>Thông tin:</strong> ${device.isMobile ? 'Chèn xong có thể edit trong editor.' : 'Sau khi chèn, có thể chỉnh sửa thuộc tính trong editor. JSON-LD schema tự động tạo khi publish.'}
                                     </p>
                                 </div>
                             </div>
@@ -2005,7 +2104,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             return result;
         }
         
-        // Edit existing shortcode
+        // Edit existing shortcode - RESPONSIVE
         function editExistingShortcode(node, shortcodeText) {
             var parsed = parseShortcode(shortcodeText);
             
@@ -2017,34 +2116,39 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             var containerShortcodes = ['faq', 'quiz', 'poll', 'carousel', 'breadcrumb'];
             var isContainer = containerShortcodes.indexOf(parsed.type) !== -1;
             
-            // Open modal with pre-filled data - FULLSCREEN (Fixed footer overflow)
+            // Responsive sizing
+            const responsive = getModalSize(1600, 1000, { margin: 40 });
+            const fonts = getFontSizes();
+            const device = responsive.device;
+            
+            // Open modal with pre-filled data - RESPONSIVE
             editor.windowManager.open({
                 title: '✏️ Edit ' + parsed.type.toUpperCase() + ' Schema',
-                width: Math.min(window.innerWidth - 40, 1600),
-                height: Math.min(window.innerHeight - 40, 1000),
-                resizable: true,
-                maximizable: true,
+                width: responsive.width,
+                height: responsive.height,
+                resizable: !device.isMobile,
+                maximizable: !device.isMobile,
                 body: [
                     {
                         type: 'container',
-                        html: '<div style="display:flex;flex-direction:column;min-height:800px;max-height:calc(100vh - 200px);background:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">' +
+                        html: '<div style="display:flex;flex-direction:column;height:100%;min-height:500px; max-height:calc(100vh - 150px);background:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">' +
                               '<!-- Header -->' +
-                              '<div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,0.15);flex-shrink:0;border-radius:8px 8px 0 0;">' +
-                              '<h2 style="margin:0 0 6px 0;font-size:20px;font-weight:600;">✏️ Edit ' + parsed.type.toUpperCase() + ' Schema</h2>' +
-                              '<p style="margin:0;opacity:0.95;font-size:13px;">Modify attributes and click Update to save changes</p>' +
+                              '<div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:' + (device.isMobile ? '16px 20px' : '20px 24px') + ';box-shadow:0 2px 8px rgba(0,0,0,0.15);flex-shrink:0;border-radius:8px 8px 0 0;">' +
+                              '<h2 style="margin:0 0 6px 0;font-size:' + fonts.h2 + ';font-weight:600;">✏️ Edit ' + parsed.type.toUpperCase() + ' Schema</h2>' +
+                              '<p style="margin:0;opacity:0.95;font-size:' + fonts.body + ';">' + (device.isMobile ? 'Chỉnh sửa và Update' : 'Modify attributes and click Update to save changes') + '</p>' +
                               '</div>' +
                               '<!-- Content Area -->' +
-                              '<div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:20px;min-height:0;">' +
+                              '<div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:' + responsive.padding + ';min-height:0;">' +
                               '<div style="background:white;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;">' +
-                              '<div class="kata-edit-info" style="background:#e3f2fd;padding:16px;border-bottom:2px solid #2196f3;flex-shrink:0;">' +
-                              '<strong style="color:#1976d2;font-size:14px;">📝 Editing Existing Schema</strong><br>' +
-                              '<span style="color:#555;font-size:12px;margin-top:6px;display:block;">Modify attributes below and click Update to save changes.</span>' +
-                              (isContainer ? '<div style="background:#fff3cd;border:1px solid #ffc107;padding:10px;margin-top:10px;border-radius:6px;">' +
-                              '<strong style="color:#856404;font-size:13px;">ℹ️ Container Shortcode</strong><br>' +
-                              '<span style="color:#856404;font-size:11px;">This is a container shortcode. Edit individual items inside (e.g., [kata_faq_item]).</span>' +
+                              '<div class="kata-edit-info" style="background:#e3f2fd;padding:' + (device.isMobile ? '12px' : '16px') + ';border-bottom:2px solid #2196f3;flex-shrink:0;">' +
+                              '<strong style="color:#1976d2;font-size:' + fonts.h4 + ';">📝 ' + (device.isMobile ? 'Editing Schema' : 'Editing Existing Schema') + '</strong><br>' +
+                              '<span style="color:#555;font-size:' + fonts.small + ';margin-top:6px;display:block;">' + (device.isMobile ? 'Update changes below' : 'Modify attributes below and click Update to save changes.') + '</span>' +
+                              (isContainer ? '<div style="background:#fff3cd;border:1px solid #ffc107;padding:' + (device.isMobile ? '8px' : '10px') + ';margin-top:10px;border-radius:6px;">' +
+                              '<strong style="color:#856404;font-size:' + fonts.body + ';">ℹ️ Container Shortcode</strong><br>' +
+                              '<span style="color:#856404;font-size:' + fonts.small + ';">Edit individual items inside (e.g., [kata_faq_item]).</span>' +
                               '</div>' : '') +
                               '</div>' +
-                              '<div id="kata-edit-attributes" style="flex:1;overflow-y:auto;padding:16px;min-height:0;"></div>' +
+                              '<div id="kata-edit-attributes" style="flex:1;overflow-y:auto;padding:' + (device.isMobile ? '12px' : '16px') + ';min-height:0;"></div>' +
                               '</div>' +
                               '</div>' +
                               '</div>'

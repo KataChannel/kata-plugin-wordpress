@@ -14,18 +14,29 @@
 [kata_faq_item question="Có tương thích với Gutenberg không?" answer="Có, plugin hoạt động tốt với cả Classic Editor và Gutenberg Block Editor."]
 [/kata_faq]`,
                 preview: `
-                    <div class="kata-preview-box">
-                        <h4>🔍 FAQ Schema sẽ tạo rich snippets:</h4>
-                        <div class="faq-preview">
-                            <p><strong>Q:</strong> KATA SEO Manager có miễn phí không?</p>
-                            <p><strong>A:</strong> KATA SEO Manager hoàn toàn miễn phí...</p>
-                            <hr>
-                            <p><strong>Q:</strong> Plugin hỗ trợ bao nhiều loại Schema?</p>
-                            <p><strong>A:</strong> Plugin hỗ trợ 26+ loại Schema markup...</p>
+                    <div class="kata-preview-box" style="
+                        background: #f8f9fa;
+                        border: 1px solid #e5e7eb;
+                        border-radius: 8px;
+                        padding: 20px;
+                        margin-bottom: 16px;
+                    ">
+                        <h4 style="margin: 0 0 16px 0; font-size: 16px; color: #374151;">🔍 FAQ Schema sẽ tạo rich snippets:</h4>
+                        <div class="faq-preview" style="
+                            background: white;
+                            padding: 16px;
+                            border-radius: 6px;
+                            border-left: 4px solid #667eea;
+                        ">
+                            <p style="margin: 8px 0;"><strong>Q:</strong> KATA SEO Manager có miễn phí không?</p>
+                            <p style="margin: 8px 0; color: #6b7280;"><strong>A:</strong> KATA SEO Manager hoàn toàn miễn phí...</p>
+                            <hr style="margin: 12px 0; border: none; border-top: 1px solid #e5e7eb;">
+                            <p style="margin: 8px 0;"><strong>Q:</strong> Plugin hỗ trợ bao nhiều loại Schema?</p>
+                            <p style="margin: 8px 0; color: #6b7280;"><strong>A:</strong> Plugin hỗ trợ 26+ loại Schema markup...</p>
                         </div>
-                        <small>✅ JSON-LD Schema tự động được tạo cho Google</small>
-                        <hr style="margin:10px 0; border:none; border-top:1px solid #ddd;">
-                        <small style="color:#666;">
+                        <small style="display: block; margin-top: 12px; color: #059669;">✅ JSON-LD Schema tự động được tạo cho Google</small>
+                        <hr style="margin:12px 0; border:none; border-top:1px solid #e5e7eb;">
+                        <small style="color:#6b7280; line-height: 1.6;">
                             <strong>MODE 1 (Schema):</strong> schema_fields, hide_*, show_*<br>
                             <strong>MODE 2 (Content):</strong> hide_content_*, show_content_*<br>
                             <strong>Ví dụ:</strong> hide_content_question="true" trong kata_faq_item
@@ -786,61 +797,150 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             const schemaOptions = Object.keys(templates).map(key => `
                 <div class="kata-schema-option" data-key="${key}" style="
                     border: 1px solid #ddd; 
-                    border-radius: 6px; 
-                    padding: 12px; 
-                    margin: 8px 0; 
+                    border-radius: 8px; 
+                    padding: 16px; 
+                    margin: 10px 0; 
                     cursor: pointer; 
-                    transition: all 0.2s ease;
-                    background: #f8f9fa;
+                    transition: all 0.3s ease;
+                    background: #ffffff;
                     position: relative;
                     overflow: hidden;
-                " onmouseover="this.style.borderColor='#0073aa'; this.style.background='#e6f3ff'; this.style.transform='translateY(-1px)';" 
-                   onmouseout="this.style.borderColor='#ddd'; this.style.background='#f8f9fa'; this.style.transform='translateY(0)';">
-                    <h4 style="margin: 0 0 6px 0; color: #23282d; font-size: 14px; font-weight: 600;">${templates[key].title}</h4>
-                    <p style="margin: 0; font-size: 11px; color: #666; line-height: 1.3; word-break: break-word;">
-                        ${templates[key].shortcode.length > 80 ? templates[key].shortcode.substring(0, 80) + '...' : templates[key].shortcode}
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                " onmouseover="this.style.borderColor='#0073aa'; this.style.background='#f0f8ff'; this.style.transform='translateX(4px)'; this.style.boxShadow='0 4px 8px rgba(0,115,170,0.15)';" 
+                   onmouseout="this.style.borderColor='#ddd'; this.style.background='#ffffff'; this.style.transform='translateX(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.05)';">
+                    <h4 style="margin: 0 0 8px 0; color: #23282d; font-size: 15px; font-weight: 600;">${templates[key].title}</h4>
+                    <p style="margin: 0; font-size: 12px; color: #666; line-height: 1.4; word-break: break-word;">
+                        ${templates[key].shortcode.length > 100 ? templates[key].shortcode.substring(0, 100) + '...' : templates[key].shortcode}
                     </p>
                 </div>
             `).join('');
 
             editor.windowManager.open({
-                title: '🏷️ Chọn Schema Template để Chèn',
-                width: Math.min(650, window.innerWidth - 40),
-                height: Math.min(600, window.innerHeight - 40),
-                resizable: true,
-                maximizable: true,
+                title: '🏷️ KATA SEO Manager - Chọn Schema Template',
+                width: window.innerWidth,
+                height: window.innerHeight,
+                resizable: false,
+                maximizable: false,
+                inline: false,
                 body: [
                     {
                         type: 'container',
                         html: `
-                            <div style="padding: 15px; height: calc(100vh - 200px); max-height: 500px; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; box-sizing: border-box;">
-                                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 15px; border-radius: 6px; margin-bottom: 15px; text-align: center;">
-                                    <h3 style="margin: 0 0 3px 0; font-size: 16px;">KATA SEO Manager</h3>
-                                    <p style="margin: 0; opacity: 0.9; font-size: 13px;">Chọn template để chèn dữ liệu mẫu</p>
+                            <div style="
+                                position: fixed;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                bottom: 0;
+                                background: #f5f7fa;
+                                display: flex;
+                                flex-direction: column;
+                                font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+                                overflow: hidden;
+                            ">
+                                <!-- Header -->
+                                <div style="
+                                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                    color: white;
+                                    padding: 24px 32px;
+                                    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                                    flex-shrink: 0;
+                                ">
+                                    <h2 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 600;">KATA SEO Manager</h2>
+                                    <p style="margin: 0; opacity: 0.95; font-size: 14px;">Chọn schema template để chèn vào nội dung - 26+ loại schema hỗ trợ SEO</p>
                                 </div>
                                 
-                                <!-- Search Box -->
-                                <div style="margin-bottom: 15px;">
-                                    <input 
-                                        type="text" 
-                                        id="kata-schema-search" 
-                                        placeholder="🔍 Tìm kiếm schema (FAQ, Article, Product, LocalBusiness...)" 
-                                        style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;"
-                                        onfocus="this.style.borderColor='#667eea'"
-                                        onblur="this.style.borderColor='#e0e0e0'"
-                                    />
-                                    <p style="margin: 5px 0 0 0; font-size: 11px; color: #666;">
-                                        💡 Gõ tên schema để lọc nhanh
-                                    </p>
-                                </div>
-                                
-                                <div id="kata-schema-list" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
-                                    ${schemaOptions}
-                                </div>
-                                <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 8px; margin-top: 12px;">
-                                    <p style="margin: 0; font-size: 11px; color: #856404; line-height: 1.3;">
-                                        💡 <strong>Lưu ý:</strong> Sau khi chọn, bạn có thể chỉnh sửa nội dung trong editor.
-                                    </p>
+                                <!-- Main Content Area -->
+                                <div style="
+                                    flex: 1;
+                                    display: flex;
+                                    overflow: hidden;
+                                    padding: 24px 32px;
+                                    gap: 24px;
+                                ">
+                                    <!-- Left Panel - Schema List -->
+                                    <div style="
+                                        flex: 0 0 420px;
+                                        display: flex;
+                                        flex-direction: column;
+                                        background: white;
+                                        border-radius: 12px;
+                                        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                                        overflow: hidden;
+                                    ">
+                                        <!-- Search Box -->
+                                        <div style="padding: 20px; border-bottom: 1px solid #e5e7eb; flex-shrink: 0;">
+                                            <input 
+                                                type="text" 
+                                                id="kata-schema-search" 
+                                                placeholder="🔍 Tìm kiếm schema (FAQ, Article, Product, LocalBusiness...)" 
+                                                style="
+                                                    width: 100%;
+                                                    padding: 12px 16px;
+                                                    border: 2px solid #e5e7eb;
+                                                    border-radius: 8px;
+                                                    font-size: 14px;
+                                                    box-sizing: border-box;
+                                                    transition: all 0.3s;
+                                                    outline: none;
+                                                "
+                                                onfocus="this.style.borderColor='#667eea'; this.style.boxShadow='0 0 0 3px rgba(102,126,234,0.1)'"
+                                                onblur="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'"
+                                            />
+                                            <p style="margin: 8px 0 0 0; font-size: 12px; color: #6b7280;">
+                                                💡 Gõ để lọc nhanh - Hỗ trợ 26+ schema types
+                                            </p>
+                                        </div>
+                                        
+                                        <!-- Schema List -->
+                                        <div id="kata-schema-list" style="
+                                            flex: 1;
+                                            overflow-y: auto;
+                                            padding: 16px;
+                                        ">
+                                            ${schemaOptions}
+                                        </div>
+                                        
+                                        <!-- Footer Note -->
+                                        <div style="
+                                            padding: 16px 20px;
+                                            background: #fffbeb;
+                                            border-top: 1px solid #fef3c7;
+                                            flex-shrink: 0;
+                                        ">
+                                            <p style="margin: 0; font-size: 12px; color: #92400e; line-height: 1.5;">
+                                                💡 <strong>Tip:</strong> Click vào schema để xem preview và tùy chọn content
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Right Panel - Preview & Info -->
+                                    <div style="
+                                        flex: 1;
+                                        display: flex;
+                                        flex-direction: column;
+                                        background: white;
+                                        border-radius: 12px;
+                                        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+                                        overflow: hidden;
+                                    ">
+                                        <div id="kata-preview-panel" style="
+                                            flex: 1;
+                                            padding: 32px;
+                                            overflow-y: auto;
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            text-align: center;
+                                            color: #9ca3af;
+                                        ">
+                                            <div>
+                                                <div style="font-size: 64px; margin-bottom: 16px;">📋</div>
+                                                <h3 style="margin: 0 0 8px 0; font-size: 18px; color: #6b7280;">Chọn một schema bên trái</h3>
+                                                <p style="margin: 0; font-size: 14px;">Preview và tùy chọn sẽ hiển thị ở đây</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         `
@@ -848,7 +948,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                 ],
                 buttons: [
                     {
-                        text: 'Hủy',
+                        text: '✖ Đóng',
                         onclick: 'close'
                     }
                 ],
@@ -901,11 +1001,125 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                             option.addEventListener('click', function() {
                                 const key = this.dataset.key;
                                 
-                                // Close current dialog
-                                dialog.close();
+                                // Remove active state from all options
+                                options.forEach(opt => {
+                                    opt.style.borderColor = '#ddd';
+                                    opt.style.background = '#ffffff';
+                                    opt.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                                });
                                 
-                                // Show preview and insert
-                                showPreviewAndInsert(key);
+                                // Add active state to clicked option
+                                this.style.borderColor = '#0073aa';
+                                this.style.background = '#f0f8ff';
+                                this.style.boxShadow = '0 4px 12px rgba(0,115,170,0.25)';
+                                
+                                // Show preview in right panel
+                                const previewPanel = document.getElementById('kata-preview-panel');
+                                if (previewPanel && templates[key]) {
+                                    const template = templates[key];
+                                    previewPanel.style.display = 'block';
+                                    previewPanel.style.padding = '24px';
+                                    previewPanel.style.textAlign = 'left';
+                                    previewPanel.style.alignItems = 'flex-start';
+                                    previewPanel.innerHTML = `
+                                        <div style="width: 100%; max-width: 900px;">
+                                            <!-- Schema Header -->
+                                            <div style="
+                                                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                                color: white;
+                                                padding: 20px 24px;
+                                                border-radius: 12px;
+                                                margin-bottom: 24px;
+                                            ">
+                                                <h3 style="margin: 0 0 8px 0; font-size: 20px;">${template.title}</h3>
+                                                <p style="margin: 0; opacity: 0.95; font-size: 13px;">Schema template với dữ liệu mẫu sẵn sàng sử dụng</p>
+                                            </div>
+                                            
+                                            <!-- Preview Content -->
+                                            <div style="margin-bottom: 24px;">
+                                                ${template.preview}
+                                            </div>
+                                            
+                                            <!-- Shortcode Display -->
+                                            <div style="
+                                                background: #f8f9fa;
+                                                border: 1px solid #e5e7eb;
+                                                border-radius: 8px;
+                                                padding: 16px;
+                                                margin-bottom: 24px;
+                                            ">
+                                                <h4 style="margin: 0 0 12px 0; font-size: 14px; color: #374151;">📝 Shortcode:</h4>
+                                                <textarea 
+                                                    readonly 
+                                                    style="
+                                                        width: 100%;
+                                                        min-height: 120px;
+                                                        padding: 12px;
+                                                        border: 1px solid #d1d5db;
+                                                        border-radius: 6px;
+                                                        font-family: 'Courier New', monospace;
+                                                        font-size: 12px;
+                                                        background: #ffffff;
+                                                        resize: vertical;
+                                                        line-height: 1.5;
+                                                        box-sizing: border-box;
+                                                    "
+                                                    onclick="this.select()"
+                                                >${template.shortcode}</textarea>
+                                                <p style="margin: 8px 0 0 0; font-size: 12px; color: #6b7280;">
+                                                    💡 Click vào textarea để select toàn bộ code
+                                                </p>
+                                            </div>
+                                            
+                                            <!-- Action Buttons -->
+                                            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                                                <button 
+                                                    onclick="
+                                                        const textarea = this.parentElement.previousElementSibling.querySelector('textarea');
+                                                        textarea.select();
+                                                        document.execCommand('copy');
+                                                        this.textContent = '✅ Đã copy!';
+                                                        setTimeout(() => { this.textContent = '📋 Copy shortcode'; }, 2000);
+                                                    "
+                                                    style="
+                                                        padding: 10px 20px;
+                                                        background: #6b7280;
+                                                        color: white;
+                                                        border: none;
+                                                        border-radius: 6px;
+                                                        font-size: 14px;
+                                                        cursor: pointer;
+                                                        transition: all 0.3s;
+                                                    "
+                                                    onmouseover="this.style.background='#4b5563'"
+                                                    onmouseout="this.style.background='#6b7280'"
+                                                >📋 Copy shortcode</button>
+                                                
+                                                <button 
+                                                    onclick="
+                                                        var shortcode = \`${template.shortcode.replace(/`/g, '\\`')}\`;
+                                                        tinymce.activeEditor.insertContent(shortcode);
+                                                        tinymce.activeEditor.windowManager.close();
+                                                    "
+                                                    style="
+                                                        padding: 10px 24px;
+                                                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                                                        color: white;
+                                                        border: none;
+                                                        border-radius: 6px;
+                                                        font-size: 14px;
+                                                        font-weight: 600;
+                                                        cursor: pointer;
+                                                        transition: all 0.3s;
+                                                        box-shadow: 0 4px 12px rgba(102,126,234,0.3);
+                                                    "
+                                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(102,126,234,0.4)'"
+                                                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(102,126,234,0.3)'"
+                                                >✨ Chèn vào Editor</button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }
                             });
                         });
                     }, 100);
@@ -1031,7 +1245,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                     {
                         type: 'container',
                         html: `
-                            <div id="show_content_${key}" style="padding: 15px; height: calc(100vh - 180px); max-height: 800px; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; box-sizing: border-box;">
+                            <div id="show_content_${key}" style="padding: 15px; height: 80vh !important; max-height: 80vh !important; width: 80vw !important; max-width: 80vw !important; overflow-y: auto; font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; box-sizing: border-box;">
                                 <div style="margin-bottom: 15px;">
                                     <h3 style="color: #23282d; margin: 0 0 12px 0; font-size: 18px;">${templates[key].title}</h3>
                                     <div style="max-height: 200px; overflow-y: auto; margin-bottom: 15px;">

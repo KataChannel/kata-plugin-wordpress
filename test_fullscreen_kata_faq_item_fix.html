@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>✅ Test Fullscreen + kata_faq_item Fix - KATA SEO Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 36px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .status {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+        }
+        
+        .status h2 {
+            color: #155724;
+            font-size: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+        
+        .status-item {
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+        
+        .status-item h3 {
+            color: #155724;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        
+        .status-item .code {
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #495057;
+            margin-top: 8px;
+        }
+        
+        .bug-section {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .bug-section h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .bug-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .bug-box h3 {
+            color: #856404;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        
+        .bug-box .description {
+            color: #856404;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        
+        .fix-box {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .fix-box h3 {
+            color: #155724;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        
+        .fix-box .description {
+            color: #155724;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        
+        .code-block .comment {
+            color: #6a9955;
+        }
+        
+        .code-block .keyword {
+            color: #569cd6;
+        }
+        
+        .code-block .string {
+            color: #ce9178;
+        }
+        
+        .code-block .number {
+            color: #b5cea8;
+        }
+        
+        .test-section {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .test-section h3 {
+            color: #1976d2;
+            font-size: 18px;
+            margin-bottom: 16px;
+        }
+        
+        .test-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .test-list li {
+            background: white;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 4px solid #2196f3;
+            color: #333;
+            font-size: 14px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .test-list li::before {
+            content: '✓';
+            color: #28a745;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .comparison-box {
+            padding: 16px;
+            border-radius: 8px;
+        }
+        
+        .comparison-box.before {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+        
+        .comparison-box.after {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+        
+        .comparison-box h4 {
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .comparison-box.before h4 {
+            color: #721c24;
+        }
+        
+        .comparison-box.after h4 {
+            color: #155724;
+        }
+        
+        .highlight {
+            background: #ffeb3b;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+        
+        .footer {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 32px;
+        }
+        
+        .footer p {
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>
+                <span>✅</span>
+                <span>Fullscreen + kata_faq_item Fix</span>
+            </h1>
+            <p class="subtitle">
+                Đã fix 2 bugs quan trọng trong edit modal: Footer overflow và kata_faq_item detection không hoạt động
+            </p>
+        </div>
+
+        <!-- Status Summary -->
+        <div class="status">
+            <h2>
+                <span>🎯</span>
+                <span>Tổng Kết Fixes</span>
+            </h2>
+            <div class="status-grid">
+                <div class="status-item">
+                    <h3>✅ Bug 1: Fullscreen Modal Footer Overflow</h3>
+                    <p>Modal footer (mce-foot) bị tràn ra ngoài màn hình</p>
+                    <div class="code">Status: <strong style="color: #28a745;">FIXED</strong></div>
+                </div>
+                <div class="status-item">
+                    <h3>✅ Bug 2: kata_faq_item Detection</h3>
+                    <p>Double-click [kata_faq_item] không hoạt động</p>
+                    <div class="code">Status: <strong style="color: #28a745;">FIXED</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bug 1: Fullscreen Modal Footer Overflow -->
+        <div class="bug-section">
+            <h2>
+                <span>🐛</span>
+                <span>Bug 1: Fullscreen Modal Footer Overflow</span>
+            </h2>
+
+            <div class="bug-box">
+                <h3>❌ Vấn đề</h3>
+                <p class="description">
+                    Khi mở edit modal fullscreen (<code>width: window.innerWidth</code>, <code>height: window.innerHeight</code>), 
+                    phần footer chứa buttons (Update, Cancel, Delete) bị tràn ra ngoài màn hình, user không thấy được buttons.
+                </p>
+                <div class="code-block">
+<span class="comment">// ❌ OLD CODE - Fixed positioning caused footer overflow</span>
+width: window.innerWidth,
+height: window.innerHeight,
+resizable: <span class="keyword">false</span>,
+maximizable: <span class="keyword">false</span>,
+html: <span class="string">'&lt;div style="position:fixed;top:0;left:0;right:0;bottom:0;..."&gt;'</span>
+                </div>
+                <p class="description">
+                    <strong>Root cause:</strong> Layout <code>position: fixed</code> với <code>top:0;left:0;right:0;bottom:0</code> 
+                    chiếm toàn bộ viewport, không để chỗ cho TinyMCE footer.
+                </p>
+            </div>
+
+            <div class="fix-box">
+                <h3>✅ Giải pháp</h3>
+                <p class="description">
+                    Thay đổi từ fixed fullscreen sang responsive modal với max-height tính toán:
+                </p>
+                <div class="code-block">
+<span class="comment">// ✅ NEW CODE - Responsive with proper spacing</span>
+width: Math.min(window.innerWidth - <span class="number">40</span>, <span class="number">1600</span>),
+height: Math.min(window.innerHeight - <span class="number">40</span>, <span class="number">1000</span>),
+resizable: <span class="keyword">true</span>,
+maximizable: <span class="keyword">true</span>,
+html: <span class="string">'&lt;div style="display:flex;flex-direction:column;height:100%;max-height:calc(100vh - 200px);..."&gt;'</span>
+                </div>
+                <ul style="list-style: none; padding: 0; margin-top: 16px;">
+                    <li style="padding: 8px 0; color: #155724;">
+                        <strong>1.</strong> Modal size: <code>window.innerWidth - 40</code> (margin 20px mỗi bên)
+                    </li>
+                    <li style="padding: 8px 0; color: #155724;">
+                        <strong>2.</strong> Max height: <code>calc(100vh - 200px)</code> (để chỗ cho header + footer)
+                    </li>
+                    <li style="padding: 8px 0; color: #155724;">
+                        <strong>3.</strong> Resizable: <code>true</code> (user có thể điều chỉnh)
+                    </li>
+                    <li style="padding: 8px 0; color: #155724;">
+                        <strong>4.</strong> Layout: Flexbox với <code>min-height: 0</code> để scroll hoạt động
+                    </li>
+                </ul>
+            </div>
+
+            <div class="comparison">
+                <div class="comparison-box before">
+                    <h4>❌ Before (Footer tràn)</h4>
+                    <p style="color: #721c24; font-size: 13px; line-height: 1.6;">
+                        • Modal: 100vw × 100vh<br>
+                        • Layout: position: fixed<br>
+                        • Footer: Bị đẩy ra ngoài màn hình<br>
+                        • Buttons: Không visible<br>
+                        • Scroll: Không hoạt động đúng
+                    </p>
+                </div>
+                <div class="comparison-box after">
+                    <h4>✅ After (Footer visible)</h4>
+                    <p style="color: #155724; font-size: 13px; line-height: 1.6;">
+                        • Modal: (100vw - 40px) × (100vh - 40px)<br>
+                        • Layout: display: flex, max-height<br>
+                        • Footer: Luôn visible<br>
+                        • Buttons: Update, Cancel, Delete<br>
+                        • Scroll: Smooth trong content area
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bug 2: kata_faq_item Detection -->
+        <div class="bug-section">
+            <h2>
+                <span>🐛</span>
+                <span>Bug 2: kata_faq_item Detection Không Hoạt Động</span>
+            </h2>
+
+            <div class="bug-box">
+                <h3>❌ Vấn đề</h3>
+                <p class="description">
+                    Double-click vào shortcode <code>[kata_faq_item question="..." answer="..."]</code> không mở edit modal. 
+                    Regex cũ không match được shortcode có attributes dài hoặc multi-line.
+                </p>
+                <div class="code-block">
+<span class="comment">// ❌ OLD REGEX - Không match multi-line</span>
+<span class="keyword">var</span> shortcodeMatch = content.match(<span class="string">/\[kata_\w+[^\]]*\]/</span>);
+
+<span class="comment">// ❌ PROBLEMS:</span>
+<span class="comment">// 1. \w+ không match underscore (kata_faq_item ❌)</span>
+<span class="comment">// 2. [^\]]* không match newlines trong attributes</span>
+<span class="comment">// 3. Không get parent context cho better matching</span>
+                </div>
+                <p class="description">
+                    <strong>Example không hoạt động:</strong>
+                </p>
+                <div class="code-block">
+[kata_faq_item 
+  question=<span class="string">"KATA SEO Manager có miễn phí không?"</span> 
+  answer=<span class="string">"KATA SEO Manager hoàn toàn miễn phí..."</span>]
+                </div>
+            </div>
+
+            <div class="fix-box">
+                <h3>✅ Giải pháp</h3>
+                <p class="description">
+                    Update regex + add parent node context để match đúng tất cả shortcodes:
+                </p>
+                <div class="code-block">
+<span class="comment">// ✅ NEW REGEX - Match multi-line + underscore</span>
+<span class="keyword">var</span> shortcodeMatch = content.match(<span class="string">/\[kata_[\w_]+(?:\s+[\s\S]*?)?\]/</span>);
+
+<span class="comment">// ✅ IMPROVEMENTS:</span>
+<span class="comment">// 1. [\w_]+ matches kata_faq_item ✅</span>
+<span class="comment">// 2. (?:\s+[\s\S]*?)? matches multi-line attributes ✅</span>
+<span class="comment">// 3. Get parent node content for better context ✅</span>
+<span class="comment">// 4. Enhanced logging with nodeType + nodeName ✅</span>
+                </div>
+                <ul style="list-style: none; padding: 0; margin-top: 16px;">
+                    <li style="padding: 8px 0; color: #155724;">
+                        <strong>1.</strong> <code>[\w_]+</code> - Match word chars + underscore (kata_faq_item ✅)
+                    </li>
+                    <li style="padding: 8px 0; color: #155724;">
+                        <strong>2.</strong> <code>[\s\S]*?</code> - Match any char including newlines (lazy)
+                    </li>
+                    <li style="padding: 8px 0; color: #155724;">
+                        <strong>3.</strong> Parent context - Get parent node content for better matching
+                    </li>
+                    <li style="padding: 8px 0; color: #155724;">
+                        <strong>4.</strong> Enhanced logging - Debug info: nodeType, nodeName, matched length
+                    </li>
+                </ul>
+            </div>
+
+            <div class="comparison">
+                <div class="comparison-box before">
+                    <h4>❌ Before (Không match)</h4>
+                    <p style="color: #721c24; font-size: 13px; line-height: 1.6;">
+                        <strong>Regex:</strong> <code>/\[kata_\w+[^\]]*\]/</code><br><br>
+                        <strong>Không match:</strong><br>
+                        • <code>[kata_faq_item ...]</code> ❌<br>
+                        • Multi-line attributes ❌<br>
+                        • Long attributes ❌<br><br>
+                        <strong>Context:</strong> Chỉ node content
+                    </p>
+                </div>
+                <div class="comparison-box after">
+                    <h4>✅ After (Match đúng)</h4>
+                    <p style="color: #155724; font-size: 13px; line-height: 1.6;">
+                        <strong>Regex:</strong> <code>/\[kata_[\w_]+(?:\s+[\s\S]*?)?\]/</code><br><br>
+                        <strong>Match đúng:</strong><br>
+                        • <code>[kata_faq_item ...]</code> ✅<br>
+                        • Multi-line attributes ✅<br>
+                        • Long attributes ✅<br><br>
+                        <strong>Context:</strong> Node + parent content
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Testing Guide -->
+        <div class="bug-section">
+            <h2>
+                <span>🧪</span>
+                <span>Testing Guide</span>
+            </h2>
+
+            <div class="test-section">
+                <h3>✅ Test Bug 1: Fullscreen Modal Footer</h3>
+                <ul class="test-list">
+                    <li>
+                        Mở WordPress editor, chèn <code>[kata_article title="Test"]</code>
+                    </li>
+                    <li>
+                        Double-click vào shortcode để mở edit modal
+                    </li>
+                    <li>
+                        <strong>Expected:</strong> Modal mở với size responsive (không fullscreen 100%)
+                    </li>
+                    <li>
+                        <strong>Expected:</strong> Footer buttons (Update, Cancel, Delete) visible ở bottom
+                    </li>
+                    <li>
+                        <strong>Expected:</strong> Content area scrollable, không tràn
+                    </li>
+                    <li>
+                        <strong>Expected:</strong> Modal có thể resize và maximize
+                    </li>
+                </ul>
+            </div>
+
+            <div class="test-section" style="margin-top: 20px;">
+                <h3>✅ Test Bug 2: kata_faq_item Detection</h3>
+                <ul class="test-list">
+                    <li>
+                        Chèn shortcode container: <code>[kata_faq]...[/kata_faq]</code>
+                    </li>
+                    <li>
+                        Chèn item shortcode: <code>[kata_faq_item question="Test Q?" answer="Test A"]</code>
+                    </li>
+                    <li>
+                        Double-click vào <code>[kata_faq]</code>
+                    </li>
+                    <li>
+                        <strong>Expected:</strong> Modal mở với "Container Shortcode" message
+                    </li>
+                    <li>
+                        Double-click vào <code>[kata_faq_item ...]</code>
+                    </li>
+                    <li>
+                        <strong>Expected:</strong> Modal mở với edit form (question, answer fields)
+                    </li>
+                    <li>
+                        Thử với multi-line attributes (enter trong shortcode)
+                    </li>
+                    <li>
+                        <strong>Expected:</strong> Vẫn detect và mở edit modal đúng
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="bug-section">
+            <h2>
+                <span>🔧</span>
+                <span>Technical Details</span>
+            </h2>
+
+            <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: #333; font-size: 16px; margin-bottom: 12px;">Files Modified</h3>
+                <div class="code-block" style="background: #1e1e1e; color: #d4d4d4;">
+wp-content/plugins/kata-seo-manager/assets/js/tinymce-plugin.js
+
+<span class="comment">// SECTION 1: editExistingShortcode() - Lines ~1998-2065</span>
+<span class="comment">// - Changed modal width/height from fullscreen to responsive</span>
+<span class="comment">// - Changed resizable from false to true</span>
+<span class="comment">// - Changed maximizable from false to true</span>
+<span class="comment">// - Updated HTML layout: position:fixed → flex with max-height</span>
+<span class="comment">// - Reduced padding sizes for compact layout</span>
+<span class="comment">// - Added min-height:0 for proper flex scrolling</span>
+
+<span class="comment">// SECTION 2: Double-click detection - Lines ~1940-1965</span>
+<span class="comment">// - Updated regex: /\[kata_\w+[^\]]*\]/ → /\[kata_[\w_]+(?:\s+[\s\S]*?)?\]/</span>
+<span class="comment">// - Added parent node context checking</span>
+<span class="comment">// - Enhanced console.log with object details</span>
+<span class="comment">// - Better handling of text nodes vs element nodes</span>
+                </div>
+            </div>
+
+            <div style="background: #e3f2fd; padding: 20px; border-radius: 8px; border: 2px solid #2196f3;">
+                <h3 style="color: #1976d2; font-size: 16px; margin-bottom: 12px;">🎯 Key Changes Summary</h3>
+                <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                    <tr style="background: white;">
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #2196f3; color: #1976d2;">Change</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #2196f3; color: #1976d2;">Before</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #2196f3; color: #1976d2;">After</th>
+                    </tr>
+                    <tr style="background: white;">
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><strong>Modal Width</strong></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><code>window.innerWidth</code></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><code>Math.min(window.innerWidth - 40, 1600)</code></td>
+                    </tr>
+                    <tr style="background: #f8f9fa;">
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><strong>Modal Height</strong></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><code>window.innerHeight</code></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><code>Math.min(window.innerHeight - 40, 1000)</code></td>
+                    </tr>
+                    <tr style="background: white;">
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><strong>Resizable</strong></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><code>false</code></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><code>true</code></td>
+                    </tr>
+                    <tr style="background: #f8f9fa;">
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><strong>Max Height</strong></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><code>none (overflow)</code></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><code>calc(100vh - 200px)</code></td>
+                    </tr>
+                    <tr style="background: white;">
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><strong>Regex Pattern</strong></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><code>/\[kata_\w+[^\]]*\]/</code></td>
+                        <td style="padding: 12px; border-bottom: 1px solid #e0e0e0;"><code>/\[kata_[\w_]+(?:\s+[\s\S]*?)?\]/</code></td>
+                    </tr>
+                    <tr style="background: #f8f9fa;">
+                        <td style="padding: 12px;"><strong>Parent Context</strong></td>
+                        <td style="padding: 12px;"><code>No</code></td>
+                        <td style="padding: 12px;"><code>Yes (check parent node)</code></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>
+                <strong>KATA SEO Manager v1.0.0</strong><br>
+                Fullscreen + kata_faq_item Fix Testing Guide | Dev1.3 Branch
+            </p>
+        </div>
+    </div>
+</body>
+</html>

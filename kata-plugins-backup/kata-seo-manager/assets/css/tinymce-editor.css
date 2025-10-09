@@ -124,10 +124,10 @@
     font-weight: 600;
 }
 
-.mce-window {
+/* .mce-window {
     max-width: 95vw;
     max-height: 95vh;
-}
+} */
 
 .mce-window .mce-window-body {
     overflow: hidden;

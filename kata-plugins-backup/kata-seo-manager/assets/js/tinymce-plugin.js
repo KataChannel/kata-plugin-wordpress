@@ -1932,6 +1932,323 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             }
         });
 
+        // ========================================
+        // EDIT SHORTCODE FEATURE
+        // ========================================
+        
+        // Detect double-click on shortcode to edit
+        editor.on('dblclick', function(e) {
+            var node = e.target;
+            var content = '';
+            
+            // Get text content from node and surrounding context
+            if (node.nodeType === 3) { // Text node
+                content = node.nodeValue || '';
+                // Get parent content for better context
+                if (node.parentNode) {
+                    var parentContent = node.parentNode.textContent || '';
+                    // If parent has more content, use it for better matching
+                    if (parentContent.length > content.length) {
+                        content = parentContent;
+                    }
+                }
+            } else { // Element node
+                content = node.textContent || node.innerText || '';
+            }
+            
+            // Check if clicked content contains KATA shortcode
+            // Updated regex to match multi-line attributes and handle both single-line and multi-line shortcodes
+            // Matches: [kata_type ...], [kata_type attr="val"], [kata_faq_item question="..." answer="..."]
+            var shortcodeMatch = content.match(/\[kata_[\w_]+(?:\s+[\s\S]*?)?\]/);
+            
+            if (shortcodeMatch) {
+                e.preventDefault();
+                console.log('KATA: Detected shortcode double-click', {
+                    matched: shortcodeMatch[0].substring(0, 100) + '...',
+                    fullLength: shortcodeMatch[0].length,
+                    nodeType: node.nodeType,
+                    nodeName: node.nodeName
+                });
+                editExistingShortcode(node, shortcodeMatch[0]);
+            }
+        });
+        
+        // Parse shortcode attributes
+        function parseShortcode(shortcodeText) {
+            var result = {
+                type: '',
+                attributes: {},
+                fullMatch: shortcodeText.trim()
+            };
+            
+            // Extract shortcode type: [kata_article ...]
+            var typeMatch = shortcodeText.match(/\[kata_(\w+)/);
+            if (typeMatch) {
+                result.type = typeMatch[1];
+            }
+            
+            // Extract attributes: name="value"
+            // Support both double quotes and single quotes
+            var attrRegex = /(\w+)=["']([^"']*)["']/g;
+            var match;
+            while ((match = attrRegex.exec(shortcodeText)) !== null) {
+                result.attributes[match[1]] = match[2];
+            }
+            
+            console.log('KATA Parser:', {
+                input: shortcodeText.substring(0, 100) + '...',
+                type: result.type,
+                attributeCount: Object.keys(result.attributes).length,
+                attributes: result.attributes
+            });
+            
+            return result;
+        }
+        
+        // Edit existing shortcode
+        function editExistingShortcode(node, shortcodeText) {
+            var parsed = parseShortcode(shortcodeText);
+            
+            if (!parsed.type) {
+                return;
+            }
+            
+            // Check if this is a container shortcode (no attributes expected)
+            var containerShortcodes = ['faq', 'quiz', 'poll', 'carousel', 'breadcrumb'];
+            var isContainer = containerShortcodes.indexOf(parsed.type) !== -1;
+            
+            // Open modal with pre-filled data - FULLSCREEN (Fixed footer overflow)
+            editor.windowManager.open({
+                title: '✏️ Edit ' + parsed.type.toUpperCase() + ' Schema',
+                width: Math.min(window.innerWidth - 40, 1600),
+                height: Math.min(window.innerHeight - 40, 1000),
+                resizable: true,
+                maximizable: true,
+                body: [
+                    {
+                        type: 'container',
+                        html: '<div style="display:flex;flex-direction:column;min-height:800px;max-height:calc(100vh - 200px);background:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">' +
+                              '<!-- Header -->' +
+                              '<div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:20px 24px;box-shadow:0 2px 8px rgba(0,0,0,0.15);flex-shrink:0;border-radius:8px 8px 0 0;">' +
+                              '<h2 style="margin:0 0 6px 0;font-size:20px;font-weight:600;">✏️ Edit ' + parsed.type.toUpperCase() + ' Schema</h2>' +
+                              '<p style="margin:0;opacity:0.95;font-size:13px;">Modify attributes and click Update to save changes</p>' +
+                              '</div>' +
+                              '<!-- Content Area -->' +
+                              '<div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:20px;min-height:0;">' +
+                              '<div style="background:white;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;">' +
+                              '<div class="kata-edit-info" style="background:#e3f2fd;padding:16px;border-bottom:2px solid #2196f3;flex-shrink:0;">' +
+                              '<strong style="color:#1976d2;font-size:14px;">📝 Editing Existing Schema</strong><br>' +
+                              '<span style="color:#555;font-size:12px;margin-top:6px;display:block;">Modify attributes below and click Update to save changes.</span>' +
+                              (isContainer ? '<div style="background:#fff3cd;border:1px solid #ffc107;padding:10px;margin-top:10px;border-radius:6px;">' +
+                              '<strong style="color:#856404;font-size:13px;">ℹ️ Container Shortcode</strong><br>' +
+                              '<span style="color:#856404;font-size:11px;">This is a container shortcode. Edit individual items inside (e.g., [kata_faq_item]).</span>' +
+                              '</div>' : '') +
+                              '</div>' +
+                              '<div id="kata-edit-attributes" style="flex:1;overflow-y:auto;padding:16px;min-height:0;"></div>' +
+                              '</div>' +
+                              '</div>' +
+                              '</div>'
+                    }
+                ],
+                buttons: [
+                    {
+                        text: 'Cancel',
+                        onclick: 'close'
+                    },
+                    {
+                        text: 'Update Schema',
+                        onclick: function() {
+                            updateShortcode(node, parsed);
+                            this.parent().close();
+                        },
+                        primary: true
+                    },
+                    {
+                        text: 'Delete Schema',
+                        onclick: function() {
+                            if (confirm('Are you sure you want to delete this schema?')) {
+                                editor.dom.remove(node);
+                                this.parent().close();
+                            }
+                        }
+                    }
+                ],
+                onpostrender: function() {
+                    // Delay to ensure DOM is ready
+                    setTimeout(function() {
+                        renderEditForm(parsed, isContainer);
+                    }, 100);
+                }
+            });
+        }
+        
+        // Render edit form with current values
+        function renderEditForm(parsed, isContainer) {
+            var container = jQuery('#kata-edit-attributes');
+            
+            // Check if container exists
+            if (!container || container.length === 0) {
+                console.error('KATA Edit Form: Container #kata-edit-attributes not found');
+                return;
+            }
+            
+            var html = '<div style="height:100%;overflow-y:auto;padding:10px;">';
+            
+            // Group attributes by category
+            var categories = {
+                'Basic Info': ['name', 'title', 'description', 'schema_name'],
+                'Content': ['question', 'answer', 'ingredients', 'instructions', 'content', 'json_code'],
+                'Meta': ['author', 'category', 'tags', 'price', 'currency', 'rating_value'],
+                'Display': ['show_schema', 'show_frontend', 'show_info', 'show_raw', 'show_content_formatted'],
+                'Advanced': []
+            };
+            
+            // Add all other attributes to Advanced
+            for (var key in parsed.attributes) {
+                var found = false;
+                for (var cat in categories) {
+                    if (categories[cat].indexOf(key) !== -1) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) {
+                    categories['Advanced'].push(key);
+                }
+            }
+            
+            var hasAttributes = false;
+            
+            // Render by category
+            for (var category in categories) {
+                var categoryAttrs = [];
+                
+                // Collect attributes for this category that actually exist
+                for (var i = 0; i < categories[category].length; i++) {
+                    var key = categories[category][i];
+                    if (parsed.attributes.hasOwnProperty(key)) {
+                        categoryAttrs.push(key);
+                    }
+                }
+                
+                // Skip empty categories
+                if (categoryAttrs.length === 0) {
+                    continue;
+                }
+                
+                hasAttributes = true;
+                
+                html += '<div class="kata-edit-category" style="margin-bottom:20px;">';
+                html += '<h4 style="color:#667eea;margin:0 0 10px 0;padding-bottom:8px;border-bottom:2px solid #f0f0f0;">' + category + '</h4>';
+                
+                for (var i = 0; i < categoryAttrs.length; i++) {
+                    var key = categoryAttrs[i];
+                    var value = parsed.attributes[key] || '';
+                    
+                    html += '<div class="kata-edit-field" style="margin-bottom:12px;">';
+                    html += '<label style="display:block;font-weight:600;margin-bottom:4px;color:#333;font-size:13px;">' + 
+                            key.replace(/_/g, ' ').toUpperCase() + '</label>';
+                    
+                    // Checkbox for boolean values
+                    if (value === 'true' || value === 'false') {
+                        html += '<input type="checkbox" id="attr_' + key + '" ' + (value === 'true' ? 'checked' : '') + 
+                                ' style="width:20px;height:20px;cursor:pointer;"> ' +
+                                '<span style="color:#666;font-size:12px;">(true/false)</span>';
+                    }
+                    // Textarea for long text
+                    else if (key === 'description' || key === 'content' || key === 'json_code' || 
+                             key === 'ingredients' || key === 'instructions') {
+                        html += '<textarea id="attr_' + key + '" rows="3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:13px;">' + 
+                                value + '</textarea>';
+                    }
+                    // Regular input
+                    else {
+                        html += '<input type="text" id="attr_' + key + '" value="' + value + 
+                                '" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:13px;">';
+                    }
+                    
+                    html += '</div>';
+                }
+                
+                html += '</div>';
+            }
+            
+            // If no attributes found
+            if (!hasAttributes) {
+                if (isContainer) {
+                    // Container shortcode - helpful message
+                    html += '<div style="padding:40px;text-align:center;background:linear-gradient(135deg,#e3f2fd 0%,#e1bee7 100%);border-radius:12px;margin:20px;">';
+                    html += '<div style="font-size:64px;margin-bottom:20px;">📦</div>';
+                    html += '<h3 style="margin:0 0 15px 0;color:#4a148c;font-size:24px;">Container Shortcode</h3>';
+                    html += '<p style="margin:0 0 20px 0;color:#4a148c;font-size:16px;line-height:1.6;">';
+                    html += '<strong>[' + parsed.type + ']</strong> is a container shortcode that wraps child items.';
+                    html += '</p>';
+                    html += '<div style="background:white;padding:20px;border-radius:8px;text-align:left;max-width:600px;margin:0 auto;">';
+                    html += '<p style="margin:0 0 12px 0;color:#666;font-size:14px;"><strong>How to use:</strong></p>';
+                    html += '<ol style="padding-left:20px;color:#666;font-size:14px;line-height:2;">';
+                    html += '<li>This container has <strong>no attributes</strong> to edit</li>';
+                    html += '<li>Edit individual <strong>child items</strong> inside by double-clicking them</li>';
+                    html += '<li>Example: Double-click <code>[kata_' + parsed.type + '_item ...]</code></li>';
+                    html += '</ol>';
+                    html += '</div>';
+                    html += '</div>';
+                } else {
+                    // Regular shortcode without attributes - show error
+                    html += '<div style="padding:20px;text-align:center;background:#fff3cd;border-radius:8px;margin:10px 0;">';
+                    html += '<p style="margin:0;color:#856404;font-size:14px;">⚠️ No attributes found in this shortcode.</p>';
+                    html += '<p style="margin:10px 0 0 0;color:#856404;font-size:12px;">Shortcode: <code>' + parsed.fullMatch + '</code></p>';
+                    html += '</div>';
+                }
+            }
+            
+            html += '</div>';
+            container.html(html);
+            
+            console.log('KATA Edit Form: Rendered', {
+                type: parsed.type,
+                attributeCount: Object.keys(parsed.attributes).length,
+                hasAttributes: hasAttributes,
+                isContainer: isContainer
+            });
+        }
+        
+        // Update shortcode with new values
+        function updateShortcode(node, parsed) {
+            var newShortcode = '[kata_' + parsed.type;
+            
+            // Collect updated values
+            jQuery('#kata-edit-attributes').find('input, textarea').each(function() {
+                var input = jQuery(this);
+                var id = input.attr('id');
+                if (!id || !id.startsWith('attr_')) return;
+                
+                var key = id.replace('attr_', '');
+                var value;
+                
+                if (input.attr('type') === 'checkbox') {
+                    value = input.is(':checked') ? 'true' : 'false';
+                } else {
+                    value = input.val().trim();
+                }
+                
+                if (value) {
+                    // Escape quotes in value
+                    value = value.replace(/"/g, '&quot;');
+                    newShortcode += ' ' + key + '="' + value + '"';
+                }
+            });
+            
+            newShortcode += ']';
+            
+            // Replace old shortcode with new one
+            editor.dom.setOuterHTML(node, newShortcode);
+            
+            // Show success notification
+            if (window.KataSEONotifications) {
+                window.KataSEONotifications.show('✅ Schema updated successfully!', 'success');
+            }
+        }
+
         // Context menu integration
         editor.on('contextmenu', function(e) {
             // Add KATA SEO options to right-click menu if needed

@@ -1017,6 +1017,276 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                 const previewPanel = document.getElementById('kata-preview-panel');
                                 if (previewPanel && templates[key]) {
                                     const template = templates[key];
+                                    
+                                    // Define schema attributes for customization
+                                    const schemaAttributes = {
+                                        faq: {
+                                            schema: ['question', 'answer'],
+                                            content: ['question', 'answer', 'date']
+                                        },
+                                        article: {
+                                            schema: ['title', 'author', 'category', 'tags', 'excerpt'],
+                                            content: ['title', 'author', 'category', 'tags', 'excerpt', 'reading_time', 'word_count', 'date', 'image']
+                                        },
+                                        recipe: {
+                                            schema: ['name', 'description', 'ingredients', 'instructions', 'time'],
+                                            content: ['name', 'description', 'image', 'ingredients', 'instructions', 'time', 'nutrition', 'rating']
+                                        },
+                                        product: {
+                                            schema: ['name', 'price', 'brand', 'availability'],
+                                            content: ['name', 'description', 'image', 'price', 'brand', 'category', 'availability', 'rating', 'features']
+                                        },
+                                        event: {
+                                            schema: ['name', 'date', 'location', 'organizer'],
+                                            content: ['name', 'description', 'date', 'time', 'location', 'organizer', 'price', 'image', 'status']
+                                        },
+                                        howto: {
+                                            schema: ['name', 'steps', 'tools'],
+                                            content: ['name', 'description', 'image', 'steps', 'tools', 'time', 'difficulty', 'cost']
+                                        },
+                                        local_business: {
+                                            schema: ['name', 'address', 'phone', 'hours'],
+                                            content: ['name', 'address', 'contact', 'hours', 'description', 'services', 'rating', 'departments']
+                                        },
+                                        course: {
+                                            schema: ['name', 'provider', 'instructor', 'price'],
+                                            content: ['name', 'description', 'provider', 'instructor', 'price', 'duration', 'level', 'skills']
+                                        },
+                                        job_posting: {
+                                            schema: ['title', 'company', 'location', 'salary'],
+                                            content: ['title', 'company', 'location', 'description', 'salary', 'requirements', 'benefits']
+                                        },
+                                        book: {
+                                            schema: ['name', 'author', 'publisher'],
+                                            content: ['name', 'author', 'description', 'publisher', 'date', 'pages', 'genre', 'isbn']
+                                        },
+                                        image_metadata: {
+                                            schema: ['url', 'name', 'creator'],
+                                            content: ['preview', 'name', 'description', 'technical', 'size', 'dimensions', 'format', 'camera', 'creator', 'date', 'location', 'keywords']
+                                        }
+                                    };
+                                    
+                                    const attrs = schemaAttributes[key] || { schema: [], content: [] };
+                                    
+                                    // Generate attribute checkboxes
+                                    let attributeControls = '';
+                                    if (attrs.schema.length > 0 || attrs.content.length > 0) {
+                                        attributeControls = `
+                                            <!-- Attribute Controls -->
+                                            <div id="attribute-controls-${key}" style="
+                                                background: #ffffff;
+                                                border: 1px solid #e5e7eb;
+                                                border-radius: 8px;
+                                                padding: 16px;
+                                                margin-bottom: 24px;
+                                            ">
+                                                <h4 style="margin: 0 0 16px 0; font-size: 14px; color: #374151; display: flex; align-items: center; gap: 8px;">
+                                                    ⚙️ Tùy chỉnh thuộc tính Schema
+                                                    <button 
+                                                        onclick="
+                                                            const panel = document.getElementById('controls-panel-${key}');
+                                                            const icon = this.querySelector('span');
+                                                            if (panel.style.display === 'none') {
+                                                                panel.style.display = 'block';
+                                                                icon.textContent = '▼';
+                                                            } else {
+                                                                panel.style.display = 'none';
+                                                                icon.textContent = '▶';
+                                                            }
+                                                        "
+                                                        style="
+                                                            background: #f3f4f6;
+                                                            border: 1px solid #d1d5db;
+                                                            border-radius: 4px;
+                                                            padding: 4px 8px;
+                                                            font-size: 12px;
+                                                            cursor: pointer;
+                                                            margin-left: auto;
+                                                        "
+                                                    ><span>▼</span> Toggle</button>
+                                                </h4>
+                                                
+                                                <div id="controls-panel-${key}" style="display: block;">
+                                                    ${attrs.schema.length > 0 ? `
+                                                        <!-- Schema Fields Section -->
+                                                        <div style="
+                                                            background: #f0f8ff;
+                                                            border: 2px solid #0073aa;
+                                                            border-radius: 8px;
+                                                            padding: 16px;
+                                                            margin-bottom: 16px;
+                                                        ">
+                                                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                                                <div>
+                                                                    <strong style="font-size: 14px; color: #0073aa; display: block;">📋 Schema Fields (hide_* / show_*)</strong>
+                                                                    <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280;">Kiểm soát dữ liệu trong JSON-LD schema</p>
+                                                                </div>
+                                                                <div style="display: flex; gap: 8px;">
+                                                                    <button 
+                                                                        onclick="
+                                                                            const checkboxes = document.querySelectorAll('.schema-field-${key}');
+                                                                            checkboxes.forEach(cb => cb.checked = true);
+                                                                            window.updateShortcode_${key}();
+                                                                        "
+                                                                        style="
+                                                                            background: #0073aa;
+                                                                            color: white;
+                                                                            border: none;
+                                                                            border-radius: 4px;
+                                                                            padding: 6px 12px;
+                                                                            font-size: 11px;
+                                                                            cursor: pointer;
+                                                                            transition: all 0.2s;
+                                                                        "
+                                                                        onmouseover="this.style.background='#005a87'"
+                                                                        onmouseout="this.style.background='#0073aa'"
+                                                                    >✓ All</button>
+                                                                    <button 
+                                                                        onclick="
+                                                                            const checkboxes = document.querySelectorAll('.schema-field-${key}');
+                                                                            checkboxes.forEach(cb => cb.checked = false);
+                                                                            window.updateShortcode_${key}();
+                                                                        "
+                                                                        style="
+                                                                            background: #dc2626;
+                                                                            color: white;
+                                                                            border: none;
+                                                                            border-radius: 4px;
+                                                                            padding: 6px 12px;
+                                                                            font-size: 11px;
+                                                                            cursor: pointer;
+                                                                            transition: all 0.2s;
+                                                                        "
+                                                                        onmouseover="this.style.background='#b91c1c'"
+                                                                        onmouseout="this.style.background='#dc2626'"
+                                                                    >✗ None</button>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div style="
+                                                                display: grid;
+                                                                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                                                                gap: 8px;
+                                                            ">
+                                                                ${attrs.schema.map(attr => `
+                                                                    <label style="
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        gap: 8px;
+                                                                        padding: 8px;
+                                                                        background: #ffffff;
+                                                                        border: 1px solid #0073aa;
+                                                                        border-radius: 6px;
+                                                                        cursor: pointer;
+                                                                        transition: all 0.2s;
+                                                                    " onmouseover="this.style.background='#e6f3ff'; this.style.transform='translateX(2px)'" onmouseout="this.style.background='#ffffff'; this.style.transform='translateX(0)'">
+                                                                        <input 
+                                                                            type="checkbox" 
+                                                                            class="schema-field-${key}" 
+                                                                            data-attr="${attr}" 
+                                                                            data-type="schema"
+                                                                            checked
+                                                                            onchange="window.updateShortcode_${key}()"
+                                                                            style="width: 16px; height: 16px; cursor: pointer; accent-color: #0073aa;"
+                                                                        />
+                                                                        <span style="font-size: 12px; color: #0073aa; font-weight: 500;">${attr}</span>
+                                                                    </label>
+                                                                `).join('')}
+                                                            </div>
+                                                        </div>
+                                                    ` : ''}
+                                                    
+                                                    ${attrs.content.length > 0 ? `
+                                                        <!-- Content Display Section -->
+                                                        <div style="
+                                                            background: #fffbeb;
+                                                            border: 2px solid #f59e0b;
+                                                            border-radius: 8px;
+                                                            padding: 16px;
+                                                        ">
+                                                            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                                                                <div>
+                                                                    <strong style="font-size: 14px; color: #f59e0b; display: block;">🎨 Content Display (hide_content_* / show_content_*)</strong>
+                                                                    <p style="margin: 4px 0 0 0; font-size: 11px; color: #6b7280;">Kiểm soát hiển thị trên frontend website</p>
+                                                                </div>
+                                                                <div style="display: flex; gap: 8px;">
+                                                                    <button 
+                                                                        onclick="
+                                                                            const checkboxes = document.querySelectorAll('.content-field-${key}');
+                                                                            checkboxes.forEach(cb => cb.checked = true);
+                                                                            window.updateShortcode_${key}();
+                                                                        "
+                                                                        style="
+                                                                            background: #f59e0b;
+                                                                            color: white;
+                                                                            border: none;
+                                                                            border-radius: 4px;
+                                                                            padding: 6px 12px;
+                                                                            font-size: 11px;
+                                                                            cursor: pointer;
+                                                                            transition: all 0.2s;
+                                                                        "
+                                                                        onmouseover="this.style.background='#d97706'"
+                                                                        onmouseout="this.style.background='#f59e0b'"
+                                                                    >✓ All</button>
+                                                                    <button 
+                                                                        onclick="
+                                                                            const checkboxes = document.querySelectorAll('.content-field-${key}');
+                                                                            checkboxes.forEach(cb => cb.checked = false);
+                                                                            window.updateShortcode_${key}();
+                                                                        "
+                                                                        style="
+                                                                            background: #dc2626;
+                                                                            color: white;
+                                                                            border: none;
+                                                                            border-radius: 4px;
+                                                                            padding: 6px 12px;
+                                                                            font-size: 11px;
+                                                                            cursor: pointer;
+                                                                            transition: all 0.2s;
+                                                                        "
+                                                                        onmouseover="this.style.background='#b91c1c'"
+                                                                        onmouseout="this.style.background='#dc2626'"
+                                                                    >✗ None</button>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <div style="
+                                                                display: grid;
+                                                                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                                                                gap: 8px;
+                                                            ">
+                                                                ${attrs.content.map(attr => `
+                                                                    <label style="
+                                                                        display: flex;
+                                                                        align-items: center;
+                                                                        gap: 8px;
+                                                                        padding: 8px;
+                                                                        background: #ffffff;
+                                                                        border: 1px solid #f59e0b;
+                                                                        border-radius: 6px;
+                                                                        cursor: pointer;
+                                                                        transition: all 0.2s;
+                                                                    " onmouseover="this.style.background='#fef3c7'; this.style.transform='translateX(2px)'" onmouseout="this.style.background='#ffffff'; this.style.transform='translateX(0)'">
+                                                                        <input 
+                                                                            type="checkbox" 
+                                                                            class="content-field-${key}" 
+                                                                            data-attr="${attr}" 
+                                                                            data-type="content"
+                                                                            checked
+                                                                            onchange="window.updateShortcode_${key}()"
+                                                                            style="width: 16px; height: 16px; cursor: pointer; accent-color: #f59e0b;"
+                                                                        />
+                                                                        <span style="font-size: 12px; color: #f59e0b; font-weight: 500;">${attr}</span>
+                                                                    </label>
+                                                                `).join('')}
+                                                            </div>
+                                                        </div>
+                                                    ` : ''}
+                                            </div>
+                                        `;
+                                    }
+                                    
                                     previewPanel.style.display = 'block';
                                     previewPanel.style.padding = '24px';
                                     previewPanel.style.textAlign = 'left';
@@ -1040,6 +1310,8 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                                 ${template.preview}
                                             </div>
                                             
+                                            ${attributeControls}
+                                            
                                             <!-- Shortcode Display -->
                                             <div style="
                                                 background: #f8f9fa;
@@ -1050,6 +1322,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                             ">
                                                 <h4 style="margin: 0 0 12px 0; font-size: 14px; color: #374151;">📝 Shortcode:</h4>
                                                 <textarea 
+                                                    id="shortcode-textarea-${key}"
                                                     readonly 
                                                     style="
                                                         width: 100%;
@@ -1071,11 +1344,57 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                                 </p>
                                             </div>
                                             
+                                            <!-- Update Function -->
+                                            <script>
+                                                window.updateShortcode_${key} = function() {
+                                                    // Get schema and content checkboxes separately
+                                                    const schemaCheckboxes = document.querySelectorAll('.schema-field-${key}');
+                                                    const contentCheckboxes = document.querySelectorAll('.content-field-${key}');
+                                                    
+                                                    let baseShortcode = \`${template.shortcode.replace(/`/g, '\\`')}\`;
+                                                    
+                                                    const hiddenSchemaAttrs = [];
+                                                    const hiddenContentAttrs = [];
+                                                    
+                                                    // Process schema field checkboxes
+                                                    schemaCheckboxes.forEach(cb => {
+                                                        if (!cb.checked) {
+                                                            const attr = cb.dataset.attr;
+                                                            hiddenSchemaAttrs.push('hide_' + attr + '="true"');
+                                                        }
+                                                    });
+                                                    
+                                                    // Process content field checkboxes
+                                                    contentCheckboxes.forEach(cb => {
+                                                        if (!cb.checked) {
+                                                            const attr = cb.dataset.attr;
+                                                            hiddenContentAttrs.push('hide_content_' + attr + '="true"');
+                                                        }
+                                                    });
+                                                    
+                                                    // Add hide attributes to shortcode
+                                                    if (hiddenSchemaAttrs.length > 0 || hiddenContentAttrs.length > 0) {
+                                                        const allHideAttrs = [...hiddenSchemaAttrs, ...hiddenContentAttrs].join(' ');
+                                                        
+                                                        // Find the closing bracket or tag
+                                                        if (baseShortcode.includes(']')) {
+                                                            baseShortcode = baseShortcode.replace(/\]/, ' ' + allHideAttrs + ']');
+                                                        }
+                                                    }
+                                                    
+                                                    // Update textarea
+                                                    const textarea = document.getElementById('shortcode-textarea-${key}');
+                                                    if (textarea) {
+                                                        textarea.value = baseShortcode;
+                                                    }
+                                                };
+                                            </script>
+                                            
                                             <!-- Action Buttons -->
                                             <div style="display: flex; gap: 12px; justify-content: flex-end;">
                                                 <button 
                                                     onclick="
-                                                        const textarea = this.parentElement.previousElementSibling.querySelector('textarea');
+                                                        const textarea = document.getElementById('shortcode-textarea-${key}');
                                                         textarea.select();
                                                         document.execCommand('copy');
                                                         this.textContent = '✅ Đã copy!';
@@ -1097,7 +1416,8 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                                 
                                                 <button 
                                                     onclick="
-                                                        var shortcode = \`${template.shortcode.replace(/`/g, '\\`')}\`;
+                                                        const textarea = document.getElementById('shortcode-textarea-${key}');
+                                                        const shortcode = textarea.value;
                                                         tinymce.activeEditor.insertContent(shortcode);
                                                         tinymce.activeEditor.windowManager.close();
                                                     "

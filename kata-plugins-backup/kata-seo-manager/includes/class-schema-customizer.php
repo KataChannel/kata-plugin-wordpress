@@ -204,6 +204,56 @@ class KATA_Schema_Customizer {
             'benefits' => false,
             'workHours' => false,
             'incentiveCompensation' => false
+        ),
+        'video' => array(
+            '@context' => true,
+            '@type' => true,
+            'name' => true,
+            'contentUrl' => true,
+            'description' => true,
+            'thumbnailUrl' => true,
+            'duration' => true,
+            'uploadDate' => true,
+            'embedUrl' => false,
+            'transcript' => false,
+            'videoQuality' => false,
+            'publisher' => false,
+            'contentSize' => false,
+            'encodingFormat' => false,
+            'interactionStatistic' => false,
+            'regionsAllowed' => false
+        ),
+        'organization' => array(
+            '@context' => true,
+            '@type' => true,
+            'name' => true,
+            'url' => true,
+            'logo' => true,
+            'description' => true,
+            'address' => true,
+            'telephone' => true,
+            'email' => true,
+            'foundingDate' => false,
+            'founder' => false,
+            'numberOfEmployees' => false,
+            'slogan' => false,
+            'contactPoint' => false,
+            'sameAs' => false,
+            'areaServed' => false,
+            'award' => false
+        ),
+        'rating' => array(
+            '@context' => true,
+            '@type' => true,
+            'ratingValue' => true,
+            'bestRating' => true,
+            'worstRating' => false,
+            'ratingCount' => false,
+            'reviewCount' => false,
+            'itemReviewed' => false,
+            'author' => false,
+            'reviewBody' => false,
+            'datePublished' => false
         )
     );
     
@@ -323,6 +373,16 @@ class KATA_Schema_Customizer {
         return isset(self::$default_properties[$schema_type]) 
             ? self::$default_properties[$schema_type] 
             : array();
+    }
+    
+    /**
+     * Get all default properties cho tất cả schema types
+     * Dùng cho Admin UI để hiển thị checkboxes
+     * 
+     * @return array
+     */
+    public static function get_all_default_properties() {
+        return self::$default_properties;
     }
     
     /**

@@ -4433,7 +4433,46 @@ class KATA_SEO_Manager {
             'price_range' => '',
             'description' => '',
             'image' => '',
+            'latitude' => '',
+            'longitude' => '',
+            'email' => '',
+            'website' => '',
+            'services' => '',
+            'rating' => '',
+            'review_count' => '',
             'show_frontend' => 'true',  // Control whether to show frontend UI
+            
+            // Department/Branch support (up to 10 departments)
+            'department_1_name' => '',
+            'department_1_address' => '',
+            'department_1_phone' => '',
+            'department_1_url' => '',
+            'department_1_latitude' => '',
+            'department_1_longitude' => '',
+            'department_2_name' => '',
+            'department_2_address' => '',
+            'department_2_phone' => '',
+            'department_2_url' => '',
+            'department_2_latitude' => '',
+            'department_2_longitude' => '',
+            'department_3_name' => '',
+            'department_3_address' => '',
+            'department_3_phone' => '',
+            'department_3_url' => '',
+            'department_3_latitude' => '',
+            'department_3_longitude' => '',
+            'department_4_name' => '',
+            'department_4_address' => '',
+            'department_4_phone' => '',
+            'department_4_url' => '',
+            'department_4_latitude' => '',
+            'department_4_longitude' => '',
+            'department_5_name' => '',
+            'department_5_address' => '',
+            'department_5_phone' => '',
+            'department_5_url' => '',
+            'department_5_latitude' => '',
+            'department_5_longitude' => '',
             
             // MODE 1: Schema Filtering
             'schema_fields' => '',
@@ -4460,13 +4499,18 @@ class KATA_SEO_Manager {
             'hide_content_price' => '',
             'hide_content_description' => '',
             'hide_content_image' => '',
+            'hide_content_departments' => '',
             'show_content_name' => '',
             'show_content_address' => '',
             'show_content_phone' => '',
             'show_content_hours' => '',
             'show_content_price' => '',
             'show_content_description' => '',
-            'show_content_image' => ''
+            'show_content_image' => '',
+            'show_content_services' => '',
+            'show_content_rating' => '',
+            'show_content_contact' => '',
+            'show_content_departments' => ''
         ), $atts, 'kata_localbusiness');
         
         if (empty($atts['name'])) {
@@ -4483,26 +4527,113 @@ class KATA_SEO_Manager {
             'name' => $atts['name']
         );
         
-        if (!empty($atts['address'])) {
-            $schema['address'] = $atts['address'];
+        // Add @id if URL is provided
+        if (!empty($atts['url'])) {
+            $schema['@id'] = $atts['url'] . '#LocalBusiness';
+            $schema['url'] = $atts['url'];
+        } elseif (!empty($atts['website'])) {
+            $schema['@id'] = $atts['website'] . '#LocalBusiness';
+            $schema['url'] = $atts['website'];
         }
+        
+        if (!empty($atts['address'])) {
+            // Try to parse structured address
+            $schema['address'] = array(
+                '@type' => 'PostalAddress',
+                'streetAddress' => $atts['address']
+            );
+        }
+        
         if (!empty($atts['phone'])) {
             $schema['telephone'] = $atts['phone'];
         }
-        if (!empty($atts['url'])) {
-            $schema['url'] = $atts['url'];
+        
+        if (!empty($atts['email'])) {
+            $schema['email'] = $atts['email'];
         }
+        
         if (!empty($atts['hours'])) {
             $schema['openingHours'] = $atts['hours'];
         }
+        
         if (!empty($atts['price_range'])) {
             $schema['priceRange'] = $atts['price_range'];
         }
+        
         if (!empty($atts['description'])) {
             $schema['description'] = $atts['description'];
         }
+        
         if (!empty($atts['image'])) {
             $schema['image'] = $atts['image'];
+        }
+        
+        // Add geo coordinates if provided
+        if (!empty($atts['latitude']) && !empty($atts['longitude'])) {
+            $schema['geo'] = array(
+                '@type' => 'GeoCoordinates',
+                'latitude' => floatval($atts['latitude']),
+                'longitude' => floatval($atts['longitude'])
+            );
+        }
+        
+        // Add aggregate rating if provided
+        if (!empty($atts['rating'])) {
+            $schema['aggregateRating'] = array(
+                '@type' => 'AggregateRating',
+                'ratingValue' => $atts['rating']
+            );
+            if (!empty($atts['review_count'])) {
+                $schema['aggregateRating']['reviewCount'] = $atts['review_count'];
+            }
+        }
+        
+        // Process departments/branches
+        $departments = array();
+        for ($i = 1; $i <= 10; $i++) {
+            $dept_name = $atts["department_{$i}_name"];
+            if (!empty($dept_name)) {
+                $department = array(
+                    '@type' => 'LocalBusiness',
+                    'name' => $dept_name
+                );
+                
+                if (!empty($atts["department_{$i}_url"])) {
+                    $department['@id'] = $atts["department_{$i}_url"] . '#LocalBusiness';
+                    $department['url'] = $atts["department_{$i}_url"];
+                }
+                
+                if (!empty($atts["department_{$i}_address"])) {
+                    $department['address'] = array(
+                        '@type' => 'PostalAddress',
+                        'streetAddress' => $atts["department_{$i}_address"]
+                    );
+                }
+                
+                if (!empty($atts["department_{$i}_phone"])) {
+                    $department['telephone'] = $atts["department_{$i}_phone"];
+                }
+                
+                if (!empty($atts["department_{$i}_latitude"]) && !empty($atts["department_{$i}_longitude"])) {
+                    $department['geo'] = array(
+                        '@type' => 'GeoCoordinates',
+                        'latitude' => floatval($atts["department_{$i}_latitude"]),
+                        'longitude' => floatval($atts["department_{$i}_longitude"])
+                    );
+                }
+                
+                // Add image if main business has image
+                if (!empty($atts['image'])) {
+                    $department['image'] = $atts['image'];
+                }
+                
+                $departments[] = $department;
+            }
+        }
+        
+        // Add departments to schema if any exist
+        if (!empty($departments)) {
+            $schema['department'] = $departments;
         }
         
         // MODE 1: Apply schema filtering
@@ -4598,6 +4729,44 @@ class KATA_SEO_Manager {
             }
             
             $output .= '</div>'; // .kata-localbusiness-details
+            
+            // Display departments/branches if any
+            if ($should_show_content('departments') && !empty($departments)) {
+                $output .= '<div class="kata-localbusiness-departments" style="margin-top: 20px; padding-top: 15px; border-top: 2px dashed #e0e0e0;">';
+                $output .= '<h4 style="margin: 0 0 12px 0; font-size: 15px; color: #333;">🏪 Chi nhánh / Departments</h4>';
+                
+                foreach ($departments as $index => $dept) {
+                    $output .= '<div class="kata-department-item" style="margin-bottom: 12px; padding: 10px; background: #f9f9f9; border-left: 3px solid #667eea; border-radius: 4px;">';
+                    $output .= '<div style="font-weight: 600; color: #667eea; margin-bottom: 5px;">📍 ' . esc_html($dept['name']) . '</div>';
+                    
+                    if (!empty($dept['address']['streetAddress'])) {
+                        $output .= '<div style="font-size: 13px; color: #666; margin-bottom: 3px;">';
+                        $output .= '<span class="dashicons dashicons-location" style="font-size: 14px; vertical-align: middle;"></span> ';
+                        $output .= esc_html($dept['address']['streetAddress']);
+                        $output .= '</div>';
+                    }
+                    
+                    if (!empty($dept['telephone'])) {
+                        $output .= '<div style="font-size: 13px; color: #666; margin-bottom: 3px;">';
+                        $output .= '<span class="dashicons dashicons-phone" style="font-size: 14px; vertical-align: middle;"></span> ';
+                        $output .= '<a href="tel:' . esc_attr($dept['telephone']) . '" style="color: #667eea; text-decoration: none;">' . esc_html($dept['telephone']) . '</a>';
+                        $output .= '</div>';
+                    }
+                    
+                    if (!empty($dept['url'])) {
+                        $output .= '<div style="font-size: 13px; margin-top: 5px;">';
+                        $output .= '<a href="' . esc_url($dept['url']) . '" target="_blank" rel="noopener" style="color: #667eea; text-decoration: none; font-weight: 500;">';
+                        $output .= '<span class="dashicons dashicons-external" style="font-size: 14px; vertical-align: middle;"></span> Xem chi tiết';
+                        $output .= '</a>';
+                        $output .= '</div>';
+                    }
+                    
+                    $output .= '</div>';
+                }
+                
+                $output .= '</div>'; // .kata-localbusiness-departments
+            }
+            
             $output .= '</div>'; // .kata-schema-content
             $output .= '</div>'; // .kata-localbusiness-container
         }

@@ -571,24 +571,75 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             // === ENHANCED EXISTING SCHEMAS ===
 
             local_business: {
-                title: '🏢 Local Business (Enhanced)',
-                shortcode: '[kata_local_business name="KATA Digital Marketing Agency" address="123 Nguyễn Văn Cừ, Quận 1, TP.HCM" phone="+84 28 1234 5678" email="hello@katadigital.com" website="https://katadigital.com" hours="Thứ 2-6: 9:00-18:00, Thứ 7: 9:00-12:00" description="Agency chuyên cung cấp dịch vụ Digital Marketing và phát triển Website chuyên nghiệp tại TP.HCM" services="SEO Optimization,Google Ads,Social Media Marketing,Web Development" rating="4.8" review_count="127" price_range="$$" show_schema="true" show_frontend="true" show_content_name="true" show_content_address="true" show_content_contact="true" show_content_hours="true" show_content_description="true" show_content_services="true" show_content_rating="true"]',
+                title: '🏢 Local Business with Departments',
+                shortcode: `[kata_local_business 
+    name="KATA Digital Marketing Agency - Văn phòng Chính" 
+    address="123 Nguyễn Văn Cừ, Quận 1, TP.HCM" 
+    phone="+84 28 1234 5678" 
+    email="hello@katadigital.com" 
+    website="https://katadigital.com" 
+    hours="Thứ 2-6: 9:00-18:00, Thứ 7: 9:00-12:00" 
+    description="Agency chuyên cung cấp dịch vụ Digital Marketing và phát triển Website chuyên nghiệp tại TP.HCM với 2 chi nhánh" 
+    services="SEO Optimization,Google Ads,Social Media Marketing,Web Development" 
+    rating="4.8" 
+    review_count="127" 
+    price_range="$$"
+    latitude="10.7769"
+    longitude="106.7009"
+    department_1_name="KATA Digital - Chi nhánh Quận 3"
+    department_1_address="456 Võ Văn Tần, Quận 3, TP.HCM"
+    department_1_phone="+84 28 9876 5432"
+    department_1_latitude="10.7821"
+    department_1_longitude="106.6919"
+    department_2_name="KATA Digital - Chi nhánh Thủ Đức"
+    department_2_address="789 Võ Văn Ngân, Thủ Đức, TP.HCM"
+    department_2_phone="+84 28 5555 6666"
+    department_2_latitude="10.8509"
+    department_2_longitude="106.7718"
+    show_schema="true" 
+    show_frontend="true" 
+    show_content_name="true" 
+    show_content_address="true" 
+    show_content_contact="true" 
+    show_content_hours="true" 
+    show_content_description="true" 
+    show_content_services="true" 
+    show_content_rating="true"
+    show_content_departments="true"]`,
                 preview: `
                     <div class="kata-preview-box">
-                        <h4>🏢 Enhanced Local Business sẽ tạo:</h4>
+                        <h4>🏢 LocalBusiness với Department Array sẽ tạo:</h4>
                         <div class="business-preview">
-                            <h3>KATA Digital Marketing Agency</h3>
+                            <h3>KATA Digital Marketing Agency - Văn phòng Chính</h3>
                             <p>📍 123 Nguyễn Văn Cừ, Q1, TP.HCM | ☎️ +84 28 1234 5678</p>
                             <p>⭐ 4.8/5 (127 reviews) | 💰 $$</p>
                             <p>🕒 T2-6: 9:00-18:00, T7: 9:00-12:00</p>
                             <p>🎯 SEO, Google Ads, Social Media, Web Dev</p>
+                            <hr style="margin: 8px 0; border-top: 1px dashed #ddd;">
+                            <p><strong>🏪 Chi nhánh:</strong></p>
+                            <p style="margin-left: 15px;">• Chi nhánh Q3: 456 Võ Văn Tần</p>
+                            <p style="margin-left: 15px;">• Chi nhánh Thủ Đức: 789 Võ Văn Ngân</p>
                         </div>
-                        <small>✅ LocalBusiness schema + Visual business card</small>
+                        <small>✅ LocalBusiness schema với department array + Geo coordinates</small>
+                        <hr style="margin:10px 0; border:none; border-top:1px solid #ddd;">
+                        <small style="color:#666;">
+                            <strong>Schema Structure:</strong><br>
+                            <code style="background:#f5f5f5; padding:2px 4px; border-radius:3px;">
+                            {<br>
+                            &nbsp;&nbsp;"@type": "LocalBusiness",<br>
+                            &nbsp;&nbsp;"name": "Văn phòng Chính",<br>
+                            &nbsp;&nbsp;"department": [<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;{ "@type": "LocalBusiness", "name": "Chi nhánh 1" },<br>
+                            &nbsp;&nbsp;&nbsp;&nbsp;{ "@type": "LocalBusiness", "name": "Chi nhánh 2" }<br>
+                            &nbsp;&nbsp;]<br>
+                            }
+                            </code>
+                        </small>
                         <hr style="margin:10px 0; border:none; border-top:1px solid #ddd;">
                         <small style="color:#666;">
                             <strong>MODE 1 (Schema):</strong> schema_fields, hide_*, show_*<br>
                             <strong>MODE 2 (Content):</strong> hide_content_*, show_content_*<br>
-                            <strong>Ví dụ:</strong> hide_content_hours="true" show_content_contact="true"
+                            <strong>Ví dụ:</strong> show_content_departments="true" hide_content_hours="true"
                         </small>
                     </div>
                 `
@@ -767,6 +818,22 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                     <h3 style="margin: 0 0 3px 0; font-size: 16px;">KATA SEO Manager</h3>
                                     <p style="margin: 0; opacity: 0.9; font-size: 13px;">Chọn template để chèn dữ liệu mẫu</p>
                                 </div>
+                                
+                                <!-- Search Box -->
+                                <div style="margin-bottom: 15px;">
+                                    <input 
+                                        type="text" 
+                                        id="kata-schema-search" 
+                                        placeholder="🔍 Tìm kiếm schema (FAQ, Article, Product, LocalBusiness...)" 
+                                        style="width: 100%; padding: 10px 12px; border: 2px solid #e0e0e0; border-radius: 6px; font-size: 14px; box-sizing: border-box; transition: border-color 0.3s;"
+                                        onfocus="this.style.borderColor='#667eea'"
+                                        onblur="this.style.borderColor='#e0e0e0'"
+                                    />
+                                    <p style="margin: 5px 0 0 0; font-size: 11px; color: #666;">
+                                        💡 Gõ tên schema để lọc nhanh
+                                    </p>
+                                </div>
+                                
                                 <div id="kata-schema-list" style="max-height: 350px; overflow-y: auto; padding-right: 5px;">
                                     ${schemaOptions}
                                 </div>
@@ -789,6 +856,46 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                     // Add click handlers to schema options
                     const dialog = this;
                     setTimeout(() => {
+                        // Add search functionality
+                        const searchInput = document.getElementById('kata-schema-search');
+                        const schemaList = document.getElementById('kata-schema-list');
+                        const allOptions = schemaList.querySelectorAll('.kata-schema-option');
+                        
+                        if (searchInput) {
+                            searchInput.addEventListener('input', function(e) {
+                                const searchTerm = e.target.value.toLowerCase().trim();
+                                
+                                allOptions.forEach(option => {
+                                    const title = option.querySelector('h4').textContent.toLowerCase();
+                                    const description = option.querySelector('p').textContent.toLowerCase();
+                                    
+                                    if (searchTerm === '' || title.includes(searchTerm) || description.includes(searchTerm)) {
+                                        option.style.display = 'block';
+                                    } else {
+                                        option.style.display = 'none';
+                                    }
+                                });
+                                
+                                // Show "no results" message if all hidden
+                                const visibleOptions = Array.from(allOptions).filter(opt => opt.style.display !== 'none');
+                                const existingNoResults = schemaList.querySelector('.kata-no-results');
+                                
+                                if (visibleOptions.length === 0 && !existingNoResults) {
+                                    const noResultsDiv = document.createElement('div');
+                                    noResultsDiv.className = 'kata-no-results';
+                                    noResultsDiv.style.cssText = 'text-align: center; padding: 40px 20px; color: #999;';
+                                    noResultsDiv.innerHTML = `
+                                        <p style="font-size: 48px; margin: 0;">🔍</p>
+                                        <p style="margin: 10px 0 5px 0; font-size: 16px; font-weight: 600;">Không tìm thấy schema</p>
+                                        <p style="margin: 0; font-size: 13px;">Thử tìm kiếm với từ khóa khác</p>
+                                    `;
+                                    schemaList.appendChild(noResultsDiv);
+                                } else if (visibleOptions.length > 0 && existingNoResults) {
+                                    existingNoResults.remove();
+                                }
+                            });
+                        }
+                        
                         const options = document.querySelectorAll('.kata-schema-option');
                         options.forEach(option => {
                             option.addEventListener('click', function() {

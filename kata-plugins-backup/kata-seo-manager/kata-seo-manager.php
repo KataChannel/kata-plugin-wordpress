@@ -9747,8 +9747,14 @@ class KATA_SEO_Manager {
      * Register TinyMCE button
      */
     public function register_tinymce_button($buttons) {
-        // Only add buttons on post edit screens
+        // Only add buttons on post edit screens with Classic Editor
         global $current_screen;
+        
+        // Skip if Gutenberg is active
+        if (function_exists('use_block_editor_for_post') && use_block_editor_for_post($GLOBALS['post'] ?? null)) {
+            return $buttons;
+        }
+        
         if (isset($current_screen) && in_array($current_screen->base, array('post', 'page'))) {
             array_push($buttons, 'kata_seo_manager', 'kata_seo_quick');
         }
@@ -9759,9 +9765,20 @@ class KATA_SEO_Manager {
      * Register TinyMCE plugin
      */
     public function register_tinymce_plugin($plugins) {
+        // Only add plugin on post edit screens with Classic Editor
         global $current_screen;
+        
+        // Skip if Gutenberg is active
+        if (function_exists('use_block_editor_for_post') && use_block_editor_for_post($GLOBALS['post'] ?? null)) {
+            return $plugins;
+        }
+        
         if (isset($current_screen) && in_array($current_screen->base, array('post', 'page'))) {
-            $plugins['kata_seo_manager'] = KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/tinymce-plugin.js?v=' . KATA_SEO_MANAGER_VERSION;
+            // Verify file exists before registering
+            $plugin_file = KATA_SEO_MANAGER_PLUGIN_DIR . 'assets/js/tinymce-plugin.js';
+            if (file_exists($plugin_file)) {
+                $plugins['kata_seo_manager'] = KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/tinymce-plugin.js?v=' . KATA_SEO_MANAGER_VERSION;
+            }
         }
         return $plugins;
     }

@@ -2131,7 +2131,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                 body: [
                     {
                         type: 'container',
-                        html: '<div style="display:flex;flex-direction:column;height:100%;min-height:500px; max-height:calc(100vh - 150px);background:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">' +
+                        html: '<div style="display:flex;flex-direction:column;height:600px;padding:10px; background:#f5f7fa;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;">' +
                               '<!-- Header -->' +
                               '<div style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:white;padding:' + (device.isMobile ? '16px 20px' : '20px 24px') + ';box-shadow:0 2px 8px rgba(0,0,0,0.15);flex-shrink:0;border-radius:8px 8px 0 0;">' +
                               '<h2 style="margin:0 0 6px 0;font-size:' + fonts.h2 + ';font-weight:600;">✏️ Edit ' + parsed.type.toUpperCase() + ' Schema</h2>' +
@@ -2196,7 +2196,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                 return;
             }
             
-            var html = '<div style="height:100%;overflow-y:auto;padding:10px;">';
+            var html = '<div style="height:100%;padding:10px;">';
             
             // Group attributes by category
             var categories = {

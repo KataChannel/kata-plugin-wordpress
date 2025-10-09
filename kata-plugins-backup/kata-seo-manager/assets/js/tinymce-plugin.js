@@ -1205,6 +1205,10 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                         speakable: {
                                             schema: ['title', 'content'],
                                             content: ['title', 'content', 'summary', 'voice_settings', 'selectors']
+                                        },
+                                        dynamic: {
+                                            schema: ['json_code', 'validate', 'pretty_print', 'minify', 'auto_context', 'escape_quotes'],
+                                            content: ['info', 'raw', 'formatted']
                                         }
                                     };
                                     

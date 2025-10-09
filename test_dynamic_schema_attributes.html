@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KATA Dynamic Schema - Attribute Customization Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 42px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        
+        .test-case {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        
+        .test-case h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 28px;
+            border-bottom: 3px solid #f0f0f0;
+            padding-bottom: 15px;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .section h3 {
+            color: #764ba2;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .attribute-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .attribute-item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .attribute-item code {
+            background: #e3f2fd;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: #1976d2;
+            font-size: 13px;
+        }
+        
+        .shortcode-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 25px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            position: relative;
+        }
+        
+        .shortcode-box pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #e1bee7 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .info-box h4 {
+            color: #4a148c;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .info-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .info-box li {
+            padding: 8px 0;
+            color: #4a148c;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-box li::before {
+            content: '✅';
+            font-size: 16px;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .comparison-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .comparison-table tr:hover {
+            background: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚡ Dynamic Schema Attributes</h1>
+            <p style="font-size: 18px; color: #666; margin-bottom: 10px;">Tùy chỉnh thuộc tính Schema cho Dynamic Schema</p>
+            <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 25px; border-radius: 12px;">
+                    <strong style="font-size: 24px; display: block;">6</strong>
+                    <span style="font-size: 14px;">Schema Attributes</span>
+                </div>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 15px 25px; border-radius: 12px;">
+                    <strong style="font-size: 24px; display: block;">3</strong>
+                    <span style="font-size: 14px;">Content Attributes</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Case 1: Schema Attributes -->
+        <div class="test-case">
+            <h2>📋 MODE 1: Schema Attributes (JSON-LD Control)</h2>
+            
+            <div class="section">
+                <h3>6 Schema Attributes Available:</h3>
+                <div class="attribute-list">
+                    <div class="attribute-item">
+                        <code>hide_json_code</code>
+                        <span>Ẩn JSON code trong schema</span>
+                    </div>
+                    <div class="attribute-item">
+                        <code>hide_validate</code>
+                        <span>Tắt validation</span>
+                    </div>
+                    <div class="attribute-item">
+                        <code>hide_pretty_print</code>
+                        <span>Tắt pretty print</span>
+                    </div>
+                    <div class="attribute-item">
+                        <code>hide_minify</code>
+                        <span>Tắt minify</span>
+                    </div>
+                    <div class="attribute-item">
+                        <code>hide_auto_context</code>
+                        <span>Tắt auto @context</span>
+                    </div>
+                    <div class="attribute-item">
+                        <code>hide_escape_quotes</code>
+                        <span>Tắt escape quotes</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>💡 Use Case: Disable Validation</h3>
+                <p style="margin-bottom: 15px;">Tắt JSON validation khi bạn chắc chắn JSON đúng syntax:</p>
+                <div class="shortcode-box">
+                    <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                    <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"WebSite","name":"example.com"}' 
+    hide_validate="true" 
+    show_schema="true"]
+
+<!-- Validation bị disabled, tiết kiệm ~5ms processing time --></pre>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>💡 Use Case: Force Minify OFF</h3>
+                <p style="margin-bottom: 15px;">Muốn JSON readable ngay cả khi có minify="true":</p>
+                <div class="shortcode-box">
+                    <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                    <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Person","name":"John"}' 
+    minify="true" 
+    hide_minify="true" 
+    show_schema="true"]
+
+<!-- minify="true" sẽ bị override bởi hide_minify="true" --></pre>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>💡 Use Case: Disable Auto Context</h3>
+                <p style="margin-bottom: 15px;">Không muốn tự động thêm @context (JSON đã có sẵn):</p>
+                <div class="shortcode-box">
+                    <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                    <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Organization","name":"KATA"}' 
+    auto_context="true" 
+    hide_auto_context="true" 
+    show_schema="true"]
+
+<!-- Không check và add @context, dùng JSON y nguyên --></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Case 2: Content Attributes -->
+        <div class="test-case">
+            <h2>🎨 MODE 2: Content Attributes (Frontend Display)</h2>
+            
+            <div class="section">
+                <h3>3 Content Attributes Available:</h3>
+                <div class="attribute-list">
+                    <div class="attribute-item">
+                        <code>hide_content_info</code>
+                        <span>Ẩn schema info box</span>
+                    </div>
+                    <div class="attribute-item">
+                        <code>hide_content_raw</code>
+                        <span>Ẩn raw JSON display</span>
+                    </div>
+                    <div class="attribute-item">
+                        <code>hide_content_formatted</code>
+                        <span>Ẩn property table</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>💡 Use Case: Show Only Info Box</h3>
+                <p style="margin-bottom: 15px;">Hiển thị chỉ schema info, ẩn raw JSON và table:</p>
+                <div class="shortcode-box">
+                    <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                    <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Product","name":"iPhone 15"}' 
+    schema_name="iPhone 15 Pro" 
+    description="Flagship smartphone" 
+    show_frontend="true" 
+    show_info="true" 
+    hide_content_raw="true" 
+    hide_content_formatted="true"]
+
+<!-- Chỉ hiển thị info box, không có raw JSON hay property table --></pre>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>💡 Use Case: Show Only Raw JSON</h3>
+                <p style="margin-bottom: 15px;">Chỉ hiển thị raw JSON code, ẩn info box và table:</p>
+                <div class="shortcode-box">
+                    <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                    <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Event","name":"WordPress Meetup"}' 
+    show_frontend="true" 
+    show_raw="true" 
+    hide_content_info="true" 
+    hide_content_formatted="true"]
+
+<!-- Chỉ raw JSON code block, clean and simple --></pre>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>💡 Use Case: Show Only Property Table</h3>
+                <p style="margin-bottom: 15px;">Chỉ table với properties, không cần info hay raw JSON:</p>
+                <div class="shortcode-box">
+                    <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                    <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Course","name":"WordPress Development"}' 
+    show_frontend="true" 
+    show_content_formatted="true" 
+    hide_content_info="true" 
+    hide_content_raw="true"]
+
+<!-- Clean property table, perfect for technical docs --></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Case 3: Combined Controls -->
+        <div class="test-case">
+            <h2>🔄 MODE 1 + 2: Combined Attribute Control</h2>
+            
+            <div class="section">
+                <h3>💡 Production Optimized</h3>
+                <p style="margin-bottom: 15px;">Schema only, no frontend, minified, no validation overhead:</p>
+                <div class="shortcode-box">
+                    <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                    <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"WebSite","name":"example.com","url":"https://example.com"}' 
+    minify="true" 
+    hide_validate="true" 
+    show_schema="true" 
+    show_frontend="false" 
+    hide_content_info="true" 
+    hide_content_raw="true" 
+    hide_content_formatted="true"]
+
+<!-- Fastest possible output:
+     - Minified JSON
+     - No validation
+     - No frontend display
+     - All content hidden
+--></pre>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>💡 Development Full Debug</h3>
+                <p style="margin-bottom: 15px;">Show everything cho debugging và testing:</p>
+                <div class="shortcode-box">
+                    <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                    <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Organization","name":"KATA Digital","url":"https://katadigital.com"}' 
+    schema_name="KATA Digital Agency" 
+    description="Digital Marketing Agency" 
+    validate="true" 
+    pretty_print="true" 
+    show_schema="true" 
+    show_frontend="true" 
+    show_info="true" 
+    show_raw="true" 
+    show_content_formatted="true"]
+
+<!-- Full debug mode:
+     - Schema + Frontend
+     - Pretty print
+     - Validation ON
+     - Info + Raw + Table all visible
+--></pre>
+                </div>
+            </div>
+            
+            <div class="section">
+                <h3>💡 Custom Selective Display</h3>
+                <p style="margin-bottom: 15px;">Pick and choose specific components:</p>
+                <div class="shortcode-box">
+                    <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                    <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Person","name":"Nguyễn Văn A","jobTitle":"SEO Specialist"}' 
+    schema_name="Nguyễn Văn A" 
+    show_schema="true" 
+    show_frontend="true" 
+    show_info="true" 
+    show_raw="true" 
+    hide_content_formatted="true" 
+    pretty_print="true" 
+    hide_minify="true"]
+
+<!-- Selective display:
+     - Schema: YES
+     - Info box: YES
+     - Raw JSON: YES (pretty printed)
+     - Table: NO (hidden)
+     - Minify: DISABLED
+--></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison Table -->
+        <div class="test-case">
+            <h2>📊 Attributes Comparison</h2>
+            
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Mode</th>
+                        <th>Attribute</th>
+                        <th>Type</th>
+                        <th>Effect</th>
+                        <th>Use When</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Schema Attributes -->
+                    <tr>
+                        <td rowspan="6"><strong>MODE 1<br>Schema</strong></td>
+                        <td><code>hide_json_code</code></td>
+                        <td>boolean</td>
+                        <td>Ẩn JSON code trong schema</td>
+                        <td>Never (json_code required)</td>
+                    </tr>
+                    <tr>
+                        <td><code>hide_validate</code></td>
+                        <td>boolean</td>
+                        <td>Tắt JSON validation</td>
+                        <td>Production (chắc JSON đúng)</td>
+                    </tr>
+                    <tr>
+                        <td><code>hide_pretty_print</code></td>
+                        <td>boolean</td>
+                        <td>Tắt pretty formatting</td>
+                        <td>Want compact JSON</td>
+                    </tr>
+                    <tr>
+                        <td><code>hide_minify</code></td>
+                        <td>boolean</td>
+                        <td>Tắt minification</td>
+                        <td>Want readable JSON</td>
+                    </tr>
+                    <tr>
+                        <td><code>hide_auto_context</code></td>
+                        <td>boolean</td>
+                        <td>Tắt auto @context</td>
+                        <td>JSON có sẵn @context</td>
+                    </tr>
+                    <tr>
+                        <td><code>hide_escape_quotes</code></td>
+                        <td>boolean</td>
+                        <td>Tắt quote escaping</td>
+                        <td>JSON already escaped</td>
+                    </tr>
+                    
+                    <!-- Content Attributes -->
+                    <tr>
+                        <td rowspan="3"><strong>MODE 2<br>Content</strong></td>
+                        <td><code>hide_content_info</code></td>
+                        <td>boolean</td>
+                        <td>Ẩn schema info box</td>
+                        <td>Don't need overview</td>
+                    </tr>
+                    <tr>
+                        <td><code>hide_content_raw</code></td>
+                        <td>boolean</td>
+                        <td>Ẩn raw JSON display</td>
+                        <td>Only want visual table</td>
+                    </tr>
+                    <tr>
+                        <td><code>hide_content_formatted</code></td>
+                        <td>boolean</td>
+                        <td>Ẩn property table</td>
+                        <td>Only want raw JSON</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TinyMCE Integration -->
+        <div class="test-case">
+            <h2>🎨 TinyMCE Integration</h2>
+            
+            <div class="info-box">
+                <h4>✅ Dynamic Schema Attributes trong TinyMCE Modal</h4>
+                <ul>
+                    <li>Mở TinyMCE Editor → Click "KATA SEO Manager" button</li>
+                    <li>Chọn "⚡ Dynamic Schema (Custom JSON-LD)" template</li>
+                    <li>Scroll xuống phần "⚙️ Tùy chỉnh thuộc tính Schema"</li>
+                    <li>Thấy 2 sections:
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li><strong>📋 Schema Fields:</strong> 6 checkboxes (json_code, validate, pretty_print, minify, auto_context, escape_quotes)</li>
+                            <li><strong>🎨 Content Display:</strong> 3 checkboxes (info, raw, formatted)</li>
+                        </ul>
+                    </li>
+                    <li>Check/uncheck để add hide_* attributes vào shortcode</li>
+                    <li>Click "Insert Shortcode" → Code tự động có attributes!</li>
+                </ul>
+            </div>
+            
+            <div class="section">
+                <h3>🔧 How It Works</h3>
+                <p style="margin-bottom: 15px;"><strong>JavaScript Config:</strong></p>
+                <div class="shortcode-box">
+                    <pre style="color: #4caf50;">// tinymce-plugin.js line 1209-1212
+dynamic: {
+    schema: ['json_code', 'validate', 'pretty_print', 'minify', 'auto_context', 'escape_quotes'],
+    content: ['info', 'raw', 'formatted']
+}</pre>
+                </div>
+                
+                <p style="margin: 20px 0 15px 0;"><strong>Generated Checkboxes:</strong></p>
+                <div class="shortcode-box">
+                    <pre style="color: #2196f3;">MODE 1 (Schema):
+☑️ hide_json_code
+☑️ hide_validate
+☑️ hide_pretty_print
+☑️ hide_minify
+☑️ hide_auto_context
+☑️ hide_escape_quotes
+
+MODE 2 (Content):
+☑️ hide_content_info
+☑️ hide_content_raw
+☑️ hide_content_formatted</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="test-case">
+            <h2>💡 Best Practices</h2>
+            
+            <div class="info-box">
+                <h4>✅ Recommended Configurations:</h4>
+                <ul>
+                    <li><strong>Production (Live Site):</strong>
+                        <ul style="margin-left: 20px; margin-top: 8px;">
+                            <li><code>minify="true"</code> → Compact JSON</li>
+                            <li><code>hide_validate="true"</code> → Skip validation overhead</li>
+                            <li><code>show_frontend="false"</code> → No visual display</li>
+                            <li><code>hide_content_*="true"</code> → All content hidden</li>
+                        </ul>
+                    </li>
+                    <li><strong>Development (Testing):</strong>
+                        <ul style="margin-left: 20px; margin-top: 8px;">
+                            <li><code>validate="true"</code> → Catch errors early</li>
+                            <li><code>pretty_print="true"</code> → Readable JSON</li>
+                            <li><code>show_frontend="true"</code> → Visual debugging</li>
+                            <li>All content visible (no hide_* attributes)</li>
+                        </ul>
+                    </li>
+                    <li><strong>Documentation (Demos):</strong>
+                        <ul style="margin-left: 20px; margin-top: 8px;">
+                            <li><code>show_info="true"</code> → Schema overview</li>
+                            <li><code>show_raw="true"</code> → Code examples</li>
+                            <li><code>hide_content_formatted="true"</code> → Less clutter</li>
+                            <li><code>pretty_print="true"</code> → Easy to read</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="header">
+            <h2>🎉 Dynamic Schema Attributes Complete!</h2>
+            <p style="font-size: 16px;">Giờ Dynamic Schema có đầy đủ customization như các schema khác</p>
+            <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px; flex-wrap: wrap;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 20px; border-radius: 8px;">
+                    ✅ TinyMCE Integration
+                </div>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 20px; border-radius: 8px;">
+                    ✅ 9 Attributes Total
+                </div>
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 20px; border-radius: 8px;">
+                    ✅ Dual-Mode Control
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(button) {
+            const pre = button.nextElementSibling;
+            const text = pre.textContent;
+            
+            navigator.clipboard.writeText(text).then(function() {
+                const originalText = button.textContent;
+                button.textContent = '✅ Copied!';
+                button.style.background = '#4caf50';
+                
+                setTimeout(function() {
+                    button.textContent = originalText;
+                    button.style.background = '#667eea';
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Copy failed:', err);
+                alert('Failed to copy. Please select and copy manually.');
+            });
+        }
+    </script>
+</body>
+</html>

@@ -19,6 +19,9 @@
 
 !autogit.sh
 
+
+# Allow all .html files in root directory
+!/*.html
 # =================================================================
 # Additional ignores within kata-plugins-backup (if needed)
 # =================================================================

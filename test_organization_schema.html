@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Organization Schema - KATA SEO Manager</title>
+</head>
+<body>
+    <h1>🏢 Organization Schema - Comprehensive Test Cases</h1>
+    
+    <hr>
+    
+    <h2>Test 1: Basic Organization (Minimal)</h2>
+    <p><strong>Shortcode:</strong></p>
+    <pre>[kata_organization name="KATA Digital Agency" url="https://katadigital.com" show_frontend="true"]</pre>
+    
+    <hr>
+    
+    <h2>Test 2: Organization với Logo & Description</h2>
+    <p><strong>Shortcode:</strong></p>
+    <pre>[kata_organization 
+    name="KATA Digital Agency" 
+    url="https://katadigital.com" 
+    logo="https://katadigital.com/logo.png"
+    description="Công ty chuyên cung cấp dịch vụ Digital Marketing, SEO và phát triển Website chuyên nghiệp tại Việt Nam"
+    slogan="Transform Your Digital Presence"
+    show_frontend="true"]</pre>
+    
+    <hr>
+    
+    <h2>Test 3: Full Organization Information</h2>
+    <p><strong>Shortcode:</strong></p>
+    <pre>[kata_organization 
+    name="KATA Digital Agency" 
+    url="https://katadigital.com" 
+    logo="https://katadigital.com/logo.png"
+    description="Công ty hàng đầu Việt Nam về Digital Marketing với 8+ năm kinh nghiệm, phục vụ 500+ khách hàng doanh nghiệp"
+    slogan="Transform Your Digital Presence"
+    address="123 Nguyễn Văn Cừ, Quận 1, TP.HCM, Việt Nam"
+    phone="+84 28 1234 5678"
+    email="hello@katadigital.com"
+    founding_date="2017-03-15"
+    founder="Nguyễn Minh Tuấn"
+    number_of_employees="50-100"
+    area_served="Việt Nam, Đông Nam Á"
+    show_frontend="true"
+    show_content_name="true"
+    show_content_logo="true"
+    show_content_description="true"
+    show_content_contact="true"
+    show_content_info="true"]</pre>
+    
+    <hr>
+    
+    <h2>Test 4: Organization với Social Media</h2>
+    <p><strong>Shortcode:</strong></p>
+    <pre>[kata_organization 
+    name="KATA Digital Agency" 
+    url="https://katadigital.com" 
+    logo="https://katadigital.com/logo.png"
+    description="Leading digital marketing agency in Vietnam"
+    same_as="https://facebook.com/katadigital,https://linkedin.com/company/kata-digital,https://twitter.com/katadigital,https://instagram.com/katadigital,https://youtube.com/@katadigital"
+    show_frontend="true"
+    show_content_social="true"]</pre>
+    
+    <hr>
+    
+    <h2>Test 5: Organization với Awards & Contact Point</h2>
+    <p><strong>Shortcode:</strong></p>
+    <pre>[kata_organization 
+    name="KATA Digital Agency" 
+    url="https://katadigital.com"
+    description="Award-winning digital agency với nhiều giải thưởng quốc tế"
+    award="Top 10 Digital Agency Vietnam 2024,Google Premier Partner 2023,Facebook Marketing Partner 2022,Best SEO Agency Award 2021"
+    contact_point="Customer Service|+84 28 1234 5678|support@katadigital.com"
+    show_frontend="true"
+    show_content_awards="true"
+    show_content_contact="true"]</pre>
+    
+    <hr>
+    
+    <h2>Test 6: Organization với Legal Information</h2>
+    <p><strong>Shortcode:</strong></p>
+    <pre>[kata_organization 
+    name="KATA Digital Agency" 
+    legal_name="CÔNG TY TNHH KATA DIGITAL"
+    url="https://katadigital.com"
+    tax_id="0123456789"
+    duns="12-345-6789"
+    description="Registered digital marketing company in Vietnam"
+    address="123 Nguyễn Văn Cừ, Q1, TP.HCM"
+    phone="+84 28 1234 5678"
+    email="legal@katadigital.com"
+    show_frontend="true"
+    show_content_info="true"
+    show_content_contact="true"]</pre>
+    
+    <hr>
+    
+    <h2>Test 7: Schema Only (No Frontend Display)</h2>
+    <p><strong>Shortcode:</strong></p>
+    <pre>[kata_organization 
+    name="KATA Digital Agency" 
+    url="https://katadigital.com" 
+    logo="https://katadigital.com/logo.png"
+    description="Digital marketing agency"
+    show_schema="true"
+    show_frontend="false"]</pre>
+    <p><em>Note: Chỉ tạo JSON-LD schema trong &lt;head&gt;, không hiển thị HTML</em></p>
+    
+    <hr>
+    
+    <h2>Test 8: Customized Display (Hide Some Content)</h2>
+    <p><strong>Shortcode:</strong></p>
+    <pre>[kata_organization 
+    name="KATA Digital Agency" 
+    url="https://katadigital.com" 
+    logo="https://katadigital.com/logo.png"
+    description="Digital marketing agency"
+    slogan="Transform Your Digital Presence"
+    address="123 Nguyễn Văn Cừ, Q1, TP.HCM"
+    phone="+84 28 1234 5678"
+    email="hello@katadigital.com"
+    show_frontend="true"
+    hide_content_logo="true"
+    hide_content_slogan="true"
+    show_content_description="true"
+    show_content_contact="true"]</pre>
+    <p><em>Note: Ẩn logo và slogan, chỉ hiện description và contact</em></p>
+    
+    <hr>
+    
+    <h2>Test 9: Schema Filtering (Hide Schema Fields)</h2>
+    <p><strong>Shortcode:</strong></p>
+    <pre>[kata_organization 
+    name="KATA Digital Agency" 
+    url="https://katadigital.com" 
+    logo="https://katadigital.com/logo.png"
+    description="Digital marketing agency"
+    phone="+84 28 1234 5678"
+    email="hello@katadigital.com"
+    hide_telephone="true"
+    hide_email="true"
+    show_frontend="true"]</pre>
+    <p><em>Note: JSON-LD schema sẽ không có telephone và email fields</em></p>
+    
+    <hr>
+    
+    <h2>Test 10: Complete Organization (All Features)</h2>
+    <p><strong>Shortcode:</strong></p>
+    <pre>[kata_organization 
+    name="KATA Digital Marketing Agency" 
+    legal_name="CÔNG TY TNHH KATA DIGITAL"
+    url="https://katadigital.com" 
+    logo="https://katadigital.com/assets/logo-full.png"
+    image="https://katadigital.com/office1.jpg,https://katadigital.com/office2.jpg,https://katadigital.com/team.jpg"
+    description="Leading digital marketing agency in Vietnam with 8+ years of experience, serving 500+ enterprise clients across Southeast Asia. Specialized in SEO, Google Ads, Social Media Marketing, and Web Development."
+    slogan="Transform Your Digital Presence - Grow Your Business"
+    address="123 Nguyễn Văn Cừ, Quận 1, TP. Hồ Chí Minh, Việt Nam"
+    phone="+84 28 1234 5678"
+    email="hello@katadigital.com"
+    founding_date="2017-03-15"
+    founder="Nguyễn Minh Tuấn"
+    number_of_employees="50-100"
+    tax_id="0123456789"
+    duns="12-345-6789"
+    area_served="Việt Nam, Thailand, Singapore, Malaysia, Indonesia"
+    contact_point="Customer Support|+84 28 1234 5678|support@katadigital.com"
+    same_as="https://www.facebook.com/katadigital,https://www.linkedin.com/company/kata-digital-agency,https://twitter.com/katadigital,https://www.instagram.com/katadigital,https://www.youtube.com/@katadigitalagency"
+    award="Top 10 Digital Marketing Agency Vietnam 2024,Google Premier Partner 2023,Facebook Marketing Partner 2022,Best SEO Agency Southeast Asia 2021,Innovation Award Digital Marketing 2020"
+    show_schema="true"
+    show_frontend="true"
+    show_content_name="true"
+    show_content_logo="true"
+    show_content_description="true"
+    show_content_slogan="true"
+    show_content_contact="true"
+    show_content_info="true"
+    show_content_social="true"
+    show_content_awards="true"
+    show_content_address="true"
+    show_content_employees="true"]</pre>
+    
+    <hr>
+    
+    <h2>📊 Expected JSON-LD Schema (Test 10)</h2>
+    <pre>{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "KATA Digital Marketing Agency",
+  "legalName": "CÔNG TY TNHH KATA DIGITAL",
+  "url": "https://katadigital.com",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://katadigital.com/assets/logo-full.png"
+  },
+  "image": [
+    "https://katadigital.com/office1.jpg",
+    "https://katadigital.com/office2.jpg",
+    "https://katadigital.com/team.jpg"
+  ],
+  "description": "Leading digital marketing agency...",
+  "slogan": "Transform Your Digital Presence - Grow Your Business",
+  "telephone": "+84 28 1234 5678",
+  "email": "hello@katadigital.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "123 Nguyễn Văn Cừ, Quận 1, TP. Hồ Chí Minh, Việt Nam"
+  },
+  "foundingDate": "2017-03-15",
+  "founder": {
+    "@type": "Person",
+    "name": "Nguyễn Minh Tuấn"
+  },
+  "numberOfEmployees": "50-100",
+  "taxID": "0123456789",
+  "duns": "12-345-6789",
+  "areaServed": [
+    "Việt Nam",
+    "Thailand",
+    "Singapore",
+    "Malaysia",
+    "Indonesia"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "Customer Support",
+    "telephone": "+84 28 1234 5678",
+    "email": "support@katadigital.com"
+  },
+  "sameAs": [
+    "https://www.facebook.com/katadigital",
+    "https://www.linkedin.com/company/kata-digital-agency",
+    "https://twitter.com/katadigital",
+    "https://www.instagram.com/katadigital",
+    "https://www.youtube.com/@katadigitalagency"
+  ],
+  "award": [
+    "Top 10 Digital Marketing Agency Vietnam 2024",
+    "Google Premier Partner 2023",
+    "Facebook Marketing Partner 2022",
+    "Best SEO Agency Southeast Asia 2021",
+    "Innovation Award Digital Marketing 2020"
+  ]
+}</pre>
+    
+    <hr>
+    
+    <h2>🧪 Testing Checklist</h2>
+    <ul>
+        <li>✅ Test 1: Minimal organization (name + url only)</li>
+        <li>✅ Test 2: With logo and description</li>
+        <li>✅ Test 3: Full contact information</li>
+        <li>✅ Test 4: Social media profiles</li>
+        <li>✅ Test 5: Awards and contact points</li>
+        <li>✅ Test 6: Legal information (tax ID, DUNS)</li>
+        <li>✅ Test 7: Schema only (no frontend)</li>
+        <li>✅ Test 8: Customized content display</li>
+        <li>✅ Test 9: Schema field filtering</li>
+        <li>✅ Test 10: Complete with all features</li>
+    </ul>
+    
+    <hr>
+    
+    <h2>🎯 Features Summary</h2>
+    <table border="1" cellpadding="10" style="border-collapse: collapse; width: 100%;">
+        <thead>
+            <tr style="background: #667eea; color: white;">
+                <th>Feature</th>
+                <th>Attribute</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td rowspan="7"><strong>Core Info</strong></td>
+                <td>name</td>
+                <td>Organization name (required)</td>
+            </tr>
+            <tr>
+                <td>legal_name</td>
+                <td>Legal registered name</td>
+            </tr>
+            <tr>
+                <td>url</td>
+                <td>Official website URL</td>
+            </tr>
+            <tr>
+                <td>logo</td>
+                <td>Logo image URL</td>
+            </tr>
+            <tr>
+                <td>image</td>
+                <td>Additional images (comma separated)</td>
+            </tr>
+            <tr>
+                <td>description</td>
+                <td>Organization description</td>
+            </tr>
+            <tr>
+                <td>slogan</td>
+                <td>Company slogan/tagline</td>
+            </tr>
+            <tr>
+                <td rowspan="3"><strong>Contact</strong></td>
+                <td>phone</td>
+                <td>Phone number</td>
+            </tr>
+            <tr>
+                <td>email</td>
+                <td>Email address</td>
+            </tr>
+            <tr>
+                <td>address</td>
+                <td>Physical address</td>
+            </tr>
+            <tr>
+                <td rowspan="5"><strong>Details</strong></td>
+                <td>founding_date</td>
+                <td>Date established (YYYY-MM-DD)</td>
+            </tr>
+            <tr>
+                <td>founder</td>
+                <td>Founder name(s)</td>
+            </tr>
+            <tr>
+                <td>number_of_employees</td>
+                <td>Employee count</td>
+            </tr>
+            <tr>
+                <td>tax_id</td>
+                <td>Tax identification number</td>
+            </tr>
+            <tr>
+                <td>duns</td>
+                <td>DUNS number</td>
+            </tr>
+            <tr>
+                <td rowspan="4"><strong>Additional</strong></td>
+                <td>area_served</td>
+                <td>Geographic coverage (comma separated)</td>
+            </tr>
+            <tr>
+                <td>contact_point</td>
+                <td>Contact info: Type|Phone|Email</td>
+            </tr>
+            <tr>
+                <td>same_as</td>
+                <td>Social profiles (comma separated URLs)</td>
+            </tr>
+            <tr>
+                <td>award</td>
+                <td>Awards (comma separated)</td>
+            </tr>
+            <tr>
+                <td rowspan="2"><strong>Display</strong></td>
+                <td>show_schema</td>
+                <td>true/false - Show JSON-LD schema</td>
+            </tr>
+            <tr>
+                <td>show_frontend</td>
+                <td>true/false - Show HTML output</td>
+            </tr>
+        </tbody>
+    </table>
+    
+</body>
+</html>

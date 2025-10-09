@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KATA Dynamic Schema - Test Cases</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 42px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+        
+        .header p {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .stat-item span {
+            font-size: 28px;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .test-case {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .test-case:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+        }
+        
+        .test-case h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #f0f0f0;
+        }
+        
+        .test-case h3 {
+            color: #764ba2;
+            margin: 25px 0 15px 0;
+            font-size: 20px;
+        }
+        
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .description p {
+            color: #495057;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .feature-item {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .feature-item::before {
+            content: '✅';
+            font-size: 20px;
+        }
+        
+        .shortcode-box {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 25px;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            position: relative;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .shortcode-box pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .copy-btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+        
+        .expected-output {
+            background: #e8f5e9;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #4caf50;
+            margin-top: 20px;
+        }
+        
+        .expected-output h4 {
+            color: #2e7d32;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .json-preview {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        
+        .validation-checklist {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 5px solid #ffc107;
+            margin-top: 20px;
+        }
+        
+        .validation-checklist h4 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .validation-checklist ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .validation-checklist li {
+            padding: 8px 0;
+            color: #856404;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .validation-checklist li::before {
+            content: '🔍';
+            font-size: 16px;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #e3f2fd 0%, #e1bee7 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+        
+        .info-box h4 {
+            color: #4a148c;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .info-box p {
+            color: #4a148c;
+            line-height: 1.8;
+        }
+        
+        .attributes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .attributes-table th,
+        .attributes-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .attributes-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
+        .attributes-table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .attributes-table code {
+            background: #e3f2fd;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: #1976d2;
+            font-size: 13px;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+            
+            .stats {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚡ KATA Dynamic Schema</h1>
+            <p>Tự thêm code JSON-LD tùy chỉnh cho WordPress - Test Suite</p>
+            <div class="stats">
+                <div class="stat-item">
+                    <span>12</span>
+                    Test Cases
+                </div>
+                <div class="stat-item">
+                    <span>8</span>
+                    Attributes
+                </div>
+                <div class="stat-item">
+                    <span>∞</span>
+                    Schema Types
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Case 1: WebSite Schema -->
+        <div class="test-case">
+            <h2>🌐 Test 1: WebSite Schema (Minimal)</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test basic WebSite schema với minimal attributes</p>
+                <p><strong>Tính năng test:</strong> JSON validation, auto @context, schema output</p>
+            </div>
+            
+            <div class="features">
+                <div class="feature-item">JSON-LD WebSite type</div>
+                <div class="feature-item">Auto @context</div>
+                <div class="feature-item">Schema only (no frontend)</div>
+                <div class="feature-item">Validation enabled</div>
+            </div>
+            
+            <h3>📋 Shortcode:</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"WebSite","name":"example.com","url":"https://www.example.com/"}' 
+    show_schema="true" 
+    show_frontend="false" 
+    validate="true"]</pre>
+            </div>
+            
+            <div class="expected-output">
+                <h4>✅ Expected JSON-LD Output:</h4>
+                <div class="json-preview">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "example.com",
+  "url": "https://www.example.com/"
+}
+                </div>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>Có <code>&lt;script type="application/ld+json"&gt;</code> tag</li>
+                    <li>JSON syntax hợp lệ</li>
+                    <li>@context = "https://schema.org"</li>
+                    <li>@type = "WebSite"</li>
+                    <li>Không có frontend HTML display</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Test Case 2: Organization Schema with Frontend -->
+        <div class="test-case">
+            <h2>🏢 Test 2: Organization Schema (With Frontend Display)</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test Organization schema với frontend visual display</p>
+                <p><strong>Tính năng test:</strong> show_frontend, show_info, show_raw attributes</p>
+            </div>
+            
+            <div class="features">
+                <div class="feature-item">Organization type</div>
+                <div class="feature-item">Frontend display enabled</div>
+                <div class="feature-item">Schema info box</div>
+                <div class="feature-item">Raw JSON display</div>
+            </div>
+            
+            <h3>📋 Shortcode:</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Organization","name":"KATA Digital","url":"https://katadigital.com","logo":"https://katadigital.com/logo.png","description":"Leading digital marketing agency","address":{"@type":"PostalAddress","streetAddress":"123 Main St","addressLocality":"Hanoi","addressCountry":"VN"},"contactPoint":{"@type":"ContactPoint","telephone":"+84-28-1234-5678","contactType":"Customer Service"}}' 
+    schema_name="KATA Digital Agency" 
+    description="Công ty Digital Marketing hàng đầu Việt Nam" 
+    show_schema="true" 
+    show_frontend="true" 
+    show_info="true" 
+    show_raw="true" 
+    validate="true" 
+    pretty_print="true"]</pre>
+            </div>
+            
+            <div class="expected-output">
+                <h4>✅ Expected Outputs:</h4>
+                <ol style="margin-left: 20px; color: #2e7d32;">
+                    <li><strong>JSON-LD script tag</strong> với Organization schema</li>
+                    <li><strong>Schema info box</strong> hiển thị:
+                        <ul style="margin-left: 20px;">
+                            <li>Title: "KATA Digital Agency"</li>
+                            <li>Type: Organization</li>
+                            <li>Properties: 7</li>
+                            <li>Format: JSON-LD</li>
+                        </ul>
+                    </li>
+                    <li><strong>Raw JSON display</strong> với pretty print formatting</li>
+                </ol>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>Script tag + Frontend HTML đều xuất hiện</li>
+                    <li>Info box có background gradient purple</li>
+                    <li>Raw JSON có syntax highlighting</li>
+                    <li>JSON được format đẹp (indentation)</li>
+                    <li>Nested objects (address, contactPoint) hiển thị đúng</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Test Case 3: Person Schema -->
+        <div class="test-case">
+            <h2>👤 Test 3: Person Schema (Author/Creator)</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test Person schema cho author profiles</p>
+                <p><strong>Tính năng test:</strong> auto_context (không cần manual @context)</p>
+            </div>
+            
+            <div class="features">
+                <div class="feature-item">Person type</div>
+                <div class="feature-item">Auto @context</div>
+                <div class="feature-item">Property table display</div>
+                <div class="feature-item">Frontend enabled</div>
+            </div>
+            
+            <h3>📋 Shortcode:</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@type":"Person","name":"Nguyễn Văn A","jobTitle":"SEO Specialist","email":"nguyenvana@example.com","url":"https://example.com/author/nguyen-van-a","image":"https://example.com/avatar.jpg","sameAs":["https://facebook.com/nguyenvana","https://linkedin.com/in/nguyenvana","https://twitter.com/nguyenvana"]}' 
+    schema_name="Nguyễn Văn A - SEO Specialist" 
+    description="Chuyên gia SEO với 10+ năm kinh nghiệm" 
+    show_schema="true" 
+    show_frontend="true" 
+    show_content_formatted="true" 
+    auto_context="true" 
+    validate="true"]</pre>
+            </div>
+            
+            <div class="expected-output">
+                <h4>✅ Expected Behavior:</h4>
+                <div class="json-preview">
+{
+  "@context": "https://schema.org",  ← Auto-added
+  "@type": "Person",
+  "name": "Nguyễn Văn A",
+  "jobTitle": "SEO Specialist",
+  "email": "nguyenvana@example.com",
+  "url": "https://example.com/author/nguyen-van-a",
+  "image": "https://example.com/avatar.jpg",
+  "sameAs": [
+    "https://facebook.com/nguyenvana",
+    "https://linkedin.com/in/nguyenvana",
+    "https://twitter.com/nguyenvana"
+  ]
+}
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h4>💡 Key Feature: Auto @context</h4>
+                <p>Attribute <code>auto_context="true"</code> tự động thêm <code>"@context": "https://schema.org"</code> nếu thiếu trong JSON code. Tiện lợi khi copy schema từ external sources.</p>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>@context được tự động thêm vào</li>
+                    <li>Property table hiển thị 7 properties</li>
+                    <li>Array "sameAs" hiển thị đúng format</li>
+                    <li>Schema name hiển thị trong info box</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Test Case 4: Event Schema -->
+        <div class="test-case">
+            <h2>📅 Test 4: Event Schema (Full Details)</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test complex Event schema với nhiều nested objects</p>
+                <p><strong>Tính năng test:</strong> Nested objects, date formatting, location data</p>
+            </div>
+            
+            <h3>📋 Shortcode:</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Event","name":"WordPress Meetup Hanoi 2025","description":"Monthly WordPress community meetup in Hanoi","startDate":"2025-10-15T18:00:00+07:00","endDate":"2025-10-15T21:00:00+07:00","location":{"@type":"Place","name":"KATA Digital Office","address":{"@type":"PostalAddress","streetAddress":"123 Nguyen Van Cu","addressLocality":"Hanoi","addressCountry":"VN"}},"organizer":{"@type":"Organization","name":"WordPress Hanoi Community","url":"https://wphanoi.com"},"offers":{"@type":"Offer","price":"0","priceCurrency":"VND","availability":"https://schema.org/InStock","url":"https://wphanoi.com/register"}}' 
+    schema_name="WordPress Meetup Hanoi" 
+    show_schema="true" 
+    show_frontend="true" 
+    show_info="true" 
+    show_content_formatted="true" 
+    pretty_print="true"]</pre>
+            </div>
+            
+            <div class="expected-output">
+                <h4>✅ Expected Complex Schema Output:</h4>
+                <p style="color: #2e7d32; margin-bottom: 10px;">Schema có 3 levels của nested objects:</p>
+                <ol style="margin-left: 20px; color: #2e7d32;">
+                    <li>Event (root)</li>
+                    <li>└─ location (Place)
+                        <ul style="margin-left: 20px;">
+                            <li>└─ address (PostalAddress)</li>
+                        </ul>
+                    </li>
+                    <li>└─ organizer (Organization)</li>
+                    <li>└─ offers (Offer)</li>
+                </ol>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>All nested objects render correctly</li>
+                    <li>ISO 8601 dates valid</li>
+                    <li>Property table shows nested structure</li>
+                    <li>JSON pretty print với indentation</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Test Case 5: Validation Error Test -->
+        <div class="test-case">
+            <h2>❌ Test 5: JSON Validation Error</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test error handling khi JSON syntax sai</p>
+                <p><strong>Tính năng test:</strong> JSON validation, error messages, error display control</p>
+            </div>
+            
+            <div class="features">
+                <div class="feature-item">Syntax error detection</div>
+                <div class="feature-item">Helpful error messages</div>
+                <div class="feature-item">Error display styling</div>
+                <div class="feature-item">JSON snippet in error</div>
+            </div>
+            
+            <h3>📋 Shortcode (Invalid JSON):</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"WebSite","name":"example.com","url":"https://www.example.com"' 
+    validate="true" 
+    error_display="true"]
+
+<!-- Missing closing brace } in JSON --></pre>
+            </div>
+            
+            <div class="expected-output" style="background: #ffebee; border-left-color: #c62828;">
+                <h4 style="color: #c62828;">❌ Expected Error Display:</h4>
+                <div style="background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #c62828; color: #c00; margin-top: 10px;">
+                    <strong>⚠️ JSON Validation Error:</strong> Syntax error, malformed JSON<br>
+                    <small>Please check your JSON syntax. Use a JSON validator tool if needed.</small>
+                    <pre style="background: #f5f5f5; padding: 10px; margin-top: 10px; color: #333;">{...invalid JSON...}</pre>
+                </div>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>Error box có background đỏ (#fee)</li>
+                    <li>Error message rõ ràng và helpful</li>
+                    <li>Invalid JSON được hiển thị trong <code>&lt;pre&gt;</code></li>
+                    <li>Không có JSON-LD script tag output</li>
+                    <li>Không có frontend display</li>
+                </ul>
+            </div>
+            
+            <div class="info-box">
+                <h4>💡 Error Display Control</h4>
+                <p>Sử dụng <code>error_display="false"</code> để ẩn error messages và return empty string thay vì error box. Hữu ích cho production environments.</p>
+            </div>
+        </div>
+
+        <!-- Test Case 6: Empty json_code Error -->
+        <div class="test-case">
+            <h2>⚠️ Test 6: Missing json_code Attribute</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test error khi thiếu required attribute json_code</p>
+                <p><strong>Tính năng test:</strong> Required attribute validation</p>
+            </div>
+            
+            <h3>📋 Shortcode (Missing json_code):</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic show_schema="true" show_frontend="false"]
+
+<!-- No json_code attribute --></pre>
+            </div>
+            
+            <div class="expected-output" style="background: #ffebee; border-left-color: #c62828;">
+                <h4 style="color: #c62828;">❌ Expected Error:</h4>
+                <div style="background: #fff; padding: 15px; border-radius: 8px; border-left: 4px solid #c62828; color: #c00; margin-top: 10px;">
+                    <strong>⚠️ Dynamic Schema Error:</strong> Attribute <code>json_code</code> is required.<br>
+                    <small>Example: <code>[kata_dynamic json_code='{"@context":"https://schema.org","@type":"WebSite","name":"Example"}']</code></small>
+                </div>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>Error message chỉ rõ thiếu json_code</li>
+                    <li>Có example shortcode hướng dẫn</li>
+                    <li>Return error box nếu error_display="true"</li>
+                    <li>Return empty string nếu error_display="false"</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Test Case 7: Schema Only (No Frontend) -->
+        <div class="test-case">
+            <h2>🔒 Test 7: Schema Only Mode</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test output chỉ có JSON-LD, không có frontend HTML</p>
+                <p><strong>Tính năng test:</strong> show_schema="true", show_frontend="false"</p>
+            </div>
+            
+            <h3>📋 Shortcode:</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://example.com"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://example.com/blog"},{"@type":"ListItem","position":3,"name":"SEO","item":"https://example.com/blog/seo"}]}' 
+    show_schema="true" 
+    show_frontend="false" 
+    validate="true"]</pre>
+            </div>
+            
+            <div class="expected-output">
+                <h4>✅ Expected Output:</h4>
+                <p style="color: #2e7d32;">Chỉ có <code>&lt;script type="application/ld+json"&gt;...&lt;/script&gt;</code> tag</p>
+                <p style="color: #2e7d32;">Không có bất kỳ HTML visual display nào</p>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>Chỉ có script tag trong output</li>
+                    <li>Không có div.kata-dynamic-container</li>
+                    <li>Không có CSS trong output</li>
+                    <li>JSON-LD format hợp lệ</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Test Case 8: Frontend Only (Testing) -->
+        <div class="test-case">
+            <h2>🎨 Test 8: Frontend Display Only (Debug Mode)</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test frontend display mà không output JSON-LD (for testing UI)</p>
+                <p><strong>Tính năng test:</strong> show_schema="false", show_frontend="true"</p>
+            </div>
+            
+            <h3>📋 Shortcode:</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Product","name":"iPhone 15 Pro","brand":"Apple","offers":{"@type":"Offer","price":"29990000","priceCurrency":"VND"}}' 
+    schema_name="iPhone 15 Pro" 
+    description="Flagship smartphone from Apple" 
+    show_schema="false" 
+    show_frontend="true" 
+    show_info="true" 
+    show_raw="true" 
+    show_content_formatted="true"]</pre>
+            </div>
+            
+            <div class="expected-output">
+                <h4>✅ Expected Output:</h4>
+                <ol style="margin-left: 20px; color: #2e7d32;">
+                    <li><strong>KHÔNG CÓ</strong> script tag</li>
+                    <li><strong>CÓ</strong> frontend display với:
+                        <ul style="margin-left: 20px;">
+                            <li>Schema info box</li>
+                            <li>Raw JSON display</li>
+                            <li>Property table</li>
+                            <li>CSS styling</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+            
+            <div class="info-box">
+                <h4>💡 Use Case: UI Testing</h4>
+                <p>Mode này hữu ích khi bạn muốn test frontend UI/UX mà không muốn output duplicate JSON-LD schemas. Useful trong development/testing phase.</p>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>Không có script tag trong output</li>
+                    <li>Frontend HTML đầy đủ</li>
+                    <li>All visual components render</li>
+                    <li>CSS styling applied</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Test Case 9: Pretty Print vs Minify -->
+        <div class="test-case">
+            <h2>🎯 Test 9: Pretty Print vs Minified JSON</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test JSON formatting options</p>
+                <p><strong>Tính năng test:</strong> pretty_print="true" vs minify="true"</p>
+            </div>
+            
+            <h3>📋 Shortcode A: Pretty Print</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Recipe","name":"Phở Bò","recipeIngredient":["Xương bò","Thịt bò","Bánh phở"],"recipeInstructions":[{"@type":"HowToStep","text":"Luộc xương"},{"@type":"HowToStep","text":"Thái thịt"}]}' 
+    pretty_print="true" 
+    show_schema="true"]</pre>
+            </div>
+            
+            <div class="expected-output">
+                <h4>✅ Expected (Pretty Print):</h4>
+                <div class="json-preview">
+{
+  "@context": "https://schema.org",
+  "@type": "Recipe",
+  "name": "Phở Bò",
+  "recipeIngredient": [
+    "Xương bò",
+    "Thịt bò",
+    "Bánh phở"
+  ],
+  "recipeInstructions": [
+    {
+      "@type": "HowToStep",
+      "text": "Luộc xương"
+    },
+    {
+      "@type": "HowToStep",
+      "text": "Thái thịt"
+    }
+  ]
+}
+                </div>
+            </div>
+            
+            <h3>📋 Shortcode B: Minified</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Recipe","name":"Phở Bò","recipeIngredient":["Xương bò","Thịt bò","Bánh phở"],"recipeInstructions":[{"@type":"HowToStep","text":"Luộc xương"},{"@type":"HowToStep","text":"Thái thịt"}]}' 
+    minify="true" 
+    show_schema="true"]</pre>
+            </div>
+            
+            <div class="expected-output">
+                <h4>✅ Expected (Minified):</h4>
+                <div class="json-preview">
+{"@context":"https://schema.org","@type":"Recipe","name":"Phở Bò","recipeIngredient":["Xương bò","Thịt bò","Bánh phở"],"recipeInstructions":[{"@type":"HowToStep","text":"Luộc xương"},{"@type":"HowToStep","text":"Thái thịt"}]}
+                </div>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>Pretty print: Có indentation và line breaks</li>
+                    <li>Minified: Một dòng, không có whitespace</li>
+                    <li>Cả 2 đều valid JSON</li>
+                    <li>Cả 2 có cùng semantic meaning</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Test Case 10: Multiple @type (Union Types) -->
+        <div class="test-case">
+            <h2>🔄 Test 10: Multiple @type (Array)</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test schema với multiple @type values</p>
+                <p><strong>Tính năng test:</strong> Array @type support, schema.org multiple types</p>
+            </div>
+            
+            <h3>📋 Shortcode:</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":["BlogPosting","NewsArticle"],"headline":"Breaking News: WordPress 6.5 Released","author":{"@type":"Person","name":"John Doe"},"datePublished":"2025-10-09","articleBody":"WordPress 6.5 brings major improvements..."}' 
+    schema_name="Blog Post + News Article" 
+    description="Schema với multiple types" 
+    show_schema="true" 
+    show_frontend="true" 
+    show_info="true" 
+    validate="true"]</pre>
+            </div>
+            
+            <div class="expected-output">
+                <h4>✅ Expected Schema:</h4>
+                <div class="json-preview">
+{
+  "@context": "https://schema.org",
+  "@type": ["BlogPosting", "NewsArticle"],  ← Array of types
+  "headline": "Breaking News: WordPress 6.5 Released",
+  "author": {
+    "@type": "Person",
+    "name": "John Doe"
+  },
+  "datePublished": "2025-10-09",
+  "articleBody": "WordPress 6.5 brings major improvements..."
+}
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h4>💡 Multiple @type Use Cases</h4>
+                <p>Schema.org cho phép combine multiple types. Ví dụ:</p>
+                <ul style="margin-left: 20px;">
+                    <li>BlogPosting + NewsArticle (tin tức blog)</li>
+                    <li>LocalBusiness + Restaurant (nhà hàng local)</li>
+                    <li>Product + SoftwareApplication (software product)</li>
+                </ul>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>@type là array của strings</li>
+                    <li>Schema info box hiển thị types correctly</li>
+                    <li>Google Rich Results Test accepts it</li>
+                    <li>Property table shows all properties</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Test Case 11: Real-world Complex Schema -->
+        <div class="test-case">
+            <h2>🚀 Test 11: Real-World Complex Schema</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test production-ready complex schema với all features</p>
+                <p><strong>Tính năng test:</strong> Large JSON, nested objects, arrays, all display options</p>
+            </div>
+            
+            <h3>📋 Shortcode:</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"Course","name":"Complete WordPress Development Bootcamp 2025","description":"Học WordPress từ zero đến hero với 100+ video lessons","provider":{"@type":"Organization","name":"KATA Academy","url":"https://kataacademy.com","logo":"https://kataacademy.com/logo.png"},"instructor":[{"@type":"Person","name":"Nguyễn Văn A","jobTitle":"Senior WordPress Developer","image":"https://kataacademy.com/instructors/nguyen-van-a.jpg"},{"@type":"Person","name":"Trần Thị B","jobTitle":"WordPress Expert","image":"https://kataacademy.com/instructors/tran-thi-b.jpg"}],"hasCourseInstance":{"@type":"CourseInstance","courseMode":"online","courseWorkload":"PT40H","startDate":"2025-11-01","endDate":"2025-12-31","instructor":{"@type":"Person","name":"Nguyễn Văn A"}},"offers":{"@type":"Offer","price":"1990000","priceCurrency":"VND","availability":"https://schema.org/InStock","url":"https://kataacademy.com/courses/wordpress-bootcamp","validFrom":"2025-10-01"},"aggregateRating":{"@type":"AggregateRating","ratingValue":"4.8","ratingCount":"1250","bestRating":"5","worstRating":"1"},"totalTime":"PT40H","numberOfCredits":"10","educationalLevel":"Beginner to Advanced","teaches":["WordPress Basics","Theme Development","Plugin Development","WooCommerce","SEO Optimization"],"coursePrerequisites":"Basic HTML/CSS knowledge","educationalCredentialAwarded":"Certificate of Completion"}' 
+    schema_name="WordPress Development Bootcamp" 
+    description="Complete course với 100+ videos và certification" 
+    show_schema="true" 
+    show_frontend="true" 
+    show_info="true" 
+    show_raw="true" 
+    show_content_formatted="true" 
+    pretty_print="true" 
+    validate="true"]</pre>
+            </div>
+            
+            <div class="expected-output">
+                <h4>✅ Expected Complex Output:</h4>
+                <ol style="margin-left: 20px; color: #2e7d32;">
+                    <li><strong>JSON-LD Schema</strong> với Course type</li>
+                    <li><strong>Schema Info Box:</strong>
+                        <ul style="margin-left: 20px;">
+                            <li>Type: Course</li>
+                            <li>Properties: 15+</li>
+                        </ul>
+                    </li>
+                    <li><strong>Raw JSON:</strong> Pretty printed với indentation</li>
+                    <li><strong>Property Table:</strong> All 15+ properties với values</li>
+                    <li><strong>Nested Objects:</strong>
+                        <ul style="margin-left: 20px;">
+                            <li>provider (Organization)</li>
+                            <li>instructor (Array of Person)</li>
+                            <li>hasCourseInstance (CourseInstance)</li>
+                            <li>offers (Offer)</li>
+                            <li>aggregateRating (AggregateRating)</li>
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>All nested objects render correctly</li>
+                    <li>Arrays (instructor, teaches) display properly</li>
+                    <li>Property table shows nested structure in <code>&lt;pre&gt;</code></li>
+                    <li>No JSON parsing errors</li>
+                    <li>Google Rich Results Test validates successfully</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Test Case 12: Custom Wrapper Class -->
+        <div class="test-case">
+            <h2>🎨 Test 12: Custom Styling with wrapper_class</h2>
+            
+            <div class="description">
+                <p><strong>Mục đích:</strong> Test custom CSS class cho wrapper</p>
+                <p><strong>Tính năng test:</strong> wrapper_class attribute for custom styling</p>
+            </div>
+            
+            <h3>📋 Shortcode:</h3>
+            <div class="shortcode-box">
+                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+                <pre>[kata_dynamic 
+    json_code='{"@context":"https://schema.org","@type":"WebSite","name":"Example.com","url":"https://example.com"}' 
+    show_frontend="true" 
+    show_info="true" 
+    wrapper_class="my-custom-schema-wrapper dark-theme"]</pre>
+            </div>
+            
+            <div class="expected-output">
+                <h4>✅ Expected HTML Structure:</h4>
+                <div class="json-preview" style="color: #4caf50;">
+&lt;div class="kata-dynamic-container my-custom-schema-wrapper dark-theme" itemscope&gt;
+    &lt;!-- Schema content --&gt;
+&lt;/div&gt;
+                </div>
+            </div>
+            
+            <div class="info-box">
+                <h4>💡 Custom Styling</h4>
+                <p>Thêm custom CSS classes để style theo design của website. Ví dụ:</p>
+                <ul style="margin-left: 20px;">
+                    <li><code>wrapper_class="dark-theme"</code> - Dark mode</li>
+                    <li><code>wrapper_class="compact-view"</code> - Compact layout</li>
+                    <li><code>wrapper_class="sidebar-schema"</code> - Sidebar version</li>
+                </ul>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>🔍 Validation Checklist:</h4>
+                <ul>
+                    <li>Wrapper div có cả kata-dynamic-container VÀ custom classes</li>
+                    <li>Multiple classes separated by spaces</li>
+                    <li>Classes được escaped properly</li>
+                    <li>Can apply custom CSS to override default styling</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Attributes Reference Table -->
+        <div class="test-case">
+            <h2>📚 Attributes Reference</h2>
+            
+            <div class="description">
+                <p><strong>All Available Attributes for [kata_dynamic]</strong></p>
+            </div>
+            
+            <table class="attributes-table">
+                <thead>
+                    <tr>
+                        <th>Attribute</th>
+                        <th>Type</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>json_code</code></td>
+                        <td>string</td>
+                        <td><em>required</em></td>
+                        <td>JSON-LD code (bắt buộc)</td>
+                    </tr>
+                    <tr>
+                        <td><code>schema_type</code></td>
+                        <td>string</td>
+                        <td>auto-detect</td>
+                        <td>Schema @type (auto từ JSON nếu empty)</td>
+                    </tr>
+                    <tr>
+                        <td><code>schema_name</code></td>
+                        <td>string</td>
+                        <td>auto</td>
+                        <td>Tên hiển thị của schema</td>
+                    </tr>
+                    <tr>
+                        <td><code>description</code></td>
+                        <td>string</td>
+                        <td>''</td>
+                        <td>Mô tả schema (hiển thị trong info box)</td>
+                    </tr>
+                    <tr>
+                        <td><code>validate</code></td>
+                        <td>boolean</td>
+                        <td>true</td>
+                        <td>Validate JSON syntax</td>
+                    </tr>
+                    <tr>
+                        <td><code>pretty_print</code></td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>Format JSON với indentation</td>
+                    </tr>
+                    <tr>
+                        <td><code>minify</code></td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>Remove whitespace từ JSON</td>
+                    </tr>
+                    <tr>
+                        <td><code>auto_context</code></td>
+                        <td>boolean</td>
+                        <td>true</td>
+                        <td>Tự thêm @context nếu thiếu</td>
+                    </tr>
+                    <tr>
+                        <td><code>escape_quotes</code></td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>Escape double quotes trong JSON</td>
+                    </tr>
+                    <tr>
+                        <td><code>show_schema</code></td>
+                        <td>boolean</td>
+                        <td>true</td>
+                        <td>Output JSON-LD trong script tag</td>
+                    </tr>
+                    <tr>
+                        <td><code>show_frontend</code></td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>Hiển thị visual representation</td>
+                    </tr>
+                    <tr>
+                        <td><code>show_raw</code></td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>Hiển thị raw JSON code</td>
+                    </tr>
+                    <tr>
+                        <td><code>show_info</code></td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>Hiển thị schema info box</td>
+                    </tr>
+                    <tr>
+                        <td><code>show_content_formatted</code></td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>Hiển thị property table</td>
+                    </tr>
+                    <tr>
+                        <td><code>hide_content_info</code></td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>Ẩn info box</td>
+                    </tr>
+                    <tr>
+                        <td><code>hide_content_raw</code></td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>Ẩn raw JSON</td>
+                    </tr>
+                    <tr>
+                        <td><code>hide_content_formatted</code></td>
+                        <td>boolean</td>
+                        <td>false</td>
+                        <td>Ẩn property table</td>
+                    </tr>
+                    <tr>
+                        <td><code>wrapper_class</code></td>
+                        <td>string</td>
+                        <td>''</td>
+                        <td>Custom CSS class cho wrapper div</td>
+                    </tr>
+                    <tr>
+                        <td><code>error_display</code></td>
+                        <td>boolean</td>
+                        <td>true</td>
+                        <td>Hiển thị validation errors</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Best Practices -->
+        <div class="test-case">
+            <h2>💡 Best Practices & Tips</h2>
+            
+            <div class="info-box">
+                <h4>✅ DO's:</h4>
+                <ul style="margin-left: 20px; line-height: 2;">
+                    <li>✅ Always test JSON với validator trước khi deploy</li>
+                    <li>✅ Use <code>pretty_print="true"</code> during development</li>
+                    <li>✅ Use <code>minify="true"</code> in production để giảm size</li>
+                    <li>✅ Enable <code>validate="true"</code> để catch errors sớm</li>
+                    <li>✅ Use <code>auto_context="true"</code> khi copy từ external sources</li>
+                    <li>✅ Set <code>error_display="false"</code> in production</li>
+                    <li>✅ Test với Google Rich Results Tool trước khi publish</li>
+                </ul>
+            </div>
+            
+            <div class="validation-checklist">
+                <h4>❌ DON'Ts:</h4>
+                <ul>
+                    <li>❌ Không dùng single quotes cho JSON (phải dùng double quotes)</li>
+                    <li>❌ Không quên escape special characters trong values</li>
+                    <li>❌ Không output duplicate schemas (check existing ones)</li>
+                    <li>❌ Không enable frontend display nếu không cần (performance)</li>
+                    <li>❌ Không hardcode dates - use dynamic values khi possible</li>
+                </ul>
+            </div>
+            
+            <div class="expected-output">
+                <h4>🎯 Common Use Cases:</h4>
+                <ol style="margin-left: 20px; color: #2e7d32; line-height: 2;">
+                    <li><strong>Import from Google Tool:</strong> Copy JSON từ Structured Data Tool → paste vào json_code</li>
+                    <li><strong>Custom Schema Types:</strong> Test schema types chưa có trong plugin (SoftwareApplication, MusicEvent, etc.)</li>
+                    <li><strong>Prototype New Features:</strong> Test schema mới trước khi code permanent render function</li>
+                    <li><strong>Override Defaults:</strong> Override plugin's default schemas cho specific pages</li>
+                    <li><strong>Multiple @types:</strong> Combine types (LocalBusiness + Restaurant)</li>
+                    <li><strong>Testing & Debug:</strong> Use show_frontend="true" để visualize schema structure</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="header">
+            <h2>🎉 Testing Complete!</h2>
+            <p style="font-size: 16px;">Đã test 12 scenarios với đầy đủ tính năng của Dynamic Schema</p>
+            <div class="stats" style="margin-top: 20px;">
+                <div class="stat-item">
+                    <span>✅</span>
+                    All Features Covered
+                </div>
+                <div class="stat-item">
+                    <span>🚀</span>
+                    Ready for Production
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function copyToClipboard(button) {
+            const pre = button.nextElementSibling;
+            const text = pre.textContent;
+            
+            navigator.clipboard.writeText(text).then(function() {
+                const originalText = button.textContent;
+                button.textContent = '✅ Copied!';
+                button.style.background = '#4caf50';
+                
+                setTimeout(function() {
+                    button.textContent = originalText;
+                    button.style.background = '#667eea';
+                }, 2000);
+            }).catch(function(err) {
+                console.error('Copy failed:', err);
+                alert('Failed to copy. Please select and copy manually.');
+            });
+        }
+        
+        // Auto-scroll to hash on load
+        if (window.location.hash) {
+            setTimeout(function() {
+                const element = document.querySelector(window.location.hash);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>

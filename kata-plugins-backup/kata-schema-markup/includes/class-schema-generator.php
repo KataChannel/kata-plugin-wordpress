@@ -115,11 +115,6 @@ class KataSchema_Generator {
         // Get enabled schema types
         $enabled_schemas = get_option('kata_schema_enabled_schemas', array('article', 'breadcrumb'));
         
-        // Ensure $enabled_schemas is an array
-        if (!is_array($enabled_schemas)) {
-            $enabled_schemas = array('article', 'breadcrumb');
-        }
-        
         foreach ($enabled_schemas as $schema_type) {
             if ($this->should_generate_schema($schema_type)) {
                 $schema = $this->generate_schema(null, $schema_type);
@@ -327,14 +322,10 @@ class KataSchema_Generator {
         
         // Custom field variables
         $custom_fields = get_post_meta($post_id);
-        
-        // Ensure $custom_fields is an array
-        if (is_array($custom_fields)) {
-            foreach ($custom_fields as $key => $values) {
-                if (strpos($key, '_kata_schema_') === 0) {
-                    $field_name = str_replace('_kata_schema_', '', $key);
-                    $variables['{{' . $field_name . '}}'] = $values[0] ?? '';
-                }
+        foreach ($custom_fields as $key => $values) {
+            if (strpos($key, '_kata_schema_') === 0) {
+                $field_name = str_replace('_kata_schema_', '', $key);
+                $variables['{{' . $field_name . '}}'] = $values[0] ?? '';
             }
         }
         
@@ -433,11 +424,8 @@ class KataSchema_Generator {
         $categories = get_the_category($post_id);
         $category_names = array();
         
-        // Ensure $categories is an array
-        if (is_array($categories)) {
-            foreach ($categories as $category) {
-                $category_names[] = $category->name;
-            }
+        foreach ($categories as $category) {
+            $category_names[] = $category->name;
         }
         
         return $category_names;

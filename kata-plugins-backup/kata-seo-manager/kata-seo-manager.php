@@ -134,8 +134,8 @@ class KATA_SEO_Manager {
         // Admin notices
         add_action('admin_notices', array($this, 'show_admin_notices'));
         
-        // Schema output
-        add_action('wp_head', array($this, 'output_schema_markup'), 1);
+        // Schema output (will process content internally to capture shortcode schemas)
+        add_action('wp_head', array($this, 'output_schema_markup'), 999);
         
         // AJAX handlers
         add_action('wp_ajax_kata_seo_create_schema', array($this, 'ajax_create_schema'));
@@ -1054,7 +1054,16 @@ class KATA_SEO_Manager {
         return $schemas;
     }
 
-    
+    /**
+     * Capture shortcode schemas when content is processed through the_content filter
+     * This is a filter that returns the content unchanged but captures schemas as a side effect
+     */
+    public function capture_shortcode_schemas($content) {
+        // This filter runs when the_content is called
+        // At this point, shortcodes have been processed and schemas stored
+        // We just return the content unchanged
+        return $content;
+    }
 
     
 
@@ -1069,13 +1078,33 @@ class KATA_SEO_Manager {
      * Renders schemas from both database table and post meta
      */
     public function output_schema_markup() {
-        if (!is_singular()) {
+        // Support both singular posts/pages and front page
+        if (!is_singular() && !is_front_page()) {
             return;
         }
         
         global $post, $wpdb;
+        
+        // For front page, we need to get the page content manually
+        if (is_front_page() && get_option('page_on_front')) {
+            $page_id = get_option('page_on_front');
+            $post = get_post($page_id);
+        }
+        
+        if (empty($post)) {
+            return;
+        }
+        
         $output_schemas = array();
         $generator = new KATA_SEO_Schema_Generator();
+        
+        // PREPROCESS: Extract schemas from shortcodes in post content
+        // Process shortcodes BEFORE collecting schemas to ensure they're captured
+        if (!empty($post->post_content) && strpos($post->post_content, '[kata_') !== false) {
+            // Temporarily process shortcodes to populate $this->shortcode_schemas
+            // Output is discarded, we only care about schemas being stored via store_shortcode_schema()
+            do_shortcode($post->post_content);
+        }
         
         // SOURCE 1: Get schemas from post meta (legacy support)
         $post_meta_schemas = get_post_meta($post->ID, '_kata_seo_schemas', true);
@@ -1150,8 +1179,8 @@ class KATA_SEO_Manager {
             }
         }
         
-        // SOURCE 3: Get schemas generated from shortcodes (NEW FIX!)
-        // These are collected when shortcodes are rendered during the_content()
+        // SOURCE 3: Get schemas generated from shortcodes
+        // These are collected when shortcodes are processed above
         $shortcode_schemas = $this->get_shortcode_schemas();
         if (!empty($shortcode_schemas)) {
             foreach ($shortcode_schemas as $schema_markup) {
@@ -8035,6 +8064,10 @@ class KATA_SEO_Manager {
             'language' => 'vi',
             'breadcrumb' => '',
             'show_content' => 'false',
+            'show_content_name' => 'false',
+            'show_content_description' => 'false',
+            'show_content_keywords' => 'false',
+            'show_content_breadcrumb' => 'false',
             'show_schema' => 'true'
         ), $atts, 'kata_webpage');
         
@@ -8116,17 +8149,43 @@ class KATA_SEO_Manager {
         
         $output = '';
         
-        if ($atts['show_content'] === 'true') {
+        // Support for individual show_content_* attributes or the legacy show_content attribute
+        $show_any_content = ($atts['show_content'] === 'true') || 
+                           ($atts['show_content_name'] === 'true') ||
+                           ($atts['show_content_description'] === 'true') ||
+                           ($atts['show_content_keywords'] === 'true') ||
+                           ($atts['show_content_breadcrumb'] === 'true');
+        
+        if ($show_any_content) {
             $output .= '<div class="kata-webpage-info">';
             $output .= '<h3>🌐 Thông Tin Trang Web</h3>';
             $output .= '<div class="kata-webpage-details">';
-            $output .= '<div class="kata-detail">Tiêu đề: <strong>' . esc_html($atts['name']) . '</strong></div>';
-            if (!empty($atts['description'])) {
+            
+            // Show name if enabled
+            if ($atts['show_content'] === 'true' || $atts['show_content_name'] === 'true') {
+                $output .= '<div class="kata-detail">Tiêu đề: <strong>' . esc_html($atts['name']) . '</strong></div>';
+            }
+            
+            // Show description if enabled
+            if (($atts['show_content'] === 'true' || $atts['show_content_description'] === 'true') && !empty($atts['description'])) {
                 $output .= '<div class="kata-detail">Mô tả: ' . esc_html($atts['description']) . '</div>';
             }
-            if (!empty($atts['url'])) {
+            
+            // Show keywords if enabled
+            if ($atts['show_content_keywords'] === 'true' && !empty($atts['keywords'])) {
+                $output .= '<div class="kata-detail">Từ khóa: ' . esc_html($atts['keywords']) . '</div>';
+            }
+            
+            // Show breadcrumb if enabled
+            if ($atts['show_content_breadcrumb'] === 'true' && !empty($atts['breadcrumb'])) {
+                $output .= '<div class="kata-detail">Breadcrumb: ' . esc_html($atts['breadcrumb']) . '</div>';
+            }
+            
+            // Show URL if show_content is true
+            if ($atts['show_content'] === 'true' && !empty($atts['url'])) {
                 $output .= '<div class="kata-detail">URL: <a href="' . esc_url($atts['url']) . '" target="_blank">' . esc_html($atts['url']) . '</a></div>';
             }
+            
             $output .= '</div>';
             $output .= '</div>';
         }

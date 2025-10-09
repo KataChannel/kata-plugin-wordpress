@@ -3,7 +3,7 @@
  * Plugin Name: KATA SEO Manager
  * Plugin URI: https://katachannel.com/kata-seo-manager
  * Description: Complete SEO Schema Manager with 26 Schema Types - Manage, configure, and track all KATA SEO features with Google-compliant Schema Markup
- * Version: 2.1.2
+ * Version: 2.1.3
  * Author: KATA Channel
  * Author URI: https://katachannel.com
  * License: GPL v2 or later
@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('KATA_SEO_MANAGER_VERSION', '2.1.2');
+define('KATA_SEO_MANAGER_VERSION', '2.1.3');
 define('KATA_SEO_MANAGER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('KATA_SEO_MANAGER_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('KATA_SEO_MANAGER_PLUGIN_FILE', __FILE__);
@@ -177,8 +177,12 @@ class KATA_SEO_Manager {
         // Demo Content AJAX handler
         add_action('wp_ajax_kata_generate_demo_content', array($this, 'ajax_generate_demo_content'));
         
-        // Shortcodes - need to be registered on init
-        add_action('init', array($this, 'register_shortcodes'));
+        // Shortcodes - need to be registered early for page builder compatibility
+        add_action('init', array($this, 'register_shortcodes'), 5);
+        
+        // UX Builder / Page Builder compatibility
+        add_filter('ux_builder_shortcodes', array($this, 'add_uxbuilder_support'));
+        add_filter('the_content', array($this, 'ensure_shortcode_processing'), 999);
         
         // TinyMCE Integration
         add_filter('mce_buttons', array($this, 'register_tinymce_button'));
@@ -1308,6 +1312,67 @@ class KATA_SEO_Manager {
             'Video' => __('Video (Video)', 'kata-seo-manager'),
             'WebPage' => __('WebPage (Trang web)', 'kata-seo-manager')
         );
+    }
+    
+    /**
+     * Add UX Builder (Flatsome) shortcode support
+     * Tells UX Builder which shortcodes are available
+     */
+    public function add_uxbuilder_support($shortcodes) {
+        if (!is_array($shortcodes)) {
+            $shortcodes = array();
+        }
+        
+        $kata_shortcodes = array(
+            'kata_article',
+            'kata_recipe',
+            'kata_product',
+            'kata_event',
+            'kata_howto',
+            'kata_faq',
+            'kata_faq_item',
+            'kata_video',
+            'kata_organization',
+            'kata_localbusiness',
+            'kata_jobposting',
+            'kata_course',
+            'kata_review',
+            'kata_breadcrumb',
+            'kata_rating',
+            'kata_person',
+            'kata_software',
+            'kata_book',
+            'kata_music',
+            'kata_movie',
+            'kata_website',
+            'kata_blog',
+            'kata_offer',
+            'kata_aggregate_rating',
+            'kata_search_box',
+            'kata_site_navigation',
+            'kata_quiz',
+            'kata_quiz_question',
+            'kata_poll',
+            'kata_poll_option',
+            'kata_calculator',
+            'kata_countdown',
+            'kata_progress_bar',
+            'kata_wheel_of_fortune'
+        );
+        
+        return array_merge($shortcodes, $kata_shortcodes);
+    }
+    
+    /**
+     * Ensure shortcodes are processed in all contexts
+     * Especially important for page builders
+     */
+    public function ensure_shortcode_processing($content) {
+        // Only process if content contains our shortcodes
+        if (stripos($content, '[kata_') !== false) {
+            $content = do_shortcode($content);
+        }
+        return $content;
     }
     
     /**

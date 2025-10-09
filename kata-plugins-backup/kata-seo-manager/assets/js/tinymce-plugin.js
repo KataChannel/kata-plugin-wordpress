@@ -1184,7 +1184,6 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                                                             type="checkbox" 
                                                                             class="schema-field-${key}" 
                                                                             data-attr="${attr}" 
-                                                                            data-type="schema"
                                                                             checked
                                                                             onchange="window.updateShortcode_${key}()"
                                                                             style="width: 16px; height: 16px; cursor: pointer; accent-color: #0073aa;"
@@ -1272,7 +1271,6 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                                                             type="checkbox" 
                                                                             class="content-field-${key}" 
                                                                             data-attr="${attr}" 
-                                                                            data-type="content"
                                                                             checked
                                                                             onchange="window.updateShortcode_${key}()"
                                                                             style="width: 16px; height: 16px; cursor: pointer; accent-color: #f59e0b;"
@@ -1344,52 +1342,6 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                                 </p>
                                             </div>
                                             
-                                            <!-- Update Function -->
-                                            <script>
-                                                window.updateShortcode_${key} = function() {
-                                                    // Get schema and content checkboxes separately
-                                                    const schemaCheckboxes = document.querySelectorAll('.schema-field-${key}');
-                                                    const contentCheckboxes = document.querySelectorAll('.content-field-${key}');
-                                                    
-                                                    let baseShortcode = \`${template.shortcode.replace(/`/g, '\\`')}\`;
-                                                    
-                                                    const hiddenSchemaAttrs = [];
-                                                    const hiddenContentAttrs = [];
-                                                    
-                                                    // Process schema field checkboxes
-                                                    schemaCheckboxes.forEach(cb => {
-                                                        if (!cb.checked) {
-                                                            const attr = cb.dataset.attr;
-                                                            hiddenSchemaAttrs.push('hide_' + attr + '="true"');
-                                                        }
-                                                    });
-                                                    
-                                                    // Process content field checkboxes
-                                                    contentCheckboxes.forEach(cb => {
-                                                        if (!cb.checked) {
-                                                            const attr = cb.dataset.attr;
-                                                            hiddenContentAttrs.push('hide_content_' + attr + '="true"');
-                                                        }
-                                                    });
-                                                    
-                                                    // Add hide attributes to shortcode
-                                                    if (hiddenSchemaAttrs.length > 0 || hiddenContentAttrs.length > 0) {
-                                                        const allHideAttrs = [...hiddenSchemaAttrs, ...hiddenContentAttrs].join(' ');
-                                                        
-                                                        // Find the closing bracket or tag
-                                                        if (baseShortcode.includes(']')) {
-                                                            baseShortcode = baseShortcode.replace(/\]/, ' ' + allHideAttrs + ']');
-                                                        }
-                                                    }
-                                                    
-                                                    // Update textarea
-                                                    const textarea = document.getElementById('shortcode-textarea-${key}');
-                                                    if (textarea) {
-                                                        textarea.value = baseShortcode;
-                                                    }
-                                                };
-                                            </script>
-                                            
                                             <!-- Action Buttons -->
                                             <div style="display: flex; gap: 12px; justify-content: flex-end;">
                                                 <button 
@@ -1439,6 +1391,68 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                                             </div>
                                         </div>
                                     `;
+                                    
+                                    // Define updateShortcode function after setting innerHTML
+                                    // (Scripts in innerHTML are not executed by browsers for security reasons)
+                                    window['updateShortcode_' + key] = function() {
+                                        console.log('🔄 Updating shortcode for ' + key + '...');
+                                        
+                                        // Get schema and content checkboxes separately
+                                        const schemaCheckboxes = document.querySelectorAll('.schema-field-' + key);
+                                        const contentCheckboxes = document.querySelectorAll('.content-field-' + key);
+                                        
+                                        console.log('📊 Schema checkboxes found:', schemaCheckboxes.length);
+                                        console.log('📊 Content checkboxes found:', contentCheckboxes.length);
+                                        
+                                        let baseShortcode = template.shortcode;
+                                        console.log('📝 Base shortcode:', baseShortcode);
+                                        
+                                        const hiddenSchemaAttrs = [];
+                                        const hiddenContentAttrs = [];
+                                        
+                                        // Process schema field checkboxes
+                                        schemaCheckboxes.forEach(cb => {
+                                            console.log('✓ Schema checkbox:', cb.dataset.attr, 'checked:', cb.checked);
+                                            if (!cb.checked) {
+                                                const attr = cb.dataset.attr;
+                                                hiddenSchemaAttrs.push('hide_' + attr + '="true"');
+                                            }
+                                        });
+                                        
+                                        // Process content field checkboxes
+                                        contentCheckboxes.forEach(cb => {
+                                            console.log('✓ Content checkbox:', cb.dataset.attr, 'checked:', cb.checked);
+                                            if (!cb.checked) {
+                                                const attr = cb.dataset.attr;
+                                                hiddenContentAttrs.push('hide_content_' + attr + '="true"');
+                                            }
+                                        });
+                                        
+                                        console.log('🔵 Hidden schema attrs:', hiddenSchemaAttrs);
+                                        console.log('🟠 Hidden content attrs:', hiddenContentAttrs);
+                                        
+                                        // Add hide attributes to shortcode
+                                        if (hiddenSchemaAttrs.length > 0 || hiddenContentAttrs.length > 0) {
+                                            const allHideAttrs = [...hiddenSchemaAttrs, ...hiddenContentAttrs].join(' ');
+                                            console.log('📦 All hide attributes:', allHideAttrs);
+                                            
+                                            // Find the closing bracket or tag
+                                            if (baseShortcode.includes(']')) {
+                                                baseShortcode = baseShortcode.replace(/\]/, ' ' + allHideAttrs + ']');
+                                            }
+                                        }
+                                        
+                                        console.log('✅ Final shortcode:', baseShortcode);
+                                        
+                                        // Update textarea
+                                        const textarea = document.getElementById('shortcode-textarea-' + key);
+                                        if (textarea) {
+                                            textarea.value = baseShortcode;
+                                            console.log('✅ Textarea updated!');
+                                        } else {
+                                            console.error('❌ Textarea not found!');
+                                        }
+                                    };
                                 }
                             });
                         });

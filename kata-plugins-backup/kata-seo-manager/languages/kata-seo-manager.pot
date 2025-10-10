@@ -1,0 +1,463 @@
+# KATA SEO Manager Translation Template
+# Copyright (C) 2025 KATA Channel
+# This file is distributed under the GPL v2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: KATA SEO Manager 1.0.0\n"
+"Report-Msgid-Bugs-To: https://katachannel.com/support\n"
+"POT-Creation-Date: 2025-10-04 00:00+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Manual\n"
+
+# Plugin Information
+msgid "KATA SEO Manager"
+msgstr ""
+
+msgid "Complete SEO Schema Manager with 26 Schema Types"
+msgstr ""
+
+# Menu Items
+msgid "KATA SEO"
+msgstr ""
+
+msgid "Dashboard"
+msgstr ""
+
+msgid "Schema Types"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "Statistics"
+msgstr ""
+
+# Dashboard
+msgid "Overview"
+msgstr ""
+
+msgid "Total Schemas"
+msgstr ""
+
+msgid "Active Schemas"
+msgstr ""
+
+msgid "Validation Status"
+msgstr ""
+
+msgid "Schema Types Used"
+msgstr ""
+
+msgid "Recent Schemas"
+msgstr ""
+
+msgid "Schema Usage Chart"
+msgstr ""
+
+msgid "Add New Schema"
+msgstr ""
+
+msgid "View All"
+msgstr ""
+
+msgid "Quick Actions"
+msgstr ""
+
+# Schema Types
+msgid "Article"
+msgstr ""
+
+msgid "Breadcrumb"
+msgstr ""
+
+msgid "Carousel"
+msgstr ""
+
+msgid "Course"
+msgstr ""
+
+msgid "Dataset"
+msgstr ""
+
+msgid "Forum"
+msgstr ""
+
+msgid "Education Q&A"
+msgstr ""
+
+msgid "Employer Rating"
+msgstr ""
+
+msgid "Event"
+msgstr ""
+
+msgid "FAQ"
+msgstr ""
+
+msgid "HowTo"
+msgstr ""
+
+msgid "Image Metadata"
+msgstr ""
+
+msgid "Job Posting"
+msgstr ""
+
+msgid "Local Business"
+msgstr ""
+
+msgid "Math Solver"
+msgstr ""
+
+msgid "Movie"
+msgstr ""
+
+msgid "Organization"
+msgstr ""
+
+msgid "Practice Problem"
+msgstr ""
+
+msgid "Product"
+msgstr ""
+
+msgid "Profile Page"
+msgstr ""
+
+msgid "Recipe"
+msgstr ""
+
+msgid "Review"
+msgstr ""
+
+msgid "Sitelinks"
+msgstr ""
+
+msgid "Speakable"
+msgstr ""
+
+msgid "Video"
+msgstr ""
+
+msgid "WebPage"
+msgstr ""
+
+# Schema Actions
+msgid "Edit"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Duplicate"
+msgstr ""
+
+msgid "View"
+msgstr ""
+
+msgid "Validate"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+# Settings
+msgid "General Settings"
+msgstr ""
+
+msgid "Organization Details"
+msgstr ""
+
+msgid "Performance"
+msgstr ""
+
+msgid "Google Search Console"
+msgstr ""
+
+msgid "Auto-generate schemas"
+msgstr ""
+
+msgid "Enable automatic schema generation for posts"
+msgstr ""
+
+msgid "Validation mode"
+msgstr ""
+
+msgid "Strict validation for Google compliance"
+msgstr ""
+
+msgid "Organization Name"
+msgstr ""
+
+msgid "Organization URL"
+msgstr ""
+
+msgid "Organization Logo"
+msgstr ""
+
+msgid "Enable caching"
+msgstr ""
+
+msgid "Cache generated schemas for better performance"
+msgstr ""
+
+msgid "Cache duration"
+msgstr ""
+
+msgid "How long to cache schemas (in hours)"
+msgstr ""
+
+msgid "Save Changes"
+msgstr ""
+
+# Validation
+msgid "Valid"
+msgstr ""
+
+msgid "Invalid"
+msgstr ""
+
+msgid "Warning"
+msgstr ""
+
+msgid "Validation successful"
+msgstr ""
+
+msgid "Schema is Google-compliant"
+msgstr ""
+
+msgid "Validation failed"
+msgstr ""
+
+msgid "Please fix the errors below"
+msgstr ""
+
+# Messages
+msgid "Schema created successfully"
+msgstr ""
+
+msgid "Schema updated successfully"
+msgstr ""
+
+msgid "Schema deleted successfully"
+msgstr ""
+
+msgid "Settings saved successfully"
+msgstr ""
+
+msgid "Error creating schema"
+msgstr ""
+
+msgid "Error updating schema"
+msgstr ""
+
+msgid "Error deleting schema"
+msgstr ""
+
+# Form Fields
+msgid "Title"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+msgid "Author"
+msgstr ""
+
+msgid "Date Published"
+msgstr ""
+
+msgid "Date Modified"
+msgstr ""
+
+msgid "Image"
+msgstr ""
+
+msgid "URL"
+msgstr ""
+
+msgid "Price"
+msgstr ""
+
+msgid "Rating"
+msgstr ""
+
+msgid "Review Count"
+msgstr ""
+
+# Statistics
+msgid "Impressions"
+msgstr ""
+
+msgid "Clicks"
+msgstr ""
+
+msgid "CTR"
+msgstr ""
+
+msgid "Position"
+msgstr ""
+
+msgid "Last 7 Days"
+msgstr ""
+
+msgid "Last 30 Days"
+msgstr ""
+
+msgid "Last 90 Days"
+msgstr ""
+
+msgid "Custom Range"
+msgstr ""
+
+msgid "Export to CSV"
+msgstr ""
+
+# Help Text
+msgid "Select a schema type to begin"
+msgstr ""
+
+msgid "Fill in the required fields"
+msgstr ""
+
+msgid "Preview the generated schema"
+msgstr ""
+
+msgid "Click Save to publish"
+msgstr ""
+
+# Errors
+msgid "Required field"
+msgstr ""
+
+msgid "Invalid URL format"
+msgstr ""
+
+msgid "Invalid email format"
+msgstr ""
+
+msgid "Invalid date format"
+msgstr ""
+
+msgid "Invalid number format"
+msgstr ""
+
+msgid "Value must be positive"
+msgstr ""
+
+msgid "Permission denied"
+msgstr ""
+
+msgid "Schema not found"
+msgstr ""
+
+# Placeholders
+msgid "Enter title..."
+msgstr ""
+
+msgid "Enter description..."
+msgstr ""
+
+msgid "Select type..."
+msgstr ""
+
+msgid "Search schemas..."
+msgstr ""
+
+msgid "https://example.com"
+msgstr ""
+
+# Button Labels
+msgid "Add Schema"
+msgstr ""
+
+msgid "Update Schema"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Apply"
+msgstr ""
+
+msgid "Reset"
+msgstr ""
+
+msgid "Import"
+msgstr ""
+
+msgid "Browse"
+msgstr ""
+
+msgid "Upload"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+# Tabs
+msgid "Form"
+msgstr ""
+
+msgid "Template"
+msgstr ""
+
+msgid "Preview"
+msgstr ""
+
+msgid "Advanced"
+msgstr ""
+
+# Modal
+msgid "Insert Schema"
+msgstr ""
+
+msgid "Choose Schema Type"
+msgstr ""
+
+msgid "Configure Schema"
+msgstr ""
+
+msgid "Review & Insert"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+# Notifications
+msgid "Generating schema..."
+msgstr ""
+
+msgid "Validating schema..."
+msgstr ""
+
+msgid "Saving schema..."
+msgstr ""
+
+msgid "Loading..."
+msgstr ""
+
+# Footer
+msgid "Version"
+msgstr ""
+
+msgid "Documentation"
+msgstr ""
+
+msgid "Support"
+msgstr ""
+
+msgid "Rate Plugin"
+msgstr ""

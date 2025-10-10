@@ -91,6 +91,12 @@
          * Bind event listeners
          */
         function bindEvents() {
+            // BUGFIX: Check if elements exist before binding events
+            if (!toggleBtn || !sendBtn || !messageInput) {
+                console.warn('Chatbot: Required elements not found for event binding');
+                return;
+            }
+            
             // Chat toggle
             toggleBtn.addEventListener('click', toggleChat);
             
@@ -936,8 +942,17 @@
     
     // Auto-initialize if container exists
     document.addEventListener('DOMContentLoaded', function() {
-        if (document.getElementById('kata-chatbot-container')) {
-            window.kataChatbotInstance = new window.KataChatbot(window.kata_chatbot_settings || {});
+        var container = document.getElementById('kata-chatbot-container');
+        
+        // BUGFIX: Only initialize if container exists AND KataChatbot is a constructor
+        if (container && typeof window.KataChatbot === 'function') {
+            try {
+                window.kataChatbotInstance = new window.KataChatbot(window.kata_chatbot_settings || {});
+            } catch (error) {
+                console.error('Kata Chatbot initialization error:', error);
+            }
+        } else if (!container) {
+            console.log('Kata Chatbot: Container not found on this page');
         }
     });
     

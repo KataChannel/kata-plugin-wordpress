@@ -156,6 +156,12 @@
          * Bind event handlers
          */
         bindEvents() {
+            // BUGFIX: Check if elements exist before binding events
+            if (!this.$center || this.$center.length === 0) {
+                console.warn('Wheel: Spin button not found, skipping event binding');
+                return;
+            }
+            
             // Spin button click - UPDATED: Show form modal first if needed
             this.$center.on('click', (e) => {
                 e.preventDefault();
@@ -182,31 +188,35 @@
             }
             
             // Form inline submit (for simple style or old structure)
-            this.$form.find('.kata-wheel-submit-btn, .kata-wheel-submit-btn-simple').on('click', (e) => {
-                e.preventDefault();
-                console.log('Inline form submit clicked');
-                this.handleFormSubmit();
-            });
+            if (this.$form && this.$form.length) {
+                this.$form.find('.kata-wheel-submit-btn, .kata-wheel-submit-btn-simple').on('click', (e) => {
+                    e.preventDefault();
+                    console.log('Inline form submit clicked');
+                    this.handleFormSubmit();
+                });
+            }
             
             // Result modal close
-            if (this.isSimple) {
-                this.$resultModal.find('.kata-wheel-result-simple-btn').on('click', () => {
-                    this.closeResultModal();
-                });
-            } else {
-                this.$resultModal.find('.kata-wheel-result-close, .kata-wheel-result-btn').on('click', () => {
-                    this.closeResultModal();
-                });
-                
-                this.$resultModal.find('.kata-wheel-result-overlay').on('click', () => {
-                    this.closeResultModal();
-                });
-                
-                this.$resultModal.on('click', (e) => {
-                    if ($(e.target).is('.kata-wheel-result-modal')) {
+            if (this.$resultModal && this.$resultModal.length) {
+                if (this.isSimple) {
+                    this.$resultModal.find('.kata-wheel-result-simple-btn').on('click', () => {
                         this.closeResultModal();
-                    }
-                });
+                    });
+                } else {
+                    this.$resultModal.find('.kata-wheel-result-close, .kata-wheel-result-btn').on('click', () => {
+                        this.closeResultModal();
+                    });
+                    
+                    this.$resultModal.find('.kata-wheel-result-overlay').on('click', () => {
+                        this.closeResultModal();
+                    });
+                    
+                    this.$resultModal.on('click', (e) => {
+                        if ($(e.target).is('.kata-wheel-result-modal')) {
+                            this.closeResultModal();
+                        }
+                    });
+                }
             }
             
             console.log('Events bound successfully');

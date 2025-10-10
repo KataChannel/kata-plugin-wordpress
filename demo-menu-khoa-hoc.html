@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Menu Khóa Học - White Background Section</title>
+    <link rel="stylesheet" href="wp-content/themes/flatsome-child/assets/css/custom-fonts.css">
+    <link rel="stylesheet" href="wp-content/themes/flatsome-child/assets/css/menu-khoa-hoc.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'SVN-Aguda', Arial, sans-serif;
+            background: #f5f5f5;
+        }
+        
+        .demo-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .demo-header {
+            text-align: center;
+            margin-bottom: 50px;
+            background: linear-gradient(to bottom, #042277, #040B1E);
+            color: white;
+            padding: 60px 20px;
+            border-radius: 12px;
+        }
+        
+        .demo-header h1 {
+            font-size: 48px;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+        
+        .demo-header p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        .code-example {
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .code-example pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .feature-card h3 {
+            color: #042277;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .feature-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-card li {
+            padding: 8px 0;
+            color: #666;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        .feature-card li:before {
+            content: "✓";
+            color: #042277;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .feature-card li:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <!-- Header -->
+        <div class="demo-header">
+            <h1>📚 Menu Khóa Học</h1>
+            <p>Section với nền trắng và màu chữ phù hợp</p>
+        </div>
+
+        <!-- Giới thiệu -->
+        <div class="feature-card" style="margin-bottom: 30px;">
+            <h2 style="color: #042277; margin-bottom: 20px;">🎯 Giới thiệu</h2>
+            <p style="color: #666; line-height: 1.8; margin-bottom: 15px;">
+                Section <strong>menu-khoa-hoc</strong> được thiết kế với nền <strong>trắng (#ffffff)</strong> 
+                thay vì gradient như menu chính. Màu chữ được điều chỉnh phù hợp để dễ đọc trên nền trắng.
+            </p>
+            <ul style="margin-top: 20px;">
+                <li>Background: White (#ffffff)</li>
+                <li>Text color: Primary (#042277)</li>
+                <li>Hover color: Secondary (#040B1E)</li>
+                <li>Icons: Gradient background</li>
+                <li>Buttons: Gradient style</li>
+            </ul>
+        </div>
+
+        <!-- Demo Section 1: Basic -->
+        <section class="menu-khoa-hoc" style="margin: 40px 0;">
+            <h2 class="section-title" style="text-align: center; margin-bottom: 30px;">
+                🎓 Danh Sách Khóa Học
+            </h2>
+            
+            <div class="menu-grid">
+                <div class="menu-item-card">
+                    <div class="menu-icon">📊</div>
+                    <div class="menu-item-title">Marketing Cơ Bản</div>
+                    <div class="menu-item-description">
+                        Học các kiến thức nền tảng về marketing digital và chiến lược tiếp thị
+                    </div>
+                    <a href="#" class="button" style="margin-top: 15px; display: inline-block;">
+                        Xem Chi Tiết
+                    </a>
+                </div>
+                
+                <div class="menu-item-card">
+                    <div class="menu-icon">💻</div>
+                    <div class="menu-item-title">SEO Nâng Cao</div>
+                    <div class="menu-item-description">
+                        Tối ưu hóa công cụ tìm kiếm chuyên sâu cho website của bạn
+                    </div>
+                    <a href="#" class="button" style="margin-top: 15px; display: inline-block;">
+                        Xem Chi Tiết
+                    </a>
+                </div>
+                
+                <div class="menu-item-card">
+                    <div class="menu-icon">🎨</div>
+                    <div class="menu-item-title">Content Marketing</div>
+                    <div class="menu-item-description">
+                        Tạo nội dung hấp dẫn và chiến lược phân phối hiệu quả
+                    </div>
+                    <a href="#" class="button" style="margin-top: 15px; display: inline-block;">
+                        Xem Chi Tiết
+                    </a>
+                </div>
+                
+                <div class="menu-item-card">
+                    <div class="menu-icon">📱</div>
+                    <div class="menu-item-title">Social Media</div>
+                    <div class="menu-item-description">
+                        Quản lý và phát triển thương hiệu trên mạng xã hội
+                    </div>
+                    <a href="#" class="button" style="margin-top: 15px; display: inline-block;">
+                        Xem Chi Tiết
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Demo Section 2: List Style -->
+        <section id="menu-khoa-hoc" style="margin: 40px 0;">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #042277;">
+                📋 Khóa Học Phổ Biến
+            </h2>
+            
+            <div style="max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <ul>
+                    <li><a href="#">Khóa học Marketing cho Người Mới Bắt Đầu</a></li>
+                    <li><a href="#">SEO và Tối Ưu Hóa Nội Dung</a></li>
+                    <li><a href="#">Chiến Lược Content Marketing Hiệu Quả</a></li>
+                    <li><a href="#">Google Ads và Facebook Ads Chuyên Sâu</a></li>
+                    <li><a href="#">Email Marketing và Marketing Automation</a></li>
+                    <li><a href="#">Analytics và Đo Lường Hiệu Quả</a></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Hướng dẫn sử dụng -->
+        <div class="feature-card" style="margin: 40px 0;">
+            <h2 style="color: #042277; margin-bottom: 20px;">📖 Cách Sử Dụng</h2>
+            
+            <h3 style="color: #042277; margin: 20px 0 10px;">1️⃣ Sử dụng class "menu-khoa-hoc"</h3>
+            <div class="code-example">
+<pre>&lt;section class="menu-khoa-hoc"&gt;
+    &lt;h2 class="section-title"&gt;Danh Sách Khóa Học&lt;/h2&gt;
+    
+    &lt;div class="menu-grid"&gt;
+        &lt;div class="menu-item-card"&gt;
+            &lt;div class="menu-icon"&gt;📊&lt;/div&gt;
+            &lt;div class="menu-item-title"&gt;Tên Khóa Học&lt;/div&gt;
+            &lt;div class="menu-item-description"&gt;Mô tả khóa học&lt;/div&gt;
+            &lt;a href="#" class="button"&gt;Xem Chi Tiết&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/section&gt;</pre>
+            </div>
+            
+            <h3 style="color: #042277; margin: 20px 0 10px;">2️⃣ Hoặc sử dụng ID "menu-khoa-hoc"</h3>
+            <div class="code-example">
+<pre>&lt;section id="menu-khoa-hoc"&gt;
+    &lt;h2&gt;Khóa Học Phổ Biến&lt;/h2&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Khóa học 1&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Khóa học 2&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Khóa học 3&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/section&gt;</pre>
+            </div>
+
+            <h3 style="color: #042277; margin: 20px 0 10px;">3️⃣ WordPress Shortcode (nếu có)</h3>
+            <div class="code-example">
+<pre>[section class="menu-khoa-hoc"]
+    &lt;h2&gt;Danh Sách Khóa Học&lt;/h2&gt;
+    &lt;!-- Nội dung khóa học --&gt;
+[/section]</pre>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <h2 style="text-align: center; color: #042277; margin: 40px 0 30px;">✨ Tính Năng</h2>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>🎨 Màu Sắc</h3>
+                <ul>
+                    <li>Nền: White (#ffffff)</li>
+                    <li>Chữ: Primary (#042277)</li>
+                    <li>Hover: Secondary (#040B1E)</li>
+                    <li>Active: Bold với border</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📐 Layout</h3>
+                <ul>
+                    <li>Grid responsive tự động</li>
+                    <li>Card style với border</li>
+                    <li>Icon gradient tròn</li>
+                    <li>Padding phù hợp</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🔘 Buttons</h3>
+                <ul>
+                    <li>Gradient background</li>
+                    <li>Hover effect mượt mà</li>
+                    <li>Outline variant</li>
+                    <li>Shadow khi hover</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h3>📱 Responsive</h3>
+                <ul>
+                    <li>Mobile: 1 column</li>
+                    <li>Tablet: 2 columns</li>
+                    <li>Desktop: 3+ columns</li>
+                    <li>Auto-fit layout</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h3>♿ Accessibility</h3>
+                <ul>
+                    <li>Focus states rõ ràng</li>
+                    <li>High contrast support</li>
+                    <li>Keyboard navigation</li>
+                    <li>ARIA-friendly</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h3>⚡ Performance</h3>
+                <ul>
+                    <li>CSS thuần, không JS</li>
+                    <li>Smooth transitions</li>
+                    <li>GPU acceleration</li>
+                    <li>Tối ưu hóa loading</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- CSS Classes Available -->
+        <div class="feature-card" style="margin: 40px 0;">
+            <h2 style="color: #042277; margin-bottom: 20px;">🎯 CSS Classes Có Sẵn</h2>
+            
+            <h3 style="color: #042277; margin: 20px 0 10px;">Container Classes</h3>
+            <div class="code-example">
+<pre>.menu-khoa-hoc          - Container chính
+#menu-khoa-hoc          - Hoặc sử dụng ID
+.section-khoa-hoc       - Alternative container
+.khoa-hoc-section       - Alternative container</pre>
+            </div>
+            
+            <h3 style="color: #042277; margin: 20px 0 10px;">Layout Classes</h3>
+            <div class="code-example">
+<pre>.menu-grid              - Grid layout responsive
+.menu-item-card         - Card cho mỗi khóa học
+.menu-icon              - Icon với gradient background
+.menu-item-title        - Tiêu đề khóa học
+.menu-item-description  - Mô tả khóa học</pre>
+            </div>
+            
+            <h3 style="color: #042277; margin: 20px 0 10px;">Button Classes</h3>
+            <div class="code-example">
+<pre>.button                 - Button với gradient
+.btn                    - Alternative button class
+.button-outline         - Outline button style</pre>
+            </div>
+        </div>
+
+        <!-- Color Reference -->
+        <div class="feature-card" style="margin: 40px 0;">
+            <h2 style="color: #042277; margin-bottom: 20px;">🎨 Bảng Màu</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px;">
+                <div style="text-align: center;">
+                    <div style="height: 100px; background: #ffffff; border: 2px solid #042277; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #042277;">
+                        Background
+                    </div>
+                    <p style="margin-top: 10px; color: #666;">#ffffff</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="height: 100px; background: #042277; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
+                        Primary Text
+                    </div>
+                    <p style="margin-top: 10px; color: #666;">#042277</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="height: 100px; background: #040B1E; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
+                        Hover Text
+                    </div>
+                    <p style="margin-top: 10px; color: #666;">#040B1E</p>
+                </div>
+                <div style="text-align: center;">
+                    <div style="height: 100px; background: linear-gradient(135deg, #042277, #040B1E); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">
+                        Gradient
+                    </div>
+                    <p style="margin-top: 10px; color: #666;">Gradient Icons/Buttons</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Integration with WordPress -->
+        <div class="feature-card" style="margin: 40px 0;">
+            <h2 style="color: #042277; margin-bottom: 20px;">🔌 Tích Hợp WordPress</h2>
+            <p style="color: #666; margin-bottom: 15px;">
+                CSS file <code>menu-khoa-hoc.css</code> đã được tự động enqueue trong <code>functions.php</code>:
+            </p>
+            <div class="code-example">
+<pre>// File đã được thêm vào functions.php
+wp_enqueue_style( 
+    'timona-menu-khoa-hoc', 
+    get_stylesheet_directory_uri() . '/assets/css/menu-khoa-hoc.css',
+    array('timona-custom-fonts'),
+    '1.0.2'
+);</pre>
+            </div>
+            <p style="color: #666; margin-top: 15px;">
+                ✅ Không cần cấu hình thêm, chỉ cần sử dụng class hoặc ID trong content!
+            </p>
+        </div>
+
+        <!-- Examples -->
+        <div class="feature-card" style="margin: 40px 0;">
+            <h2 style="color: #042277; margin-bottom: 20px;">💡 Ví Dụ Thực Tế</h2>
+            
+            <h3 style="color: #042277; margin: 20px 0 10px;">Ví dụ 1: Grid Layout với Cards</h3>
+            <div class="code-example">
+<pre>&lt;section class="menu-khoa-hoc"&gt;
+    &lt;h2 style="text-align: center;"&gt;Khóa Học Marketing&lt;/h2&gt;
+    &lt;div class="menu-grid"&gt;
+        &lt;div class="menu-item-card"&gt;
+            &lt;div class="menu-icon"&gt;📊&lt;/div&gt;
+            &lt;div class="menu-item-title"&gt;Marketing Cơ Bản&lt;/div&gt;
+            &lt;div class="menu-item-description"&gt;
+                Học các kiến thức nền tảng về marketing
+            &lt;/div&gt;
+            &lt;a href="#" class="button"&gt;Đăng Ký Ngay&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;!-- More cards... --&gt;
+    &lt;/div&gt;
+&lt;/section&gt;</pre>
+            </div>
+            
+            <h3 style="color: #042277; margin: 20px 0 10px;">Ví dụ 2: Simple List</h3>
+            <div class="code-example">
+<pre>&lt;div id="menu-khoa-hoc"&gt;
+    &lt;h2&gt;Danh Sách Khóa Học&lt;/h2&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Khóa học SEO Cơ Bản&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Khóa học Content Writing&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href="#"&gt;Khóa học Social Media&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+&lt;/div&gt;</pre>
+            </div>
+
+            <h3 style="color: #042277; margin: 20px 0 10px;">Ví dụ 3: Custom với Additional Classes</h3>
+            <div class="code-example">
+<pre>&lt;section class="menu-khoa-hoc my-custom-section"&gt;
+    &lt;div class="container"&gt;
+        &lt;h2&gt;Khóa Học Premium&lt;/h2&gt;
+        &lt;div class="menu-grid"&gt;
+            &lt;!-- Your custom content --&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/section&gt;</pre>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin: 60px 0 40px; padding: 40px 20px; background: linear-gradient(to bottom, #042277, #040B1E); color: white; border-radius: 12px;">
+            <h2 style="color: white; margin-bottom: 15px;">✅ Menu Khóa Học Ready!</h2>
+            <p style="font-size: 18px; opacity: 0.9; margin-bottom: 20px;">
+                Section với nền trắng và màu chữ phù hợp đã sẵn sàng sử dụng
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <div style="background: rgba(255,255,255,0.2); padding: 15px 25px; border-radius: 8px;">
+                    <strong>✓</strong> Nền trắng
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 15px 25px; border-radius: 8px;">
+                    <strong>✓</strong> Chữ màu primary
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 15px 25px; border-radius: 8px;">
+                    <strong>✓</strong> Responsive
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 15px 25px; border-radius: 8px;">
+                    <strong>✓</strong> Accessible
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

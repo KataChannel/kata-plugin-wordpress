@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Khóa Học - Quick Reference</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #042277;
+            margin-bottom: 30px;
+            font-size: 36px;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 5px solid #042277;
+        }
+        
+        .section h2 {
+            color: #042277;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        
+        .code {
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        
+        .color-box {
+            display: flex;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .color-item {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .color-swatch {
+            height: 80px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .checklist li {
+            padding: 10px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 6px;
+            border-left: 3px solid #10b981;
+        }
+        
+        .checklist li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .highlight {
+            background: linear-gradient(to bottom, #042277, #040B1E);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .highlight h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        
+        th {
+            background: #042277;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #042277;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Menu Khóa Học<br>Quick Reference</h1>
+        
+        <!-- Highlight -->
+        <div class="highlight">
+            <h2>✅ Setup Complete!</h2>
+            <p style="font-size: 18px; margin: 15px 0;">
+                Section với nền TRẮNG và chữ màu phù hợp đã sẵn sàng
+            </p>
+            <p style="opacity: 0.9;">
+                Chỉ cần thêm class <code style="background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 3px;">.menu-khoa-hoc</code> vào HTML!
+            </p>
+        </div>
+        
+        <!-- Color Scheme -->
+        <div class="section">
+            <h2>🎨 Color Scheme</h2>
+            <div class="color-box">
+                <div class="color-item">
+                    <div class="color-swatch" style="background: #ffffff; border: 2px solid #042277; color: #042277;">
+                        White
+                    </div>
+                    <strong>#ffffff</strong>
+                    <p style="font-size: 12px; color: #666;">Background</p>
+                </div>
+                <div class="color-item">
+                    <div class="color-swatch" style="background: #042277; color: white;">
+                        Primary
+                    </div>
+                    <strong>#042277</strong>
+                    <p style="font-size: 12px; color: #666;">Text</p>
+                </div>
+                <div class="color-item">
+                    <div class="color-swatch" style="background: #040B1E; color: white;">
+                        Secondary
+                    </div>
+                    <strong>#040B1E</strong>
+                    <p style="font-size: 12px; color: #666;">Hover</p>
+                </div>
+                <div class="color-item">
+                    <div class="color-swatch" style="background: linear-gradient(135deg, #042277, #040B1E); color: white;">
+                        Gradient
+                    </div>
+                    <strong>Gradient</strong>
+                    <p style="font-size: 12px; color: #666;">Icons/Buttons</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Basic Usage -->
+        <div class="section">
+            <h2>💻 Basic Usage</h2>
+            <p style="margin-bottom: 10px;"><strong>Option 1:</strong> Sử dụng class</p>
+            <div class="code">&lt;section class="menu-khoa-hoc"&gt;
+    &lt;h2&gt;Danh Sách Khóa Học&lt;/h2&gt;
+    &lt;!-- Content --&gt;
+&lt;/section&gt;</div>
+            
+            <p style="margin: 15px 0 10px;"><strong>Option 2:</strong> Sử dụng ID</p>
+            <div class="code">&lt;div id="menu-khoa-hoc"&gt;
+    &lt;h2&gt;Khóa Học Phổ Biến&lt;/h2&gt;
+    &lt;!-- Content --&gt;
+&lt;/div&gt;</div>
+        </div>
+        
+        <!-- Grid Layout -->
+        <div class="section">
+            <h2>📐 Grid Layout Example</h2>
+            <div class="code">&lt;section class="menu-khoa-hoc"&gt;
+    &lt;h2&gt;Khóa Học Marketing&lt;/h2&gt;
+    &lt;div class="menu-grid"&gt;
+        &lt;div class="menu-item-card"&gt;
+            &lt;div class="menu-icon"&gt;📊&lt;/div&gt;
+            &lt;div class="menu-item-title"&gt;SEO Cơ Bản&lt;/div&gt;
+            &lt;div class="menu-item-description"&gt;
+                Học tối ưu hóa website
+            &lt;/div&gt;
+            &lt;a href="#" class="button"&gt;Xem Chi Tiết&lt;/a&gt;
+        &lt;/div&gt;
+        &lt;!-- More cards... --&gt;
+    &lt;/div&gt;
+&lt;/section&gt;</div>
+        </div>
+        
+        <!-- CSS Classes -->
+        <div class="section">
+            <h2>🎯 Available CSS Classes</h2>
+            <table>
+                <tr>
+                    <th>Class</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td><code>.menu-khoa-hoc</code></td>
+                    <td>Container chính (hoặc dùng <code>#menu-khoa-hoc</code>)</td>
+                </tr>
+                <tr>
+                    <td><code>.menu-grid</code></td>
+                    <td>Grid layout responsive</td>
+                </tr>
+                <tr>
+                    <td><code>.menu-item-card</code></td>
+                    <td>Card cho từng khóa học</td>
+                </tr>
+                <tr>
+                    <td><code>.menu-icon</code></td>
+                    <td>Icon với gradient background</td>
+                </tr>
+                <tr>
+                    <td><code>.menu-item-title</code></td>
+                    <td>Tiêu đề khóa học</td>
+                </tr>
+                <tr>
+                    <td><code>.menu-item-description</code></td>
+                    <td>Mô tả khóa học</td>
+                </tr>
+                <tr>
+                    <td><code>.button</code></td>
+                    <td>Button với gradient</td>
+                </tr>
+                <tr>
+                    <td><code>.button-outline</code></td>
+                    <td>Outline button style</td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Features Checklist -->
+        <div class="section">
+            <h2>✨ Features</h2>
+            <ul class="checklist">
+                <li><strong>Nền trắng</strong> - Background #ffffff thay vì gradient</li>
+                <li><strong>Text màu primary</strong> - Color #042277 dễ đọc</li>
+                <li><strong>Hover effect</strong> - Chuyển màu #040B1E smooth</li>
+                <li><strong>Responsive grid</strong> - Auto 1-4 columns based on screen</li>
+                <li><strong>Gradient icons</strong> - Icons với background đẹp mắt</li>
+                <li><strong>Gradient buttons</strong> - Buttons nổi bật</li>
+                <li><strong>Card hover</strong> - Border + shadow khi hover</li>
+                <li><strong>Mobile friendly</strong> - Tối ưu cho mọi thiết bị</li>
+            </ul>
+        </div>
+        
+        <!-- Files Info -->
+        <div class="section">
+            <h2>📁 Files Created</h2>
+            <table>
+                <tr>
+                    <th>File</th>
+                    <th>Size</th>
+                    <th>Version</th>
+                </tr>
+                <tr>
+                    <td><code>menu-khoa-hoc.css</code></td>
+                    <td>5.7 KB</td>
+                    <td><span class="badge">1.0.2</span></td>
+                </tr>
+                <tr>
+                    <td><code>demo-menu-khoa-hoc.html</code></td>
+                    <td>19 KB</td>
+                    <td><span class="badge">Demo</span></td>
+                </tr>
+                <tr>
+                    <td><code>MENU_KHOA_HOC_SUMMARY.md</code></td>
+                    <td>8.9 KB</td>
+                    <td><span class="badge">Docs</span></td>
+                </tr>
+            </table>
+            <p style="margin-top: 15px; color: #666;">
+                <strong>Location:</strong> <code>/wp-content/themes/flatsome-child/assets/css/</code>
+            </p>
+        </div>
+        
+        <!-- Testing -->
+        <div class="section">
+            <h2>🧪 Testing Steps</h2>
+            <ol style="padding-left: 20px; line-height: 2;">
+                <li>Clear cache: <code>Ctrl + Shift + R</code></li>
+                <li>Open demo: <code>http://localhost/timona/demo-menu-khoa-hoc.html</code></li>
+                <li>Check background = white ✓</li>
+                <li>Check text = #042277 ✓</li>
+                <li>Hover → text = #040B1E ✓</li>
+                <li>Test responsive (mobile/tablet/desktop) ✓</li>
+            </ol>
+        </div>
+        
+        <!-- WordPress Integration -->
+        <div class="section">
+            <h2>🔌 WordPress Integration</h2>
+            <p style="margin-bottom: 10px;">CSS đã được auto-enqueued trong <code>functions.php</code>:</p>
+            <div class="code">wp_enqueue_style( 
+    'timona-menu-khoa-hoc', 
+    get_stylesheet_directory_uri() . '/assets/css/menu-khoa-hoc.css',
+    array('timona-custom-fonts'),
+    '1.0.2'
+);</div>
+            <p style="margin-top: 10px; color: #10b981; font-weight: 600;">
+                ✅ Không cần setup gì thêm - chỉ cần dùng class trong HTML!
+            </p>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="section">
+            <h2>🔗 Quick Links</h2>
+            <table>
+                <tr>
+                    <th>Resource</th>
+                    <th>URL</th>
+                </tr>
+                <tr>
+                    <td>Demo Page</td>
+                    <td><a href="demo-menu-khoa-hoc.html" style="color: #042277;">demo-menu-khoa-hoc.html</a></td>
+                </tr>
+                <tr>
+                    <td>Documentation</td>
+                    <td><a href="MENU_KHOA_HOC_SUMMARY.md" style="color: #042277;">MENU_KHOA_HOC_SUMMARY.md</a></td>
+                </tr>
+                <tr>
+                    <td>CSS File</td>
+                    <td><code>wp-content/themes/flatsome-child/assets/css/menu-khoa-hoc.css</code></td>
+                </tr>
+                <tr>
+                    <td>Functions</td>
+                    <td><code>wp-content/themes/flatsome-child/functions.php</code></td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 40px; padding: 30px; background: #f8f9fa; border-radius: 8px;">
+            <h2 style="color: #042277; margin-bottom: 15px;">🎉 All Set!</h2>
+            <p style="color: #666; font-size: 16px; line-height: 1.8;">
+                Section <strong>menu-khoa-hoc</strong> với nền trắng đã sẵn sàng sử dụng.<br>
+                Thêm class vào HTML và xem kết quả ngay!
+            </p>
+            <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                <span style="background: #042277; color: white; padding: 8px 16px; border-radius: 6px;">✓ White BG</span>
+                <span style="background: #042277; color: white; padding: 8px 16px; border-radius: 6px;">✓ Primary Text</span>
+                <span style="background: #042277; color: white; padding: 8px 16px; border-radius: 6px;">✓ Responsive</span>
+                <span style="background: #042277; color: white; padding: 8px 16px; border-radius: 6px;">✓ Accessible</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

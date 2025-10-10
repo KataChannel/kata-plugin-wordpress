@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIV = UL Submenu - Quick Reference</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #042277;
+            margin-bottom: 20px;
+        }
+        .highlight {
+            background: linear-gradient(to bottom, #042277, #040B1E);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #e5e5e5;
+        }
+        .box h3 {
+            color: #042277;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .code {
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #10b981;
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        th {
+            background: #042277;
+            color: white;
+        }
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e5e5;
+        }
+        .checklist li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 DIV = UL Submenu</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 20px;">
+            Quick Reference v1.0.3
+        </p>
+        
+        <div class="highlight">
+            <h2 style="color: white; margin-bottom: 10px;">✅ Updated!</h2>
+            <p>DIV.sub-menu giờ hoạt động giống Y HỆT như UL.sub-menu</p>
+        </div>
+
+        <!-- Comparison -->
+        <div class="comparison">
+            <div class="box">
+                <h3>UL.sub-menu</h3>
+                <div class="code">&lt;ul class="sub-menu"&gt;
+  &lt;li&gt;&lt;a&gt;Item&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</div>
+                <span class="badge">Standard</span>
+            </div>
+            <div class="box">
+                <h3>DIV.sub-menu</h3>
+                <div class="code">&lt;div class="sub-menu"&gt;
+  &lt;a&gt;Item&lt;/a&gt;
+&lt;/div&gt;</div>
+                <span class="badge">Updated!</span>
+            </div>
+        </div>
+
+        <!-- Properties -->
+        <h2 style="color: #042277; margin: 30px 0 15px;">🎨 Properties</h2>
+        <table>
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Background</td>
+                <td>linear-gradient(#042277, #040B1E)</td>
+            </tr>
+            <tr>
+                <td>Text Color</td>
+                <td>#ffffff (white)</td>
+            </tr>
+            <tr>
+                <td>Border Top</td>
+                <td>3px solid #ffffff</td>
+            </tr>
+            <tr>
+                <td>Hover BG</td>
+                <td>rgba(255, 255, 255, 0.1)</td>
+            </tr>
+            <tr>
+                <td>Hover Color</td>
+                <td>#ffffff (stays white)</td>
+            </tr>
+        </table>
+
+        <!-- CSS Applied -->
+        <h2 style="color: #042277; margin: 30px 0 15px;">📝 CSS Applied</h2>
+        <div class="code">/* Both UL and DIV */
+div.sub-menu,
+ul.sub-menu,
+div.nav-dropdown,
+ul.nav-dropdown {
+  background: linear-gradient(to bottom, #042277, #040B1E) !important;
+  border-top: 3px solid #ffffff;
+}
+
+div.sub-menu a,
+ul.sub-menu li a {
+  color: #ffffff !important;
+}
+
+div.sub-menu a:hover,
+ul.sub-menu li a:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}</div>
+
+        <!-- Files Updated -->
+        <h2 style="color: #042277; margin: 30px 0 15px;">📁 Files Updated</h2>
+        <ul class="checklist">
+            <li><strong>custom-menu.css</strong> - Added div selectors (v1.0.3)</li>
+            <li><strong>menu-override.css</strong> - High specificity overrides (v1.0.3)</li>
+            <li><strong>functions.php</strong> - Version bumped to 1.0.3</li>
+            <li><strong>test-div-vs-ul-submenu.html</strong> - Demo page created</li>
+        </ul>
+
+        <!-- Testing -->
+        <h2 style="color: #042277; margin: 30px 0 15px;">🧪 Testing</h2>
+        <ol style="padding-left: 20px; line-height: 2;">
+            <li>Clear cache: <code>Ctrl + Shift + R</code></li>
+            <li>Open: <code>http://localhost/timona/test-div-vs-ul-submenu.html</code></li>
+            <li>Hover both UL and DIV menus</li>
+            <li>Verify: Same colors, same effects</li>
+            <li>Check DevTools computed styles</li>
+        </ol>
+
+        <!-- Expected -->
+        <div style="background: #dcfce7; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+            <h3 style="color: #10b981; margin-bottom: 10px;">✅ Expected Result</h3>
+            <p style="color: #666;">
+                Khi hover qua menu dropdown:
+            </p>
+            <ul style="margin-top: 10px; padding-left: 20px; color: #666;">
+                <li>Background: Gradient (#042277 → #040B1E) ✓</li>
+                <li>Text: White (#ffffff) ✓</li>
+                <li>Hover: White text + light BG ✓</li>
+                <li>DIV = UL (giống y hệt) ✓</li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+            <strong style="color: #042277;">Version 1.0.3</strong> | 
+            Updated: Oct 10, 2025 | 
+            <span style="color: #10b981;">✅ Complete</span>
+        </div>
+    </div>
+</body>
+</html>

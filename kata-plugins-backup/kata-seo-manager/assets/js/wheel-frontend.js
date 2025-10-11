@@ -520,6 +520,12 @@
          * NEW: Show result modal
          */
         showResultModal(prize) {
+            // ✅ BUGFIX: Validate prize object exists
+            if (!prize) {
+                console.error('Wheel: Prize data is missing');
+                return;
+            }
+            
             const $modal = this.$resultModal;
             
             // Update content
@@ -664,6 +670,14 @@
          * Escape HTML
          */
         escapeHtml(text) {
+            // ✅ BUGFIX: Handle null/undefined values
+            if (text === null || text === undefined) {
+                return '';
+            }
+            
+            // Convert to string if not already
+            const str = String(text);
+            
             const map = {
                 '&': '&amp;',
                 '<': '&lt;',
@@ -671,7 +685,7 @@
                 '"': '&quot;',
                 "'": '&#039;'
             };
-            return text.replace(/[&<>"']/g, m => map[m]);
+            return str.replace(/[&<>"']/g, m => map[m]);
         }
     }
 

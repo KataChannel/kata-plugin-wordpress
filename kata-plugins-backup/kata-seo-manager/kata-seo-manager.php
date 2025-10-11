@@ -501,6 +501,15 @@ class KATA_SEO_Manager {
         
         add_submenu_page(
             'kata-seo-manager',
+            __('Thống kê Schema', 'kata-seo-manager'),
+            __('Thống kê Schema', 'kata-seo-manager'),
+            'manage_options',
+            'kata-seo-schema-statistics',
+            array($this, 'admin_schema_statistics_page')
+        );
+        
+        add_submenu_page(
+            'kata-seo-manager',
             __('Thống kê', 'kata-seo-manager'),
             __('Thống kê', 'kata-seo-manager'),
             'manage_options',
@@ -593,6 +602,13 @@ class KATA_SEO_Manager {
      */
     public function admin_schema_types_page() {
         include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/schema-types.php';
+    }
+    
+    /**
+     * Schema statistics page
+     */
+    public function admin_schema_statistics_page() {
+        include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/schema-statistics.php';
     }
     
     /**

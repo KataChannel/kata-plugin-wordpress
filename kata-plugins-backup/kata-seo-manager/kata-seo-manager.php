@@ -492,29 +492,11 @@ class KATA_SEO_Manager {
         
         add_submenu_page(
             'kata-seo-manager',
-            __('Loại Schema', 'kata-seo-manager'),
-            __('Loại Schema', 'kata-seo-manager'),
-            'manage_options',
-            'kata-seo-schema-types',
-            array($this, 'admin_schema_types_page')
-        );
-        
-        add_submenu_page(
-            'kata-seo-manager',
             __('Thống kê Schema', 'kata-seo-manager'),
             __('Thống kê Schema', 'kata-seo-manager'),
             'manage_options',
             'kata-seo-schema-statistics',
             array($this, 'admin_schema_statistics_page')
-        );
-        
-        add_submenu_page(
-            'kata-seo-manager',
-            __('Thống kê', 'kata-seo-manager'),
-            __('Thống kê', 'kata-seo-manager'),
-            'manage_options',
-            'kata-seo-statistics',
-            array($this, 'admin_statistics_page')
         );
         
         add_submenu_page(
@@ -598,24 +580,10 @@ class KATA_SEO_Manager {
     }
     
     /**
-     * Schema types page
-     */
-    public function admin_schema_types_page() {
-        include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/schema-types.php';
-    }
-    
-    /**
      * Schema statistics page
      */
     public function admin_schema_statistics_page() {
         include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/schema-statistics.php';
-    }
-    
-    /**
-     * Statistics page
-     */
-    public function admin_statistics_page() {
-        include KATA_SEO_MANAGER_PLUGIN_DIR . 'admin/statistics.php';
     }
     
     /**

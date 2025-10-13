@@ -151,6 +151,47 @@
     // NOTE: Wheel functions moved to wheel-frontend.js (KataWheel class)
     // The wheel now uses a modern ES6 class-based approach with proper AJAX integration
     
+    // ✅ BUGFIX: FAQ Toggle Function
+    window.kataToggleFAQ = function(faqId) {
+        var faqItem = document.getElementById(faqId);
+        if (!faqItem) {
+            console.warn('FAQ item not found:', faqId);
+            return;
+        }
+        
+        var answer = faqItem.querySelector('.kata-faq-answer');
+        var question = faqItem.querySelector('.kata-faq-question');
+        
+        if (!answer) {
+            console.warn('FAQ answer element not found in:', faqId);
+            return;
+        }
+        
+        // Toggle visibility
+        if (answer.style.display === 'none' || !answer.style.display) {
+            answer.style.display = 'block';
+            if (question) {
+                question.classList.add('active');
+                question.setAttribute('aria-expanded', 'true');
+            }
+        } else {
+            answer.style.display = 'none';
+            if (question) {
+                question.classList.remove('active');
+                question.setAttribute('aria-expanded', 'false');
+            }
+        }
+        
+        // Analytics tracking
+        if (typeof gtag !== 'undefined') {
+            gtag('event', 'faq_toggle', {
+                'event_category': 'engagement',
+                'event_label': faqId,
+                'value': answer.style.display === 'block' ? 1 : 0
+            });
+        }
+    };
+    
     // Rating Functions
     window.kataSetRating = function(ratingId, event) {
         var container = document.getElementById(ratingId);

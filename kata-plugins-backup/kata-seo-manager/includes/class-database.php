@@ -454,6 +454,9 @@ class KATA_SEO_Database {
         
         // Insert default templates
         $this->insert_default_templates();
+        
+        // Return true on success
+        return true;
     }
     
     /**

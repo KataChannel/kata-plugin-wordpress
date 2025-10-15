@@ -224,10 +224,18 @@ class KATA_Smart_Chatbot {
         $all_keywords = array_merge($course_keywords, $product_keywords, $service_keywords);
         $found_keywords = array();
         
-        $content_lower = mb_strtolower(strip_tags($content), 'UTF-8');
+        // Use mb_strtolower if available, otherwise fallback to strtolower
+        $content_lower = function_exists('mb_strtolower') 
+            ? mb_strtolower(strip_tags($content), 'UTF-8')
+            : strtolower(strip_tags($content));
         
         foreach ($all_keywords as $keyword) {
-            if (mb_strpos($content_lower, mb_strtolower($keyword, 'UTF-8')) !== false) {
+            $keyword_lower = function_exists('mb_strtolower')
+                ? mb_strtolower($keyword, 'UTF-8')
+                : strtolower($keyword);
+            
+            $search_func = function_exists('mb_strpos') ? 'mb_strpos' : 'strpos';
+            if ($search_func($content_lower, $keyword_lower) !== false) {
                 $found_keywords[] = $keyword;
             }
         }

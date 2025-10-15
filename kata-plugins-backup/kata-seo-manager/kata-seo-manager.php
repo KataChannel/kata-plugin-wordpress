@@ -77,6 +77,7 @@ class KATA_SEO_Manager {
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-quiz-manager.php';
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-schema-customizer.php';
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-schema-admin-ui.php';
+        require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-smart-chatbot.php';
         
         // Base schema class (must be loaded first)
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/schemas/class-base-schema.php';
@@ -217,6 +218,10 @@ class KATA_SEO_Manager {
                 throw new Exception('Failed to create database tables');
             }
             
+            // Create chatbot tables
+            $chatbot = KATA_Smart_Chatbot::get_instance();
+            $chatbot->create_tables();
+            
             // Set default options
             add_option('kata_seo_manager_version', KATA_SEO_MANAGER_VERSION);
             add_option('kata_seo_manager_settings', array(
@@ -227,6 +232,13 @@ class KATA_SEO_Manager {
                 'installation_date' => current_time('mysql'),
                 'activation_count' => 1
             ));
+            
+            // Set default chatbot options
+            add_option('kata_chatbot_enabled', true);
+            add_option('kata_chatbot_primary_color', '#042277');
+            add_option('kata_chatbot_secondary_color', '#040B1E');
+            add_option('kata_chatbot_bot_name', 'KATA Assistant');
+            add_option('kata_chatbot_welcome_message', 'Xin chào! Tôi có thể giúp gì cho bạn?');
             
             // Initialize plugin data
             $this->initialize_default_schemas();
@@ -1009,7 +1021,7 @@ class KATA_SEO_Manager {
      * @param array $schema Schema data array
      * @param string $schema_type Type of schema (e.g., 'Article', 'FAQPage', 'Poll')
      */
-    private function store_shortcode_schema($schema, $schema_type = '') {
+    public function store_shortcode_schema($schema, $schema_type = '') {
         if (!is_array($schema) || empty($schema)) {
             return;
         }
@@ -1030,7 +1042,7 @@ class KATA_SEO_Manager {
      * 
      * @return array Array of schemas
      */
-    private function get_shortcode_schemas() {
+    public function get_shortcode_schemas() {
         $schemas = array();
         foreach ($this->shortcode_schemas as $data) {
             $schemas[] = $data['schema'];
@@ -1048,11 +1060,6 @@ class KATA_SEO_Manager {
         // We just return the content unchanged
         return $content;
     }
-
-    
-
-    
-
     
     /**
      * Output schema markup
@@ -1060,10 +1067,12 @@ class KATA_SEO_Manager {
     /**
      * Output schema markup in <head>
      * Renders schemas from both database table and post meta
+     * 
+     * @param bool $force_output Force output even if not singular/front page (for testing)
      */
-    public function output_schema_markup() {
+    public function output_schema_markup($force_output = false) {
         // Support both singular posts/pages and front page
-        if (!is_singular() && !is_front_page()) {
+        if (!$force_output && !is_singular() && !is_front_page()) {
             return;
         }
         
@@ -4896,6 +4905,11 @@ class KATA_SEO_Manager {
             $output .= '<script type="application/ld+json">' . "\n";
             $output .= $final_json . "\n";
             $output .= '</script>' . "\n";
+            
+            // Store schema for <head> output (only if valid array)
+            if (is_array($schema_data) && !empty($schema_data)) {
+                $this->store_shortcode_schema($schema_data, $schema_type);
+            }
         }
         
         // MODE 2: Frontend Display

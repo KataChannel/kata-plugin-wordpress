@@ -10728,29 +10728,58 @@ class KATA_SEO_Manager {
     
     /**
      * Register TinyMCE plugin
+     * 
+     * BUGFIX: Only load on specific screens to prevent conflicts
+     * - Only on Classic Editor (not Gutenberg)
+     * - Only when user has capability
+     * - Prevent loading on all post types unnecessarily
      */
     public function register_tinymce_plugin($plugins) {
+        // Check if array to prevent errors
+        if (!is_array($plugins)) {
+            $plugins = array();
+        }
+        
         // Only add plugin on post edit screens with Classic Editor
         global $current_screen;
         
-        // Skip if Gutenberg is active
-        if (function_exists('use_block_editor_for_post') && use_block_editor_for_post($GLOBALS['post'] ?? null)) {
+        // Skip if current screen not set
+        if (!isset($current_screen)) {
             return $plugins;
         }
         
-        if (isset($current_screen) && in_array($current_screen->base, array('post', 'page'))) {
-            // Verify file exists before registering
-            $plugin_file = KATA_SEO_MANAGER_PLUGIN_DIR . 'assets/js/tinymce-plugin.js';
-            if (file_exists($plugin_file)) {
-                $plugins['kata_seo_manager'] = KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/tinymce-plugin.js?v=' . KATA_SEO_MANAGER_VERSION;
-                
-                // BUGFIX: Localize plugin URL for TinyMCE to load CSS correctly
-                // Pass plugin URL to JavaScript so editor-styles.css can be loaded from correct path
-                wp_localize_script('editor', 'kataSeoManager', array(
-                    'pluginUrl' => KATA_SEO_MANAGER_PLUGIN_URL
-                ));
+        // Skip if Gutenberg is active
+        if (function_exists('use_block_editor_for_post')) {
+            global $post;
+            if ($post && use_block_editor_for_post($post)) {
+                return $plugins;
             }
         }
+        
+        // Only load on post/page edit screens
+        if (!in_array($current_screen->base, array('post', 'page'), true)) {
+            return $plugins;
+        }
+        
+        // Only load if user has capability
+        if (!current_user_can('edit_posts')) {
+            return $plugins;
+        }
+        
+        // Verify file exists before registering
+        $plugin_file = KATA_SEO_MANAGER_PLUGIN_DIR . 'assets/js/tinymce-plugin.js';
+        if (!file_exists($plugin_file)) {
+            return $plugins;
+        }
+        
+        // Prevent duplicate registration
+        if (isset($plugins['kata_seo_manager'])) {
+            return $plugins;
+        }
+        
+        // Register plugin with version for cache busting
+        $plugins['kata_seo_manager'] = KATA_SEO_MANAGER_PLUGIN_URL . 'assets/js/tinymce-plugin.js?v=' . KATA_SEO_MANAGER_VERSION;
+        
         return $plugins;
     }
     

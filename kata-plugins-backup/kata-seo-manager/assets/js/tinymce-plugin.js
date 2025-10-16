@@ -1,8 +1,26 @@
 (function() {
     'use strict';
 
+    // Check if tinymce exists to prevent errors
+    if (typeof tinymce === 'undefined') {
+        console.warn('KATA SEO Manager: TinyMCE not loaded, skipping plugin registration');
+        return;
+    }
+    
+    // Check if plugin already registered to prevent duplicate
+    if (tinymce.PluginManager.get('kata_seo_manager')) {
+        console.warn('KATA SEO Manager: TinyMCE plugin already registered, skipping');
+        return;
+    }
+
     // TinyMCE Plugin for KATA SEO Manager
     tinymce.PluginManager.add('kata_seo_manager', function(editor, url) {
+        
+        // Ensure this only runs once per editor instance
+        if (editor.kata_seo_manager_initialized) {
+            return;
+        }
+        editor.kata_seo_manager_initialized = true;
         
         // Template dữ liệu mẫu cho từng tính năng
         const templates = {
@@ -2365,35 +2383,64 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
         });
     });
 
-    // Custom CSS for TinyMCE editor - FIXED: Use plugin URL instead of tinymce.baseURL
-    // Get plugin URL from window object (set by PHP localize script)
-    var pluginUrl = window.kataSeoManager && window.kataSeoManager.pluginUrl 
-        ? window.kataSeoManager.pluginUrl 
-        : '/wp-content/plugins/kata-seo-manager/';
-    tinymce.DOM.loadCSS(pluginUrl + 'assets/css/editor-styles.css');
+    // Custom CSS for TinyMCE editor - Load only once to prevent conflicts
+    if (typeof tinymce !== 'undefined' && typeof tinymce.DOM !== 'undefined') {
+        // Check if CSS already loaded
+        if (!window.kataSeoManagerCSSLoaded) {
+            window.kataSeoManagerCSSLoaded = true;
+            
+            // Get plugin URL from window object (set by PHP localize script)
+            var pluginUrl = window.kataSeoManager && window.kataSeoManager.pluginUrl 
+                ? window.kataSeoManager.pluginUrl 
+                : '/wp-content/plugins/kata-seo-manager/';
+            
+            try {
+                tinymce.DOM.loadCSS(pluginUrl + 'assets/css/editor-styles.css?v=' + (new Date().getTime()));
+            } catch(e) {
+                console.warn('KATA SEO Manager: Could not load editor CSS', e);
+            }
+        }
+    }
 
 })();
 
 // jQuery helper functions for enhanced functionality
-jQuery(document).ready(function($) {
-    // Add preview functionality
-    $('body').on('click', '.kata-preview-shortcode', function(e) {
-        e.preventDefault();
-        var shortcode = $(this).data('shortcode');
-        // AJAX preview functionality could be added here
+// Wrap in check to prevent conflicts
+if (typeof jQuery !== 'undefined') {
+    jQuery(document).ready(function($) {
+        // Namespace check to prevent duplicate bindings
+        if (window.kataSeoManagerJQueryLoaded) {
+            return;
+        }
+        window.kataSeoManagerJQueryLoaded = true;
+        
+        // Add preview functionality
+        $('body').on('click', '.kata-preview-shortcode', function(e) {
+            e.preventDefault();
+            var shortcode = $(this).data('shortcode');
+            // AJAX preview functionality could be added here
+        });
     });
-});
+}
 
 // Notification system
-window.KataSEONotifications = {
-    show: function(message, type = 'success') {
-        var notification = jQuery('<div class="kata-notification kata-notification-' + type + '">' + message + '</div>');
-        jQuery('body').append(notification);
-        
-        setTimeout(function() {
-            notification.fadeOut(function() {
-                notification.remove();
-            });
-        }, 3000);
-    }
-};
+// Use namespace to prevent conflicts
+if (typeof window.KataSEONotifications === 'undefined') {
+    window.KataSEONotifications = {
+        show: function(message, type = 'success') {
+            if (typeof jQuery === 'undefined') {
+                console.warn('KATA SEO Manager: jQuery not loaded, cannot show notification');
+                return;
+            }
+            
+            var notification = jQuery('<div class="kata-notification kata-notification-' + type + '">' + message + '</div>');
+            jQuery('body').append(notification);
+            
+            setTimeout(function() {
+                notification.fadeOut(function() {
+                    notification.remove();
+                });
+            }, 3000);
+        }
+    };
+}

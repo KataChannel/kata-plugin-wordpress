@@ -670,6 +670,13 @@ Bạn muốn biết thêm về điều gì?',
         $template_file = KATA_CHATBOT_PLUGIN_PATH . 'admin/chatbot-settings-legacy.php';
         if (file_exists($template_file)) {
             include $template_file;
+        } else {
+            echo '<div class="wrap">';
+            echo '<h1>Smart Chatbot Settings</h1>';
+            echo '<div class="notice notice-error"><p>';
+            echo '<strong>Error:</strong> Template file not found: ' . esc_html($template_file);
+            echo '</p></div>';
+            echo '</div>';
         }
     }
     
@@ -680,6 +687,13 @@ Bạn muốn biết thêm về điều gì?',
         $template_file = KATA_CHATBOT_PLUGIN_PATH . 'admin/chatbot-logs-legacy.php';
         if (file_exists($template_file)) {
             include $template_file;
+        } else {
+            echo '<div class="wrap">';
+            echo '<h1>Chat Logs</h1>';
+            echo '<div class="notice notice-error"><p>';
+            echo '<strong>Error:</strong> Template file not found: ' . esc_html($template_file);
+            echo '</p></div>';
+            echo '</div>';
         }
     }
     
@@ -690,6 +704,13 @@ Bạn muốn biết thêm về điều gì?',
         $template_file = KATA_CHATBOT_PLUGIN_PATH . 'admin/chatbot-leads-legacy.php';
         if (file_exists($template_file)) {
             include $template_file;
+        } else {
+            echo '<div class="wrap">';
+            echo '<h1>Chatbot Leads</h1>';
+            echo '<div class="notice notice-error"><p>';
+            echo '<strong>Error:</strong> Template file not found: ' . esc_html($template_file);
+            echo '</p></div>';
+            echo '</div>';
         }
     }
     

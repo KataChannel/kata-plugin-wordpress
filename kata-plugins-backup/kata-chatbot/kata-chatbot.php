@@ -139,6 +139,12 @@ class KataChatbot {
         // Create database tables
         $this->create_tables();
         
+        // Create Smart Chatbot Legacy tables
+        if (class_exists('KATA_Smart_Chatbot_Legacy')) {
+            $legacy_chatbot = KATA_Smart_Chatbot_Legacy::get_instance();
+            $legacy_chatbot->create_tables();
+        }
+        
         // Set default options
         $this->set_default_options();
         
@@ -445,6 +451,11 @@ class KataChatbot {
         $this->chat_handler = new KataChatbot_Chat_Handler();
         $this->branch_handler = new KataChatbot_Branch_Handler();
         
+        // Initialize Smart Chatbot Legacy (from kata-seo-manager)
+        if (class_exists('KATA_Smart_Chatbot_Legacy')) {
+            KATA_Smart_Chatbot_Legacy::get_instance();
+        }
+        
         // Initialize admin if in admin area
         if (is_admin()) {
             $this->admin = new KataChatbot_Admin();
@@ -460,6 +471,7 @@ class KataChatbot {
             'includes/class-db-handler.php',
             'includes/class-chat-handler.php',
             'includes/class-branch-handler.php',
+            'includes/class-smart-chatbot-legacy.php', // Legacy Smart Chatbot from kata-seo-manager
         );
         
         if (is_admin()) {

@@ -77,7 +77,8 @@ class KATA_SEO_Manager {
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-quiz-manager.php';
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-schema-customizer.php';
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-schema-admin-ui.php';
-        require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-smart-chatbot.php';
+        // Chatbot functionality moved to kata-chatbot plugin
+        // require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/class-smart-chatbot.php';
         
         // Base schema class (must be loaded first)
         require_once KATA_SEO_MANAGER_PLUGIN_DIR . 'includes/schemas/class-base-schema.php';
@@ -218,9 +219,9 @@ class KATA_SEO_Manager {
                 throw new Exception('Failed to create database tables');
             }
             
-            // Create chatbot tables
-            $chatbot = KATA_Smart_Chatbot::get_instance();
-            $chatbot->create_tables();
+            // Chatbot functionality moved to kata-chatbot plugin
+            // $chatbot = KATA_Smart_Chatbot::get_instance();
+            // $chatbot->create_tables();
             
             // Set default options
             add_option('kata_seo_manager_version', KATA_SEO_MANAGER_VERSION);
@@ -233,12 +234,12 @@ class KATA_SEO_Manager {
                 'activation_count' => 1
             ));
             
-            // Set default chatbot options
-            add_option('kata_chatbot_enabled', true);
-            add_option('kata_chatbot_primary_color', '#042277');
-            add_option('kata_chatbot_secondary_color', '#040B1E');
-            add_option('kata_chatbot_bot_name', 'KATA Assistant');
-            add_option('kata_chatbot_welcome_message', 'Xin chào! Tôi có thể giúp gì cho bạn?');
+            // Chatbot settings moved to kata-chatbot plugin
+            // add_option('kata_chatbot_enabled', true);
+            // add_option('kata_chatbot_primary_color', '#042277');
+            // add_option('kata_chatbot_secondary_color', '#040B1E');
+            // add_option('kata_chatbot_bot_name', 'KATA Assistant');
+            // add_option('kata_chatbot_welcome_message', 'Xin chào! Tôi có thể giúp gì cho bạn?');
             
             // Initialize plugin data
             $this->initialize_default_schemas();

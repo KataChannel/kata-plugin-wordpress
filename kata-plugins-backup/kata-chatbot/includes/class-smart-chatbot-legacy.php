@@ -69,8 +69,8 @@ class KATA_Smart_Chatbot_Legacy {
         add_action('wp_ajax_kata_chatbot_save_lead', array($this, 'handle_save_lead'));
         add_action('wp_ajax_nopriv_kata_chatbot_save_lead', array($this, 'handle_save_lead'));
         
-        // Admin hooks
-        add_action('admin_menu', array($this, 'add_admin_menu'));
+        // Admin hooks - priority 15 to run AFTER parent menu is created (priority 5)
+        add_action('admin_menu', array($this, 'add_admin_menu'), 15);
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_assets'));
         add_action('admin_init', array($this, 'register_settings'));
     }

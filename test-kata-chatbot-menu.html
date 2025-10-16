@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>KATA Chatbot Menu Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .step {
+            background: #ecf0f1;
+            padding: 15px;
+            margin: 15px 0;
+            border-left: 4px solid #3498db;
+            border-radius: 4px;
+        }
+        .step h3 {
+            margin-top: 0;
+            color: #2980b9;
+        }
+        .url {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 12px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            margin: 10px 0;
+            display: block;
+            text-decoration: none;
+        }
+        .url:hover {
+            background: #34495e;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        .error {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🚀 KATA Chatbot Menu Test</h1>
+        <p>Hướng dẫn truy cập các trang admin của KATA Smart Chatbot</p>
+    </div>
+
+    <div class="card">
+        <h2>📋 Yêu cầu</h2>
+        <div class="warning">
+            <strong>⚠️ Quan trọng:</strong> Bạn PHẢI đăng nhập WordPress admin trước khi test!
+        </div>
+        <ul>
+            <li>✅ Đã cài đặt plugin <strong>Kata Chatbot</strong></li>
+            <li>✅ Plugin đã được <strong>activate</strong></li>
+            <li>✅ Đã <strong>đăng nhập</strong> WordPress admin</li>
+            <li>✅ Tài khoản có quyền <code>manage_options</code> (Administrator)</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>🔧 Hướng dẫn sử dụng</h2>
+        
+        <div class="step">
+            <h3>Bước 1: Đăng nhập WordPress Admin</h3>
+            <p>Click vào link dưới để đăng nhập:</p>
+            <a href="/wp-admin/" class="btn btn-success" target="_blank">
+                🔐 Đăng nhập WordPress Admin
+            </a>
+        </div>
+
+        <div class="step">
+            <h3>Bước 2: Test các menu KATA Chatbot</h3>
+            <p>Sau khi đăng nhập, click vào các link sau để test:</p>
+            
+            <strong>1. Smart Chatbot Settings (Cài đặt chatbot)</strong>
+            <a href="/wp-admin/admin.php?page=kata-smart-chatbot" class="url" target="_blank">
+                http://localhost/timona/wp-admin/admin.php?page=kata-smart-chatbot
+            </a>
+
+            <strong>2. Chat Logs (Lịch sử chat)</strong>
+            <a href="/wp-admin/admin.php?page=kata-chatbot-logs" class="url" target="_blank">
+                http://localhost/timona/wp-admin/admin.php?page=kata-chatbot-logs
+            </a>
+
+            <strong>3. Chatbot Leads (Khách hàng tiềm năng)</strong>
+            <a href="/wp-admin/admin.php?page=kata-chatbot-leads" class="url" target="_blank">
+                http://localhost/timona/wp-admin/admin.php?page=kata-chatbot-leads
+            </a>
+        </div>
+
+        <div class="step">
+            <h3>Bước 3: Hoặc dùng menu WordPress</h3>
+            <p>Trong WordPress admin sidebar, tìm menu:</p>
+            <ul>
+                <li><strong>Kata Chatbot</strong> (menu chính)</li>
+                <li>→ <strong>Smart Chatbot</strong> (submenu)</li>
+                <li>→ <strong>Chat Logs</strong> (submenu)</li>
+                <li>→ <strong>Leads</strong> (submenu)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>❌ Nếu gặp lỗi 403 Forbidden</h2>
+        
+        <div class="error">
+            <strong>Nguyên nhân phổ biến:</strong>
+        </div>
+
+        <ul>
+            <li><strong>Chưa đăng nhập:</strong> Bắt buộc phải login vào <code>/wp-admin/</code> trước</li>
+            <li><strong>Không có quyền:</strong> Tài khoản cần role Administrator hoặc có capability <code>manage_options</code></li>
+            <li><strong>Plugin chưa activate:</strong> Kiểm tra trong Plugins → Installed Plugins</li>
+            <li><strong>Cache:</strong> Clear browser cache và reload trang (Ctrl + Shift + R)</li>
+        </ul>
+
+        <div class="warning">
+            <strong>💡 Mẹo debug:</strong>
+            <ol>
+                <li>Mở Developer Tools (F12)</li>
+                <li>Vào tab Network</li>
+                <li>Click vào URL có lỗi 403</li>
+                <li>Kiểm tra Response Headers để xem lý do</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>✅ Kết quả mong đợi</h2>
+        <div class="success">
+            <strong>Nếu thành công, bạn sẽ thấy:</strong>
+            <ul>
+                <li>✓ Trang Smart Chatbot Settings với 6 tabs: General, Triggers, UI, Messages, Contact, AI</li>
+                <li>✓ Trang Chat Logs hiển thị danh sách tin nhắn chatbot</li>
+                <li>✓ Trang Leads hiển thị danh sách khách hàng tiềm năng</li>
+                <li>✓ Menu "Kata Chatbot" xuất hiện ở sidebar admin</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>🔍 Debug Information</h2>
+        <p>Nếu vẫn gặp lỗi, chạy file debug để xem chi tiết:</p>
+        <a href="/test-403-debug.php" class="btn" target="_blank">
+            🐛 Run Debug Script
+        </a>
+        <p style="margin-top: 15px;">
+            <small>Script này sẽ kiểm tra: user permissions, plugin status, class loading, admin menu, file permissions, và recent errors.</small>
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>📚 Tài liệu tham khảo</h2>
+        <ul>
+            <li><a href="/kata-plugins-backup/kata-chatbot/HOW_TO_ACCESS_ADMIN_PAGES.md" target="_blank">Hướng dẫn truy cập admin pages</a></li>
+            <li><a href="/kata-plugins-backup/kata-chatbot/BUGFIX_SMART_CHATBOT_MENUS.md" target="_blank">Bug fix summary</a></li>
+            <li><a href="/kata-plugins-backup/kata-chatbot/MIGRATION_GUIDE.md" target="_blank">Migration guide</a></li>
+        </ul>
+    </div>
+
+    <div class="card" style="text-align: center; background: #2c3e50; color: white;">
+        <h3 style="color: white; border: none;">🎯 Quick Test</h3>
+        <p>Click nút dưới để test trực tiếp (sau khi đã login):</p>
+        <a href="/wp-admin/admin.php?page=kata-smart-chatbot" class="btn btn-success" target="_blank">
+            Test Smart Chatbot Settings
+        </a>
+    </div>
+
+</body>
+</html>

@@ -32,7 +32,8 @@ class KataChatbot_Admin {
      * Initialize admin functionality
      */
     private function init() {
-        add_action('admin_menu', array($this, 'add_admin_menu'));
+        // Register parent menu FIRST with high priority (5) so Legacy can add submenus
+        add_action('admin_menu', array($this, 'add_admin_menu'), 5);
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
         add_action('admin_init', array($this, 'register_settings'));
         add_action('admin_init', array($this, 'handle_settings_save'));

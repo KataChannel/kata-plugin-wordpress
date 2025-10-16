@@ -100,7 +100,13 @@
             // Chat toggle
             toggleBtn.addEventListener('click', toggleChat);
             
-            // Header actions
+            // Window close button (new)
+            var windowCloseBtn = document.getElementById('kata-window-close');
+            if (windowCloseBtn) {
+                windowCloseBtn.addEventListener('click', closeChat);
+            }
+            
+            // Header actions (legacy)
             var closeBtn = document.getElementById('kata-close-btn');
             var minimizeBtn = document.getElementById('kata-minimize-btn');
             
@@ -190,11 +196,14 @@
             isOpen = true;
             isMinimized = false;
             container.classList.add('kata-chat-open');
+            container.classList.add('open'); // Add 'open' class for CSS
             container.classList.remove('kata-chat-minimized');
             
             // Focus input
             setTimeout(function() {
-                messageInput.focus();
+                if (messageInput) {
+                    messageInput.focus();
+                }
             }, 300);
             
             // Hide notification badge
@@ -213,7 +222,7 @@
         function closeChat() {
             isOpen = false;
             isMinimized = false;
-            container.classList.remove('kata-chat-open', 'kata-chat-minimized');
+            container.classList.remove('kata-chat-open', 'kata-chat-minimized', 'open'); // Remove 'open' class
             hideEmojiPicker();
             
             // Track event

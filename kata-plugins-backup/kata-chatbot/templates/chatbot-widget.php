@@ -93,51 +93,21 @@ if (!$enabled) {
 
     <!-- Chat Window -->
     <div id="kata-chat-window" class="kata-chat-window">
-        <!-- Chat Tabs -->
-        <div class="kata-chat-tabs">
-            <div class="kata-tab-nav">
+        <!-- Close Button -->
+        <button id="kata-window-close" class="kata-window-close" title="<?php _e('Đóng', 'kata-chatbot'); ?>">
+            <svg viewBox="0 0 24 24" width="16" height="16">
+                <path fill="currentColor" d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            </svg>
+        </button>
+        
+        <!-- Main Wrapper: Content Left, Tabs Right -->
+        <div class="kata-chat-main-wrapper">
+            <!-- Content Area (Left) -->
+            <div class="kata-chat-content-area">
+                <!-- Tab Contents -->
                 <?php if ($show_chat_tab) : ?>
-                <button class="kata-tab-btn <?php echo ($default_tab === 'chat') ? 'active' : ''; ?>" data-tab="chat">
-                    <svg viewBox="0 0 24 24" width="16" height="16">
-                        <path fill="#4A90E2" d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-                    </svg>
-                    <span><?php _e('Hỗ Trợ', 'kata-chatbot'); ?></span>
-                </button>
-                <?php endif; ?>
-                
-                <?php if ($show_facebook_tab) : ?>
-                <button class="kata-tab-btn <?php echo ($default_tab === 'facebook') ? 'active' : ''; ?>" data-tab="facebook">
-                    <svg viewBox="0 0 24 24" width="16" height="16">
-                        <path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                    </svg>
-                    <span><?php _e('Facebook', 'kata-chatbot'); ?></span>
-                </button>
-                <?php endif; ?>
-                
-                <?php if ($show_zalo_tab) : ?>
-                <button class="kata-tab-btn <?php echo ($default_tab === 'zalo') ? 'active' : ''; ?>" data-tab="zalo">
-                    <svg viewBox="0 0 24 24" width="16" height="16">
-                        <path fill="#0068FF" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.243 13.243a1 1 0 01-.707.293H8.464a1 1 0 01-.707-1.707L11.293 10.293a1 1 0 011.414 0l3.536 3.536a1 1 0 010 1.414z"/>
-                    </svg>
-                    <span><?php _e('Zalo', 'kata-chatbot'); ?></span>
-                </button>
-                <?php endif; ?>
-                
-                <?php if ($show_hotline_tab) : ?>
-                <button class="kata-tab-btn <?php echo ($default_tab === 'hotline') ? 'active' : ''; ?>" data-tab="hotline">
-                    <svg viewBox="0 0 24 24" width="16" height="16">
-                        <path fill="#00C851" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                    </svg>
-                    <span><?php _e('Hotline', 'kata-chatbot'); ?></span>
-                </button>
-                <?php endif; ?>
-            </div>
-        </div>
-
-        <!-- Tab Contents -->
-        <?php if ($show_chat_tab) : ?>
-        <!-- AI Chat Tab -->
-        <div id="kata-tab-chat" class="kata-tab-content <?php echo ($default_tab === 'chat') ? 'active' : ''; ?>">
+                <!-- AI Chat Tab -->
+                <div id="kata-tab-chat" class="kata-tab-content <?php echo ($default_tab === 'chat') ? 'active' : ''; ?>">
             <!-- Contact Header (giống style các tab khác) -->
             <div class="kata-contact-header">
                 <div class="kata-contact-icon">
@@ -423,8 +393,51 @@ if (!$enabled) {
             </div>
         </div>
         <?php endif; ?>
-    </div>
-</div>
+            </div> <!-- End .kata-chat-content-area -->
+            
+            <!-- Tab Navigation - Vertical on Right Side -->
+            <div class="kata-chat-tabs">
+                <div class="kata-tab-nav">
+                    <?php if ($show_chat_tab) : ?>
+                    <button class="kata-tab-btn <?php echo ($default_tab === 'chat') ? 'active' : ''; ?>" data-tab="chat">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="currentColor" d="M20 2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4l4 4 4-4h4c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
+                        </svg>
+                        <span><?php _e('Chat', 'kata-chatbot'); ?></span>
+                    </button>
+                    <?php endif; ?>
+                    
+                    <?php if ($show_facebook_tab) : ?>
+                    <button class="kata-tab-btn <?php echo ($default_tab === 'facebook') ? 'active' : ''; ?>" data-tab="facebook">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="currentColor" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                        </svg>
+                        <span><?php _e('FB', 'kata-chatbot'); ?></span>
+                    </button>
+                    <?php endif; ?>
+                    
+                    <?php if ($show_zalo_tab) : ?>
+                    <button class="kata-tab-btn <?php echo ($default_tab === 'zalo') ? 'active' : ''; ?>" data-tab="zalo">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.243 13.243a1 1 0 01-.707.293H8.464a1 1 0 01-.707-1.707L11.293 10.293a1 1 0 011.414 0l3.536 3.536a1 1 0 010 1.414z"/>
+                        </svg>
+                        <span><?php _e('Zalo', 'kata-chatbot'); ?></span>
+                    </button>
+                    <?php endif; ?>
+                    
+                    <?php if ($show_hotline_tab) : ?>
+                    <button class="kata-tab-btn <?php echo ($default_tab === 'hotline') ? 'active' : ''; ?>" data-tab="hotline">
+                        <svg viewBox="0 0 24 24" width="20" height="20">
+                            <path fill="currentColor" d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                        </svg>
+                        <span><?php _e('Call', 'kata-chatbot'); ?></span>
+                    </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div> <!-- End .kata-chat-main-wrapper -->
+    </div> <!-- End .kata-chat-window -->
+</div> <!-- End .kata-chatbot-container -->
 
 <style>
 /* Tab Navigation */

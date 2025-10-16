@@ -2,7 +2,7 @@
 /**
  * KATA Smart Chatbot - Chat Logs Page
  * 
- * @package KATA_SEO_Manager
+ * @package KataChatbot
  * @subpackage Admin
  */
 

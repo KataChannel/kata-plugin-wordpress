@@ -2,7 +2,7 @@
 /**
  * KATA Smart Chatbot - Admin Settings Page
  * 
- * @package KATA_SEO_Manager
+ * @package KataChatbot
  * @subpackage Admin
  */
 
@@ -30,7 +30,7 @@ $ai_api_key = get_option('kata_chatbot_ai_api_key', '');
 $ai_model = get_option('kata_chatbot_ai_model', 'gpt-3.5-turbo');
 
 // Get statistics
-$chatbot = KATA_Smart_Chatbot::get_instance();
+$chatbot = KATA_Smart_Chatbot_Legacy::get_instance();
 $stats = $chatbot->get_statistics(30);
 
 // Handle form submission

@@ -597,24 +597,43 @@ Bạn muốn biết thêm về điều gì?',
      */
     public function enqueue_admin_assets($hook) {
         if (strpos($hook, 'kata-smart-chatbot') === false && 
-            strpos($hook, 'kata-chatbot') === false) {
+            strpos($hook, 'kata-chatbot-logs') === false &&
+            strpos($hook, 'kata-chatbot-leads') === false) {
             return;
         }
         
+        // Use main admin CSS if chatbot-admin.css doesn't exist
+        $admin_css = KATA_CHATBOT_PLUGIN_URL . 'assets/css/chatbot-admin.css';
+        if (!file_exists(KATA_CHATBOT_PLUGIN_PATH . 'assets/css/chatbot-admin.css')) {
+            $admin_css = KATA_CHATBOT_PLUGIN_URL . 'assets/css/admin.css';
+        }
+        
         wp_enqueue_style(
-            'kata-chatbot-admin',
-            KATA_CHATBOT_PLUGIN_URL . 'assets/css/chatbot-admin.css',
+            'kata-chatbot-admin-legacy',
+            $admin_css,
             array(),
             KATA_CHATBOT_VERSION
         );
         
+        // Use main admin JS if chatbot-admin.js doesn't exist
+        $admin_js = KATA_CHATBOT_PLUGIN_URL . 'assets/js/chatbot-admin.js';
+        if (!file_exists(KATA_CHATBOT_PLUGIN_PATH . 'assets/js/chatbot-admin.js')) {
+            $admin_js = KATA_CHATBOT_PLUGIN_URL . 'assets/js/admin.js';
+        }
+        
         wp_enqueue_script(
-            'kata-chatbot-admin',
-            KATA_CHATBOT_PLUGIN_URL . 'assets/js/chatbot-admin.js',
+            'kata-chatbot-admin-legacy',
+            $admin_js,
             array('jquery'),
             KATA_CHATBOT_VERSION,
             true
         );
+        
+        // Add color picker for settings page
+        if (strpos($hook, 'kata-smart-chatbot') !== false) {
+            wp_enqueue_style('wp-color-picker');
+            wp_enqueue_script('wp-color-picker');
+        }
     }
     
     /**

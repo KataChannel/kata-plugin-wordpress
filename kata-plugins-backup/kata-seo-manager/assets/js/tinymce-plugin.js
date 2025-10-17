@@ -2040,6 +2040,68 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             `);
         });
 
+        // ========================================
+        // FIX BUG: MCE-PANEL KHÔNG TẮT KHI CHỌN HEADING
+        // ========================================
+        
+        // Đóng mce-panel khi format được apply (heading, bold, italic, etc)
+        editor.on('NodeChange', function(e) {
+            // Tìm tất cả panels đang mở
+            setTimeout(function() {
+                try {
+                    var panels = jQuery('.mce-floatpanel:visible, .mce-panel:visible, .mce-menu:visible');
+                    if (panels.length > 0) {
+                        // Check nếu user đã chọn format/heading
+                        var selectedFormat = e.element;
+                        if (selectedFormat && (
+                            selectedFormat.nodeName === 'H1' || 
+                            selectedFormat.nodeName === 'H2' || 
+                            selectedFormat.nodeName === 'H3' || 
+                            selectedFormat.nodeName === 'H4' || 
+                            selectedFormat.nodeName === 'H5' || 
+                            selectedFormat.nodeName === 'H6' ||
+                            selectedFormat.nodeName === 'P' ||
+                            selectedFormat.nodeName === 'STRONG' ||
+                            selectedFormat.nodeName === 'EM'
+                        )) {
+                            // Đóng panel sau khi format được apply
+                            panels.hide();
+                            
+                            // Trigger TinyMCE hide panel event
+                            if (editor.windowManager && typeof editor.windowManager.close === 'function') {
+                                try {
+                                    editor.windowManager.close();
+                                } catch(err) {
+                                    // Ignore errors nếu không có window đang mở
+                                }
+                            }
+                        }
+                    }
+                } catch(err) {
+                    // Fail silently để không ảnh hưởng editor
+                    console.warn('KATA SEO Manager: Could not close mce-panel', err);
+                }
+            }, 50); // Delay nhỏ để format được apply trước
+        });
+        
+        // Đóng panel khi click vào editor content
+        editor.on('click', function(e) {
+            setTimeout(function() {
+                try {
+                    // Nếu click vào editor content (không phải toolbar)
+                    var target = e.target;
+                    var isToolbarClick = jQuery(target).closest('.mce-toolbar, .mce-menubar, .mce-panel, .mce-floatpanel').length > 0;
+                    
+                    if (!isToolbarClick) {
+                        // Đóng tất cả panels/menus
+                        jQuery('.mce-floatpanel:visible, .mce-menu:visible').hide();
+                    }
+                } catch(err) {
+                    console.warn('KATA SEO Manager: Panel close error', err);
+                }
+            }, 100);
+        });
+
         // Quick insert buttons (optional)
         editor.addButton('kata_quick_faq', {
             title: 'Quick FAQ',

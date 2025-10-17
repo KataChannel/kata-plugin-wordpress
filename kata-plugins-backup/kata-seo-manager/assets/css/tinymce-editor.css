@@ -81,59 +81,60 @@
     }
 }
 
-/* TinyMCE Button Enhancements */
-.mce-btn[aria-label*="KATA"] {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-    border-color: #667eea !important;
-    color: white !important;
-    visibility: visible !important;
-    display: inline-block !important;
-    position: relative !important;
-    z-index: 10 !important;
+/* ========================================
+   KATA SEO Manager - TinyMCE Button Styles
+   Target ONLY KATA buttons, no global impact
+   ======================================== */
+
+/* KATA Main Button - Specific targeting only */
+button.mce-btn[aria-label*="KATA SEO Manager"],
+.mce-btn[aria-label*="KATA SEO Manager"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #667eea;
+    color: white;
 }
 
-.mce-btn[aria-label*="KATA"]:hover {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+button.mce-btn[aria-label*="KATA SEO Manager"]:hover,
+.mce-btn[aria-label*="KATA SEO Manager"]:hover {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    border-color: #764ba2;
 }
 
-.mce-btn[aria-label*="Quick"] {
-    background: linear-gradient(135deg, #ff6b6b, #ffa500) !important;
-    border-color: #ff6b6b !important;
-    color: white !important;
-    visibility: visible !important;
-    display: inline-block !important;
-    position: relative !important;
-    z-index: 10 !important;
+/* KATA Quick Button - Specific targeting only */
+button.mce-btn[aria-label*="KATA Quick"],
+button.mce-btn[aria-label*="Quick FAQ"],
+.mce-btn[aria-label*="Quick FAQ"] {
+    background: linear-gradient(135deg, #ff6b6b, #ffa500);
+    border-color: #ff6b6b;
+    color: white;
 }
 
-.mce-btn[aria-label*="Quick"]:hover {
-    background: linear-gradient(135deg, #ffa500, #ff6b6b) !important;
+button.mce-btn[aria-label*="KATA Quick"]:hover,
+button.mce-btn[aria-label*="Quick FAQ"]:hover,
+.mce-btn[aria-label*="Quick FAQ"]:hover {
+    background: linear-gradient(135deg, #ffa500, #ff6b6b);
+    border-color: #ffa500;
 }
 
-/* Modal Dialog Enhancements */
-.mce-window .mce-container-body {
+/* Modal Dialog Enhancements - KATA Modals Only */
+.mce-window[aria-label*="KATA"] .mce-container-body {
     background: #f8f9fa;
     overflow: hidden;
 }
 
-.mce-window .mce-title {
+.mce-window[aria-label*="KATA"] .mce-title {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
     font-weight: 600;
 }
 
-/* .mce-window {
-    max-width: 95vw;
-    max-height: 95vh;
-} */
-
-.mce-window .mce-window-body {
+.mce-window[aria-label*="KATA"] .mce-window-body {
     overflow: hidden;
 }
 
-.mce-container-body .mce-container {
+.mce-window[aria-label*="KATA"] .mce-container-body .mce-container {
     overflow: hidden;
 }
 
@@ -216,93 +217,25 @@
     100% { transform: scale(1); }
 }
 
-/* Fix TinyMCE Toolbar Visibility Issues */
-.mce-toolbar-grp {
-    position: relative !important;
-    z-index: 100 !important;
-    visibility: visible !important;
-    display: block !important;
-    opacity: 1 !important;
-    height: auto !important;
-    overflow: visible !important;
-}
+/* ========================================
+   REMOVED: Global TinyMCE Overrides
+   ========================================
+   
+   REASON: These CSS rules were applying !important to ALL TinyMCE instances
+   across the entire WordPress site, causing conflicts with:
+   - Other plugins using TinyMCE
+   - WordPress core TinyMCE functionality
+   - TinyMCE Advanced plugin
+   - Custom editor configurations
+   
+   IMPACT OF REMOVAL:
+   - Better compatibility with other plugins
+   - No more global !important conflicts
+   - Proper CSS specificity cascade
+   - Reduced CSS bloat
+   
+   KATA-SPECIFIC STYLES ARE PRESERVED BELOW
+   ======================================== */
 
-/* BUGFIX: Fix inline toolbar group visibility and positioning */
-.mce-inline-toolbar-grp {
-    position: absolute !important;
-    z-index: 150 !important;
-    visibility: visible !important;
-    display: block !important;
-    opacity: 1 !important;
-    overflow: visible !important;
-}
-
-/* Fix mce-container and mce-panel display */
-.mce-container.mce-panel {
-    visibility: visible !important;
-    display: block !important;
-    opacity: 1 !important;
-}
-
-/* Ensure inline toolbar is not hidden by overflow */
-.mce-tinymce.mce-container.mce-panel {
-    overflow: visible !important;
-    z-index: auto !important;
-}
-
-/* Fix TinyMCE Editor Area Padding Issue */
-.mce-edit-area.mce-container.mce-panel.mce-stack-layout-item {
-    padding-top: 0 !important;
-}
-
-.mce-edit-area {
-    padding-top: 0 !important;
-}
-
-/* Additional TinyMCE container fixes */
-.mce-container.mce-panel.mce-stack-layout-item.mce-edit-area {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-}
-
-/* Ensure iframe content area is properly positioned */
-.mce-edit-area iframe {
-    padding-top: 0 !important;
-    margin-top: 0 !important;
-}
-
-/* Fix for specific TinyMCE layout classes */
-.mce-stack-layout-item.mce-edit-area,
-div[class*="mce-edit-area"] {
-    padding-top: 0 !important;
-}
-
-.mce-toolbar {
-    position: relative !important;
-    visibility: visible !important;
-    display: block !important;
-    z-index: 100 !important;
-}
-
-.mce-container-body {
-    position: relative !important;
-    z-index: 1 !important;
-}
-
-/* Ensure all editor buttons are visible */
-.mce-btn, .mce-menubtn {
-    visibility: visible !important;
-    display: inline-block !important;
-    opacity: 1 !important;
-}
-
-/* Fix potential overlay issues */
-.wp-editor-container {
-    position: relative !important;
-    z-index: 1 !important;
-}
-
-.wp-editor-tabs {
-    position: relative !important;
-    z-index: 10 !important;
-}
+/* KATA-Specific Button Styles Only (no global impact) */
+/* These target only KATA SEO Manager buttons, not all TinyMCE */

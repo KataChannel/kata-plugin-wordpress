@@ -2084,10 +2084,24 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             }, 50); // Delay nhỏ để format được apply trước
         });
         
-        // BUG FIX: Removed aggressive panel close on click
-        // TinyMCE handles panel closing automatically, no need to force close on every click
-        // Previous code was preventing panels from opening properly
-        
+        // Đóng panel khi click vào editor content
+        editor.on('click', function(e) {
+            setTimeout(function() {
+                try {
+                    // Nếu click vào editor content (không phải toolbar)
+                    var target = e.target;
+                    var isToolbarClick = jQuery(target).closest('.mce-toolbar, .mce-menubar, .mce-panel, .mce-floatpanel').length > 0;
+                    
+                    if (!isToolbarClick) {
+                        // Đóng tất cả panels/menus
+                        jQuery('.mce-floatpanel:visible, .mce-menu:visible').hide();
+                    }
+                } catch(err) {
+                    console.warn('KATA SEO Manager: Panel close error', err);
+                }
+            }, 100);
+        });
+
         // Quick insert buttons (optional)
         editor.addButton('kata_quick_faq', {
             title: 'Quick FAQ',

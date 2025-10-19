@@ -1,0 +1,326 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║         📊 SCHEMA STATISTICS - QUICK REFERENCE CARD 📊              ║
+║                                                                      ║
+║              KATA SEO Manager v2.1.3 - User Guide                   ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ 🎯 TRUY CẬP TRANG THỐNG KÊ                                           │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  WordPress Admin → KATA SEO → Thống kê Schema                       │
+│                                                                      │
+│  Hoặc truy cập trực tiếp:                                           │
+│  /wp-admin/admin.php?page=kata-seo-schema-statistics                │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ 📊 CÁC CHỈ SỐ CHÍNH                                                  │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  📄 Tổng Posts & Pages                                              │
+│     → Tổng số bài viết + trang trong website                        │
+│                                                                      │
+│  ✅ Có Schema                                                        │
+│     → Số bài đã implement schema (%)                                │
+│     → Mục tiêu: 100%                                                │
+│                                                                      │
+│  ⚠️  Chưa có Schema                                                  │
+│     → Số bài cần bổ sung schema                                     │
+│     → Ưu tiên xử lý                                                 │
+│                                                                      │
+│  🏷️  Schema Types đang dùng                                          │
+│     → X/26 types có sẵn                                             │
+│     → Đa dạng schema = SEO tốt hơn                                  │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ 🔍 TÌM KIẾM & LỌC                                                    │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Search Box (🔎)                                                     │
+│  ────────────────                                                   │
+│  • Tìm theo tiêu đề bài viết                                        │
+│  • Tìm theo ID bài viết                                             │
+│  • Real-time search (gõ là lọc)                                     │
+│  • Case-insensitive                                                 │
+│                                                                      │
+│  Schema Filter (▼)                                                  │
+│  ────────────────                                                   │
+│  • Chọn loại schema cụ thể                                          │
+│  • Xem bài viết dùng schema đó                                      │
+│  • "Tất cả Schema Types" = reset filter                             │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ 🎨 MÀU SẮC SCHEMA TAGS                                               │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  🟢 XANH LÁ (Active)                                                 │
+│     → Schema đang được sử dụng trong bài viết                       │
+│     → Đã implement thành công                                       │
+│                                                                      │
+│  🟠 CAM (Recommended)                                                │
+│     → Gợi ý schema phù hợp cho bài viết                             │
+│     → Click để copy shortcode                                       │
+│     → Nên thêm vào để tối ưu SEO                                    │
+│                                                                      │
+│  🔵 XANH DƯƠNG (Suggested)                                           │
+│     → Gợi ý cho bài chưa có schema                                  │
+│     → Click để copy shortcode                                       │
+│     → Ưu tiên cao                                                   │
+│                                                                      │
+│  ⚪ XÁM (Unused)                                                     │
+│     → Schema chưa được sử dụng trong website                        │
+│     → Cân nhắc triển khai nếu phù hợp                               │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ ⚡ TÍNH NĂNG NHANH                                                    │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  🎯 Copy Shortcode                                                  │
+│  ────────────────                                                   │
+│  1. Click vào schema tag màu CAM hoặc XANH DƯƠNG                    │
+│  2. Shortcode tự động copy vào clipboard                            │
+│  3. Thông báo hiện: "✅ Đã copy: [kata_article]"                    │
+│  4. Paste vào editor để sử dụng                                     │
+│                                                                      │
+│  📝 Sửa bài nhanh                                                   │
+│  ────────────────                                                   │
+│  1. Click nút "Sửa" ở cột "Thao tác"                                │
+│  2. Editor mở trực tiếp                                             │
+│  3. Thêm schema vào nội dung                                        │
+│  4. Lưu bài viết                                                    │
+│                                                                      │
+│  🔄 Làm mới dữ liệu                                                 │
+│  ────────────────                                                   │
+│  Click nút "Làm mới" ở góc trên phải                                │
+│  → Page reload để cập nhật số liệu mới nhất                         │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ 💡 GỢI Ý SCHEMA THÔNG MINH                                           │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Hệ thống tự động phân tích và gợi ý dựa trên:                      │
+│                                                                      │
+│  📌 Loại nội dung                                                   │
+│     • Post → Article, HowTo, FAQ, Video...                          │
+│     • Page → LocalBusiness, Organization...                         │
+│                                                                      │
+│  📌 Tiêu đề bài viết                                                │
+│     • "Hướng dẫn..." → HowTo schema                                 │
+│     • "Câu hỏi..." → FAQ schema                                     │
+│     • "Review..." → Review schema                                   │
+│     • "Sản phẩm..." → Product schema                                │
+│     • "Sự kiện..." → Event schema                                   │
+│     • "Khóa học..." → Course schema                                 │
+│     • "Liên hệ..." → LocalBusiness schema                           │
+│     • "Tuyển dụng..." → JobPosting schema                           │
+│                                                                      │
+│  📌 Schema cơ bản (Luôn gợi ý)                                      │
+│     • Breadcrumb → Mọi bài viết/trang                               │
+│     • WebPage → Mọi trang                                           │
+│     • Article → Mọi blog post                                       │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ 🎓 WORKFLOW KHUYẾN NGHỊ                                              │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  BƯỚC 1: Xem tổng quan                                              │
+│  ─────────────────                                                  │
+│  • Kiểm tra 4 thẻ thống kê đầu trang                                │
+│  • Xác định % bài viết đã có schema                                 │
+│  • Mục tiêu: Đạt 100% coverage                                      │
+│                                                                      │
+│  BƯỚC 2: Phân tích schema types                                     │
+│  ─────────────────                                                  │
+│  • Xem biểu đồ "Thống kê theo loại Schema"                          │
+│  • Schema nào được dùng nhiều nhất?                                 │
+│  • Schema nào chưa được triển khai?                                 │
+│  • Cân nhắc đa dạng hóa schema types                                │
+│                                                                      │
+│  BƯỚC 3: Xử lý bài chưa có schema                                   │
+│  ─────────────────                                                  │
+│  • Scroll đến "Posts & Pages cần thêm Schema"                       │
+│  • Ưu tiên 20 bài đầu tiên                                          │
+│  • Click schema tag màu xanh dương → Copy shortcode                 │
+│  • Click "Thêm Schema" → Mở editor                                  │
+│  • Paste shortcode và điền thông tin                                │
+│                                                                      │
+│  BƯỚC 4: Tối ưu bài đã có schema                                    │
+│  ─────────────────                                                  │
+│  • Xem "Chi tiết Posts & Pages có Schema"                           │
+│  • Kiểm tra cột "Gợi ý thêm"                                        │
+│  • Thêm schema được recommend (tag cam)                             │
+│  • Ví dụ: Bài có Article → Thêm Breadcrumb                          │
+│                                                                      │
+│  BƯỚC 5: Theo dõi & duy trì                                         │
+│  ─────────────────                                                  │
+│  • Kiểm tra thống kê định kỳ (1 tuần/lần)                           │
+│  • Thêm schema cho bài viết mới                                     │
+│  • Cập nhật schema cho bài cũ khi cần                               │
+│  • Monitor Google Search Console để đánh giá                        │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ 📋 CHECKLIST TỐI ƯU SEO                                              │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  ☐ Mọi bài viết có ít nhất Breadcrumb + WebPage/Article             │
+│  ☐ Bài hướng dẫn có HowTo schema                                    │
+│  ☐ Bài câu hỏi có FAQ schema                                        │
+│  ☐ Bài video có Video schema                                        │
+│  ☐ Bài review có Review schema                                      │
+│  ☐ Trang sản phẩm có Product schema                                 │
+│  ☐ Trang liên hệ có LocalBusiness/Organization                      │
+│  ☐ Trang tuyển dụng có JobPosting schema                            │
+│  ☐ Sự kiện có Event schema                                          │
+│  ☐ Khóa học có Course schema                                        │
+│  ☐ Công thức nấu ăn có Recipe schema                                │
+│  ☐ % coverage ≥ 80% (mục tiêu 100%)                                 │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ 🚀 TIPS & TRICKS                                                     │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  💡 Tip 1: Keyboard Shortcuts                                       │
+│     • Ctrl/Cmd + F = Mở search box của browser                      │
+│     • Tab = Di chuyển giữa search và filter                         │
+│                                                                      │
+│  💡 Tip 2: Quick Copy Multiple Schemas                              │
+│     • Mở bài viết trong tab mới (Shift + Click "Sửa")              │
+│     • Copy nhiều schema tags từ statistics page                     │
+│     • Paste lần lượt vào editor                                     │
+│                                                                      │
+│  💡 Tip 3: Bulk Update Strategy                                     │
+│     • Filter theo schema type cần thêm                              │
+│     • Export danh sách bài viết (screenshot hoặc note)              │
+│     • Update từng bài theo list                                     │
+│                                                                      │
+│  💡 Tip 4: Monitor Progress                                         │
+│     • Screenshot overview cards hàng tuần                           │
+│     • So sánh % coverage qua thời gian                              │
+│     • Đặt mục tiêu cải thiện (VD: +10% mỗi tuần)                    │
+│                                                                      │
+│  💡 Tip 5: Content Strategy                                         │
+│     • Xem schema nào chưa dùng (tags xám)                           │
+│     • Plan tạo nội dung phù hợp với schema đó                       │
+│     • VD: Chưa có Recipe → Viết bài công thức                       │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ ⚠️  TROUBLESHOOTING                                                  │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  ❌ Vấn đề: Số liệu không chính xác                                 │
+│  ✅ Giải pháp:                                                       │
+│     1. Click nút "Làm mới"                                          │
+│     2. Clear browser cache (Ctrl + Shift + R)                       │
+│     3. Kiểm tra schema có đúng format [kata_*] không                │
+│                                                                      │
+│  ❌ Vấn đề: Schema không xuất hiện trong thống kê                   │
+│  ✅ Giải pháp:                                                       │
+│     1. Kiểm tra bài viết đã Publish chưa (Draft không count)        │
+│     2. Xác nhận shortcode đúng format: [kata_article ...]           │
+│     3. Schema phải nằm trong post_content (không phải custom field) │
+│                                                                      │
+│  ❌ Vấn đề: Search không hoạt động                                  │
+│  ✅ Giải pháp:                                                       │
+│     1. Refresh trang                                                │
+│     2. Kiểm tra JavaScript console có lỗi không (F12)               │
+│     3. Disable browser extensions (có thể conflict)                 │
+│                                                                      │
+│  ❌ Vấn đề: Copy shortcode không work                               │
+│  ✅ Giải pháp:                                                       │
+│     1. Browser phải hỗ trợ Clipboard API                            │
+│     2. Thử browser khác (Chrome, Firefox recommended)               │
+│     3. Workaround: Copy thủ công từ tooltip                         │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ 📊 HIỂU BIỂU ĐỒ                                                      │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Progress Bar (Schema Types)                                        │
+│  ──────────────────────────                                         │
+│  Article  ████████████████ 15 bài (75%)                             │
+│           │                │                                        │
+│           └─ Gradient fill  └─ Count + Percentage                   │
+│                                                                      │
+│  • Width = Tỷ lệ so với tổng posts có schema                        │
+│  • Màu gradient: #667eea → #764ba2                                  │
+│  • Hover để highlight card                                          │
+│                                                                      │
+│  Stat Cards (Overview)                                              │
+│  ──────────────────────────                                         │
+│  [Icon] 45                                                          │
+│         Tổng Posts & Pages                                          │
+│                                                                      │
+│  • Icon màu = Category (xanh/cam/tím/xám)                           │
+│  • Number animation: 0 → target (1.2s)                              │
+│  • Hover = Lift up effect                                           │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ 🔗 LIÊN KẾT HỮU ÍCH                                                  │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  📚 Documentation                                                   │
+│     → SCHEMA_STATISTICS_FEATURE.md (Technical details)              │
+│                                                                      │
+│  🎨 Design System                                                   │
+│     → assets/css/schema-statistics.css (All styles)                 │
+│                                                                      │
+│  ⚙️  JavaScript Features                                            │
+│     → assets/js/schema-statistics.js (Interactive code)             │
+│                                                                      │
+│  🏷️  Available Schemas                                              │
+│     → KATA SEO → Loại Schema (26 schema types)                      │
+│                                                                      │
+│  📖 Google Guidelines                                               │
+│     → developers.google.com/search/docs/appearance/structured-data  │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ 📞 HỖ TRỢ                                                            │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│  Nếu cần hỗ trợ:                                                    │
+│                                                                      │
+│  1. Đọc documentation: SCHEMA_STATISTICS_FEATURE.md                 │
+│  2. Kiểm tra Troubleshooting section (phía trên)                    │
+│  3. Test với sample data trước                                      │
+│  4. Contact KATA Channel development team                           │
+│                                                                      │
+└──────────────────────────────────────────────────────────────────────┘
+
+╔══════════════════════════════════════════════════════════════════════╗
+║                                                                      ║
+║  ✅ TẤT CẢ TÍNH NĂNG ĐÃ HOÀN THÀNH                                  ║
+║                                                                      ║
+║  📅 Date: October 11, 2025                                          ║
+║  📦 Version: 2.1.3                                                  ║
+║  👨‍💻 Team: KATA Channel                                             ║
+║  🌟 Status: Production Ready                                         ║
+║                                                                      ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+Lưu card này để tham khảo nhanh! 📌

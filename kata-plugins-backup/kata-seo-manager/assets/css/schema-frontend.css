@@ -1,15 +1,18 @@
 /**
  * KATA SEO Manager - Schema Frontend Styles
+ * Uses CSS variables from kata-seo-variables.css
  * 
  * CSS for schema markup frontend display
- * Version: 1.0.0
+ * 
+ * @package KATA_SEO_Manager
+ * @since 2.1.4
  */
 
 /* Base Schema Container */
 .kata-schema-container {
-    margin: 20px 0;
+    margin: var(--kata-space-lg) 0;
     padding: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: var(--kata-font-family);
     line-height: 1.6;
 }
 
@@ -20,34 +23,34 @@
 
 /* Article Schema Styles */
 .kata-article-container {
-    background: #fff;
-    border: 1px solid #e1e1e1;
-    border-radius: 8px;
-    padding: 24px;
-    margin: 20px 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: var(--kata-white);
+    border: 1px solid var(--kata-border-base);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-2xl);
+    margin: var(--kata-space-lg) 0;
+    box-shadow: var(--kata-shadow-base);
 }
 
 .kata-article-header {
-    margin-bottom: 20px;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 15px;
+    margin-bottom: var(--kata-space-lg);
+    border-bottom: 2px solid var(--kata-gray-100);
+    padding-bottom: var(--kata-space-md);
 }
 
 .kata-article-title {
-    font-size: 1.8em;
-    font-weight: 700;
-    color: #333;
-    margin: 0 0 10px 0;
+    font-size: var(--kata-font-3xl);
+    font-weight: var(--kata-font-bold);
+    color: var(--kata-gray-800);
+    margin: 0 0 var(--kata-space-sm) 0;
     line-height: 1.3;
 }
 
 .kata-article-meta {
     display: flex;
-    gap: 20px;
-    font-size: 0.9em;
-    color: #666;
-    margin: 10px 0;
+    gap: var(--kata-space-lg);
+    font-size: var(--kata-font-sm);
+    color: var(--kata-text-secondary);
+    margin: var(--kata-space-sm) 0;
 }
 
 .kata-article-author,
@@ -55,49 +58,49 @@
 .kata-article-category {
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: var(--kata-space-xs);
 }
 
 .kata-article-content {
-    font-size: 1em;
-    color: #444;
+    font-size: var(--kata-font-base);
+    color: var(--kata-text-primary);
     line-height: 1.7;
 }
 
 /* FAQ Schema Styles */
 .kata-faq-container {
-    background: #f9f9f9;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
+    background: var(--kata-gray-50);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
 }
 
 .kata-faq-title {
-    font-size: 1.5em;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 20px;
+    font-size: var(--kata-font-2xl);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-gray-800);
+    margin-bottom: var(--kata-space-lg);
     text-align: center;
 }
 
 .kata-faq-item {
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    border-radius: 6px;
-    margin-bottom: 15px;
+    background: var(--kata-white);
+    border: 1px solid var(--kata-border-base);
+    border-radius: var(--kata-radius-sm);
+    margin-bottom: var(--kata-space-md);
     overflow: hidden;
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow var(--kata-transition-base);
 }
 
 .kata-faq-item:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: var(--kata-shadow-base);
 }
 
 .kata-faq-question {
-    background: #f5f5f5;
-    padding: 15px 20px;
-    font-weight: 600;
-    color: #333;
+    background: var(--kata-gray-100);
+    padding: var(--kata-space-md) var(--kata-space-lg);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-gray-800);
     cursor: pointer;
     position: relative;
     user-select: none;
@@ -106,13 +109,13 @@
 .kata-faq-question:after {
     content: '+';
     position: absolute;
-    right: 20px;
+    right: var(--kata-space-lg);
     top: 50%;
     transform: translateY(-50%);
-    font-size: 1.2em;
+    font-size: var(--kata-font-xl);
     font-weight: bold;
-    color: #666;
-    transition: transform 0.3s ease;
+    color: var(--kata-text-secondary);
+    transition: transform var(--kata-transition-base);
 }
 
 .kata-faq-question.active:after {
@@ -120,30 +123,30 @@
 }
 
 .kata-faq-answer {
-    padding: 20px;
-    color: #555;
+    padding: var(--kata-space-lg);
+    color: var(--kata-text-primary);
     line-height: 1.6;
     display: none;
 }
 
 .kata-faq-answer.active {
     display: block;
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn var(--kata-transition-base);
 }
 
 .kata-faq-empty {
     text-align: center;
-    color: #666;
+    color: var(--kata-text-secondary);
     font-style: italic;
-    padding: 40px 20px;
+    padding: var(--kata-space-4xl) var(--kata-space-lg);
 }
 
 /* Breadcrumb Schema Styles */
 .kata-breadcrumb {
-    background: #f8f8f8;
-    padding: 12px 16px;
-    border-radius: 4px;
-    margin: 15px 0;
+    background: var(--kata-bg-surface);
+    padding: var(--kata-space-base) var(--kata-space-lg);
+    border-radius: var(--kata-radius-sm);
+    margin: var(--kata-space-md) 0;
 }
 
 .kata-breadcrumb-list {
@@ -153,7 +156,7 @@
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: 0.9em;
+    font-size: var(--kata-font-sm);
 }
 
 .kata-breadcrumb-item {
@@ -163,138 +166,138 @@
 
 .kata-breadcrumb-item:not(:last-child):after {
     content: '›';
-    margin: 0 8px;
-    color: #666;
+    margin: 0 var(--kata-space-xs);
+    color: var(--kata-text-secondary);
     font-weight: bold;
 }
 
 .kata-breadcrumb-link {
-    color: #0066cc;
+    color: var(--kata-primary);
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color var(--kata-transition-base);
 }
 
 .kata-breadcrumb-link:hover {
-    color: #004499;
+    color: var(--kata-primary-dark);
     text-decoration: underline;
 }
 
 .kata-breadcrumb-current {
-    color: #333;
-    font-weight: 500;
+    color: var(--kata-gray-800);
+    font-weight: var(--kata-font-medium);
 }
 
 /* Product Schema Styles */
 .kata-product-container {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
-    background: #fff;
+    border: 1px solid var(--kata-border-base);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
+    background: var(--kata-white);
 }
 
 .kata-product-image {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: var(--kata-space-lg);
 }
 
 .kata-product-image img {
     max-width: 100%;
     height: auto;
-    border-radius: 4px;
+    border-radius: var(--kata-radius-sm);
 }
 
 .kata-product-title {
-    font-size: 1.6em;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 15px;
+    font-size: var(--kata-font-2xl);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-gray-800);
+    margin-bottom: var(--kata-space-md);
 }
 
 .kata-product-price {
-    font-size: 1.4em;
-    font-weight: bold;
-    color: #e74c3c;
-    margin-bottom: 15px;
+    font-size: var(--kata-font-xl);
+    font-weight: var(--kata-font-bold);
+    color: var(--kata-error-text);
+    margin-bottom: var(--kata-space-md);
 }
 
 .kata-product-description {
-    color: #555;
+    color: var(--kata-text-primary);
     line-height: 1.6;
-    margin-bottom: 15px;
+    margin-bottom: var(--kata-space-md);
 }
 
 .kata-product-rating {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
+    gap: var(--kata-space-sm);
+    margin-bottom: var(--kata-space-md);
 }
 
 .kata-rating-stars {
     color: #ffa500;
-    font-size: 1.2em;
+    font-size: var(--kata-font-xl);
 }
 
 .kata-rating-text {
-    color: #666;
-    font-size: 0.9em;
+    color: var(--kata-text-secondary);
+    font-size: var(--kata-font-sm);
 }
 
 /* Event Schema Styles */
 .kata-event-container {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 24px;
-    margin: 20px 0;
-    background: linear-gradient(135deg, #f8f9fa 0%, #fff 100%);
+    border: 1px solid var(--kata-border-base);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-2xl);
+    margin: var(--kata-space-lg) 0;
+    background: linear-gradient(135deg, var(--kata-gray-50) 0%, var(--kata-white) 100%);
 }
 
 .kata-event-title {
-    font-size: 1.7em;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 15px;
+    font-size: var(--kata-font-3xl);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-gray-800);
+    margin-bottom: var(--kata-space-md);
 }
 
 .kata-event-date,
 .kata-event-location,
 .kata-event-organizer {
-    margin-bottom: 12px;
-    color: #555;
+    margin-bottom: var(--kata-space-base);
+    color: var(--kata-text-primary);
 }
 
 .kata-event-description {
-    color: #666;
+    color: var(--kata-text-secondary);
     line-height: 1.6;
-    margin-top: 15px;
+    margin-top: var(--kata-space-md);
 }
 
 /* Recipe Schema Styles */
 .kata-recipe-container {
     border: 2px solid #8bc34a;
-    border-radius: 12px;
-    padding: 24px;
-    margin: 20px 0;
+    border-radius: var(--kata-radius-lg);
+    padding: var(--kata-space-2xl);
+    margin: var(--kata-space-lg) 0;
     background: #f8fff8;
 }
 
 .kata-recipe-title {
-    font-size: 1.8em;
-    font-weight: 600;
+    font-size: var(--kata-font-3xl);
+    font-weight: var(--kata-font-semibold);
     color: #2e7d32;
-    margin-bottom: 20px;
+    margin-bottom: var(--kata-space-lg);
     text-align: center;
 }
 
 .kata-recipe-meta {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
-    margin-bottom: 20px;
-    padding: 15px;
+    gap: var(--kata-space-md);
+    margin-bottom: var(--kata-space-lg);
+    padding: var(--kata-space-md);
     background: rgba(139, 195, 74, 0.1);
-    border-radius: 8px;
+    border-radius: var(--kata-radius-md);
 }
 
 .kata-recipe-meta-item {
@@ -302,40 +305,40 @@
 }
 
 .kata-recipe-meta-label {
-    font-weight: 600;
+    font-weight: var(--kata-font-semibold);
     color: #2e7d32;
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: var(--kata-space-xs);
 }
 
 .kata-recipe-meta-value {
-    color: #555;
-    font-size: 1.1em;
+    color: var(--kata-text-primary);
+    font-size: var(--kata-font-lg);
 }
 
 .kata-recipe-ingredients,
 .kata-recipe-instructions {
-    margin-bottom: 20px;
+    margin-bottom: var(--kata-space-lg);
 }
 
 .kata-recipe-ingredients ul,
 .kata-recipe-instructions ol {
-    padding-left: 20px;
+    padding-left: var(--kata-space-lg);
 }
 
 .kata-recipe-ingredients li,
 .kata-recipe-instructions li {
-    margin-bottom: 8px;
+    margin-bottom: var(--kata-space-xs);
     line-height: 1.5;
 }
 
 /* Video Schema Styles */
 .kata-video-container {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
-    background: #fff;
+    border: 1px solid var(--kata-border-base);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
+    background: var(--kata-white);
 }
 
 .kata-video-player {
@@ -343,7 +346,7 @@
     width: 100%;
     height: 0;
     padding-bottom: 56.25%; /* 16:9 aspect ratio */
-    margin-bottom: 15px;
+    margin-bottom: var(--kata-space-md);
 }
 
 .kata-video-player iframe,
@@ -353,87 +356,87 @@
     left: 0;
     width: 100%;
     height: 100%;
-    border-radius: 4px;
+    border-radius: var(--kata-radius-sm);
 }
 
 .kata-video-title {
-    font-size: 1.5em;
-    font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
+    font-size: var(--kata-font-2xl);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-gray-800);
+    margin-bottom: var(--kata-space-sm);
 }
 
 .kata-video-description {
-    color: #555;
+    color: var(--kata-text-primary);
     line-height: 1.6;
-    margin-bottom: 15px;
+    margin-bottom: var(--kata-space-md);
 }
 
 .kata-video-meta {
     display: flex;
-    gap: 20px;
-    font-size: 0.9em;
-    color: #666;
+    gap: var(--kata-space-lg);
+    font-size: var(--kata-font-sm);
+    color: var(--kata-text-secondary);
 }
 
 /* Quiz Integration Styles */
 .kata-quiz-schema {
-    border: 2px solid #3498db;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
+    border: 2px solid var(--kata-quiz-primary);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
     background: #f8f9ff;
 }
 
 /* Poll Integration Styles */
 .kata-poll-schema {
-    border: 2px solid #9b59b6;
-    border-radius: 8px;
-    padding: 20px;
-    margin: 20px 0;
+    border: 2px solid var(--kata-poll-primary);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
     background: #faf8ff;
 }
 
 /* Rating System Styles */
 .kata-rating-container {
-    padding: 15px;
+    padding: var(--kata-space-md);
     background: #fff3cd;
     border: 1px solid #ffeaa7;
-    border-radius: 6px;
-    margin: 15px 0;
+    border-radius: var(--kata-radius-sm);
+    margin: var(--kata-space-md) 0;
 }
 
 .kata-rating-title {
-    font-weight: 600;
+    font-weight: var(--kata-font-semibold);
     color: #856404;
-    margin-bottom: 10px;
+    margin-bottom: var(--kata-space-sm);
 }
 
 .kata-rating-display {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--kata-space-sm);
 }
 
 .kata-rating-stars {
-    font-size: 1.3em;
+    font-size: var(--kata-font-xl);
     color: #ffa500;
 }
 
 .kata-rating-value {
-    font-weight: bold;
-    color: #333;
+    font-weight: var(--kata-font-bold);
+    color: var(--kata-gray-800);
 }
 
 .kata-rating-count {
-    color: #666;
-    font-size: 0.9em;
+    color: var(--kata-text-secondary);
+    font-size: var(--kata-font-sm);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .kata-schema-container {
-        margin: 15px 0;
+        margin: var(--kata-space-md) 0;
     }
     
     .kata-article-container,
@@ -441,30 +444,30 @@
     .kata-event-container,
     .kata-recipe-container,
     .kata-video-container {
-        padding: 16px;
-        margin: 15px 0;
+        padding: var(--kata-space-lg);
+        margin: var(--kata-space-md) 0;
     }
     
     .kata-article-title {
-        font-size: 1.5em;
+        font-size: var(--kata-font-2xl);
     }
     
     .kata-product-title {
-        font-size: 1.4em;
+        font-size: var(--kata-font-xl);
     }
     
     .kata-event-title {
-        font-size: 1.5em;
+        font-size: var(--kata-font-2xl);
     }
     
     .kata-recipe-title {
-        font-size: 1.6em;
+        font-size: var(--kata-font-2xl);
     }
     
     .kata-article-meta,
     .kata-video-meta {
         flex-direction: column;
-        gap: 10px;
+        gap: var(--kata-space-sm);
     }
     
     .kata-recipe-meta {
@@ -472,7 +475,7 @@
     }
     
     .kata-breadcrumb-list {
-        font-size: 0.85em;
+        font-size: var(--kata-font-xs);
     }
 }
 
@@ -502,9 +505,9 @@
 /* Print Styles */
 @media print {
     .kata-schema-container {
-        border: 1px solid #ccc !important;
+        border: 1px solid var(--kata-border-base) !important;
         box-shadow: none !important;
-        background: #fff !important;
+        background: var(--kata-white) !important;
     }
     
     .kata-faq-question:after {

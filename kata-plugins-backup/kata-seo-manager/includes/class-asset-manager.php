@@ -123,14 +123,14 @@ class KATA_SEO_Asset_Manager {
         wp_enqueue_style(
             'kata-seo-manager-schema-builder',
             $this->assets_url . 'css/kata-seo-schema-builder.css',
-            array('kata-seo-manager-admin'),
+            array('kata-seo-variables', 'kata-seo-manager-admin'),
             $this->version
         );
         
         wp_enqueue_style(
             'kata-seo-manager-schema-dialog',
             $this->assets_url . 'css/kata-seo-schema-dialog.css',
-            array('kata-seo-manager-schema-builder'),
+            array('kata-seo-variables', 'kata-seo-manager-schema-builder'),
             $this->version
         );
         
@@ -169,7 +169,7 @@ class KATA_SEO_Asset_Manager {
         wp_enqueue_style(
             'kata-seo-manager-statistics',
             $this->assets_url . 'css/kata-seo-statistics.css',
-            array('kata-seo-manager-admin'),
+            array('kata-seo-variables', 'kata-seo-manager-admin'),
             $this->version
         );
         

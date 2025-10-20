@@ -2,7 +2,7 @@
 
 ## Date: 20/10/2025
 ## Version: 2.1.4
-## Status: 🚀 50% Complete
+## Status: 🚀 56% Complete (7/15 files done + 2 duplicates fixed)
 
 ---
 
@@ -148,23 +148,34 @@ font-family: var(--kata-font-family);
 
 ## 📊 PROGRESS TRACKING
 
-### Files Status
+### Files Status (Updated: 15 Files Discovered!)
 
-| File | Lines | Status | Progress |
-|------|-------|--------|----------|
-| kata-seo-variables.css | 280 | ✅ Complete | 100% |
-| kata-seo-admin.css | 491 | ✅ Complete | 100% |
-| kata-seo-frontend.css | 864 | ✅ Complete | 100% |
-| kata-seo-poll.css | 525 | ✅ Complete | 100% |
-| kata-seo-quiz.css | 664 | ✅ Complete | 100% |
-| kata-seo-wheel.css | 1614 | ⏳ Partial | 40% |
-| kata-seo-schema-builder.css | 450 | ⏳ Pending | 0% |
-| kata-seo-schema-dialog.css | 380 | ⏳ Pending | 0% |
-| kata-seo-statistics.css | 420 | ⏳ Pending | 0% |
-| kata-seo-tinymce.css | 250 | ⏳ Pending | 0% |
-| kata-seo-user-tracking.css | 200 | ⏳ Pending | 0% |
+| # | File | Lines | Status | Progress | Priority |
+|---|------|-------|--------|----------|----------|
+| 1 | kata-seo-variables.css | 280 | ✅ Complete | 100% | HIGH |
+| 2 | kata-seo-admin.css | 496 | ✅ Complete | 100% | HIGH |
+| 3 | kata-seo-frontend.css | 864 | ✅ Complete | 100% | HIGH |
+| 4 | kata-seo-poll.css | 526 | ✅ Complete | 100% | MEDIUM |
+| 5 | kata-seo-quiz.css | 665 | ✅ Complete | 100% | MEDIUM |
+| 6 | kata-seo-wheel.css | 1617 | ✅ Complete | 100% | HIGH |
+| 7 | kata-seo-schema-builder.css | 512 | ⏳ Pending | 0% | HIGH |
+| 8 | kata-seo-schema-dialog.css | 1346 | ⏳ Pending | 0% | HIGH |
+| 9 | kata-seo-statistics.css | 719 | ⏳ Pending | 0% | MEDIUM |
+| 10 | kata-seo-tinymce.css | 244 | ⏳ Pending | 0% | MEDIUM |
+| 11 | kata-seo-user-tracking.css | 771 | ⏳ Pending | 0% | LOW |
+| 12 | **editor-styles.css** | 257 | ⏳ Pending | 0% | MEDIUM |
+| 13 | **schema-frontend.css** | 516 | ⏳ Pending | 0% | HIGH |
+| 14 | **schema-types.css** ✅ | 485 | ✅ Complete | 100% | CRITICAL |
+| 15 | **statistics.css** ✅ | 691 | ✅ Complete | 100% | CRITICAL |
 
-**Overall Progress:** ~60% of CSS refactoring complete (6/11 files done)
+**Total Lines:** 9,989 CSS lines  
+**Completed:** 5,624 lines (56%)  
+**Remaining:** 4,365 lines (44%)  
+**Overall Progress:** ~56% of CSS refactoring complete (7/15 main files done + 2 duplicates fixed)
+
+✅ **CRITICAL ISSUES FIXED:**  
+- Files #14 (schema-types.css) and #15 (statistics.css) duplicate :root declarations **RESOLVED!**
+- File #6 (kata-seo-wheel.css) remaining 60% **COMPLETED!**
 
 ---
 

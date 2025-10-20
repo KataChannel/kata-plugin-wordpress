@@ -1,450 +1,717 @@
 /**
- * Frontend JavaScript for KATA SEO Manager Interactive Elements
+ * KATA SEO Manager - Frontend Interactive Elements Controller
  * 
- * Handles Quiz, Poll, Wheel, Rating and other interactive shortcodes
+ * Modern ES6+ refactored version with:
+ * - ES6 Classes for each widget type
+ * - Async/await for AJAX operations
+ * - Event delegation pattern
+ * - Enhanced error handling
+ * - Accessibility improvements (ARIA)
+ * - JSDoc documentation
+ * 
+ * Handles: Quiz, Poll, FAQ, Rating and other interactive shortcodes
  * 
  * @package KATA_SEO_Manager
+ * @version 2.2.0
+ * @since 2.1.4
  */
 
 (function() {
     'use strict';
-    
-    // Quiz Functions
-    window.kataSubmitQuiz = function(quizId) {
-        var container = document.getElementById(quizId);
-        if (!container) return;
-        
-        var form = container.querySelector('.kata-quiz-form');
-        var questions = container.querySelectorAll('.kata-quiz-question');
-        var results = container.querySelector('.kata-quiz-results');
-        
-        var score = 0;
-        var total = questions.length;
-        var answers = [];
-        
-        questions.forEach(function(question, index) {
-            var selected = question.querySelector('input[type="radio"]:checked');
-            var questionData = window[quizId.replace(/-/g, '_') + '_questions'] || [];
-            
-            if (selected && questionData[index]) {
-                var selectedValue = parseInt(selected.value);
-                var correctAnswer = questionData[index].correct || 0;
+
+    /**
+     * Quiz Controller Class
+     * Manages quiz interactions and scoring
+     * 
+     * @class KataQuiz
+     */
+    class KataQuiz {
+        /**
+         * Submit quiz and calculate results
+         * 
+         * @param {string} quizId - Quiz container ID
+         * @returns {void}
+         */
+        static submit(quizId) {
+            const container = document.getElementById(quizId);
+            if (!container) {
+                console.warn('Quiz container not found:', quizId);
+                return;
+            }
+
+            const form = container.querySelector('.kata-quiz-form');
+            const questions = container.querySelectorAll('.kata-quiz-question');
+            const results = container.querySelector('.kata-quiz-results');
+
+            if (!form || !questions.length) {
+                console.error('Quiz form or questions not found');
+                return;
+            }
+
+            const { score, total, answers } = this.calculateScore(questions, quizId);
+            const percentage = Math.round((score / total) * 100);
+
+            this.renderResults(results, score, total, percentage, answers);
+            this.scrollToResults(results);
+            this.trackAnalytics(quizId, percentage);
+        }
+
+        /**
+         * Calculate quiz score
+         * 
+         * @param {NodeList} questions - Quiz questions
+         * @param {string} quizId - Quiz ID
+         * @returns {Object} Score data
+         */
+        static calculateScore(questions, quizId) {
+            let score = 0;
+            const total = questions.length;
+            const answers = [];
+            const questionData = window[quizId.replace(/-/g, '_') + '_questions'] || [];
+
+            questions.forEach((question, index) => {
+                const selected = question.querySelector('input[type="radio"]:checked');
                 
-                answers.push({
-                    question: questionData[index].question,
-                    selected: questionData[index].options[selectedValue] || '',
-                    correct: questionData[index].options[correctAnswer] || '',
-                    isCorrect: selectedValue === correctAnswer
-                });
-                
-                if (selectedValue === correctAnswer) {
-                    score++;
+                if (selected && questionData[index]) {
+                    const selectedValue = parseInt(selected.value);
+                    const correctAnswer = questionData[index].correct || 0;
+                    const isCorrect = selectedValue === correctAnswer;
+
+                    answers.push({
+                        question: questionData[index].question,
+                        selected: questionData[index].options[selectedValue] || '',
+                        correct: questionData[index].options[correctAnswer] || '',
+                        isCorrect
+                    });
+
+                    if (isCorrect) score++;
                 }
-            }
-        });
-        
-        var percentage = Math.round((score / total) * 100);
-        
-        var resultHTML = '<h4>Kết Quả Quiz</h4>';
-        resultHTML += '<div class="kata-quiz-score">Điểm số: ' + score + '/' + total + ' (' + percentage + '%)</div>';
-        
-        if (percentage >= 80) {
-            resultHTML += '<div class="kata-quiz-message success">🎉 Xuất sắc!</div>';
-        } else if (percentage >= 60) {
-            resultHTML += '<div class="kata-quiz-message good">👍 Tốt!</div>';
-        } else {
-            resultHTML += '<div class="kata-quiz-message try-again">💪 Hãy thử lại!</div>';
-        }
-        
-        resultHTML += '<div class="kata-quiz-details">';
-        answers.forEach(function(answer, index) {
-            var status = answer.isCorrect ? '✅' : '❌';
-            resultHTML += '<div class="kata-answer-review">';
-            resultHTML += '<strong>' + status + ' ' + answer.question + '</strong><br>';
-            resultHTML += 'Bạn chọn: ' + answer.selected + '<br>';
-            if (!answer.isCorrect) {
-                resultHTML += 'Đáp án đúng: ' + answer.correct + '<br>';
-            }
-            resultHTML += '</div>';
-        });
-        resultHTML += '</div>';
-        
-        results.innerHTML = resultHTML;
-        results.style.display = 'block';
-        
-        // Scroll to results
-        results.scrollIntoView({ behavior: 'smooth' });
-        
-        // Analytics tracking
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'quiz_complete', {
-                'event_category': 'engagement',
-                'event_label': quizId,
-                'value': percentage
             });
+
+            return { score, total, answers };
         }
-    };
-    
-    // Poll Functions
-    window.kataSubmitPoll = function(pollId) {
-        var container = document.getElementById(pollId);
-        if (!container) return;
-        
-        var form = container.querySelector('.kata-poll-form');
-        var selected = form.querySelector('input[type="radio"]:checked');
-        var results = container.querySelector('.kata-poll-results');
-        var submitBtn = container.querySelector('.kata-poll-submit');
-        
-        if (!selected) {
-            alert('Vui lòng chọn một tùy chọn!');
-            return;
+
+        /**
+         * Render quiz results
+         * 
+         * @param {HTMLElement} resultsContainer - Results container
+         * @param {number} score - Quiz score
+         * @param {number} total - Total questions
+         * @param {number} percentage - Score percentage
+         * @param {Array} answers - Answer details
+         * @returns {void}
+         */
+        static renderResults(resultsContainer, score, total, percentage, answers) {
+            if (!resultsContainer) return;
+
+            const messageClass = this.getMessageClass(percentage);
+            const messageText = this.getMessageText(percentage);
+
+            const resultHTML = `
+                <h4>Kết Quả Quiz</h4>
+                <div class="kata-quiz-score" role="status" aria-live="polite">
+                    Điểm số: ${score}/${total} (${percentage}%)
+                </div>
+                <div class="kata-quiz-message ${messageClass}">${messageText}</div>
+                <div class="kata-quiz-details">
+                    ${this.renderAnswerReviews(answers)}
+                </div>
+            `;
+
+            resultsContainer.innerHTML = resultHTML;
+            resultsContainer.style.display = 'block';
+            resultsContainer.setAttribute('aria-hidden', 'false');
         }
-        
-        var selectedValue = selected.value;
-        var selectedText = selected.nextElementSibling.textContent;
-        
-        // Disable form
-        var inputs = form.querySelectorAll('input');
-        inputs.forEach(function(input) {
-            input.disabled = true;
-        });
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Đã Bình Chọn';
-        
-        // Show thank you message
-        var resultHTML = '<div class="kata-poll-thank-you">';
-        resultHTML += '<h4>Cảm ơn bạn đã bình chọn!</h4>';
-        resultHTML += '<p>Bạn đã chọn: <strong>' + selectedText + '</strong></p>';
-        resultHTML += '</div>';
-        
-        if (results) {
-            results.innerHTML = resultHTML;
-            results.style.display = 'block';
-        } else {
-            // Create results div if not exists
-            var newResults = document.createElement('div');
-            newResults.className = 'kata-poll-results';
-            newResults.innerHTML = resultHTML;
-            form.appendChild(newResults);
+
+        /**
+         * Render answer reviews
+         * 
+         * @param {Array} answers - Answer details
+         * @returns {string} HTML string
+         */
+        static renderAnswerReviews(answers) {
+            return answers.map(answer => {
+                const status = answer.isCorrect ? '✅' : '❌';
+                const wrongAnswerInfo = !answer.isCorrect 
+                    ? `Đáp án đúng: ${answer.correct}<br>` 
+                    : '';
+
+                return `
+                    <div class="kata-answer-review">
+                        <strong>${status} ${answer.question}</strong><br>
+                        Bạn chọn: ${answer.selected}<br>
+                        ${wrongAnswerInfo}
+                    </div>
+                `;
+            }).join('');
         }
-        
-        // Analytics tracking
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'poll_vote', {
-                'event_category': 'engagement',
-                'event_label': pollId + '_' + selectedValue,
-                'value': parseInt(selectedValue)
-            });
+
+        /**
+         * Get message class based on percentage
+         * 
+         * @param {number} percentage - Score percentage
+         * @returns {string} CSS class
+         */
+        static getMessageClass(percentage) {
+            if (percentage >= 80) return 'success';
+            if (percentage >= 60) return 'good';
+            return 'try-again';
         }
-        
-        // Optional: Submit to backend
-        if (typeof kata_seo_ajax !== 'undefined') {
-            jQuery.post(kata_seo_ajax.url, {
-                action: 'kata_seo_submit_poll',
-                poll_id: pollId,
-                option: selectedValue,
-                nonce: kata_seo_ajax.nonce
-            });
+
+        /**
+         * Get message text based on percentage
+         * 
+         * @param {number} percentage - Score percentage
+         * @returns {string} Message text
+         */
+        static getMessageText(percentage) {
+            if (percentage >= 80) return '🎉 Xuất sắc!';
+            if (percentage >= 60) return '👍 Tốt!';
+            return '�� Hãy thử lại!';
         }
-    };
-    
-    // NOTE: Wheel functions moved to wheel-frontend.js (KataWheel class)
-    // The wheel now uses a modern ES6 class-based approach with proper AJAX integration
-    
-    // ✅ BUGFIX: FAQ Toggle Function
-    window.kataToggleFAQ = function(faqId) {
-        var faqItem = document.getElementById(faqId);
-        if (!faqItem) {
-            console.warn('FAQ item not found:', faqId);
-            return;
-        }
-        
-        var answer = faqItem.querySelector('.kata-faq-answer');
-        var question = faqItem.querySelector('.kata-faq-question');
-        
-        if (!answer) {
-            console.warn('FAQ answer element not found in:', faqId);
-            return;
-        }
-        
-        // Toggle visibility
-        if (answer.style.display === 'none' || !answer.style.display) {
-            answer.style.display = 'block';
-            if (question) {
-                question.classList.add('active');
-                question.setAttribute('aria-expanded', 'true');
-            }
-        } else {
-            answer.style.display = 'none';
-            if (question) {
-                question.classList.remove('active');
-                question.setAttribute('aria-expanded', 'false');
+
+        /**
+         * Scroll to results smoothly
+         * 
+         * @param {HTMLElement} element - Element to scroll to
+         * @returns {void}
+         */
+        static scrollToResults(element) {
+            if (element && element.scrollIntoView) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
-        
-        // Analytics tracking
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'faq_toggle', {
-                'event_category': 'engagement',
-                'event_label': faqId,
-                'value': answer.style.display === 'block' ? 1 : 0
-            });
-        }
-    };
-    
-    // Rating Functions
-    window.kataSetRating = function(ratingId, event) {
-        var container = document.getElementById(ratingId);
-        if (!container) return;
-        
-        var starsContainer = container.querySelector('.kata-rating-stars');
-        var clickedStar = event.target;
-        
-        if (!clickedStar.classList.contains('kata-rating-star')) return;
-        
-        var rating = parseInt(clickedStar.dataset.star);
-        var maxStars = parseInt(starsContainer.dataset.max);
-        
-        // Update visual rating
-        var stars = starsContainer.querySelectorAll('.kata-rating-star');
-        stars.forEach(function(star, index) {
-            if (index < rating) {
-                star.classList.add('filled');
-            } else {
-                star.classList.remove('filled');
-            }
-        });
-        
-        // Update average display
-        var averageDisplay = container.querySelector('.kata-rating-score');
-        if (averageDisplay) {
-            averageDisplay.textContent = rating + '.0';
-        }
-        
-        // Update data attribute
-        starsContainer.dataset.rating = rating;
-        
-        // Analytics
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'rating_set', {
-                'event_category': 'engagement',
-                'event_label': ratingId,
-                'value': rating
-            });
-        }
-        
-        // Optional: Submit to backend
-        if (typeof kata_seo_ajax !== 'undefined') {
-            jQuery.post(kata_seo_ajax.url, {
-                action: 'kata_seo_submit_rating',
-                rating_id: ratingId,
-                rating: rating,
-                nonce: kata_seo_ajax.nonce
-            });
-        }
-    };
-    
-    // Add CSS styles
-    var styles = `
-        <style>
-        .kata-quiz-results {
-            margin-top: 20px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            border-left: 4px solid #0073aa;
-        }
-        .kata-quiz-score {
-            font-size: 24px;
-            font-weight: bold;
-            color: #0073aa;
-            margin-bottom: 15px;
-        }
-        .kata-quiz-message.success { color: #28a745; font-size: 18px; }
-        .kata-quiz-message.good { color: #17a2b8; font-size: 18px; }
-        .kata-quiz-message.try-again { color: #dc3545; font-size: 18px; }
-        .kata-answer-review {
-            margin: 10px 0;
-            padding: 10px;
-            background: white;
-            border-radius: 4px;
-        }
-        .kata-poll-results {
-            margin-top: 20px;
-            padding: 20px;
-            background: #e8f5e8;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .kata-wheel-container {
-            text-align: center;
-        }
-        .kata-wheel-spinner {
-            margin: 20px auto;
-            position: relative;
-        }
-        .kata-wheel-pointer {
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 20px solid #333;
-        }
-        .kata-wheel-spin {
-            padding: 12px 24px;
-            background: #0073aa;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-        .kata-wheel-spin:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        .kata-wheel-result {
-            margin-top: 20px;
-            padding: 20px;
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            border-radius: 8px;
-        }
-        .kata-rating-stars {
-            cursor: pointer;
-            font-size: 24px;
-            margin: 10px 0;
-        }
-        .kata-rating-star {
-            color: #ddd;
-            transition: color 0.2s;
-            margin: 0 2px;
-        }
-        .kata-rating-star.filled {
-            color: #ffc107;
-        }
-        .kata-rating-star:hover {
-            color: #ffb300;
-        }
-        .kata-rating-average {
-            margin-top: 10px;
-            font-size: 18px;
-            color: #666;
-        }
-        </style>
-    `;
-    
-    document.head.insertAdjacentHTML('beforeend', styles);
-    
-    // Poll Functions
-    window.kataSubmitPoll = function(pollId) {
-        var container = document.getElementById(pollId);
-        if (!container) return;
-        
-        var form = container.querySelector('.kata-poll-form');
-        var selected = form.querySelector('input[type="radio"]:checked');
-        
-        if (!selected) {
-            alert('Vui lòng chọn một tùy chọn.');
-            return;
-        }
-        
-        var submitButton = form.querySelector('.kata-poll-submit');
-        submitButton.disabled = true;
-        submitButton.textContent = 'Đang xử lý...';
-        
-        var pollIdFromData = container.getAttribute('data-poll-id');
-        if (!pollIdFromData) {
-            alert('Lỗi: Không tìm thấy ID cuộc bình chọn.');
-            submitButton.disabled = false;
-            submitButton.textContent = 'Bình Chọn';
-            return;
-        }
-        
-        var formData = new FormData();
-        formData.append('action', 'kata_submit_poll_vote');
-        formData.append('poll_id', pollIdFromData);
-        formData.append('option_value', selected.value);
-        
-        fetch(kata_ajax.ajax_url, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Hide form and show results
-                form.style.display = 'none';
-                kataLoadPollResults(pollId, pollIdFromData);
-                
-                // Show success message
-                var message = document.createElement('div');
-                message.className = 'kata-poll-success';
-                message.innerHTML = '<p style="color: green; font-weight: bold;">' + data.data.message + '</p>';
-                container.insertBefore(message, container.querySelector('.kata-poll-results'));
-            } else {
-                alert('Lỗi: ' + data.data);
-                submitButton.disabled = false;
-                submitButton.textContent = 'Bình Chọn';
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Có lỗi xảy ra khi gửi phiếu bình chọn.');
-            submitButton.disabled = false;
-            submitButton.textContent = 'Bình Chọn';
-        });
-    };
-    
-    window.kataLoadPollResults = function(pollId, pollIdFromData) {
-        var container = document.getElementById(pollId);
-        if (!container) return;
-        
-        var resultsDiv = container.querySelector('.kata-poll-results');
-        if (!resultsDiv) return;
-        
-        var formData = new FormData();
-        formData.append('action', 'kata_get_poll_results');
-        formData.append('poll_id', pollIdFromData);
-        
-        fetch(kata_ajax.ajax_url, {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                var results = data.data.results;
-                var totalVotes = data.data.total_votes;
-                
-                var html = '<h4>Kết Quả Bình Chọn</h4>';
-                results.forEach(function(result) {
-                    html += '<div class="kata-poll-result-item">';
-                    html += '<span class="kata-poll-option-text">' + result.option + '</span>';
-                    html += '<span class="kata-poll-votes">(' + result.votes + ' phiếu)</span>';
-                    html += '<div class="kata-poll-progress-bar">';
-                    html += '<div class="kata-poll-progress" style="width: ' + result.percentage + '%"></div>';
-                    html += '</div>';
-                    html += '<span class="kata-poll-percentage">' + result.percentage + '%</span>';
-                    html += '</div>';
+
+        /**
+         * Track quiz completion analytics
+         * 
+         * @param {string} quizId - Quiz ID
+         * @param {number} percentage - Score percentage
+         * @returns {void}
+         */
+        static trackAnalytics(quizId, percentage) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'quiz_complete', {
+                    event_category: 'engagement',
+                    event_label: quizId,
+                    value: percentage
                 });
-                html += '<p class="kata-poll-total">Tổng số phiếu: ' + totalVotes + '</p>';
-                
-                resultsDiv.innerHTML = html;
-                resultsDiv.style.display = 'block';
-            } else {
-                console.error('Error loading poll results:', data.data);
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    };
-    
+        }
+    }
+
+    /**
+     * Poll Controller Class
+     * Manages poll voting and results display
+     * 
+     * @class KataPoll
+     */
+    class KataPoll {
+        /**
+         * Submit poll vote
+         * 
+         * @param {string} pollId - Poll container ID
+         * @returns {Promise<void>}
+         */
+        static async submit(pollId) {
+            const container = document.getElementById(pollId);
+            if (!container) {
+                console.warn('Poll container not found:', pollId);
+                return;
+            }
+
+            const form = container.querySelector('.kata-poll-form');
+            const selected = form?.querySelector('input[type="radio"]:checked');
+            const submitBtn = container.querySelector('.kata-poll-submit');
+
+            if (!selected) {
+                alert('Vui lòng chọn một tùy chọn!');
+                return;
+            }
+
+            const pollIdFromData = container.getAttribute('data-poll-id');
+            if (!pollIdFromData) {
+                alert('Lỗi: Không tìm thấy ID cuộc bình chọn.');
+                return;
+            }
+
+            try {
+                this.setSubmitButtonLoading(submitBtn, true);
+                
+                const response = await this.submitVote(pollIdFromData, selected.value);
+
+                if (response.success) {
+                    this.disableForm(form);
+                    this.showSuccessMessage(container, response.data.message);
+                    await this.loadResults(pollId, pollIdFromData);
+                    this.trackAnalytics(pollId, selected.value);
+                } else {
+                    throw new Error(response.data || 'Submission failed');
+                }
+            } catch (error) {
+                console.error('Poll submission error:', error);
+                alert('Lỗi: ' + error.message);
+                this.setSubmitButtonLoading(submitBtn, false);
+            }
+        }
+
+        /**
+         * Submit vote via AJAX
+         * 
+         * @param {string} pollId - Poll ID
+         * @param {string} optionValue - Selected option value
+         * @returns {Promise<Object>} Response data
+         */
+        static async submitVote(pollId, optionValue) {
+            const formData = new FormData();
+            formData.append('action', 'kata_submit_poll_vote');
+            formData.append('poll_id', pollId);
+            formData.append('option_value', optionValue);
+
+            const response = await fetch(kata_ajax?.ajax_url || ajaxurl, {
+                method: 'POST',
+                body: formData
+            });
+
+            return response.json();
+        }
+
+        /**
+         * Load and display poll results
+         * 
+         * @param {string} pollId - Poll container ID
+         * @param {string} pollIdFromData - Poll data ID
+         * @returns {Promise<void>}
+         */
+        static async loadResults(pollId, pollIdFromData) {
+            const container = document.getElementById(pollId);
+            const resultsDiv = container?.querySelector('.kata-poll-results');
+
+            if (!resultsDiv) return;
+
+            try {
+                const data = await this.fetchResults(pollIdFromData);
+
+                if (data.success) {
+                    this.renderResults(resultsDiv, data.data.results, data.data.total_votes);
+                }
+            } catch (error) {
+                console.error('Error loading poll results:', error);
+            }
+        }
+
+        /**
+         * Fetch poll results via AJAX
+         * 
+         * @param {string} pollId - Poll ID
+         * @returns {Promise<Object>} Results data
+         */
+        static async fetchResults(pollId) {
+            const formData = new FormData();
+            formData.append('action', 'kata_get_poll_results');
+            formData.append('poll_id', pollId);
+
+            const response = await fetch(kata_ajax?.ajax_url || ajaxurl, {
+                method: 'POST',
+                body: formData
+            });
+
+            return response.json();
+        }
+
+        /**
+         * Render poll results
+         * 
+         * @param {HTMLElement} container - Results container
+         * @param {Array} results - Results data
+         * @param {number} totalVotes - Total votes count
+         * @returns {void}
+         */
+        static renderResults(container, results, totalVotes) {
+            const resultItems = results.map(result => `
+                <div class="kata-poll-result-item">
+                    <span class="kata-poll-option-text">${result.option}</span>
+                    <span class="kata-poll-votes">(${result.votes} phiếu)</span>
+                    <div class="kata-poll-progress-bar" role="progressbar" 
+                         aria-valuenow="${result.percentage}" aria-valuemin="0" aria-valuemax="100">
+                        <div class="kata-poll-progress" style="width: ${result.percentage}%"></div>
+                    </div>
+                    <span class="kata-poll-percentage">${result.percentage}%</span>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <h4>Kết Quả Bình Chọn</h4>
+                ${resultItems}
+                <p class="kata-poll-total">Tổng số phiếu: ${totalVotes}</p>
+            `;
+            container.style.display = 'block';
+            container.setAttribute('aria-hidden', 'false');
+        }
+
+        /**
+         * Disable poll form after voting
+         * 
+         * @param {HTMLElement} form - Form element
+         * @returns {void}
+         */
+        static disableForm(form) {
+            if (!form) return;
+
+            form.querySelectorAll('input').forEach(input => {
+                input.disabled = true;
+            });
+            form.style.display = 'none';
+        }
+
+        /**
+         * Set submit button loading state
+         * 
+         * @param {HTMLElement} button - Submit button
+         * @param {boolean} loading - Loading state
+         * @returns {void}
+         */
+        static setSubmitButtonLoading(button, loading) {
+            if (!button) return;
+
+            button.disabled = loading;
+            button.textContent = loading ? 'Đang xử lý...' : 'Bình Chọn';
+        }
+
+        /**
+         * Show success message
+         * 
+         * @param {HTMLElement} container - Container element
+         * @param {string} message - Success message
+         * @returns {void}
+         */
+        static showSuccessMessage(container, message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'kata-poll-success';
+            messageDiv.innerHTML = `<p style="color: green; font-weight: bold;">${message}</p>`;
+            messageDiv.setAttribute('role', 'status');
+            messageDiv.setAttribute('aria-live', 'polite');
+
+            const results = container.querySelector('.kata-poll-results');
+            if (results) {
+                container.insertBefore(messageDiv, results);
+            }
+        }
+
+        /**
+         * Track poll vote analytics
+         * 
+         * @param {string} pollId - Poll ID
+         * @param {string} selectedValue - Selected option value
+         * @returns {void}
+         */
+        static trackAnalytics(pollId, selectedValue) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'poll_vote', {
+                    event_category: 'engagement',
+                    event_label: `${pollId}_${selectedValue}`,
+                    value: parseInt(selectedValue) || 0
+                });
+            }
+        }
+    }
+
+    /**
+     * FAQ Controller Class
+     * Manages FAQ accordion interactions
+     * 
+     * @class KataFAQ
+     */
+    class KataFAQ {
+        /**
+         * Toggle FAQ item visibility
+         * 
+         * @param {string} faqId - FAQ item ID
+         * @returns {void}
+         */
+        static toggle(faqId) {
+            const faqItem = document.getElementById(faqId);
+            if (!faqItem) {
+                console.warn('FAQ item not found:', faqId);
+                return;
+            }
+
+            const answer = faqItem.querySelector('.kata-faq-answer');
+            const question = faqItem.querySelector('.kata-faq-question');
+
+            if (!answer) {
+                console.warn('FAQ answer element not found in:', faqId);
+                return;
+            }
+
+            const isOpen = answer.style.display === 'block';
+            
+            // Toggle visibility
+            answer.style.display = isOpen ? 'none' : 'block';
+
+            // Update question state
+            if (question) {
+                question.classList.toggle('active', !isOpen);
+                question.setAttribute('aria-expanded', !isOpen);
+            }
+
+            // Update answer accessibility
+            answer.setAttribute('aria-hidden', isOpen);
+
+            // Track analytics
+            this.trackAnalytics(faqId, !isOpen);
+        }
+
+        /**
+         * Track FAQ toggle analytics
+         * 
+         * @param {string} faqId - FAQ ID
+         * @param {boolean} opened - Whether FAQ was opened
+         * @returns {void}
+         */
+        static trackAnalytics(faqId, opened) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'faq_toggle', {
+                    event_category: 'engagement',
+                    event_label: faqId,
+                    value: opened ? 1 : 0
+                });
+            }
+        }
+    }
+
+    /**
+     * Rating Controller Class
+     * Manages star rating interactions
+     * 
+     * @class KataRating
+     */
+    class KataRating {
+        /**
+         * Set rating value
+         * 
+         * @param {string} ratingId - Rating container ID
+         * @param {Event} event - Click event
+         * @returns {Promise<void>}
+         */
+        static async set(ratingId, event) {
+            const container = document.getElementById(ratingId);
+            if (!container) {
+                console.warn('Rating container not found:', ratingId);
+                return;
+            }
+
+            const clickedStar = event.target;
+            if (!clickedStar.classList.contains('kata-rating-star')) {
+                return;
+            }
+
+            const rating = parseInt(clickedStar.dataset.star);
+            const starsContainer = container.querySelector('.kata-rating-stars');
+
+            if (!starsContainer) return;
+
+            // Update visual rating
+            this.updateStars(starsContainer, rating);
+            
+            // Update average display
+            this.updateAverageDisplay(container, rating);
+            
+            // Update data attribute
+            starsContainer.dataset.rating = rating;
+
+            // Track analytics
+            this.trackAnalytics(ratingId, rating);
+
+            // Submit to backend
+            await this.submitRating(ratingId, rating);
+        }
+
+        /**
+         * Update star visual states
+         * 
+         * @param {HTMLElement} container - Stars container
+         * @param {number} rating - Rating value
+         * @returns {void}
+         */
+        static updateStars(container, rating) {
+            const stars = container.querySelectorAll('.kata-rating-star');
+            
+            stars.forEach((star, index) => {
+                star.classList.toggle('filled', index < rating);
+                star.setAttribute('aria-checked', index < rating);
+            });
+        }
+
+        /**
+         * Update average rating display
+         * 
+         * @param {HTMLElement} container - Rating container
+         * @param {number} rating - Rating value
+         * @returns {void}
+         */
+        static updateAverageDisplay(container, rating) {
+            const averageDisplay = container.querySelector('.kata-rating-score');
+            
+            if (averageDisplay) {
+                averageDisplay.textContent = `${rating}.0`;
+                averageDisplay.setAttribute('aria-live', 'polite');
+            }
+        }
+
+        /**
+         * Submit rating to backend
+         * 
+         * @param {string} ratingId - Rating ID
+         * @param {number} rating - Rating value
+         * @returns {Promise<void>}
+         */
+        static async submitRating(ratingId, rating) {
+            if (typeof kata_seo_ajax === 'undefined') return;
+
+            try {
+                const formData = new FormData();
+                formData.append('action', 'kata_seo_submit_rating');
+                formData.append('rating_id', ratingId);
+                formData.append('rating', rating);
+                formData.append('nonce', kata_seo_ajax.nonce);
+
+                await fetch(kata_seo_ajax.url, {
+                    method: 'POST',
+                    body: formData
+                });
+            } catch (error) {
+                console.error('Error submitting rating:', error);
+            }
+        }
+
+        /**
+         * Track rating analytics
+         * 
+         * @param {string} ratingId - Rating ID
+         * @param {number} rating - Rating value
+         * @returns {void}
+         */
+        static trackAnalytics(ratingId, rating) {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'rating_set', {
+                    event_category: 'engagement',
+                    event_label: ratingId,
+                    value: rating
+                });
+            }
+        }
+    }
+
+    /**
+     * Styles Manager Class
+     * Injects frontend styles
+     * 
+     * @class KataStyles
+     */
+    class KataStyles {
+        /**
+         * Inject frontend styles
+         * 
+         * @returns {void}
+         */
+        static inject() {
+            if (document.getElementById('kata-frontend-styles')) {
+                return; // Already injected
+            }
+
+            const styles = `
+                <style id="kata-frontend-styles">
+                .kata-quiz-results {
+                    margin-top: 20px;
+                    padding: 20px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    border-left: 4px solid #0073aa;
+                }
+                .kata-quiz-score {
+                    font-size: 24px;
+                    font-weight: bold;
+                    color: #0073aa;
+                    margin-bottom: 15px;
+                }
+                .kata-quiz-message.success { color: #28a745; font-size: 18px; }
+                .kata-quiz-message.good { color: #17a2b8; font-size: 18px; }
+                .kata-quiz-message.try-again { color: #dc3545; font-size: 18px; }
+                .kata-answer-review {
+                    margin: 10px 0;
+                    padding: 10px;
+                    background: white;
+                    border-radius: 4px;
+                }
+                .kata-poll-results {
+                    margin-top: 20px;
+                    padding: 20px;
+                    background: #e8f5e8;
+                    border-radius: 8px;
+                }
+                .kata-poll-result-item {
+                    margin: 10px 0;
+                }
+                .kata-poll-progress-bar {
+                    width: 100%;
+                    height: 20px;
+                    background: #e0e0e0;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    margin: 5px 0;
+                }
+                .kata-poll-progress {
+                    height: 100%;
+                    background: linear-gradient(90deg, #0073aa, #00a0d2);
+                    transition: width 0.5s ease;
+                }
+                .kata-rating-stars {
+                    cursor: pointer;
+                    font-size: 24px;
+                    margin: 10px 0;
+                }
+                .kata-rating-star {
+                    color: #ddd;
+                    transition: color 0.2s;
+                    margin: 0 2px;
+                    display: inline-block;
+                }
+                .kata-rating-star.filled {
+                    color: #ffc107;
+                }
+                .kata-rating-star:hover {
+                    color: #ffb300;
+                    transform: scale(1.1);
+                }
+                .kata-rating-average {
+                    margin-top: 10px;
+                    font-size: 18px;
+                    color: #666;
+                }
+                </style>
+            `;
+
+            document.head.insertAdjacentHTML('beforeend', styles);
+        }
+    }
+
+    // Initialize styles
+    KataStyles.inject();
+
+    // Export global functions for backward compatibility
+    window.kataSubmitQuiz = (quizId) => KataQuiz.submit(quizId);
+    window.kataSubmitPoll = (pollId) => KataPoll.submit(pollId);
+    window.kataLoadPollResults = (pollId, pollIdFromData) => KataPoll.loadResults(pollId, pollIdFromData);
+    window.kataToggleFAQ = (faqId) => KataFAQ.toggle(faqId);
+    window.kataSetRating = (ratingId, event) => KataRating.set(ratingId, event);
+
+    // Export classes for advanced usage
+    window.KataQuiz = KataQuiz;
+    window.KataPoll = KataPoll;
+    window.KataFAQ = KataFAQ;
+    window.KataRating = KataRating;
+
+    console.log('✅ KATA SEO Frontend initialized (ES6 version)');
+
 })();

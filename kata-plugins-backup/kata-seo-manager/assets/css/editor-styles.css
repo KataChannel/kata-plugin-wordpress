@@ -1,30 +1,36 @@
-/* KATA SEO Manager - TinyMCE Editor Styles */
+/**
+ * KATA SEO Manager - TinyMCE Editor Styles
+ * Uses CSS variables from kata-seo-variables.css
+ * 
+ * @package KATA_SEO_Manager
+ * @since 2.1.4
+ */
 
 /* Main dropdown button */
 .mce-btn .mce-ico-dashicon.dashicons-chart-line {
     font-family: 'dashicons';
-    font-size: 16px;
-    color: #0073aa;
+    font-size: var(--kata-font-lg);
+    color: var(--kata-primary);
 }
 
 /* Menu items styling */
 .mce-menu .mce-menu-item .mce-text {
-    font-size: 13px;
-    padding: 8px 12px;
+    font-size: var(--kata-font-sm);
+    padding: var(--kata-space-xs) var(--kata-space-base);
 }
 
 /* Notification styles */
 .kata-notification {
     position: fixed;
     top: 32px;
-    right: 20px;
-    padding: 12px 24px;
-    border-radius: 6px;
-    color: white;
-    font-weight: 500;
-    z-index: 999999;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    animation: slideInRight 0.3s ease-out;
+    right: var(--kata-space-lg);
+    padding: var(--kata-space-base) var(--kata-space-2xl);
+    border-radius: var(--kata-radius-sm);
+    color: var(--kata-white);
+    font-weight: var(--kata-font-medium);
+    z-index: var(--kata-z-notification);
+    box-shadow: var(--kata-shadow-lg);
+    animation: slideInRight var(--kata-transition-base) ease-out;
 }
 
 .kata-notification-success {
@@ -32,12 +38,12 @@
 }
 
 .kata-notification-error {
-    background: linear-gradient(135deg, #dc3545, #e74c3c);
+    background: linear-gradient(135deg, var(--kata-error-text), #e74c3c);
 }
 
 .kata-notification-warning {
     background: linear-gradient(135deg, #ffc107, #fd7e14);
-    color: #212529;
+    color: var(--kata-gray-900);
 }
 
 @keyframes slideInRight {
@@ -53,11 +59,11 @@
 
 /* Preview box styles for TinyMCE */
 .kata-seo-preview {
-    border: 2px dashed #0073aa;
-    border-radius: 8px;
-    padding: 16px;
-    margin: 16px 0;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed var(--kata-border-focus);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
+    background: linear-gradient(135deg, var(--kata-gray-50) 0%, var(--kata-gray-100) 100%);
     position: relative;
 }
 
@@ -65,82 +71,82 @@
     content: '📊 KATA SEO Manager';
     position: absolute;
     top: -12px;
-    left: 16px;
-    background: #0073aa;
-    color: white;
-    padding: 4px 12px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: 600;
+    left: var(--kata-space-lg);
+    background: var(--kata-primary);
+    color: var(--kata-white);
+    padding: var(--kata-space-xs) var(--kata-space-base);
+    border-radius: var(--kata-radius-sm);
+    font-size: var(--kata-font-xs);
+    font-weight: var(--kata-font-semibold);
 }
 
 .kata-seo-preview h4 {
-    color: #0073aa;
-    margin: 0 0 8px 0;
-    font-size: 16px;
-    font-weight: 600;
+    color: var(--kata-primary);
+    margin: 0 0 var(--kata-space-xs) 0;
+    font-size: var(--kata-font-lg);
+    font-weight: var(--kata-font-semibold);
 }
 
 .kata-seo-preview p {
-    margin: 4px 0;
-    color: #495057;
-    font-size: 14px;
+    margin: var(--kata-space-xs) 0;
+    color: var(--kata-text-primary);
+    font-size: var(--kata-font-md);
     line-height: 1.4;
 }
 
 .kata-seo-preview small {
     display: block;
-    margin-top: 8px;
-    color: #28a745;
-    font-weight: 500;
-    font-size: 12px;
+    margin-top: var(--kata-space-xs);
+    color: var(--kata-success-text);
+    font-weight: var(--kata-font-medium);
+    font-size: var(--kata-font-xs);
 }
 
 /* FAQ specific preview */
 .faq-preview {
-    background: white;
-    border-radius: 6px;
-    padding: 12px;
-    margin: 8px 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    background: var(--kata-white);
+    border-radius: var(--kata-radius-sm);
+    padding: var(--kata-space-base);
+    margin: var(--kata-space-xs) 0;
+    box-shadow: var(--kata-shadow-base);
 }
 
 .faq-preview p {
-    margin: 6px 0;
-    font-size: 13px;
+    margin: var(--kata-space-xs) 0;
+    font-size: var(--kata-font-sm);
 }
 
 .faq-preview strong {
-    color: #0073aa;
+    color: var(--kata-primary);
 }
 
 .faq-preview hr {
     border: none;
-    border-top: 1px solid #dee2e6;
-    margin: 8px 0;
+    border-top: 1px solid var(--kata-border-base);
+    margin: var(--kata-space-xs) 0;
 }
 
 /* Dialog styles */
 .mce-window .mce-container-body {
-    background: #f8f9fa;
+    background: var(--kata-bg-surface);
 }
 
 .mce-window .mce-title {
-    color: #0073aa;
-    font-weight: 600;
+    color: var(--kata-primary);
+    font-weight: var(--kata-font-semibold);
 }
 
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .kata-notification {
-        right: 10px;
-        left: 10px;
+        right: var(--kata-space-sm);
+        left: var(--kata-space-sm);
         top: 46px;
     }
     
     .kata-seo-preview {
-        padding: 12px;
-        margin: 12px 0;
+        padding: var(--kata-space-base);
+        margin: var(--kata-space-base) 0;
     }
 }
 
@@ -148,19 +154,19 @@
 .wp-editor-container .kata-seo-preview {
     border-style: solid;
     border-width: 1px;
-    border-color: #ddd;
+    border-color: var(--kata-border-base);
 }
 
 .wp-editor-container .kata-seo-preview:hover {
-    border-color: #0073aa;
-    box-shadow: 0 0 8px rgba(0,115,170,0.1);
+    border-color: var(--kata-primary);
+    box-shadow: 0 0 var(--kata-space-xs) rgba(0,115,170,0.1);
 }
 
 /* Shortcode highlighting in editor */
 .mce-content-body [data-kata-shortcode] {
-    background: rgba(0,115,170,0.1);
-    border: 1px dashed #0073aa;
-    border-radius: 4px;
+    background: var(--kata-primary-lightest);
+    border: 1px dashed var(--kata-border-focus);
+    border-radius: var(--kata-radius-sm);
     padding: 2px 4px;
     margin: 0 2px;
 }
@@ -171,11 +177,11 @@
 
 /* Button states */
 .mce-btn.mce-active .mce-ico-dashicon {
-    color: #005177;
+    color: var(--kata-primary-dark);
 }
 
 .mce-btn:hover .mce-ico-dashicon {
-    color: #005177;
+    color: var(--kata-primary-dark);
 }
 
 /* Menu dropdown styling */
@@ -184,7 +190,7 @@
 }
 
 .mce-menu-item-normal.mce-active {
-    background: #e3f2fd;
+    background: var(--kata-primary-lightest);
 }
 
 /* Loading states */
@@ -199,9 +205,9 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 20px;
-    height: 20px;
-    border: 2px solid #0073aa;
+    width: var(--kata-space-lg);
+    height: var(--kata-space-lg);
+    border: 2px solid var(--kata-primary);
     border-radius: 50%;
     border-top-color: transparent;
     animation: spin 1s linear infinite;
@@ -217,12 +223,12 @@
 /* Success indicators */
 .kata-success-indicator {
     display: inline-block;
-    width: 16px;
-    height: 16px;
-    background: #28a745;
+    width: var(--kata-space-lg);
+    height: var(--kata-space-lg);
+    background: var(--kata-success-text);
     border-radius: 50%;
     position: relative;
-    margin-right: 8px;
+    margin-right: var(--kata-space-xs);
 }
 
 .kata-success-indicator::after {
@@ -231,28 +237,28 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    color: white;
-    font-size: 10px;
+    color: var(--kata-white);
+    font-size: var(--kata-font-xs);
     font-weight: bold;
 }
 
 /* Schema type badges */
 .kata-schema-badge {
     display: inline-block;
-    background: #0073aa;
-    color: white;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 11px;
-    font-weight: 500;
-    margin: 2px 4px 2px 0;
+    background: var(--kata-primary);
+    color: var(--kata-white);
+    padding: 2px var(--kata-space-xs);
+    border-radius: var(--kata-radius-lg);
+    font-size: var(--kata-font-xs);
+    font-weight: var(--kata-font-medium);
+    margin: 2px var(--kata-space-xs) 2px 0;
 }
 
-.kata-schema-badge.faq { background: #28a745; }
-.kata-schema-badge.quiz { background: #ffc107; color: #212529; }
-.kata-schema-badge.poll { background: #6f42c1; }
+.kata-schema-badge.faq { background: var(--kata-success-text); }
+.kata-schema-badge.quiz { background: var(--kata-quiz-primary); color: var(--kata-gray-900); }
+.kata-schema-badge.poll { background: var(--kata-poll-primary); }
 .kata-schema-badge.form { background: #fd7e14; }
-.kata-schema-badge.wheel { background: #e83e8c; }
+.kata-schema-badge.wheel { background: var(--kata-wheel-primary); }
 .kata-schema-badge.rating { background: #20c997; }
-.kata-schema-badge.product { background: #dc3545; }
+.kata-schema-badge.product { background: var(--kata-error-text); }
 .kata-schema-badge.recipe { background: #6610f2; }

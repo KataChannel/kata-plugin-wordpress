@@ -1,24 +1,21 @@
 /* Schema Types Page Modern Design - KATA SEO Manager */
-
-/* Root Variables */
-:root {
-    --kata-primary: #667eea;
-    --kata-primary-dark: #5a67d8;
-    --kata-secondary: #764ba2;
-    --kata-success: #10b981;
-    --kata-warning: #f59e0b;
-    --kata-error: #ef4444;
-    --kata-surface: #ffffff;
-    --kata-surface-light: #f8fafc;
-    --kata-border: #e2e8f0;
-    --kata-text: #1e293b;
-    --kata-text-muted: #64748b;
-    --kata-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --kata-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --kata-radius: 8px;
-    --kata-radius-lg: 12px;
-    --kata-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/* 
+ * REFACTORED: Now uses centralized kata-seo-variables.css
+ * No duplicate :root declarations
+ * 
+ * Variable Mapping:
+ * - --kata-primary: Now uses --kata-secondary (#667eea) from main system
+ * - --kata-surface: Maps to --kata-white
+ * - --kata-surface-light: Maps to --kata-gray-50
+ * - --kata-border: Maps to --kata-border-color
+ * - --kata-text: Maps to --kata-text-primary
+ * - --kata-text-muted: Maps to --kata-text-muted
+ * - --kata-shadow: Maps to --kata-shadow-sm
+ * - --kata-shadow-lg: Maps to --kata-shadow-lg
+ * - --kata-radius: Maps to --kata-radius-md
+ * - --kata-radius-lg: Maps to --kata-radius-lg
+ * - --kata-transition: Maps to --kata-transition-base
+ */
 
 /* Layout */
 .kata-schema-types-wrapper {
@@ -27,12 +24,12 @@
 
 /* Page Header */
 .kata-page-header {
-    background: var(--kata-surface);
-    border: 1px solid var(--kata-border);
+    background: var(--kata-white);
+    border: 1px solid var(--kata-border-color);
     border-radius: var(--kata-radius-lg);
     padding: 30px;
     margin-bottom: 30px;
-    box-shadow: var(--kata-shadow);
+    box-shadow: var(--kata-shadow-sm);
 }
 
 .kata-page-title {
@@ -45,7 +42,7 @@
 .kata-page-title h1 {
     font-size: 32px;
     font-weight: 700;
-    color: var(--kata-text);
+    color: var(--kata-text-primary);
     margin: 0;
     line-height: 1.2;
 }
@@ -53,8 +50,8 @@
 .kata-page-title-icon {
     width: 40px;
     height: 40px;
-    background: linear-gradient(135deg, var(--kata-primary), var(--kata-secondary));
-    border-radius: var(--kata-radius);
+    background: linear-gradient(135deg, var(--kata-secondary), var(--kata-accent));
+    border-radius: var(--kata-radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -80,17 +77,17 @@
     gap: 8px;
     padding: 12px 20px;
     border: none;
-    border-radius: var(--kata-radius);
+    border-radius: var(--kata-radius-md);
     font-size: 14px;
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
-    transition: var(--kata-transition);
+    transition: var(--kata-transition-base);
     white-space: nowrap;
 }
 
 .kata-btn-primary {
-    background: linear-gradient(135deg, var(--kata-primary), var(--kata-secondary));
+    background: linear-gradient(135deg, var(--kata-secondary), var(--kata-accent));
     color: white;
 }
 
@@ -101,12 +98,12 @@
 
 .kata-btn-outline {
     background: transparent;
-    color: var(--kata-primary);
-    border: 2px solid var(--kata-primary);
+    color: var(--kata-secondary);
+    border: 2px solid var(--kata-secondary);
 }
 
 .kata-btn-outline:hover {
-    background: var(--kata-primary);
+    background: var(--kata-secondary);
     color: white;
 }
 
@@ -129,10 +126,10 @@
 .kata-filter-tabs {
     display: flex;
     gap: 5px;
-    background: var(--kata-surface-light);
+    background: var(--kata-gray-50);
     padding: 4px;
-    border-radius: var(--kata-radius);
-    border: 1px solid var(--kata-border);
+    border-radius: var(--kata-radius-md);
+    border: 1px solid var(--kata-border-color);
 }
 
 .kata-filter-tab {
@@ -144,15 +141,15 @@
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    transition: var(--kata-transition);
+    transition: var(--kata-transition-base);
     white-space: nowrap;
 }
 
 .kata-filter-tab.active,
 .kata-filter-tab:hover {
-    background: var(--kata-surface);
-    color: var(--kata-primary);
-    box-shadow: var(--kata-shadow);
+    background: var(--kata-white);
+    color: var(--kata-secondary);
+    box-shadow: var(--kata-shadow-sm);
 }
 
 .kata-search-box {
@@ -172,16 +169,16 @@
 .kata-search-box input {
     width: 100%;
     padding: 12px 12px 12px 40px;
-    border: 2px solid var(--kata-border);
-    border-radius: var(--kata-radius);
+    border: 2px solid var(--kata-border-color);
+    border-radius: var(--kata-radius-md);
     font-size: 14px;
-    background: var(--kata-surface);
-    transition: var(--kata-transition);
+    background: var(--kata-white);
+    transition: var(--kata-transition-base);
 }
 
 .kata-search-box input:focus {
     outline: none;
-    border-color: var(--kata-primary);
+    border-color: var(--kata-secondary);
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -194,23 +191,23 @@
 
 /* Schema Type Cards */
 .kata-schema-type-card {
-    background: var(--kata-surface);
-    border: 1px solid var(--kata-border);
+    background: var(--kata-white);
+    border: 1px solid var(--kata-border-color);
     border-radius: var(--kata-radius-lg);
     overflow: hidden;
-    transition: var(--kata-transition);
-    box-shadow: var(--kata-shadow);
+    transition: var(--kata-transition-base);
+    box-shadow: var(--kata-shadow-sm);
 }
 
 .kata-schema-type-card:hover {
     transform: translateY(-2px);
     box-shadow: var(--kata-shadow-lg);
-    border-color: var(--kata-primary);
+    border-color: var(--kata-secondary);
 }
 
 .kata-card-header {
     padding: 20px 24px;
-    border-bottom: 1px solid var(--kata-border);
+    border-bottom: 1px solid var(--kata-border-color);
     display: flex;
     align-items: flex-start;
     gap: 16px;
@@ -219,8 +216,8 @@
 .kata-schema-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, var(--kata-primary), var(--kata-secondary));
-    border-radius: var(--kata-radius);
+    background: linear-gradient(135deg, var(--kata-secondary), var(--kata-accent));
+    border-radius: var(--kata-radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -236,7 +233,7 @@
 .kata-schema-title {
     font-size: 18px;
     font-weight: 600;
-    color: var(--kata-text);
+    color: var(--kata-text-primary);
     margin: 0 0 8px 0;
 }
 
@@ -264,7 +261,7 @@
 
 .kata-badge-category {
     background: rgba(102, 126, 234, 0.1);
-    color: var(--kata-primary);
+    color: var(--kata-secondary);
 }
 
 .kata-card-actions {
@@ -276,20 +273,20 @@
 .kata-action-btn {
     width: 36px;
     height: 36px;
-    border: 2px solid var(--kata-border);
-    background: var(--kata-surface);
-    border-radius: var(--kata-radius);
+    border: 2px solid var(--kata-border-color);
+    background: var(--kata-white);
+    border-radius: var(--kata-radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: var(--kata-transition);
+    transition: var(--kata-transition-base);
     color: var(--kata-text-muted);
 }
 
 .kata-action-btn:hover {
-    border-color: var(--kata-primary);
-    color: var(--kata-primary);
+    border-color: var(--kata-secondary);
+    color: var(--kata-secondary);
     background: rgba(102, 126, 234, 0.1);
 }
 
@@ -307,16 +304,16 @@
 .kata-stat-item {
     text-align: center;
     padding: 16px 12px;
-    background: var(--kata-surface-light);
-    border-radius: var(--kata-radius);
-    border: 1px solid var(--kata-border);
+    background: var(--kata-gray-50);
+    border-radius: var(--kata-radius-md);
+    border: 1px solid var(--kata-border-color);
 }
 
 .kata-stat-value {
     display: block;
     font-size: 24px;
     font-weight: 700;
-    color: var(--kata-primary);
+    color: var(--kata-secondary);
     margin-bottom: 4px;
 }
 
@@ -335,7 +332,7 @@
 .kata-chart-bar {
     width: 100%;
     height: 6px;
-    background: var(--kata-border);
+    background: var(--kata-border-color);
     border-radius: 3px;
     overflow: hidden;
     margin-bottom: 8px;
@@ -343,7 +340,7 @@
 
 .kata-chart-fill {
     height: 100%;
-    background: linear-gradient(90deg, var(--kata-primary), var(--kata-secondary));
+    background: linear-gradient(90deg, var(--kata-secondary), var(--kata-accent));
     border-radius: 3px;
     transition: width 1s ease-out;
 }
@@ -382,7 +379,7 @@
 .kata-empty-state h3 {
     font-size: 24px;
     font-weight: 600;
-    color: var(--kata-text);
+    color: var(--kata-text-primary);
     margin-bottom: 10px;
 }
 

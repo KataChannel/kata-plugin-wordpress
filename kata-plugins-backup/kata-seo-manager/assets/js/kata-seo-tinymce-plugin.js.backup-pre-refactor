@@ -868,17 +868,14 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
         // RESPONSIVE HELPER FUNCTIONS
         // ========================================
         
-        /**
-         * Detect device type and screen size
-         * @returns {Object} Device information with width, height, type flags, and orientation
-         */
-        const getDeviceInfo = () => {
+        // Detect device type and screen size
+        function getDeviceInfo() {
             const width = window.innerWidth || document.documentElement.clientWidth || 800;
             const height = window.innerHeight || document.documentElement.clientHeight || 600;
             
             return {
-                width,
-                height,
+                width: width,
+                height: height,
                 isMobile: width < 768,
                 isTablet: width >= 768 && width < 1024,
                 isDesktop: width >= 1024,
@@ -886,16 +883,11 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                 isLargeScreen: width >= 1200,
                 orientation: width > height ? 'landscape' : 'portrait'
             };
-        };
+        }
         
-        /**
-         * Calculate responsive modal size with breakpoints
-         * @param {number} baseWidth - Desired modal width for desktop
-         * @param {number} baseHeight - Desired modal height for desktop
-         * @param {Object} options - Optional configuration {margin, minWidth, minHeight}
-         * @returns {Object} Calculated dimensions and responsive flags
-         */
-        const getModalSize = (baseWidth, baseHeight, options = {}) => {
+        // Calculate responsive modal size with breakpoints
+        function getModalSize(baseWidth, baseHeight, options) {
+            options = options || {};
             const device = getDeviceInfo();
             const margin = options.margin || (device.isMobile ? 20 : 40);
             const minWidth = options.minWidth || (device.isMobile ? 300 : 400);
@@ -936,34 +928,28 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             height = Math.min(height, device.height - 10);
             
             return {
-                width,
-                height,
-                device,
-                margin,
+                width: width,
+                height: height,
+                device: device,
+                margin: margin,
                 // Additional responsive flags
                 useCompactLayout: device.isMobile,
                 useTwoColumn: device.isDesktop && !device.isSmallScreen,
                 fontSize: device.isMobile ? '13px' : '14px',
                 padding: device.isMobile ? '12px' : '20px'
             };
-        };
+        }
         
-        /**
-         * Get responsive grid columns based on device width
-         * @returns {number} Number of columns (1 for mobile, 2 for tablet/small desktop, 3 for large desktop)
-         */
-        const getGridColumns = () => {
+        // Get responsive grid columns
+        function getGridColumns() {
             const device = getDeviceInfo();
             if (device.isMobile) return 1;
             if (device.isTablet) return 2;
             return device.isSmallScreen ? 2 : 3;
-        };
+        }
         
-        /**
-         * Get responsive font sizes for different heading levels
-         * @returns {Object} Font size map for h1-h4, body, and small text
-         */
-        const getFontSizes = () => {
+        // Get responsive font sizes
+        function getFontSizes() {
             const device = getDeviceInfo();
             return {
                 h1: device.isMobile ? '20px' : '24px',
@@ -973,14 +959,10 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                 body: device.isMobile ? '13px' : '14px',
                 small: device.isMobile ? '11px' : '12px'
             };
-        };
+        }
 
-        /**
-         * Create modal selection for schema templates - RESPONSIVE
-         * Opens a TinyMCE dialog with all available schema templates in a searchable, responsive grid
-         * @returns {void}
-         */
-        const openSchemaSelector = () => {
+        // Tạo modal selection cho schema templates - RESPONSIVE
+        function openSchemaSelector() {
             const responsive = getModalSize(1600, 1000, { margin: 40 });
             const fonts = getFontSizes();
             const device = responsive.device;
@@ -1738,18 +1720,13 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             });
         }
 
-        /**
-         * Show preview and insert schema - RESPONSIVE
-         * Opens a TinyMCE dialog with schema preview, content visibility controls, and insert functionality
-         * @param {string} key - The schema template key from templates object
-         * @returns {void}
-         */
-        const showPreviewAndInsert = (key) => {
+        // Function to show preview and insert schema - RESPONSIVE
+        function showPreviewAndInsert(key) {
             const responsive = getModalSize(1400, 900, { margin: 20 });
             const fonts = getFontSizes();
             const device = responsive.device;
             
-            const contentFields = {
+            var contentFields = {
                 // Schema types with MODE 2 content visibility controls
                 article: ['title', 'author', 'category', 'tags', 'excerpt', 'reading_time', 'word_count', 'date', 'image'],
                 recipe: ['name', 'description', 'image', 'ingredients', 'instructions', 'time', 'nutrition', 'rating'],
@@ -1780,25 +1757,25 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                 speakable: ['title', 'content', 'summary', 'language', 'voice_type']
             };
             
-            const fields = contentFields[key] || [];
-            let checkboxesHTML = '';
+            var fields = contentFields[key] || [];
+            var checkboxesHTML = '';
             
             // Define update function globally before dialog opens
             window['kataUpdatePreview_' + key] = function() {
-                const baseShortcode = templates[key].shortcode;
-                const checkedBoxes = document.querySelectorAll('#show_content_' + key + ' .kata-content-checkbox:checked');
-                const checkedFields = [];
+                var baseShortcode = templates[key].shortcode;
+                var checkedBoxes = document.querySelectorAll('#show_content_' + key + ' .kata-content-checkbox:checked');
+                var checkedFields = [];
                 
-                checkedBoxes.forEach((cb) => {
+                checkedBoxes.forEach(function(cb) {
                     checkedFields.push(cb.getAttribute('data-field'));
                 });
                 
-                let modifiedShortcode = baseShortcode;
+                var modifiedShortcode = baseShortcode;
                 
                 if (checkedFields.length > 0) {
-                    checkedFields.forEach((field) => {
+                    checkedFields.forEach(function(field) {
                         // Remove hide_content_X="true"
-                        const hidePattern = new RegExp('hide_content_' + field + '="true"\\s*', 'g');
+                        var hidePattern = new RegExp('hide_content_' + field + '="true"\\s*', 'g');
                         modifiedShortcode = modifiedShortcode.replace(hidePattern, '');
                         
                         // Add show_content_X="true" if not exists
@@ -1895,21 +1872,21 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                         classes: 'widget btn primary',
                         onclick: function() {
                             // Get base shortcode
-                            let shortcode = templates[key].shortcode;
+                            var shortcode = templates[key].shortcode;
                             
                             // Get checked content fields
-                            const checkedFields = [];
-                            const checkboxes = document.querySelectorAll('#show_content_' + key + ' .kata-content-checkbox:checked');
+                            var checkedFields = [];
+                            var checkboxes = document.querySelectorAll('#show_content_' + key + ' .kata-content-checkbox:checked');
                             
                             if (checkboxes.length > 0) {
-                                checkboxes.forEach((cb) => {
+                                checkboxes.forEach(function(cb) {
                                     checkedFields.push(cb.getAttribute('data-field'));
                                 });
                                 
                                 // Replace hide_content_* with show_content_* for checked fields
-                                checkedFields.forEach((field) => {
+                                checkedFields.forEach(function(field) {
                                     // Remove hide_content_X="true"
-                                    const hidePattern = new RegExp('hide_content_' + field + '="true"\\s*', 'g');
+                                    var hidePattern = new RegExp('hide_content_' + field + '="true"\\s*', 'g');
                                     shortcode = shortcode.replace(hidePattern, '');
                                     
                                     // Add show_content_X="true" if not exists
@@ -2175,28 +2152,24 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             }
         });
         
-        /**
-         * Parse shortcode attributes from shortcode text
-         * @param {string} shortcodeText - The complete shortcode string to parse
-         * @returns {Object} Parsed result with type, attributes, and fullMatch
-         */
-        const parseShortcode = (shortcodeText) => {
-            const result = {
+        // Parse shortcode attributes
+        function parseShortcode(shortcodeText) {
+            var result = {
                 type: '',
                 attributes: {},
                 fullMatch: shortcodeText.trim()
             };
             
             // Extract shortcode type: [kata_article ...]
-            const typeMatch = shortcodeText.match(/\[kata_(\w+)/);
+            var typeMatch = shortcodeText.match(/\[kata_(\w+)/);
             if (typeMatch) {
                 result.type = typeMatch[1];
             }
             
             // Extract attributes: name="value"
             // Support both double quotes and single quotes
-            const attrRegex = /(\w+)=["']([^"']*)["']/g;
-            let match;
+            var attrRegex = /(\w+)=["']([^"']*)["']/g;
+            var match;
             while ((match = attrRegex.exec(shortcodeText)) !== null) {
                 result.attributes[match[1]] = match[2];
             }
@@ -2211,23 +2184,17 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             return result;
         }
         
-        /**
-         * Edit existing shortcode - RESPONSIVE
-         * Opens a modal dialog for editing existing shortcode attributes in the editor
-         * @param {Node} node - The DOM node containing the shortcode
-         * @param {string} shortcodeText - The shortcode text to edit
-         * @returns {void}
-         */
-        const editExistingShortcode = (node, shortcodeText) => {
-            const parsed = parseShortcode(shortcodeText);
+        // Edit existing shortcode - RESPONSIVE
+        function editExistingShortcode(node, shortcodeText) {
+            var parsed = parseShortcode(shortcodeText);
             
             if (!parsed.type) {
                 return;
             }
             
             // Check if this is a container shortcode (no attributes expected)
-            const containerShortcodes = ['faq', 'quiz', 'poll', 'carousel', 'breadcrumb'];
-            const isContainer = containerShortcodes.indexOf(parsed.type) !== -1;
+            var containerShortcodes = ['faq', 'quiz', 'poll', 'carousel', 'breadcrumb'];
+            var isContainer = containerShortcodes.indexOf(parsed.type) !== -1;
             
             // Responsive sizing
             const responsive = getModalSize(1600, 1000, { margin: 40 });
@@ -2299,14 +2266,9 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             });
         }
         
-        /**
-         * Render edit form with current values
-         * @param {Object} parsed - Parsed shortcode data with type and attributes
-         * @param {boolean} isContainer - Whether this is a container shortcode
-         * @returns {void}
-         */
-        const renderEditForm = (parsed, isContainer) => {
-            const container = jQuery('#kata-edit-attributes');
+        // Render edit form with current values
+        function renderEditForm(parsed, isContainer) {
+            var container = jQuery('#kata-edit-attributes');
             
             // Check if container exists
             if (!container || container.length === 0) {
@@ -2314,10 +2276,10 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                 return;
             }
             
-            let html = '<div style="height:100%;padding:10px;">';
+            var html = '<div style="height:100%;padding:10px;">';
             
             // Group attributes by category
-            const categories = {
+            var categories = {
                 'Basic Info': ['name', 'title', 'description', 'schema_name'],
                 'Content': ['question', 'answer', 'ingredients', 'instructions', 'content', 'json_code'],
                 'Meta': ['author', 'category', 'tags', 'price', 'currency', 'rating_value'],
@@ -2326,9 +2288,9 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             };
             
             // Add all other attributes to Advanced
-            Object.keys(parsed.attributes).forEach((key) => {
-                let found = false;
-                for (const cat in categories) {
+            for (var key in parsed.attributes) {
+                var found = false;
+                for (var cat in categories) {
                     if (categories[cat].indexOf(key) !== -1) {
                         found = true;
                         break;
@@ -2337,57 +2299,63 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                 if (!found) {
                     categories['Advanced'].push(key);
                 }
-            });
+            }
             
-            let hasAttributes = false;
+            var hasAttributes = false;
             
             // Render by category
-            Object.keys(categories).forEach((category) => {
-                const categoryAttrs = [];
+            for (var category in categories) {
+                var categoryAttrs = [];
                 
                 // Collect attributes for this category that actually exist
-                categories[category].forEach((key) => {
+                for (var i = 0; i < categories[category].length; i++) {
+                    var key = categories[category][i];
                     if (parsed.attributes.hasOwnProperty(key)) {
                         categoryAttrs.push(key);
                     }
-                });
+                }
                 
                 // Skip empty categories
                 if (categoryAttrs.length === 0) {
-                    return;
+                    continue;
                 }
                 
                 hasAttributes = true;
                 
                 html += '<div class="kata-edit-category" style="margin-bottom:20px;">';
-                html += `<h4 style="color:#667eea;margin:0 0 10px 0;padding-bottom:8px;border-bottom:2px solid #f0f0f0;">${category}</h4>`;
+                html += '<h4 style="color:#667eea;margin:0 0 10px 0;padding-bottom:8px;border-bottom:2px solid #f0f0f0;">' + category + '</h4>';
                 
-                categoryAttrs.forEach((key) => {
-                    const value = parsed.attributes[key] || '';
+                for (var i = 0; i < categoryAttrs.length; i++) {
+                    var key = categoryAttrs[i];
+                    var value = parsed.attributes[key] || '';
                     
                     html += '<div class="kata-edit-field" style="margin-bottom:12px;">';
-                    html += `<label style="display:block;font-weight:600;margin-bottom:4px;color:#333;font-size:13px;">${key.replace(/_/g, ' ').toUpperCase()}</label>`;
+                    html += '<label style="display:block;font-weight:600;margin-bottom:4px;color:#333;font-size:13px;">' + 
+                            key.replace(/_/g, ' ').toUpperCase() + '</label>';
                     
                     // Checkbox for boolean values
                     if (value === 'true' || value === 'false') {
-                        html += `<input type="checkbox" id="attr_${key}" ${value === 'true' ? 'checked' : ''} style="width:20px;height:20px;cursor:pointer;"> ` +
+                        html += '<input type="checkbox" id="attr_' + key + '" ' + (value === 'true' ? 'checked' : '') + 
+                                ' style="width:20px;height:20px;cursor:pointer;"> ' +
                                 '<span style="color:#666;font-size:12px;">(true/false)</span>';
                     }
                     // Textarea for long text
                     else if (key === 'description' || key === 'content' || key === 'json_code' || 
                              key === 'ingredients' || key === 'instructions') {
-                        html += `<textarea id="attr_${key}" rows="3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:13px;">${value}</textarea>`;
+                        html += '<textarea id="attr_' + key + '" rows="3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:13px;">' + 
+                                value + '</textarea>';
                     }
                     // Regular input
                     else {
-                        html += `<input type="text" id="attr_${key}" value="${value}" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:13px;">`;
+                        html += '<input type="text" id="attr_' + key + '" value="' + value + 
+                                '" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:13px;">';
                     }
                     
                     html += '</div>';
-                });
+                }
                 
                 html += '</div>';
-            });
+            }
             
             // If no attributes found
             if (!hasAttributes) {
@@ -2396,13 +2364,15 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                     html += '<div style="padding:40px;text-align:center;background:linear-gradient(135deg,#e3f2fd 0%,#e1bee7 100%);border-radius:12px;margin:20px;">';
                     html += '<div style="font-size:64px;margin-bottom:20px;">📦</div>';
                     html += '<h3 style="margin:0 0 15px 0;color:#4a148c;font-size:24px;">Container Shortcode</h3>';
-                    html += `<p style="margin:0 0 20px 0;color:#4a148c;font-size:16px;line-height:1.6;"><strong>[${parsed.type}]</strong> is a container shortcode that wraps child items.</p>`;
+                    html += '<p style="margin:0 0 20px 0;color:#4a148c;font-size:16px;line-height:1.6;">';
+                    html += '<strong>[' + parsed.type + ']</strong> is a container shortcode that wraps child items.';
+                    html += '</p>';
                     html += '<div style="background:white;padding:20px;border-radius:8px;text-align:left;max-width:600px;margin:0 auto;">';
                     html += '<p style="margin:0 0 12px 0;color:#666;font-size:14px;"><strong>How to use:</strong></p>';
                     html += '<ol style="padding-left:20px;color:#666;font-size:14px;line-height:2;">';
                     html += '<li>This container has <strong>no attributes</strong> to edit</li>';
                     html += '<li>Edit individual <strong>child items</strong> inside by double-clicking them</li>';
-                    html += `<li>Example: Double-click <code>[kata_${parsed.type}_item ...]</code></li>`;
+                    html += '<li>Example: Double-click <code>[kata_' + parsed.type + '_item ...]</code></li>';
                     html += '</ol>';
                     html += '</div>';
                     html += '</div>';
@@ -2410,7 +2380,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                     // Regular shortcode without attributes - show error
                     html += '<div style="padding:20px;text-align:center;background:#fff3cd;border-radius:8px;margin:10px 0;">';
                     html += '<p style="margin:0;color:#856404;font-size:14px;">⚠️ No attributes found in this shortcode.</p>';
-                    html += `<p style="margin:10px 0 0 0;color:#856404;font-size:12px;">Shortcode: <code>${parsed.fullMatch}</code></p>`;
+                    html += '<p style="margin:10px 0 0 0;color:#856404;font-size:12px;">Shortcode: <code>' + parsed.fullMatch + '</code></p>';
                     html += '</div>';
                 }
             }
@@ -2421,28 +2391,23 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             console.log('KATA Edit Form: Rendered', {
                 type: parsed.type,
                 attributeCount: Object.keys(parsed.attributes).length,
-                hasAttributes,
-                isContainer
+                hasAttributes: hasAttributes,
+                isContainer: isContainer
             });
-        };
+        }
         
-        /**
-         * Update shortcode with new values from edit form
-         * @param {Node} node - The DOM node containing the shortcode
-         * @param {Object} parsed - Parsed shortcode data
-         * @returns {void}
-         */
-        const updateShortcode = (node, parsed) => {
-            let newShortcode = `[kata_${parsed.type}`;
+        // Update shortcode with new values
+        function updateShortcode(node, parsed) {
+            var newShortcode = '[kata_' + parsed.type;
             
             // Collect updated values
             jQuery('#kata-edit-attributes').find('input, textarea').each(function() {
-                const input = jQuery(this);
-                const id = input.attr('id');
+                var input = jQuery(this);
+                var id = input.attr('id');
                 if (!id || !id.startsWith('attr_')) return;
                 
-                const key = id.replace('attr_', '');
-                let value;
+                var key = id.replace('attr_', '');
+                var value;
                 
                 if (input.attr('type') === 'checkbox') {
                     value = input.is(':checked') ? 'true' : 'false';
@@ -2453,7 +2418,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
                 if (value) {
                     // Escape quotes in value
                     value = value.replace(/"/g, '&quot;');
-                    newShortcode += ` ${key}="${value}"`;
+                    newShortcode += ' ' + key + '="' + value + '"';
                 }
             });
             
@@ -2466,16 +2431,16 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             if (window.KataSEONotifications) {
                 window.KataSEONotifications.show('✅ Schema updated successfully!', 'success');
             }
-        };
+        }
 
         // Context menu integration
-        editor.on('contextmenu', (e) => {
+        editor.on('contextmenu', function(e) {
             // Add KATA SEO options to right-click menu if needed
         });
 
         // Auto-complete for shortcodes (advanced feature)
-        editor.on('keyup', (e) => {
-            const content = editor.getContent();
+        editor.on('keyup', function(e) {
+            var content = editor.getContent();
             // Could add auto-suggestions for shortcode parameters
         });
     });
@@ -2487,12 +2452,12 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
             window.kataSeoManagerCSSLoaded = true;
             
             // Get plugin URL from window object (set by PHP localize script)
-            const pluginUrl = window.kataSeoManager && window.kataSeoManager.pluginUrl 
+            var pluginUrl = window.kataSeoManager && window.kataSeoManager.pluginUrl 
                 ? window.kataSeoManager.pluginUrl 
                 : '/wp-content/plugins/kata-seo-manager/';
             
             try {
-                tinymce.DOM.loadCSS(`${pluginUrl}assets/css/editor-styles.css?v=${new Date().getTime()}`);
+                tinymce.DOM.loadCSS(pluginUrl + 'assets/css/editor-styles.css?v=' + (new Date().getTime()));
             } catch(e) {
                 console.warn('KATA SEO Manager: Could not load editor CSS', e);
             }
@@ -2504,7 +2469,7 @@ Bày thịt, bánh phở vào tô, chan nước dùng nóng
 // jQuery helper functions for enhanced functionality
 // Wrap in check to prevent conflicts
 if (typeof jQuery !== 'undefined') {
-    jQuery(document).ready(($) => {
+    jQuery(document).ready(function($) {
         // Namespace check to prevent duplicate bindings
         if (window.kataSeoManagerJQueryLoaded) {
             return;
@@ -2512,9 +2477,9 @@ if (typeof jQuery !== 'undefined') {
         window.kataSeoManagerJQueryLoaded = true;
         
         // Add preview functionality
-        $('body').on('click', '.kata-preview-shortcode', (e) => {
+        $('body').on('click', '.kata-preview-shortcode', function(e) {
             e.preventDefault();
-            const shortcode = $(e.currentTarget).data('shortcode');
+            var shortcode = $(this).data('shortcode');
             // AJAX preview functionality could be added here
         });
     });
@@ -2524,23 +2489,17 @@ if (typeof jQuery !== 'undefined') {
 // Use namespace to prevent conflicts
 if (typeof window.KataSEONotifications === 'undefined') {
     window.KataSEONotifications = {
-        /**
-         * Show notification message
-         * @param {string} message - The notification message to display
-         * @param {string} type - Notification type ('success', 'error', 'warning', 'info')
-         * @returns {void}
-         */
-        show: (message, type = 'success') => {
+        show: function(message, type = 'success') {
             if (typeof jQuery === 'undefined') {
                 console.warn('KATA SEO Manager: jQuery not loaded, cannot show notification');
                 return;
             }
             
-            const notification = jQuery(`<div class="kata-notification kata-notification-${type}">${message}</div>`);
+            var notification = jQuery('<div class="kata-notification kata-notification-' + type + '">' + message + '</div>');
             jQuery('body').append(notification);
             
-            setTimeout(() => {
-                notification.fadeOut(() => {
+            setTimeout(function() {
+                notification.fadeOut(function() {
                     notification.remove();
                 });
             }, 3000);

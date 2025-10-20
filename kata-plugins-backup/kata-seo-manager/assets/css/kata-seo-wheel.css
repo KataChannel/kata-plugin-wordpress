@@ -866,52 +866,52 @@
 
 .kata-wheel-error,
 .kata-wheel-inactive {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-    color: #991b1b;
-    padding: 20px 25px;
-    border-radius: 15px;
-    margin: 20px auto;
+    background: linear-gradient(135deg, var(--kata-error-bg) 0%, var(--kata-error-light) 100%);
+    color: var(--kata-error-text);
+    padding: var(--kata-space-lg) var(--kata-space-xl);
+    border-radius: var(--kata-radius-lg);
+    margin: var(--kata-space-lg) auto;
     text-align: center;
-    font-weight: 700;
-    border-left: 5px solid #dc2626;
+    font-weight: var(--kata-font-bold);
+    border-left: 5px solid var(--kata-error);
     box-shadow: 
-        0 8px 20px rgba(220, 38, 38, 0.2),
+        var(--kata-shadow-lg),
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    animation: errorSlideIn 0.4s ease;
-    font-size: 15px;
+    animation: errorSlideIn var(--kata-transition-slow) ease;
+    font-size: var(--kata-font-md);
     max-width: 600px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: var(--kata-space-sm);
 }
 
 .kata-wheel-inactive {
-    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-    color: #92400e;
-    border-left-color: #f59e0b;
+    background: linear-gradient(135deg, var(--kata-warning-bg) 0%, var(--kata-warning-light) 100%);
+    color: var(--kata-warning-text);
+    border-left-color: var(--kata-warning);
 }
 
 .kata-wheel-error-icon,
 .kata-wheel-inactive-icon {
-    font-size: 24px;
+    font-size: var(--kata-font-3xl);
     flex-shrink: 0;
 }
 
 .kata-wheel-error {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-    color: #991b1b;
-    padding: 18px 25px;
-    border-radius: 15px;
-    margin: 20px 0;
+    background: linear-gradient(135deg, var(--kata-error-bg) 0%, var(--kata-error-light) 100%);
+    color: var(--kata-error-text);
+    padding: var(--kata-space-md) var(--kata-space-xl);
+    border-radius: var(--kata-radius-lg);
+    margin: var(--kata-space-lg) 0;
     text-align: center;
-    font-weight: 700;
-    border-left: 5px solid #dc2626;
+    font-weight: var(--kata-font-bold);
+    border-left: 5px solid var(--kata-error);
     box-shadow: 
-        0 8px 20px rgba(220, 38, 38, 0.2),
+        var(--kata-shadow-lg),
         inset 0 1px 0 rgba(255, 255, 255, 0.5);
-    animation: errorSlideIn 0.4s ease;
-    font-size: 15px;
+    animation: errorSlideIn var(--kata-transition-slow) ease;
+    font-size: var(--kata-font-md);
 }
 
 @keyframes errorSlideIn {
@@ -936,20 +936,20 @@
     transform: translate(-50%, -50%);
     background: rgba(255, 255, 255, 0.98);
     backdrop-filter: blur(20px);
-    padding: 30px 50px;
-    border-radius: 20px;
+    padding: var(--kata-space-2xl) var(--kata-space-4xl);
+    border-radius: var(--kata-radius-xl);
     box-shadow: 
-        0 15px 50px rgba(0, 0, 0, 0.4),
+        var(--kata-shadow-2xl),
         0 0 0 1px rgba(255, 255, 255, 0.5),
         inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    z-index: 100;
+    z-index: var(--kata-z-modal);
     display: none;
     border: 2px solid rgba(126, 34, 206, 0.2);
 }
 
 .kata-wheel-loading.show {
     display: block;
-    animation: loadingFadeIn 0.3s ease;
+    animation: loadingFadeIn var(--kata-transition-base) ease;
 }
 
 @keyframes loadingFadeIn {
@@ -962,10 +962,10 @@
     display: block;
     width: 50px;
     height: 50px;
-    margin: 15px auto 0;
-    border: 5px solid #f3f4f6;
-    border-top: 5px solid #7e22ce;
-    border-right: 5px solid #2a5298;
+    margin: var(--kata-space-md) auto 0;
+    border: 5px solid var(--kata-gray-100);
+    border-top: 5px solid var(--kata-wheel-primary);
+    border-right: 5px solid var(--kata-primary);
     border-radius: 50%;
     animation: loadingSpin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
 }
@@ -981,23 +981,23 @@
 
 @media (max-width: 768px) {
     .kata-wheel-container {
-        padding: 30px 20px;
-        margin: 20px 10px;
-        border-radius: 20px;
+        padding: var(--kata-space-2xl) var(--kata-space-lg);
+        margin: var(--kata-space-lg) var(--kata-space-sm);
+        border-radius: var(--kata-radius-xl);
     }
     
     .kata-wheel-header h2 {
-        font-size: 32px;
+        font-size: var(--kata-font-4xl);
     }
     
     .kata-wheel-header p {
-        font-size: 16px;
+        font-size: var(--kata-font-lg);
     }
     
     .kata-wheel-canvas {
         width: 320px;
         height: 320px;
-        margin-bottom: 30px;
+        margin-bottom: var(--kata-space-2xl);
     }
     
     .kata-wheel-container .kata-wheel-pointer {
@@ -1009,60 +1009,60 @@
     .kata-wheel-center {
         width: 90px;
         height: 90px;
-        font-size: 16px;
+        font-size: var(--kata-font-lg);
     }
     
     .kata-wheel-segment span {
-        font-size: 11px;
+        font-size: var(--kata-font-sm);
     }
     
     .kata-wheel-form {
-        padding: 25px 20px;
+        padding: var(--kata-space-xl) var(--kata-space-lg);
     }
     
     .kata-wheel-result-content {
-        padding: 35px 25px;
+        padding: var(--kata-space-3xl) var(--kata-space-xl);
         max-width: 90%;
     }
     
     .kata-wheel-result-content > div:first-child {
-        font-size: 70px;
+        font-size: var(--kata-font-7xl);
     }
     
     .kata-wheel-result-content h3 {
-        font-size: 26px;
+        font-size: var(--kata-font-3xl);
     }
     
     .kata-wheel-result-content p {
-        font-size: 16px;
+        font-size: var(--kata-font-lg);
     }
     
     .kata-wheel-result-content strong {
-        font-size: 22px;
+        font-size: var(--kata-font-2xl);
     }
     
     .kata-wheel-info p {
-        font-size: 16px;
-        padding: 12px 20px;
+        font-size: var(--kata-font-lg);
+        padding: var(--kata-space-md) var(--kata-space-lg);
     }
     
     .kata-wheel-info strong {
-        font-size: 20px;
+        font-size: var(--kata-font-xl);
     }
 }
 
 @media (max-width: 480px) {
     .kata-wheel-container {
-        padding: 20px 15px;
-        margin: 15px 5px;
+        padding: var(--kata-space-lg) var(--kata-space-md);
+        margin: var(--kata-space-md) var(--kata-space-xs);
     }
     
     .kata-wheel-header h2 {
-        font-size: 26px;
+        font-size: var(--kata-font-3xl);
     }
     
     .kata-wheel-header p {
-        font-size: 14px;
+        font-size: var(--kata-font-md);
     }
     
     .kata-wheel-canvas {
@@ -1078,59 +1078,59 @@
     .kata-wheel-center {
         width: 75px;
         height: 75px;
-        font-size: 14px;
+        font-size: var(--kata-font-md);
     }
     
     .kata-wheel-segment span {
-        font-size: 10px;
+        font-size: var(--kata-font-xs);
     }
     
     .kata-wheel-form {
-        padding: 20px 15px;
+        padding: var(--kata-space-lg) var(--kata-space-md);
     }
     
     .kata-wheel-form input {
-        padding: 12px 15px;
-        font-size: 15px;
+        padding: var(--kata-space-md) var(--kata-space-md);
+        font-size: var(--kata-font-md);
     }
     
     .kata-wheel-form button {
-        padding: 14px;
-        font-size: 15px;
+        padding: var(--kata-space-md);
+        font-size: var(--kata-font-md);
     }
     
     .kata-wheel-result-content {
-        padding: 30px 20px;
+        padding: var(--kata-space-2xl) var(--kata-space-lg);
     }
     
     .kata-wheel-result-content > div:first-child {
-        font-size: 60px;
+        font-size: var(--kata-font-6xl);
     }
     
     .kata-wheel-result-content h3 {
-        font-size: 22px;
+        font-size: var(--kata-font-2xl);
     }
     
     .kata-wheel-result-content p {
-        font-size: 15px;
+        font-size: var(--kata-font-md);
     }
     
     .kata-wheel-result-content strong {
-        font-size: 20px;
+        font-size: var(--kata-font-xl);
     }
     
     .kata-wheel-close-result {
-        padding: 12px 25px;
-        font-size: 15px;
+        padding: var(--kata-space-md) var(--kata-space-xl);
+        font-size: var(--kata-font-md);
     }
     
     .kata-wheel-info p {
-        font-size: 14px;
-        padding: 10px 15px;
+        font-size: var(--kata-font-md);
+        padding: var(--kata-space-sm) var(--kata-space-md);
     }
     
     .kata-wheel-info strong {
-        font-size: 18px;
+        font-size: var(--kata-font-lg);
     }
 }
 
@@ -1143,11 +1143,11 @@
     .kata-wheel-center {
         width: 70px;
         height: 70px;
-        font-size: 12px;
+        font-size: var(--kata-font-sm);
     }
     
     .kata-wheel-segment span {
-        font-size: 10px;
+        font-size: var(--kata-font-xs);
     }
 }
 

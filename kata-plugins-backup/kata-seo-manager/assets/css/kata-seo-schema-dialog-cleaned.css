@@ -1,0 +1,1346 @@
+/**
+
+ * KATA Schema Builder Dialog Styles
+
+ * Professional fullscreen modal with collapsible sections
+
+ * Default: Hide all attributes mode
+
+ * 
+
+ * @package KATA SEO Manager
+
+ * @version 2.1.0
+
+*/
+
+
+
+/* ============================================
+
+   FULLSCREEN MODE   DIALOG CONTAINER - RESPONSIVE
+
+   ============================================ */
+
+
+
+.kata-fullscreen-mode {
+
+    max-width: 95vw !important;
+
+    max-height: 95vh !important;
+
+    width: 1200px !important;}
+
+    height: 800px !important;
+
+}.mce-window .mce-container-body {
+
+    background: #f5f5f5;
+
+.kata-fullscreen-mode
+
+    max-height: calc(95vh - 120px) !important;
+
+}.mce-window .mce-foot {
+
+    background: #fafafa;
+
+/* ============================================    border-top: 1px solid #ddd;
+
+   COLLAPSIBLE SECTIONS    padding: 12px 16px;
+
+   ===========================
+
+
+
+.kata-section-header {/* ============================================
+
+    transition: all 0.3s ease;   FORM ELEMENTS - ENHANCED
+
+    position: relative;   ============================================ */
+
+    padding-left: 40px !important;
+
+}/* Text inputs */
+
+.mce-textbox {
+
+.kata-section-header:hover {    border-radius: 4px;
+
+    opacity: 0.9;
+
+    transform: translateY(-1px);
+
+    box-shadow: 0 4px 8px rgba(0, 115, 170, 0.3);
+
+}    transition: all 0.2s ease;
+
+    width: 100% !important;
+
+.kata-section-header:before {    box-sizing: border-box;
+
+    content: '▼';}
+
+    position: absolute;
+
+    left: 14px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    font-size: 14px;
+
+    transition: transform 0.3s ease;}
+
+}
+
+/* Multiline textbox */
+
+.kata-section-header.kata-collapsed:before {
+
+    content: '▶';
+
+    transform: translateY(-50%) rotate(0deg);
+
+}    resize: vertical;
+
+}
+
+.kata-section-content {
+
+    transition: all 0.3s ease;/* Labels */
+
+    opacity: 1;.mce-label {
+
+}    font-size: 13px;
+
+    color: #333;
+
+/* ============================================    font-weight: 500;
+
+   QUICK SELECT BUTTONS    margin-bottom: 4px;
+
+   ===========================
+
+}
+
+.kata-quick-select {
+
+    background: linear-gradient(135deg,
+
+    border: 1px solid #90caf9 !important;.mce-container.mce-formitem {
+
+    transition: all 0.2s ease;
+
+    font-weight: 600 !important;}
+
+}
+
+/* ============================================
+
+.kata-quick-select:hover {   CHECKBOXES - GRID LAYOUT
+
+    background: linear-gradient(135deg, #e3f2fd 0%,
+
+    border-color: #64b5f6 !important;
+
+    transform: translateY(-1px);.kata-checkbox-grid {
+
+    box-shadow: 0 2px 4px rgba(0, 115, 170, 0.2);
+
+}    grid-template-columns: repeat(2, 1fr);
+
+    gap: 8px 12px;
+
+.kata-quick-select:active {    margin: 12px 0;
+
+    transform: translateY(0);
+
+    box-shadow: inset 0 2px 4px rgba(0, 115, 170, 0.2);
+
+}    border-radius: 4px;
+
+    border: 1px solid #e0e0e0;
+
+/* ============================================}
+
+   DIALOG CONTAINER
+
+   ===========================
+
+    margin: 0 !important;
+
+.kata-schema-dialog {}
+
+    max-width: 95vw !important;
+
+    max-height: 95vh !important;.mce-checkbox label {
+
+}    display: inline-flex;
+
+    align-items: center;
+
+.mce-window .mce-container-body {    cursor: pointer;
+
+    background: #f5f5f5;
+
+}    border-radius: 4px;
+
+    transition: all 0.2s ease;
+
+.mce-window .mce-foot {    font-size: 13px;
+
+    background: #fafafa;
+
+    border-top: 1px solid #ddd;}
+
+    padding: 12px 16px;
+
+}.mce-checkbox label:hover {
+
+    background-color: #f0f7fc;
+
+/* ============================================}
+
+   FORM ELEMENTS - ENHANCED
+
+   ===========================
+
+    margin-right: 8px;
+
+/* Text inputs */    width: 18px;
+
+.mce-textbox {    height: 18px;
+
+    border-radius: 4px;
+
+    border: 1px solid #ddd;
+
+    padding: 8px 12px;}
+
+    font-size: 14px;
+
+    transition: all 0.2s ease;/* Checked state */
+
+    width: 100% !important;
+
+    box-sizing: border-box;
+
+}    font-weight: 500;
+
+}
+
+.mce-textbox:focus {
+
+    border-color: #0073aa;/* ============================================
+
+    box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.1);   SECTION HEADERS - MODERN DESIGN
+
+    outline: none;   ============================================ */
+
+}
+
+.mce-label[style*="linear-gradient"] {
+
+/* Multiline textbox */    background: linear-gradient(135deg,
+
+.mce-textbox[style*="height"] {    color: white !important;
+
+    min-height: 60px;
+
+    line-height: 1.5;
+
+    resize: vertical;
+
+}    font-size: 13px !important;
+
+    font-weight: 600 !important;
+
+/* Labels */    text-transform: uppercase !important;
+
+.mce-label {    letter-spacing: 0.5px !important;
+
+    font-size: 13px;
+
+    color: #333;}
+
+    font-weight: 500;
+
+    margin-bottom: 4px;/* Description text */
+
+    display: block;
+
+}    background: transparent !important;
+
+    padding: 4px 8px !important;
+
+/* Form item spacing */    margin: 4px 0 12px 0 !important;
+
+.mce-container.mce-formitem {    border-left: 0 !important;
+
+    margin-bottom: 16px;
+
+}    color: #666 !important;
+
+}
+
+/* ============================================
+
+   CHECKBOXES - GRID LAYOUT/* ============================================
+
+   ===========================
+
+   ===========================
+
+.kata-checkbox-grid {
+
+    display: grid;/* Header info box */
+
+    grid-template-columns: repeat(3, 1fr);.mce-label[style*="#fff9e6"] {
+
+    gap: 8px 12px;
+
+    margin: 12px 0;
+
+    padding: 12px;
+
+    background: white;
+
+    border-radius: 6px;
+
+    border: 1px solid #e0e0e0;
+
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+}    font-size: 13px !important;
+
+    line-height: 1.5;
+
+.mce-checkbox {    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+    margin: 0 !important;}
+
+}
+
+/* Quick actions box */
+
+.mce-checkbox label {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    cursor: pointer;
+
+    padding: 8px 12px;
+
+    border-radius: 6px;
+
+    transition: all 0.2s ease;
+
+    font-size: 13px;
+
+    min-height: 36px;
+
+    border: 1px solid transparent;}
+
+}
+
+/* Footer info box */
+
+.mce-checkbox label:hover {
+
+    background-color: #f0f7fc;
+
+    border-color: #90caf9;
+
+}    border-radius: 6px !important;
+
+    padding: 10px 14px !important;
+
+.mce-checkbox input[type="checkbox"] {    margin-top: 16px !important;
+
+    margin-right: 10px;
+
+    width: 18px;
+
+    height: 18px;
+
+    cursor: pointer;}
+
+    flex-shrink: 0;
+
+}/* ============================================
+
+   BUTTONS - MODERN GRADIENT
+
+/* Checked state */   ============================================ */
+
+.mce-checkbox input[type="checkbox"]:checked + span {
+
+    color: #0073aa;.mce-primary {
+
+    font-weight: 600;
+
+}    border-color: #005a87 !important;
+
+    color: white !important;
+
+.mce-checkbox input[type="checkbox"]:checked {    font-weight: 600 !important;
+
+    accent-color: #0073aa;
+
+}    border-radius: 6px !important;
+
+    transition: all 0.3s ease !important;
+
+/* ============================================    box-shadow: 0 2px 4px rgba(0, 115, 170, 0.3);
+
+   SECTION HEADERS - MODERN DESIGN    min-width: 140px;
+
+   ===========================
+
+
+
+.mce-label[style*="linear-gradient"] {
+
+    background: linear-gradient(135deg, #0073aa 0%, #005a87 100%) !important;
+
+    color: white !important;
+
+    padding: 12px 14px !important;
+
+    margin: 18px 0 10px 0 !important;}
+
+    border-radius: 8px !important;
+
+    font-size: 14px !important;
+
+    font-weight: 600 !important;
+
+    text-transform: uppercase !important;
+
+    letter-spacing: 0.5px !important;}
+
+    box-shadow: 0 3px 6px rgba(0, 115, 170, 0.3);
+
+}/* Cancel button */
+
+.mce-btn:not(.mce-primary) {
+
+/* Description text */    background: linear-gradient(135deg,
+
+.mce-label[style*="font-style: italic"] {    border-color: #ddd !important;
+
+    background: transparent !important;
+
+    padding: 6px 10px !important;
+
+    margin: 6px 0 12px 0 !important;
+
+    border-left: 0 !important;
+
+    font-size: 12px !important;
+
+    color: #666 !important;}
+
+}
+
+.mce-btn:not(.mce-primary):hover {
+
+/* ============================================    background: linear-gradient(135deg, #e9e9e9 0%, #ddd 100%) !important;
+
+   INFO BOXES - ENHANCED    border-color: #ccc !important;
+
+   ===========================
+
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+/* Header info box */}
+
+.mce-label[style*="#fff9e6"] {
+
+    background: linear-gradient(135deg, #fff9e6 0%,
+
+    border: 1px solid
+
+    border-left: 4px solid #f0b429 !important;   ============================================ */
+
+    border-radius: 8px !important;
+
+    padding: 14px 16px !important;
+
+    margin-bottom: 18px !important;
+
+    color: #856404 !important;}
+
+    font-size: 13px !important;
+
+    line-height: 1.6;
+
+    box-shadow: 0 2px 4px rgba(240, 180, 41, 0.1);
+
+}    border-radius: 5px;
+
+}
+
+/* Quick actions box */
+
+.mce-label[style*="#e7f3f8"][style*="border-left"] {
+
+    background: linear-gradient(135deg, #e7f3f8 0%, #d6ebf5 100%) !important;
+
+    padding: 12px 16px !important;
+
+    margin: 18px 0 !important;}
+
+    border-left: 4px solid
+
+    border-radius: 0 8px 8px 0 !important;
+
+    font-size: 12px !important;
+
+    color: #004a5d !important;}
+
+    box-shadow: 0 2px 4px rgba(0, 115, 170, 0.1);
+
+}/* ============================================
+
+   RESPONSIVE DESIGN - MOBILE FIRST
+
+/* Footer info box */   ============================================ */
+
+.mce-label[style*="#e7f3f8"][style*="border: 1px"] {
+
+    background: linear-gradient(135deg,
+
+    border: 1px solid #b3d9ea !important;
+
+    border-radius: 8px !important;
+
+    padding: 12px 16px !important;
+
+    margin-top: 18px !important;
+
+    color: #004a5d !important;    }
+
+    font-size: 12px !important;    
+
+    box-shadow: 0 2px 4px rgba(0, 115, 170, 0.1);    .kata-checkbox-grid {
+
+}        grid-template-columns: 1fr !important;
+
+        gap: 6px;
+
+/* ============================================    }
+
+   BUTTONS - MODERN GRADIENT    
+
+   ===========================
+
+        font-size: 16px !important;
+
+.mce-primary {    }
+
+    background: linear-gradient(135deg,
+
+    border-color:
+
+    color: white !important;
+
+    font-weight: 600 !important;
+
+    padding: 12px 28px !important;    }
+
+    border-radius: 8px !important;    
+
+    transition: all 0.3s ease !important;    .mce-window .mce-foot {
+
+    box-shadow: 0 3px 6px rgba(0, 115, 170, 0.3);
+
+    min-width: 160px;    }
+
+    font-size: 14px !important;    
+
+}    /* Stack buttons on mobile */
+
+    .mce-foot .mce-container-body {
+
+.mce-primary:hover {        display: flex !important;
+
+    background: linear-gradient(135deg, #005a87 0%, #004a70 100%) !important;
+
+    transform: translateY(-2px);
+
+    box-shadow: 0 5px 10px rgba(0, 115, 170, 0.4);    }
+
+}    
+
+    .mce-foot .mce-btn {
+
+.mce-primary:active {        width: 100% !important;
+
+    transform: translateY(0);
+
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);    }
+
+}}
+
+
+
+/* Cancel button */
+
+.mce-btn:not(.mce-primary) {@media (max-width: 480px) {
+
+    background: linear-gradient(135deg,
+
+    border-color: #ddd !important;
+
+    color: #555 !important;
+
+    padding: 12px 24px !important;    }
+
+    border-radius: 8px !important;    
+
+    transition: all 0.3s ease !important;    .mce-checkbox label {
+
+    min-width: 120px;
+
+    font-size: 14px !important;
+
+}    }
+
+    
+
+.mce-btn:not(.mce-primary):hover {
+
+    background: linear-gradient(135deg, #e9e9e9 0%, #ddd 100%) !important;
+
+    border-color: #ccc !important;    }
+
+    transform: translateY(-2px);}
+
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+
+}/* Landscape mode on mobile */
+
+@media (max-width: 768px) and (orientation: landscape) {
+
+/* ============================================    .kata-schema-dialog {
+
+   SCROLLBAR STYLING        max-height: 90vh !important;
+
+   ===========================
+
+    
+
+.mce-container-body.mce-abs-layout::-webkit-scrollbar {
+
+    width: 12px;
+
+}    }
+
+}
+
+.mce-container-body.mce-abs-layout::-webkit-scrollbar-track {
+
+    background: #f1f1f1;/* ============================================
+
+    border-radius: 6px;   ACCESSIBILITY
+
+}   ============================================ */
+
+
+
+.mce-container-body.mce-abs-layout::-webkit-scrollbar-thumb {/* Focus visible for keyboard navigation */
+
+    background: linear-gradient(135deg, #0073aa 0%, #005a87 100%);
+
+    border-radius: 6px;
+
+}.mce-btn:focus-visible {
+
+    outline: 3px solid #0073aa;
+
+.mce-container-body.mce-abs-layout::-webkit-scrollbar-thumb:hover {    outline-offset: 2px;
+
+    background: linear-gradient(135deg,
+
+}
+
+/* High contrast mode support */
+
+/* Firefox */@media (prefers-contrast: high) {
+
+.mce-container-body.mce-abs-layout {    .mce-textbox,
+
+    scrollbar-width: thin;    .mce-btn {
+
+    scrollbar-color: #0073aa #f1f1f1;
+
+}    }
+
+    
+
+/* ============================================    .kata-checkbox-grid {
+
+   RESPONSIVE DESIGN - MOBILE FIRST        border-width: 2px;
+
+   ===========================
+
+}
+
+/* Tablets and smaller */
+
+@media (max-width: 1024px) {/* Reduced motion support */
+
+    .kata-fullscreen-mode {@media (prefers-reduced-motion: reduce) {
+
+        width: 95vw !important;    * {
+
+    height: 95vh !important;
+
+    }        animation-iteration-count: 1 !important;
+
+            transition-duration: 0.01ms !important;
+
+    .kata-checkbox-grid {    }
+
+        grid-template-columns: repeat(2, 1fr) !important;}
+
+    }
+
+}/* ============================================
+
+   LOADING STATE
+
+@media (max-width: 768px) {   ============================================ */
+
+    .kata-schema-dialog {
+
+        width: 95vw !important;.kata-dialog-loading {
+
+    max-width: none !important;
+
+    }    opacity: 0.6;
+
+        position: relative;
+
+    .kata-checkbox-grid {}
+
+        grid-template-columns: 1fr !important;
+
+    gap: 6px;
+
+    }    content: '';
+
+        position: absolute;
+
+    .mce-textbox {    top: 50%;
+
+    font-size: 16px !important;
+
+    }    transform: translate(-50%, -50%);
+
+        width: 40px;
+
+    .mce-btn {    height: 40px;
+
+    min-width: auto !important;
+
+    padding: 10px 16px !important;
+
+    }    border-radius: 50%;
+
+        animation: kata-spin 1s linear infinite;
+
+    .mce-window
+
+        padding: 10px 12px;}
+
+    }
+
+    @keyframes kata-spin {
+
+    /* Stack buttons on mobile */    0% { transform: translate(-50%, -50%) rotate(0deg); }
+
+    .mce-foot .mce-container-body {
+
+        display: flex !important;}
+
+        flex-direction: column-reverse !important;
+
+        gap: 8px;/* ============================================
+
+    }   VALIDATION STATES
+
+       ============================================ */
+
+    .mce-foot .mce-btn {
+
+        width: 100% !important;/* Error state */
+
+        justify-content: center;.mce-textbox.kata-error {
+
+    }    border-color:
+
+}    background: #fff5f5 !important;
+
+}
+
+/* Small phones */
+
+@media (max-width: 480px) {
+
+    .mce-label[style*="linear-gradient"] {    border-color: #dc3232 !important;
+
+    font-size: 12px !important;
+
+        padding: 10px 12px !important;}
+
+    }
+
+    /* Success state */
+
+    .mce-checkbox label {
+
+    font-size: 12px;
+
+    padding: 6px 10px;
+
+    }}
+
+    
+
+    .mce-textbox {/* ============================================
+
+        padding: 10px 12px;   PRINT STYLES
+
+    }   ============================================ */
+
+}
+
+@media print {
+
+/* Landscape mode on mobile */    .mce-window {
+
+@media (max-width: 768px) and (orientation: landscape) {        box-shadow: none;
+
+    .kata-schema-dialog {        border: 1px solid #000;
+
+        max-height: 90vh !important;    }
+
+    }    
+
+        .mce-foot {
+
+    .mce-container-body.mce-abs-layout {        display: none;
+
+        max-height: calc(90vh - 120px) !important;    }
+
+    }    
+
+}    .kata-checkbox-grid {
+
+        page-break-inside: avoid;
+
+/* ============================================    }
+
+   ACCESSIBILITY}
+
+   ===========================
+
+/* ============================================
+
+/* Focus visible for keyboard navigation */   ANIMATIONS
+
+.mce-textbox:focus-visible,   ============================================ */
+
+.mce-checkbox input:focus-visible,
+
+.mce-btn:focus-visible {
+
+    outline: 3px solid
+
+    outline-offset: 2px;
+
+}        transform: translateY(-10px);
+
+    }
+
+/* High contrast mode support */    to {
+
+@media (prefers-contrast: high) {        opacity: 1;
+
+    .mce-textbox,        transform: translateY(0);
+
+    .mce-btn {    }
+
+        border-width: 2px;}
+
+    }
+
+    .mce-window {
+
+    .kata-checkbox-grid {    animation: fadeIn 0.3s ease-out;
+
+        border-width: 2px;}
+
+    }
+
+}/* ============================================
+
+   CUSTOM SCROLLBAR (FIREFOX)
+
+/* Reduced motion support */   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    * {
+
+    animation-duration: 0.01ms !important;
+
+    animation-iteration-count: 1 !important;
+
+        transition-duration: 0.01ms !important;}
+
+    }
+
+}
+
+/* ============================================
+
+/* ============================================   FORM ELEMENTS
+
+   LOADING STATE   ============================================ */
+
+   ===========================
+
+/* Text inputs */
+
+.kata-dialog-loading {
+
+    pointer-events: none;
+
+    opacity: 0.6;
+
+    position: relative;
+
+}    font-size: 13px;
+
+    transition: all 0.2s ease;
+
+.kata-dialog-loading::after {}
+
+    content: '';
+
+    position: absolute;
+
+    top: 50%;
+
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    width: 40px;}
+
+    height: 40px;
+
+    border: 4px solid
+
+    border-top: 4px solid
+
+    border-radius: 50%;
+
+    animation: kata-spin 1s linear infinite;
+
+    z-index: 9999;
+
+}}
+
+
+
+@keyframes kata-spin {/* Labels */
+
+    0% {
+
+    100% { transform: translate(-50%, -50%) rotate(360deg);
+
+}    color: #333;
+
+    font-weight: 500;
+
+/* ============================================    margin-bottom: 4px;
+
+   VALIDATION STATES}
+
+   ===========================
+
+/* Required field indicator */
+
+/* Error state */.mce-label:has(text*="*") {
+
+.mce-textbox.kata-error {    color: #d54e21;
+
+    border-color: #dc3232 !important;}
+
+    background: #fff5f5 !important;
+
+}/* ============================================
+
+   CHECKBOXES
+
+.mce-textbox.kata-error:focus {   ============================================ */
+
+    border-color: #dc3232 !important;
+
+    box-shadow: 0 0 0 2px rgba(220, 50, 50, 0.1) !important;.mce-checkbox {
+
+}    margin: 6px 0;
+
+}
+
+/* Success state */
+
+.mce-textbox.kata-success {
+
+    border-color: #46b450 !important;
+
+    background: #f7fcf7 !important;
+
+}    cursor: pointer;
+
+    padding: 4px 8px;
+
+/* ============================================    border-radius: 3px;
+
+   ANIMATIONS    transition: background-color 0.2s ease;
+
+   ===========================
+
+
+
+@keyframes fadeIn {
+
+    from {    background-color: #f0f0f0;
+
+        opacity: 0;}
+
+        transform: translateY(-10px) scale(0.98);
+
+    }.mce-checkbox input[type="checkbox"] {
+
+    to {    margin-right: 8px;
+
+    opacity: 1;
+
+    transform: translateY(0) scale(1);
+
+    }    cursor: pointer;
+
+}}
+
+
+
+.mce-window {/* Checked state */
+
+    animation: fadeIn 0.4s ease-out;
+
+}    color: #0073aa;
+
+    font-weight: 500;
+
+@keyframes slideDown {}
+
+    from {
+
+        opacity: 0;/* ============================================
+
+        max-height: 0;   SECTION SEPARATORS
+
+    }   ============================================ */
+
+    to {
+
+    opacity: 1;
+
+    max-height: 1000px;
+
+    }    color: white;
+
+}    padding: 8px 12px;
+
+    margin: 16px 0 8px 0;
+
+.kata-section-content {    border-radius: 4px;
+
+    animation: slideDown 0.3s ease-out;
+
+}    text-transform: uppercase;
+
+    letter-spacing: 0.5px;
+
+/* ============================================}
+
+   PRINT STYLES
+
+   ===========================
+
+    background: #e7f3f8;
+
+@media print {    padding: 6px 12px;
+
+    .mce-window {    margin: 4px 0 12px 0;
+
+    box-shadow: none;
+
+    border: 1px solid #000;
+
+    }    font-size: 12px;
+
+    }
+
+    .mce-foot {
+
+        display: none;/* Separator lines */
+
+    }.mce-label[text*="━━━"] {
+
+        margin: 20px 0 8px 0;
+
+    .kata-checkbox-grid {    opacity: 0.3;
+
+    page-break-inside: avoid;
+
+    }}
+
+    
+
+    .kata-section-header {/* ============================================
+
+        page-break-after: avoid;   HEADER & FOOTER
+
+    }   ============================================ */
+
+}
+
+/* Info labels */
+.mce-label:first-child {
+    background: #fff9e6;
+    border: 1px solid #ffde8a;
+    border-radius: 4px;
+    padding: 10px 12px;
+    margin-bottom: 16px;
+    color: #856404;
+    font-size: 13px;
+}
+
+.mce-label:last-child {
+    background: #e7f3f8;
+    border: 1px solid #b3d9ea;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-top: 16px;
+    color: #004a5d;
+    font-size: 12px;
+}
+
+/* ============================================
+   BUTTONS
+   ===========================
+
+.mce-primary {
+    background: linear-gradient(135deg,
+    border-color: #005a87;
+    color: white;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.mce-primary:hover {
+    background: linear-gradient(135deg,
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.mce-primary:active {
+    transform: translateY(0);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Cancel button */
+.mce-btn:not(.mce-primary) {
+    background: #f5f5f5;
+    border-color: #ddd;
+    color: #555;
+    padding: 8px 16px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.mce-btn:not(.mce-primary):hover {
+    background: #e9e9e9;
+    border-color: #ccc;
+}
+
+/* ============================================
+   FORM GRID LAYOUT
+   ===========================
+
+/* Checkbox columns (if JavaScript adds this class) */
+.kata-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin: 8px 0;
+}
+
+@media (min-width: 900px) {
+    .kata-checkbox-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* ============================================
+   VALIDATION STATES
+   ===========================
+
+/* Error state */
+.mce-textbox.kata-error {
+    border-color: #dc3232;
+    background: #fff5f5;
+}
+
+.mce-textbox.kata-error:focus {
+    border-color: #dc3232;
+    box-shadow: 0 0 0 1px #dc3232;
+}
+
+/* Success state */
+.mce-textbox.kata-success {
+    border-color: #46b450;
+    background: #f7fcf7;
+}
+
+/* ============================================
+   LOADING STATE
+   ===========================
+
+.kata-dialog-loading {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.kata-dialog-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0073aa;
+    border-radius: 50%;
+    animation: kata-spin 1s linear infinite;
+}
+
+@keyframes kata-spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ============================================
+   TOOLTIPS
+   ===========================
+
+.kata-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.kata-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    z-index: 1000;
+}
+
+.kata-tooltip:hover::after {
+    opacity: 1;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ===========================
+
+@media (max-width: 768px) {
+    .mce-window {
+        width: 95% !important;
+        max-width: 600px !important;
+    }
+    
+    .kata-checkbox-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ===========================
+
+/* Focus visible for keyboard navigation */
+.mce-textbox:focus-visible,
+.mce-checkbox input:focus-visible,
+.mce-btn:focus-visible {
+    outline: 2px solid #0073aa;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .mce-textbox,
+    .mce-btn {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* ============================================
+   PRINT STYLES
+   ===========================
+
+@media print {
+    .mce-window {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .mce-foot {
+        display: none;
+    }
+}

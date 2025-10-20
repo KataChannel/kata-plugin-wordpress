@@ -1,0 +1,496 @@
+/**
+ * Admin CSS - KATA SEO Manager
+ * 
+ * Uses CSS variables from kata-seo-variables.css
+ * 
+ * @package KATA_SEO_Manager
+ * @since 2.1.4
+ */
+
+/* General */
+.kata-seo-manager {
+    font-family: var(--kata-font-family);
+}
+
+/* Dashboard */
+.kata-seo-dashboard {
+    background: var(--kata-bg-body);
+}
+
+/* Schema Meta Box */
+.kata-schema-meta-box {
+    background: var(--kata-bg-container);
+}
+
+.kata-schema-list {
+    margin-bottom: var(--kata-space-base);
+}
+
+.kata-schema-item {
+    border: 1px solid var(--kata-border-color);
+    border-radius: var(--kata-radius-base);
+    padding: var(--kata-space-base);
+    margin-bottom: var(--kata-space-sm);
+    background: var(--kata-gray-50);
+    transition: box-shadow var(--kata-transition-base);
+}
+
+.kata-schema-item:hover {
+    box-shadow: var(--kata-shadow-base);
+}
+
+.schema-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--kata-space-sm);
+}
+
+.schema-header strong {
+    font-size: var(--kata-font-md);
+    color: var(--kata-text-primary);
+}
+
+.schema-status {
+    display: inline-block;
+    padding: 2px var(--kata-space-sm);
+    border-radius: var(--kata-radius-sm);
+    font-size: var(--kata-font-xs);
+    font-weight: var(--kata-font-semibold);
+    text-transform: uppercase;
+}
+
+.schema-status.active {
+    background: var(--kata-success-bg);
+    color: var(--kata-success-text);
+}
+
+.schema-status.inactive {
+    background: var(--kata-error-bg);
+    color: var(--kata-error-text);
+}
+
+.schema-actions {
+    display: flex;
+    gap: var(--kata-space-sm);
+}
+
+.schema-actions .button-link {
+    color: var(--kata-primary);
+    text-decoration: none;
+    transition: color var(--kata-transition-fast);
+}
+
+.schema-actions .button-link:hover {
+    color: var(--kata-primary-hover);
+    text-decoration: underline;
+}
+
+.schema-preview {
+    background: var(--kata-bg-container);
+    padding: var(--kata-space-sm);
+    border-radius: var(--kata-radius-sm);
+    font-family: var(--kata-font-mono);
+    font-size: var(--kata-font-sm);
+    overflow-x: auto;
+    border: 1px solid var(--kata-border-light);
+}
+
+/* Form Fields */
+.kata-field {
+    margin-bottom: var(--kata-space-base);
+}
+
+.kata-field-label {
+    display: block;
+    margin-bottom: var(--kata-space-xs);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-text-primary);
+}
+
+.kata-field-label .required {
+    color: var(--kata-error);
+}
+
+.kata-field-input {
+    width: 100%;
+    padding: var(--kata-space-sm) var(--kata-space-md);
+    border: 1px solid var(--kata-gray-600);
+    border-radius: var(--kata-radius-base);
+    font-size: var(--kata-font-md);
+    transition: all var(--kata-transition-fast);
+}
+
+.kata-field-input:focus {
+    border-color: var(--kata-border-focus);
+    outline: none;
+    box-shadow: 0 0 0 1px var(--kata-primary);
+}
+
+.kata-field-description {
+    margin-top: var(--kata-space-xs);
+    font-size: var(--kata-font-base);
+    color: var(--kata-text-tertiary);
+}
+
+/* Repeater Field */
+.kata-repeater-items {
+    border: 1px solid var(--kata-border-light);
+    border-radius: var(--kata-radius-base);
+    padding: var(--kata-space-base);
+    background: var(--kata-gray-50);
+}
+
+.kata-repeater-item {
+    background: var(--kata-bg-container);
+    padding: var(--kata-space-base);
+    margin-bottom: var(--kata-space-sm);
+    border: 1px solid var(--kata-border-light);
+    border-radius: var(--kata-radius-base);
+    position: relative;
+    transition: border-color var(--kata-transition-fast);
+}
+
+.kata-repeater-remove {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #dc3232;
+    cursor: pointer;
+}
+
+.kata-repeater-add {
+    margin-top: 10px;
+}
+
+/* Buttons */
+.kata-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.kata-button-primary {
+    background: #2271b1;
+    color: white;
+}
+
+.kata-button-primary:hover {
+    background: #135e96;
+}
+
+.kata-button-secondary {
+    background: #f0f0f1;
+    color: #2c3338;
+}
+
+.kata-button-secondary:hover {
+    background: #dcdcde;
+}
+
+.kata-button-danger {
+    background: #dc3232;
+    color: white;
+}
+
+.kata-button-danger:hover {
+    background: #a02222;
+}
+
+/* Stats */
+.kata-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 20px 0;
+}
+
+.kata-stat-box {
+    background: white;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    padding: 20px;
+    text-align: center;
+}
+
+.kata-stat-value {
+    font-size: 36px;
+    font-weight: bold;
+    color: #2271b1;
+    line-height: 1;
+}
+
+.kata-stat-label {
+    margin-top: 8px;
+    font-size: 14px;
+    color: #646970;
+}
+
+/* Tables */
+.kata-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid #c3c4c7;
+}
+
+.kata-table th,
+.kata-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #c3c4c7;
+}
+
+.kata-table th {
+    background: #f6f7f7;
+    font-weight: 600;
+}
+
+.kata-table tr:hover {
+    background: #f6f7f7;
+}
+
+/* Tooltips */
+.kata-tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: help;
+}
+
+.kata-tooltip .kata-tooltip-text {
+    visibility: hidden;
+    width: 200px;
+    background-color: #1d2327;
+    color: #fff;
+    text-align: center;
+    border-radius: 4px;
+    padding: 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -100px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 13px;
+}
+
+.kata-tooltip:hover .kata-tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Alerts */
+.kata-alert {
+    padding: 12px 16px;
+    border-radius: 4px;
+    margin: 15px 0;
+}
+
+.kata-alert-success {
+    background: #d4edda;
+    color: #155724;
+    border-left: 4px solid #28a745;
+}
+
+.kata-alert-error {
+    background: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid #dc3232;
+}
+
+.kata-alert-warning {
+    background: #fff3cd;
+    color: #856404;
+    border-left: 4px solid #ffc107;
+}
+
+.kata-alert-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border-left: 4px solid #17a2b8;
+}
+
+/* Loading */
+.kata-loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
+    border-top-color: #2271b1;
+    animation: kata-spin 1s linear infinite;
+}
+
+@keyframes kata-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .kata-stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-dashboard-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .kata-modal-content {
+        width: 95%;
+        max-height: 95vh;
+    }
+}
+
+/* ========================================
+   QUICK ACTIONS CARD
+   ======================================== */
+
+.kata-quick-actions-card {
+    margin-bottom: 24px;
+}
+
+.kata-quick-actions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.kata-quick-action-btn {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+}
+
+.kata-quick-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.kata-quick-action-btn:hover::before {
+    left: 100%;
+}
+
+.kata-quick-action-btn:hover {
+    border-color: #2563eb;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+    transform: translateY(-2px);
+}
+
+.kata-quick-action-btn:active {
+    transform: translateY(0);
+}
+
+.kata-quick-action-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.kata-quick-action-btn.kata-danger {
+    border-color: #fee2e2;
+}
+
+.kata-quick-action-btn.kata-danger:hover {
+    border-color: #dc2626;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+}
+
+.kata-quick-action-btn.kata-danger .kata-quick-action-icon {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    color: #dc2626;
+}
+
+.kata-quick-action-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+    border-radius: 10px;
+    color: #2563eb;
+}
+
+.kata-quick-action-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.kata-quick-action-content {
+    flex: 1;
+}
+
+.kata-quick-action-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.kata-quick-action-desc {
+    font-size: 12px;
+    color: #64748b;
+}
+
+/* Spinner for loading state */
+.kata-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(37, 99, 235, 0.1);
+    border-radius: 50%;
+    border-top-color: #2563eb;
+    animation: kata-spin 0.8s linear infinite;
+}
+
+@keyframes kata-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Quick Actions */
+@media (max-width: 782px) {
+    .kata-quick-action-btn {
+        padding: 14px;
+    }
+    
+    .kata-quick-action-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .kata-quick-action-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .kata-quick-action-title {
+        font-size: 13px;
+    }
+    
+    .kata-quick-action-desc {
+        font-size: 11px;
+    }
+}

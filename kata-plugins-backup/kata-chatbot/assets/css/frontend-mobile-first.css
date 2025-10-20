@@ -1,0 +1,1142 @@
+/**
+ * Kata Chatbot Frontend Styles - Mobile First Approach
+ * 
+ * Architecture:
+ * 1. Base styles (Mobile: 320px+)
+ * 2. Tablet breakpoint (min-width: 768px)
+ * 3. Desktop breakpoint (min-width: 1024px)
+ * 4. Large desktop (min-width: 1440px)
+ * 
+ * @package KataChatbot
+ * @since 1.1.2
+ * @author KATA Development Team
+ */
+
+/* ==========================================================================
+   Base Styles - Mobile First (320px+)
+   ========================================================================== */
+
+/* Container */
+.kata-chatbot-container {
+    position: fixed;
+    z-index: 999999;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Mobile: Bottom-right by default */
+    bottom: 12px;
+    right: 12px;
+    left: auto;
+    top: auto;
+}
+
+/* Positioning Modifiers */
+.kata-position-bottom-right {
+    bottom: 12px;
+    right: 12px;
+    left: auto;
+    top: auto;
+}
+
+.kata-position-bottom-left {
+    bottom: 12px;
+    left: 12px;
+    right: auto;
+    top: auto;
+}
+
+.kata-position-top-right {
+    top: 12px;
+    right: 12px;
+    left: auto;
+    bottom: auto;
+}
+
+.kata-position-top-left {
+    top: 12px;
+    left: 12px;
+    right: auto;
+    bottom: auto;
+}
+
+/* ==========================================================================
+   Toggle Button - Mobile First
+   ========================================================================== */
+
+.kata-chat-toggle {
+    /* Size: Min 48x48px for touch targets (WCAG 2.1) */
+    width: 56px;
+    height: 56px;
+    min-width: 48px;
+    min-height: 48px;
+    
+    /* Visual */
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0073aa, #005a87);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0, 115, 170, 0.3);
+    
+    /* Layout */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    
+    /* Interaction */
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    
+    /* Animation */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Visibility */
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: scale(1);
+}
+
+/* Toggle Button States */
+.kata-chat-toggle:hover,
+.kata-chat-toggle:focus {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 115, 170, 0.4);
+    outline: none;
+}
+
+.kata-chat-toggle:active {
+    transform: scale(0.95);
+}
+
+.kata-chat-toggle:focus-visible {
+    outline: 3px solid rgba(0, 115, 170, 0.5);
+    outline-offset: 3px;
+}
+
+/* Hide toggle when chat is open */
+.kata-chatbot-container.open .kata-chat-toggle {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: scale(0.8);
+}
+
+/* Toggle Icons */
+.kata-toggle-icon {
+    position: relative;
+    width: 24px;
+    height: 24px;
+}
+
+.kata-toggle-icon svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kata-icon-close {
+    opacity: 0;
+    transform: rotate(180deg);
+}
+
+.kata-chatbot-container.open .kata-icon-chat {
+    opacity: 0;
+    transform: rotate(-180deg);
+}
+
+.kata-chatbot-container.open .kata-icon-close {
+    opacity: 1;
+    transform: rotate(0deg);
+}
+
+/* ==========================================================================
+   Notification Badge
+   ========================================================================== */
+
+.kata-notification-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    
+    background: #dc3545;
+    color: white;
+    border-radius: 10px;
+    border: 2px solid white;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 1;
+    
+    animation: kata-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes kata-pulse {
+    0%, 100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% { 
+        transform: scale(1.1);
+        opacity: 0.9;
+    }
+}
+
+/* Status Indicator */
+.kata-status-indicator {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+.kata-status-online {
+    background: #28a745;
+}
+
+.kata-status-offline {
+    background: #dc3545;
+}
+
+.kata-status-away {
+    background: #ffc107;
+}
+
+/* ==========================================================================
+   Chat Window - Mobile First
+   ========================================================================== */
+
+.kata-chat-window {
+    position: fixed;
+    /* Mobile: Full screen minus safe areas */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: calc(100vh - 60px);
+    max-height: calc(100vh - 60px);
+    
+    /* Visual */
+    background: white;
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+    
+    /* Layout */
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    
+    /* Animation */
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kata-chatbot-container.open .kata-chat-window {
+    display: flex;
+    transform: translateY(0);
+    animation: kata-slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes kata-slide-up {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Close Button - Mobile First */
+.kata-window-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;
+    
+    /* Touch target: Min 44x44px */
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    
+    background: rgba(0, 0, 0, 0.05);
+    border: none;
+    border-radius: 50%;
+    color: #333;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.kata-window-close:hover,
+.kata-window-close:focus {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.05);
+}
+
+.kata-window-close:active {
+    transform: scale(0.95);
+}
+
+.kata-window-close svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ==========================================================================
+   Main Layout - Mobile First (Vertical Stack)
+   ========================================================================== */
+
+.kata-chat-main-wrapper {
+    display: flex;
+    flex-direction: column; /* Mobile: Vertical stack */
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/* Content Area */
+.kata-chat-content-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    order: 1; /* Mobile: Content first */
+}
+
+/* Tab Navigation - Mobile: Horizontal at bottom */
+.kata-chat-tabs {
+    width: 100%;
+    height: 64px;
+    min-height: 64px; /* Ensure touch target */
+    flex-shrink: 0;
+    order: 2; /* Mobile: Tabs at bottom */
+    
+    background: linear-gradient(90deg, #0073aa 0%, #005a87 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.kata-tab-nav {
+    display: flex;
+    flex-direction: row; /* Mobile: Horizontal tabs */
+    height: 100%;
+    gap: 0;
+}
+
+/* Tab Buttons - Mobile First */
+.kata-tab-btn {
+    flex: 1;
+    min-width: 0; /* Allow flex shrink */
+    min-height: 64px; /* Touch target */
+    padding: 8px 4px;
+    
+    border: none;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.7);
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    
+    border-top: 3px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+}
+
+.kata-tab-btn:hover,
+.kata-tab-btn:focus {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-top-color: rgba(255, 255, 255, 0.3);
+}
+
+.kata-tab-btn.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+    border-top-color: white;
+}
+
+.kata-tab-btn svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+    filter: brightness(2);
+}
+
+.kata-tab-btn span {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+.kata-tab-btn .kata-badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    
+    background: #dc3545;
+    color: white;
+    border-radius: 9px;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1;
+    
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================================
+   Tab Content
+   ========================================================================== */
+
+.kata-tab-content {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.kata-tab-content.active {
+    display: flex;
+    animation: kata-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes kata-fade-in {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Chat Tab Specific */
+#kata-tab-chat {
+    display: flex;
+    flex-direction: column;
+}
+
+#kata-tab-chat.active {
+    display: flex;
+}
+
+/* ==========================================================================
+   Chat Messages
+   ========================================================================== */
+
+.kata-chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 16px 12px;
+    background: #f8f9fa;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+.kata-message {
+    margin-bottom: 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.kata-message-avatar {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.kata-message-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.kata-message-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.kata-message-bubble {
+    background: white;
+    padding: 12px 14px;
+    border-radius: 16px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.kata-user-message {
+    flex-direction: row-reverse;
+}
+
+.kata-user-message .kata-message-avatar {
+    margin-left: 10px;
+    margin-right: 0;
+}
+
+.kata-user-message .kata-message-bubble {
+    background: #0073aa;
+    color: white;
+}
+
+.kata-message-time {
+    font-size: 11px;
+    color: #999;
+    margin-top: 4px;
+    padding: 0 4px;
+}
+
+.kata-user-message .kata-message-time {
+    text-align: right;
+}
+
+/* ==========================================================================
+   Chat Input - Mobile First
+   ========================================================================== */
+
+.kata-chat-input {
+    padding: 12px;
+    border-top: 1px solid #e0e0e0;
+    background: white;
+    flex-shrink: 0;
+    
+    /* Prevent keyboard resize issues on mobile */
+    position: relative;
+}
+
+.kata-input-group {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+#kata-message-input {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px; /* Touch target */
+    max-height: 120px;
+    
+    border: 2px solid #e0e0e0;
+    border-radius: 22px;
+    padding: 11px 16px;
+    
+    font-family: inherit;
+    font-size: 15px; /* Prevent zoom on iOS */
+    line-height: 1.4;
+    
+    resize: none;
+    outline: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    
+    transition: border-color 0.2s ease;
+}
+
+#kata-message-input:focus {
+    border-color: #0073aa;
+}
+
+.kata-send-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    flex-shrink: 0;
+    
+    border-radius: 50%;
+    background: #0073aa;
+    color: white;
+    border: none;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    
+    transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.kata-send-btn:hover,
+.kata-send-btn:focus {
+    background: #005a87;
+}
+
+.kata-send-btn:active {
+    transform: scale(0.95);
+}
+
+.kata-send-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.kata-send-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* ==========================================================================
+   Contact Components
+   ========================================================================== */
+
+.kata-contact-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f8f9fa;
+    flex-shrink: 0;
+}
+
+.kata-contact-icon {
+    flex-shrink: 0;
+}
+
+.kata-contact-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+.kata-contact-title {
+    flex: 1;
+    min-width: 0;
+}
+
+.kata-contact-title h3 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.kata-contact-title p {
+    margin: 0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.3;
+}
+
+/* Branch List */
+.kata-branch-list {
+    padding: 12px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.kata-branch-item {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.kata-branch-info h4 {
+    margin: 0 0 8px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+}
+
+.kata-branch-address {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    color: #666;
+    line-height: 1.4;
+}
+
+.kata-working-hours {
+    margin: 0 0 12px 0;
+    font-size: 12px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* Contact Buttons */
+.kata-branch-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.kata-contact-btn {
+    flex: 1;
+    min-width: 0;
+    min-height: 44px; /* Touch target */
+    padding: 10px 14px;
+    
+    border: none;
+    border-radius: 8px;
+    
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    text-align: center;
+    
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    
+    transition: all 0.2s ease;
+}
+
+.kata-contact-btn svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.kata-contact-btn:active {
+    transform: scale(0.97);
+}
+
+/* Button Colors */
+.kata-facebook-btn {
+    background: #1877F2;
+    color: white;
+}
+
+.kata-facebook-btn:hover {
+    background: #166fe5;
+    color: white;
+}
+
+.kata-zalo-btn {
+    background: #0068FF;
+    color: white;
+}
+
+.kata-zalo-btn:hover {
+    background: #0056d6;
+    color: white;
+}
+
+.kata-hotline-btn {
+    background: #00C851;
+    color: white;
+}
+
+.kata-hotline-btn:hover {
+    background: #00a843;
+    color: white;
+}
+
+.kata-phone-btn {
+    background: #17a2b8;
+    color: white;
+}
+
+.kata-phone-btn:hover {
+    background: #138496;
+    color: white;
+}
+
+/* No Contact */
+.kata-no-contact {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+/* ==========================================================================
+   Typing Indicator
+   ========================================================================== */
+
+.kata-typing-indicator {
+    padding: 12px 16px;
+    background: #f8f9fa;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.kata-typing-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.kata-typing-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #0073aa;
+    animation: kata-typing 1.4s infinite ease-in-out;
+}
+
+.kata-typing-dots span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.kata-typing-dots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.kata-typing-dots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes kata-typing {
+    0%, 60%, 100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    30% {
+        transform: scale(1.3);
+        opacity: 1;
+    }
+}
+
+/* ==========================================================================
+   Tablet Breakpoint (768px+)
+   ========================================================================== */
+
+@media (min-width: 768px) {
+    /* Container positioning */
+    .kata-chatbot-container {
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .kata-position-bottom-right {
+        bottom: 20px;
+        right: 20px;
+    }
+    
+    .kata-position-bottom-left {
+        bottom: 20px;
+        left: 20px;
+    }
+    
+    .kata-position-top-right {
+        top: 20px;
+        right: 20px;
+    }
+    
+    .kata-position-top-left {
+        top: 20px;
+        left: 20px;
+    }
+    
+    /* Toggle Button */
+    .kata-chat-toggle {
+        width: 60px;
+        height: 60px;
+    }
+    
+    /* Chat Window: Switch to floating */
+    .kata-chat-window {
+        position: absolute;
+        bottom: 75px;
+        right: 0;
+        left: auto;
+        
+        width: 380px;
+        height: 520px;
+        max-height: calc(100vh - 120px);
+        
+        border-radius: 16px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Main wrapper: Still vertical on tablet */
+    .kata-chat-main-wrapper {
+        flex-direction: column;
+    }
+    
+    .kata-chat-tabs {
+        order: 2;
+        height: 64px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        border-left: none;
+    }
+    
+    .kata-tab-nav {
+        flex-direction: row;
+    }
+    
+    .kata-tab-btn {
+        border-top: 3px solid transparent;
+        border-left: none;
+        font-size: 11px;
+    }
+    
+    .kata-tab-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* Messages */
+    .kata-chat-messages {
+        padding: 16px;
+    }
+    
+    /* Input */
+    .kata-chat-input {
+        padding: 14px;
+    }
+}
+
+/* ==========================================================================
+   Desktop Breakpoint (1024px+) - Horizontal Layout
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+    /* Chat Window: Larger size */
+    .kata-chat-window {
+        width: 420px;
+        height: 550px;
+        bottom: 75px;
+    }
+    
+    /* Main Wrapper: Switch to horizontal */
+    .kata-chat-main-wrapper {
+        flex-direction: row;
+    }
+    
+    /* Content Area */
+    .kata-chat-content-area {
+        flex: 1;
+        order: 1;
+    }
+    
+    /* Tabs: Vertical on right */
+    .kata-chat-tabs {
+        width: 70px;
+        height: 100%;
+        order: 2;
+        
+        background: linear-gradient(180deg, #0073aa 0%, #005a87 100%);
+        border-top: none;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .kata-tab-nav {
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .kata-tab-btn {
+        flex: 1;
+        padding: 16px 8px;
+        border-top: none;
+        border-left: 3px solid transparent;
+        font-size: 10px;
+    }
+    
+    .kata-tab-btn:hover,
+    .kata-tab-btn:focus {
+        border-top-color: transparent;
+        border-left-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .kata-tab-btn.active {
+        border-top-color: transparent;
+        border-left-color: white;
+    }
+    
+    .kata-tab-btn svg {
+        width: 22px;
+        height: 22px;
+    }
+    
+    /* Messages */
+    .kata-chat-messages {
+        padding: 18px;
+    }
+    
+    /* Input */
+    #kata-message-input {
+        font-size: 14px;
+    }
+}
+
+/* ==========================================================================
+   Large Desktop (1440px+)
+   ========================================================================== */
+
+@media (min-width: 1440px) {
+    .kata-chat-window {
+        width: 450px;
+        height: 600px;
+    }
+    
+    .kata-chat-tabs {
+        width: 80px;
+    }
+    
+    .kata-tab-btn {
+        font-size: 11px;
+    }
+}
+
+/* ==========================================================================
+   Theme Variations
+   ========================================================================== */
+
+.kata-theme-blue .kata-chat-toggle {
+    background: linear-gradient(135deg, #0073aa, #005a87);
+}
+
+.kata-theme-green .kata-chat-toggle {
+    background: linear-gradient(135deg, #28a745, #1e7e34);
+}
+
+.kata-theme-red .kata-chat-toggle {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+}
+
+.kata-theme-purple .kata-chat-toggle {
+    background: linear-gradient(135deg, #6f42c1, #5a32a3);
+}
+
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
+/* Focus visible for keyboard navigation */
+.kata-chat-toggle:focus-visible,
+.kata-window-close:focus-visible,
+.kata-tab-btn:focus-visible,
+.kata-send-btn:focus-visible,
+.kata-contact-btn:focus-visible {
+    outline: 3px solid rgba(0, 115, 170, 0.5);
+    outline-offset: 2px;
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .kata-message-bubble,
+    .kata-branch-item,
+    .kata-contact-btn {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Dark mode support (if needed) */
+@media (prefers-color-scheme: dark) {
+    .kata-chat-window {
+        background: #1e1e1e;
+        color: #e0e0e0;
+    }
+    
+    .kata-chat-messages {
+        background: #2d2d2d;
+    }
+    
+    .kata-message-bubble {
+        background: #3a3a3a;
+        color: #e0e0e0;
+    }
+    
+    .kata-chat-input {
+        background: #2d2d2d;
+        border-top-color: #444;
+    }
+    
+    #kata-message-input {
+        background: #3a3a3a;
+        color: #e0e0e0;
+        border-color: #555;
+    }
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+    .kata-chatbot-container {
+        display: none !important;
+    }
+}

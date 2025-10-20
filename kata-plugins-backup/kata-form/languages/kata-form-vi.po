@@ -1,0 +1,218 @@
+# KATA FORM PLUGIN - VIETNAMESE TRANSLATION
+# Plugin Name: Kata Form Manager
+# Text Domain: kata-form
+
+msgid ""
+msgstr ""
+"Project-Id-Version: Kata Form Manager 1.0.0\n"
+"Report-Msgid-Bugs-To: support@kata.vn\n"
+"POT-Creation-Date: 2025-09-05 12:00+0000\n"
+"PO-Revision-Date: 2025-09-05 12:00+0000\n"
+"Last-Translator: Kata Team <team@kata.vn>\n"
+"Language-Team: Vietnamese\n"
+"Language: vi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: manual\n"
+
+# Plugin header
+msgid "Advanced Contact Form 7 integration with database storage and comprehensive statistics management."
+msgstr "Tích hợp nâng cao với Contact Form 7, lưu trữ cơ sở dữ liệu và quản lý thống kê toàn diện."
+
+# Admin menu
+msgid "Kata Form Manager"
+msgstr "Quản Lý Kata Form"
+
+msgid "Kata Forms"
+msgstr "Kata Forms"
+
+msgid "Submissions"
+msgstr "Dữ Liệu Gửi"
+
+msgid "Statistics"
+msgstr "Thống Kê"
+
+msgid "Settings"
+msgstr "Cài Đặt"
+
+# Error messages
+msgid "Requires Contact Form 7 plugin to be installed and activated."
+msgstr "Yêu cầu plugin Contact Form 7 được cài đặt và kích hoạt."
+
+# Submissions page
+msgid "Form Submissions"
+msgstr "Dữ Liệu Form Gửi"
+
+msgid "All Forms"
+msgstr "Tất cả Form"
+
+msgid "All Statuses"
+msgstr "Tất cả Trạng thái"
+
+msgid "New"
+msgstr "Mới"
+
+msgid "Read"
+msgstr "Đã đọc"
+
+msgid "Archived"
+msgstr "Lưu trữ"
+
+msgid "Filter"
+msgstr "Lọc"
+
+msgid "Reset"
+msgstr "Đặt lại"
+
+msgid "Export Data"
+msgstr "Xuất Dữ Liệu"
+
+msgid "Search submissions:"
+msgstr "Tìm kiếm dữ liệu:"
+
+msgid "Search Submissions"
+msgstr "Tìm Kiếm"
+
+msgid "Form & Data"
+msgstr "Form & Dữ Liệu"
+
+msgid "Status"
+msgstr "Trạng Thái"
+
+msgid "IP Address"
+msgstr "Địa Chỉ IP"
+
+msgid "Date"
+msgstr "Ngày"
+
+msgid "Actions"
+msgstr "Hành Động"
+
+msgid "No submissions found."
+msgstr "Không tìm thấy dữ liệu."
+
+msgid "Show more details"
+msgstr "Xem thêm chi tiết"
+
+msgid "View"
+msgstr "Xem"
+
+msgid "Delete"
+msgstr "Xóa"
+
+msgid "Date Range"
+msgstr "Khoảng Thời Gian"
+
+msgid "From"
+msgstr "Từ"
+
+msgid "To"
+msgstr "Đến"
+
+msgid "Export"
+msgstr "Xuất Dữ Liệu"
+
+msgid "Cancel"
+msgstr "Hủy"
+
+msgid "Submission Details"
+msgstr "Chi Tiết Dữ Liệu"
+
+msgid "Close"
+msgstr "Đóng"
+
+# Statistics page
+msgid "Form Statistics"
+msgstr "Thống Kê Form"
+
+msgid "Total Submissions"
+msgstr "Tổng Dữ Liệu"
+
+msgid "Today"
+msgstr "Hôm Nay"
+
+msgid "This Month"
+msgstr "Tháng Này"
+
+msgid "Most Popular Form"
+msgstr "Form Phổ Biến Nhất"
+
+msgid "Daily Submissions (Last 30 Days)"
+msgstr "Dữ Liệu Theo Ngày (30 Ngày Gần Đây)"
+
+msgid "Submissions by Form"
+msgstr "Dữ Liệu Theo Form"
+
+msgid "Recent Activity"
+msgstr "Hoạt Động Gần Đây"
+
+msgid "No recent activity."
+msgstr "Không có hoạt động gần đây."
+
+# Settings page
+msgid "Kata Form Settings"
+msgstr "Cài Đặt Kata Form"
+
+msgid "Data Collection"
+msgstr "Thu Thập Dữ Liệu"
+
+msgid "Save IP Address"
+msgstr "Lưu Địa Chỉ IP"
+
+msgid "Store visitor IP addresses with form submissions"
+msgstr "Lưu trữ địa chỉ IP của người gửi form"
+
+msgid "Enable this to track the IP address of form submitters for security and analytics."
+msgstr "Bật tùy chọn này để theo dõi địa chỉ IP của người gửi form cho mục đích bảo mật và phân tích."
+
+msgid "Save User Agent"
+msgstr "Lưu User Agent"
+
+msgid "Store browser user agent information"
+msgstr "Lưu trữ thông tin trình duyệt user agent"
+
+msgid "This helps identify the browser and device used for submissions."
+msgstr "Điều này giúp xác định trình duyệt và thiết bị được sử dụng để gửi form."
+
+msgid "Save Referrer"
+msgstr "Lưu Referrer"
+
+msgid "Store the referring page URL"
+msgstr "Lưu trữ URL trang giới thiệu"
+
+msgid "Track which pages or external sites visitors came from before submitting the form."
+msgstr "Theo dõi khách truy cập đến từ trang nào hoặc trang web bên ngoài nào trước khi gửi form."
+
+msgid "Notifications"
+msgstr "Thông Báo"
+
+msgid "Email Notifications"
+msgstr "Thông Báo Email"
+
+msgid "Send email notifications for new submissions"
+msgstr "Gửi thông báo email cho dữ liệu mới"
+
+msgid "Notification Email"
+msgstr "Email Nhận Thông Báo"
+
+msgid "Email address to receive new submission notifications."
+msgstr "Địa chỉ email để nhận thông báo dữ liệu mới."
+
+# JavaScript messages
+msgid "Are you sure you want to delete this submission?"
+msgstr "Bạn có chắc chắn muốn xóa dữ liệu này?"
+
+msgid "Export completed successfully!"
+msgstr "Xuất dữ liệu thành công!"
+
+msgid "An error occurred. Please try again."
+msgstr "Có lỗi xảy ra. Vui lòng thử lại."
+
+# Frontend shortcode
+msgid "Total Submissions"
+msgstr "Tổng Dữ Liệu"
+
+# Common
+msgid "None"
+msgstr "Chưa có"

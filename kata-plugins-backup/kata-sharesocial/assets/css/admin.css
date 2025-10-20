@@ -1,0 +1,644 @@
+/* Kata ShareSocial Admin Styles */
+
+/* General Admin Styles */
+.kata-sharesocial-dashboard,
+.kata-sharesocial-settings,
+.kata-sharesocial-analytics {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* Dashboard Specific Styles */
+.kata-dashboard-header {
+    margin: 20px 0 30px 0;
+}
+
+.kata-stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.kata-stat-card {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 8px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: all 0.3s ease;
+}
+
+.kata-stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+}
+
+.kata-stat-number {
+    font-size: 36px;
+    font-weight: 700;
+    color: #1d2327;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.kata-stat-label {
+    color: #646970;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Dashboard Content Layout */
+.kata-dashboard-content {
+    margin-top: 20px;
+}
+
+.kata-dashboard-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.kata-dashboard-col {
+    flex: 1;
+}
+
+.kata-col-60 {
+    flex: 0 0 60%;
+}
+
+.kata-col-40 {
+    flex: 0 0 38%;
+}
+
+/* Widget Styles */
+.kata-widget {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+}
+
+.kata-widget-header {
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f1;
+    background: #fafafa;
+}
+
+.kata-widget-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.kata-widget-subtitle {
+    color: #646970;
+    font-size: 12px;
+    font-weight: normal;
+    margin-left: 10px;
+}
+
+.kata-widget-content {
+    padding: 24px;
+}
+
+/* Platform Chart */
+.kata-platform-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.kata-platform-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+}
+
+.kata-platform-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.kata-platform-info i {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.kata-platform-name {
+    font-weight: 500;
+    color: #1d2327;
+}
+
+.kata-platform-stats {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-width: 200px;
+}
+
+.kata-platform-bar {
+    background: #f0f0f1;
+    height: 8px;
+    width: 120px;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.kata-platform-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease-in-out;
+}
+
+.kata-platform-count {
+    font-weight: 600;
+    color: #1d2327;
+    min-width: 40px;
+    text-align: right;
+}
+
+/* Quick Actions */
+.kata-quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.kata-action-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #1d2327;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.kata-action-button:hover {
+    background: #f0f0f1;
+    border-color: #c3c4c7;
+    color: #1d2327;
+    text-decoration: none;
+    transform: translateY(-1px);
+}
+
+.kata-action-button .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+/* Top Post Widget */
+.kata-top-post {
+    padding: 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 8px;
+    color: white;
+    text-align: center;
+}
+
+.kata-top-post h4 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.kata-post-info strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.kata-post-info span {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.kata-edit-link {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: white;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.kata-edit-link:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+/* Top Posts List */
+.kata-top-posts {
+    display: flex;
+    flex-direction: column;
+}
+
+.kata-post-row {
+    display: flex;
+    align-items: center;
+    padding: 16px 0;
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.kata-post-row:last-child {
+    border-bottom: none;
+}
+
+.kata-post-rank {
+    font-size: 20px;
+    font-weight: 700;
+    color: #646970;
+    margin-right: 20px;
+    width: 30px;
+    text-align: center;
+}
+
+.kata-post-info {
+    flex: 1;
+}
+
+.kata-post-title a {
+    color: #1d2327;
+    text-decoration: none;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.kata-post-title a:hover {
+    color: #2271b1;
+}
+
+.kata-post-meta {
+    color: #646970;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+.kata-post-meta span {
+    margin-right: 16px;
+}
+
+.kata-post-shares {
+    text-align: right;
+    min-width: 80px;
+}
+
+.kata-post-shares strong {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1d2327;
+    line-height: 1;
+}
+
+.kata-post-shares span {
+    color: #646970;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Empty State */
+.kata-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #646970;
+}
+
+.kata-empty-state p {
+    font-size: 16px;
+    margin: 0;
+}
+
+/* Settings Styles */
+.kata-settings-container {
+    max-width: 1000px;
+}
+
+.kata-settings-section {
+    background: #fff;
+    border: 1px solid #c3c4c7;
+    border-radius: 8px;
+    margin: 24px 0;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.kata-settings-section h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1d2327;
+    border-bottom: 2px solid #f0f0f1;
+    padding-bottom: 12px;
+}
+
+/* Platform Grid */
+.kata-platforms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.kata-platform-option {
+    cursor: pointer;
+    display: block;
+}
+
+.kata-platform-option input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.kata-platform-card {
+    border: 2px solid #dcdcde;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+    background: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.kata-platform-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.kata-platform-option input[type="checkbox"]:checked + .kata-platform-card {
+    border-color: #2271b1;
+    background: #f6f9fc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(34, 113, 177, 0.15);
+}
+
+.kata-platform-option input[type="checkbox"]:checked + .kata-platform-card::before {
+    background: #2271b1;
+}
+
+.kata-platform-card:hover {
+    border-color: #2271b1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.kata-platform-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.kata-platform-name {
+    font-weight: 600;
+    color: #1d2327;
+    font-size: 14px;
+}
+
+/* Form Styles */
+.kata-settings-section .form-table th {
+    width: 220px;
+    padding: 20px 16px 20px 0;
+    vertical-align: top;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.kata-settings-section .form-table td {
+    padding: 16px 16px 16px 0;
+    vertical-align: top;
+}
+
+.kata-settings-section .form-table fieldset label {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+.kata-settings-section .form-table fieldset input[type="checkbox"],
+.kata-settings-section .form-table fieldset input[type="radio"] {
+    margin-right: 8px;
+}
+
+/* Preview Container */
+.kata-preview-container {
+    padding: 24px;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .kata-dashboard-row {
+        flex-direction: column;
+    }
+    
+    .kata-col-60,
+    .kata-col-40 {
+        flex: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .kata-stats-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-platforms-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 12px;
+    }
+    
+    .kata-platform-card {
+        padding: 16px;
+    }
+    
+    .kata-platform-icon {
+        font-size: 28px;
+        height: 40px;
+        margin-bottom: 8px;
+    }
+    
+    .kata-platform-stats {
+        min-width: auto;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+    }
+    
+    .kata-platform-bar {
+        width: 80px;
+    }
+    
+    .kata-post-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .kata-post-shares {
+        text-align: left;
+        align-self: flex-end;
+    }
+    
+    .kata-settings-section .form-table th,
+    .kata-settings-section .form-table td {
+        display: block;
+        width: 100%;
+        padding: 12px 0;
+    }
+    
+    .kata-settings-section .form-table th {
+        border-bottom: none;
+        padding-bottom: 6px;
+    }
+}
+
+@media (max-width: 480px) {
+    .kata-stat-card {
+        padding: 16px;
+    }
+    
+    .kata-stat-number {
+        font-size: 24px;
+    }
+    
+    .kata-widget-content {
+        padding: 16px;
+    }
+    
+    .kata-settings-section {
+        padding: 16px;
+    }
+}
+
+/* Animation Classes */
+.kata-fade-in {
+    animation: kataFadeIn 0.6s ease-out;
+}
+
+@keyframes kataFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kata-slide-up {
+    animation: kataSlideUp 0.4s ease-out;
+}
+
+@keyframes kataSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading States */
+.kata-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.kata-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #2271b1;
+    border-radius: 50%;
+    animation: kataSpin 1s linear infinite;
+}
+
+@keyframes kataSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Color Scheme Support */
+@media (prefers-color-scheme: dark) {
+    .kata-widget,
+    .kata-settings-section,
+    .kata-stat-card {
+        background: #1e1e1e;
+        border-color: #3c3c3c;
+        color: #e0e0e0;
+    }
+    
+    .kata-widget-header {
+        background: #2a2a2a;
+        border-color: #3c3c3c;
+    }
+    
+    .kata-stat-number,
+    .kata-platform-name,
+    .kata-post-title a {
+        color: #e0e0e0;
+    }
+    
+    .kata-platform-card {
+        background: #1e1e1e;
+        border-color: #3c3c3c;
+    }
+    
+    .kata-platform-option input[type="checkbox"]:checked + .kata-platform-card {
+        background: #1a2332;
+        border-color: #4f94d4;
+    }
+}

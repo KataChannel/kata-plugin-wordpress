@@ -1,0 +1,656 @@
+/**
+ * KATA SEO Manager - Schema Dialog Styles
+ * Uses CSS variables from kata-seo-variables.css
+ * 
+ * TinyMCE modal styling for schema insertion/editing
+ * Responsive design with proper form layouts
+ * 
+ * @package KATA_SEO_Manager
+ * @since 2.1.4
+ */
+
+/* ============================================
+   DIALOG CONTAINER - RESPONSIVE
+   ============================================ */
+
+.kata-schema-dialog {
+    max-width: 95vw !important;
+    max-height: 95vh !important;
+}
+
+/* Main modal window */
+.mce-window {
+    border-radius: var(--kata-radius-md);
+    box-shadow: var(--kata-shadow-xl);
+}
+
+.mce-window .mce-container-body {
+    background: var(--kata-bg-surface);
+    padding: var(--kata-space-lg);
+}
+
+/* Modal header */
+.mce-window .mce-title {
+    color: var(--kata-primary);
+    font-weight: var(--kata-font-semibold);
+    font-size: var(--kata-font-xl);
+}
+
+/* Modal footer */
+.mce-window .mce-foot {
+    background: var(--kata-bg-container);
+    border-top: 1px solid var(--kata-border-base);
+    padding: var(--kata-space-base) var(--kata-space-lg);
+}
+
+/* ============================================
+   FORM ELEMENTS - ENHANCED
+   ============================================ */
+
+/* Text inputs */
+.mce-textbox {
+    border-radius: var(--kata-radius-sm);
+    border: 1px solid var(--kata-border-base);
+    padding: var(--kata-space-xs) var(--kata-space-base);
+    font-size: var(--kata-font-md);
+    transition: all var(--kata-transition-base);
+    width: 100% !important;
+    box-sizing: border-box;
+    font-family: var(--kata-font-family);
+}
+
+.mce-textbox:focus {
+    border-color: var(--kata-border-focus);
+    box-shadow: 0 0 0 2px var(--kata-primary-lightest);
+    outline: none;
+}
+
+/* Multiline textbox (textarea) */
+.mce-textbox[style*="height"] {
+    min-height: 60px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+/* Labels */
+.mce-label {
+    font-size: var(--kata-font-sm);
+    color: var(--kata-gray-700);
+    font-weight: var(--kata-font-medium);
+    margin-bottom: var(--kata-space-xs);
+    display: block;
+}
+
+/* Form item spacing */
+.mce-container.mce-formitem {
+    margin-bottom: var(--kata-space-lg);
+}
+
+/* ============================================
+   CHECKBOXES - GRID LAYOUT
+   ============================================ */
+
+.kata-checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--kata-space-xs) var(--kata-space-base);
+    margin: var(--kata-space-base) 0;
+    padding: var(--kata-space-xs);
+    background: var(--kata-white);
+    border-radius: var(--kata-radius-sm);
+    border: 1px solid var(--kata-border-base);
+}
+
+.mce-checkbox {
+    margin: 0 !important;
+}
+
+.mce-checkbox label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    padding: var(--kata-space-xs) var(--kata-space-sm);
+    border-radius: var(--kata-radius-sm);
+    transition: all var(--kata-transition-base);
+    font-size: var(--kata-font-sm);
+    min-height: 32px;
+}
+
+.mce-checkbox label:hover {
+    background-color: var(--kata-primary-lightest);
+}
+
+.mce-checkbox input[type="checkbox"] {
+    margin-right: var(--kata-space-xs);
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Checked state */
+.mce-checkbox input[type="checkbox"]:checked + span {
+    color: var(--kata-primary);
+    font-weight: var(--kata-font-medium);
+}
+
+/* ============================================
+   SECTION HEADERS - MODERN DESIGN
+   ============================================ */
+
+.mce-label[style*="linear-gradient"],
+.mce-label[style*="background"] {
+    background: var(--kata-gradient-primary) !important;
+    color: var(--kata-white) !important;
+    padding: var(--kata-space-sm) var(--kata-space-md) !important;
+    margin: var(--kata-space-lg) 0 var(--kata-space-sm) 0 !important;
+    border-radius: var(--kata-radius-sm) !important;
+    font-size: var(--kata-font-sm) !important;
+    font-weight: var(--kata-font-semibold) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    box-shadow: var(--kata-shadow-base);
+}
+
+/* Description text */
+.mce-label[style*="font-style: italic"],
+.mce-label[style*="italic"] {
+    background: transparent !important;
+    padding: var(--kata-space-xs) var(--kata-space-xs) !important;
+    margin: var(--kata-space-xs) 0 var(--kata-space-base) 0 !important;
+    border-left: 0 !important;
+    font-size: var(--kata-font-xs) !important;
+    color: var(--kata-text-secondary) !important;
+    font-style: italic;
+}
+
+/* ============================================
+   INFO BOXES - ENHANCED
+   ============================================ */
+
+/* Header info box */
+.kata-info-box {
+    background: linear-gradient(135deg, var(--kata-primary-lightest) 0%, #e1f5fe 100%);
+    padding: var(--kata-space-lg);
+    border-radius: var(--kata-radius-md);
+    border-left: 4px solid var(--kata-primary);
+    margin-bottom: var(--kata-space-xl);
+}
+
+.kata-info-box h3 {
+    color: var(--kata-primary);
+    margin: 0 0 var(--kata-space-sm) 0;
+    font-size: var(--kata-font-lg);
+}
+
+.kata-info-box p {
+    color: var(--kata-gray-700);
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Warning box */
+.kata-warning-box {
+    background: var(--kata-warning-bg);
+    padding: var(--kata-space-md);
+    border-radius: var(--kata-radius-sm);
+    border-left: 4px solid #ffc107;
+    margin-bottom: var(--kata-space-lg);
+}
+
+.kata-warning-box p {
+    color: #856404;
+    margin: 0;
+    font-size: var(--kata-font-sm);
+}
+
+/* ============================================
+   BUTTONS - CONSISTENT STYLING
+   ============================================ */
+
+.mce-btn {
+    border-radius: var(--kata-radius-sm);
+    font-weight: var(--kata-font-medium);
+    transition: all var(--kata-transition-base);
+}
+
+.mce-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--kata-shadow-base);
+}
+
+.mce-btn:active {
+    transform: translateY(0);
+}
+
+/* Primary button */
+.mce-btn.mce-primary {
+    background: var(--kata-gradient-primary) !important;
+    border-color: var(--kata-primary) !important;
+    color: var(--kata-white) !important;
+}
+
+.mce-btn.mce-primary:hover {
+    background: var(--kata-primary-dark) !important;
+}
+
+/* ============================================
+   TABS - IF USED
+   ============================================ */
+
+.mce-tabs {
+    border-bottom: 1px solid var(--kata-border-base);
+}
+
+.mce-tab {
+    padding: var(--kata-space-sm) var(--kata-space-lg);
+    font-size: var(--kata-font-md);
+    color: var(--kata-gray-600);
+    transition: all var(--kata-transition-base);
+}
+
+.mce-tab:hover {
+    color: var(--kata-primary);
+    background: var(--kata-primary-lightest);
+}
+
+.mce-tab.mce-active {
+    color: var(--kata-primary);
+    border-bottom: 2px solid var(--kata-primary);
+    font-weight: var(--kata-font-semibold);
+}
+
+/* ============================================
+   SELECT DROPDOWNS
+   ============================================ */
+
+.mce-listbox button {
+    border-radius: var(--kata-radius-sm);
+    border: 1px solid var(--kata-border-base);
+    padding: var(--kata-space-xs) var(--kata-space-base);
+    font-size: var(--kata-font-md);
+    background: var(--kata-white);
+    transition: all var(--kata-transition-base);
+}
+
+.mce-listbox button:hover {
+    border-color: var(--kata-primary);
+    background: var(--kata-primary-lightest);
+}
+
+.mce-menu {
+    border-radius: var(--kata-radius-sm);
+    box-shadow: var(--kata-shadow-lg);
+    border: 1px solid var(--kata-border-base);
+}
+
+.mce-menu-item {
+    padding: var(--kata-space-xs) var(--kata-space-base);
+    font-size: var(--kata-font-sm);
+    transition: background var(--kata-transition-base);
+}
+
+.mce-menu-item:hover {
+    background: var(--kata-primary-lightest);
+}
+
+.mce-menu-item.mce-selected {
+    background: var(--kata-primary);
+    color: var(--kata-white);
+}
+
+/* ============================================
+   QUICK SELECT BUTTONS
+   ============================================ */
+
+.kata-quick-select {
+    background: linear-gradient(135deg, #f0f7fc 0%, #e3f2fd 100%) !important;
+    border: 1px solid #90caf9 !important;
+    transition: all var(--kata-transition-base);
+    font-weight: var(--kata-font-semibold) !important;
+    padding: var(--kata-space-xs) var(--kata-space-md) !important;
+    border-radius: var(--kata-radius-sm) !important;
+}
+
+.kata-quick-select:hover {
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%) !important;
+    border-color: #64b5f6 !important;
+    transform: translateY(-1px);
+    box-shadow: var(--kata-shadow-base);
+}
+
+.kata-quick-select:active {
+    transform: translateY(0);
+    box-shadow: var(--kata-shadow-sm);
+}
+
+/* ============================================
+   COLLAPSIBLE SECTIONS
+   ============================================ */
+
+.kata-section-header {
+    transition: all var(--kata-transition-base);
+    position: relative;
+    padding-left: var(--kata-space-4xl) !important;
+    cursor: pointer;
+    background: var(--kata-gray-50);
+    padding: var(--kata-space-md);
+    border-radius: var(--kata-radius-sm);
+    margin: var(--kata-space-base) 0;
+}
+
+.kata-section-header:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: var(--kata-shadow-base);
+}
+
+.kata-section-header:before {
+    content: '▼';
+    position: absolute;
+    left: var(--kata-space-md);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: var(--kata-font-md);
+    transition: transform var(--kata-transition-base);
+    color: var(--kata-primary);
+}
+
+.kata-section-header.kata-collapsed:before {
+    content: '▶';
+    transform: translateY(-50%) rotate(0deg);
+}
+
+.kata-section-content {
+    transition: all var(--kata-transition-base);
+    opacity: 1;
+    max-height: 2000px;
+    overflow: hidden;
+}
+
+.kata-section-content.kata-hidden {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+}
+
+/* ============================================
+   SCHEMA TYPE BADGES
+   ============================================ */
+
+.kata-schema-type-badge {
+    display: inline-block;
+    padding: var(--kata-space-xs) var(--kata-space-sm);
+    border-radius: var(--kata-radius-full);
+    font-size: var(--kata-font-xs);
+    font-weight: var(--kata-font-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-right: var(--kata-space-xs);
+}
+
+.kata-schema-type-badge.article {
+    background: var(--kata-primary);
+    color: var(--kata-white);
+}
+
+.kata-schema-type-badge.faq {
+    background: var(--kata-success-text);
+    color: var(--kata-white);
+}
+
+.kata-schema-type-badge.product {
+    background: var(--kata-error-text);
+    color: var(--kata-white);
+}
+
+.kata-schema-type-badge.recipe {
+    background: #8bc34a;
+    color: var(--kata-white);
+}
+
+.kata-schema-type-badge.event {
+    background: #ff9800;
+    color: var(--kata-white);
+}
+
+.kata-schema-type-badge.quiz {
+    background: var(--kata-quiz-primary);
+    color: var(--kata-white);
+}
+
+.kata-schema-type-badge.poll {
+    background: var(--kata-poll-primary);
+    color: var(--kata-white);
+}
+
+.kata-schema-type-badge.dynamic {
+    background: var(--kata-secondary);
+    color: var(--kata-white);
+}
+
+/* ============================================
+   HELP TEXT
+   ============================================ */
+
+.kata-help-text {
+    font-size: var(--kata-font-xs);
+    color: var(--kata-text-tertiary);
+    font-style: italic;
+    margin-top: var(--kata-space-xs);
+    display: block;
+}
+
+.kata-help-text code {
+    background: var(--kata-gray-100);
+    padding: 2px var(--kata-space-xs);
+    border-radius: var(--kata-radius-sm);
+    font-size: var(--kata-font-xs);
+    color: var(--kata-primary);
+}
+
+/* ============================================
+   LOADING STATES
+   ============================================ */
+
+.kata-dialog-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.kata-dialog-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--kata-space-3xl);
+    height: var(--kata-space-3xl);
+    border: 3px solid var(--kata-primary);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: kata-spin 0.8s linear infinite;
+    transform: translate(-50%, -50%);
+    z-index: var(--kata-z-modal);
+}
+
+@keyframes kata-spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* ============================================
+   ERROR STATES
+   ============================================ */
+
+.kata-error-message {
+    background: var(--kata-error-bg);
+    color: var(--kata-error-text);
+    padding: var(--kata-space-base);
+    border-radius: var(--kata-radius-sm);
+    border-left: 4px solid var(--kata-error-text);
+    margin: var(--kata-space-base) 0;
+    font-size: var(--kata-font-sm);
+}
+
+.kata-error-message strong {
+    display: block;
+    margin-bottom: var(--kata-space-xs);
+    font-weight: var(--kata-font-semibold);
+}
+
+.mce-textbox.kata-has-error {
+    border-color: var(--kata-error-text);
+    background: var(--kata-error-bg);
+}
+
+.mce-textbox.kata-has-error:focus {
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.2);
+}
+
+/* ============================================
+   SUCCESS STATES
+   ============================================ */
+
+.kata-success-message {
+    background: var(--kata-success-bg);
+    color: var(--kata-success-text);
+    padding: var(--kata-space-base);
+    border-radius: var(--kata-radius-sm);
+    border-left: 4px solid var(--kata-success-text);
+    margin: var(--kata-space-base) 0;
+    font-size: var(--kata-font-sm);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablet */
+@media (max-width: 768px) {
+    .kata-schema-dialog {
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+    }
+    
+    .mce-window .mce-container-body {
+        padding: var(--kata-space-md);
+    }
+    
+    .kata-checkbox-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-section-header {
+        padding-left: var(--kata-space-3xl) !important;
+    }
+    
+    .kata-info-box {
+        padding: var(--kata-space-md);
+    }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .mce-window .mce-container-body {
+        padding: var(--kata-space-sm);
+    }
+    
+    .mce-window .mce-title {
+        font-size: var(--kata-font-lg);
+    }
+    
+    .mce-label {
+        font-size: var(--kata-font-xs);
+    }
+    
+    .mce-textbox {
+        font-size: var(--kata-font-sm);
+    }
+    
+    .kata-info-box h3 {
+        font-size: var(--kata-font-md);
+    }
+    
+    .kata-checkbox-grid {
+        gap: var(--kata-space-xs);
+    }
+}
+
+/* ============================================
+   SCROLLBAR STYLING
+   ============================================ */
+
+.mce-container-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.mce-container-body::-webkit-scrollbar-track {
+    background: var(--kata-gray-100);
+    border-radius: var(--kata-radius-sm);
+}
+
+.mce-container-body::-webkit-scrollbar-thumb {
+    background: var(--kata-gray-400);
+    border-radius: var(--kata-radius-sm);
+}
+
+.mce-container-body::-webkit-scrollbar-thumb:hover {
+    background: var(--kata-primary);
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+    .mce-window {
+        box-shadow: none !important;
+        border: 1px solid var(--kata-border-base);
+    }
+    
+    .kata-section-header:before {
+        display: none;
+    }
+    
+    .kata-section-content {
+        max-height: none !important;
+        opacity: 1 !important;
+    }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Focus visible for keyboard navigation */
+.mce-textbox:focus-visible,
+.mce-btn:focus-visible,
+.mce-checkbox input:focus-visible {
+    outline: 2px solid var(--kata-primary);
+    outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .kata-section-header,
+    .kata-section-content,
+    .mce-btn,
+    .mce-textbox,
+    .kata-quick-select {
+        transition: none !important;
+        animation: none !important;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .mce-textbox {
+        border-width: 2px;
+    }
+    
+    .kata-section-header:before {
+        font-weight: var(--kata-font-bold);
+    }
+}

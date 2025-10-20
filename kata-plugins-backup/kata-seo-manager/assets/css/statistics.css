@@ -1,0 +1,689 @@
+/* Statistics Page Modern Design - KATA SEO Manager */
+/* 
+ * REFACTORED: Now uses centralized kata-seo-variables.css
+ * No duplicate :root declarations
+ * 
+ * Variable Mapping (same as schema-types.css):
+ * - --kata-primary: Now uses --kata-secondary (#667eea) from main system
+ * - --kata-surface: Maps to --kata-white
+ * - --kata-surface-light: Maps to --kata-gray-50
+ * - --kata-border: Maps to --kata-border-color
+ * - --kata-text: Maps to --kata-text-primary
+ * - --kata-text-muted: Maps to --kata-text-muted
+ * - --kata-shadow: Maps to --kata-shadow-sm
+ * - --kata-shadow-lg: Maps to --kata-shadow-lg
+ * - --kata-radius: Maps to --kata-radius-md
+ * - --kata-radius-lg: Maps to --kata-radius-lg
+ * - --kata-transition: Maps to --kata-transition-base
+ */
+
+/* Layout */
+.kata-statistics-wrapper {
+    margin: 20px 20px 20px 0;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+}
+
+.kata-statistics-main {
+    min-width: 0;
+}
+
+.kata-statistics-sidebar {
+    min-width: 0;
+}
+
+/* Page Header */
+.kata-page-header {
+    background: var(--kata-white);
+    border: 1px solid var(--kata-border-color);
+    border-radius: var(--kata-radius-lg);
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: var(--kata-shadow-sm);
+}
+
+.kata-page-title {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 0 0 10px 0;
+}
+
+.kata-page-title h1 {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--kata-text-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.kata-page-title-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--kata-accent), var(--kata-accent));
+    border-radius: var(--kata-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.kata-page-subtitle {
+    color: var(--kata-text-muted);
+    font-size: 16px;
+    margin: 0 0 20px 0;
+}
+
+.kata-page-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Buttons */
+.kata-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--kata-radius-md);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: var(--kata-transition-base);
+    white-space: nowrap;
+}
+
+.kata-btn-primary {
+    background: linear-gradient(135deg, var(--kata-accent), var(--kata-accent));
+    color: white;
+}
+
+.kata-btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--kata-shadow-lg);
+}
+
+.kata-btn-outline {
+    background: transparent;
+    color: var(--kata-accent);
+    border: 2px solid var(--kata-accent);
+}
+
+.kata-btn-outline:hover {
+    background: var(--kata-accent);
+    color: white;
+}
+
+.kata-btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+/* Cards */
+.kata-card {
+    background: var(--kata-white);
+    border: 1px solid var(--kata-border-color);
+    border-radius: var(--kata-radius-lg);
+    box-shadow: var(--kata-shadow-sm);
+    transition: var(--kata-transition-base);
+    margin-bottom: 20px;
+}
+
+.kata-card:hover {
+    box-shadow: var(--kata-shadow-lg);
+}
+
+.kata-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 25px;
+    border-bottom: 1px solid var(--kata-border-color);
+}
+
+.kata-card-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--kata-text-primary);
+    margin: 0;
+}
+
+.kata-card-content {
+    padding: 25px;
+}
+
+/* Metrics Grid */
+.kata-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+/* Metric Cards */
+.kata-metric-card {
+    background: var(--kata-white);
+    border: 1px solid var(--kata-border-color);
+    border-radius: var(--kata-radius-lg);
+    padding: 25px;
+    box-shadow: var(--kata-shadow-sm);
+    transition: var(--kata-transition-base);
+    position: relative;
+    overflow: hidden;
+}
+
+.kata-metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--kata-accent), var(--kata-accent));
+}
+
+.kata-metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--kata-shadow-lg);
+}
+
+.kata-metric-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.kata-metric-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--kata-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.kata-metric-icon.primary {
+    background: linear-gradient(135deg, var(--kata-accent), var(--kata-accent));
+}
+
+.kata-metric-icon.success {
+    background: linear-gradient(135deg, var(--kata-success), #059669);
+}
+
+.kata-metric-icon.warning {
+    background: linear-gradient(135deg, var(--kata-warning), #d97706);
+}
+
+.kata-metric-trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 12px;
+}
+
+.kata-metric-trend.up {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--kata-success);
+}
+
+.kata-metric-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--kata-text-primary);
+    margin: 10px 0;
+    line-height: 1;
+}
+
+.kata-metric-label {
+    color: var(--kata-text-muted);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Schema Distribution */
+.kata-distribution-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.kata-filter-btn {
+    padding: 8px 16px;
+    border: 2px solid var(--kata-border-color);
+    background: var(--kata-white);
+    color: var(--kata-text-muted);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--kata-transition-base);
+}
+
+.kata-filter-btn.active,
+.kata-filter-btn:hover {
+    border-color: var(--kata-accent);
+    color: var(--kata-accent);
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.kata-distribution-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.kata-distribution-item {
+    background: var(--kata-gray-50);
+    border: 1px solid var(--kata-border-color);
+    border-radius: var(--kata-radius-md);
+    padding: 20px;
+    transition: var(--kata-transition-base);
+}
+
+.kata-distribution-item:hover {
+    border-color: var(--kata-accent);
+    background: var(--kata-white);
+}
+
+.kata-distribution-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.kata-schema-type {
+    font-weight: 600;
+    color: var(--kata-text-primary);
+    font-size: 16px;
+}
+
+.kata-schema-count {
+    background: linear-gradient(135deg, var(--kata-accent), var(--kata-accent));
+    color: white;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.kata-progress-container {
+    margin-bottom: 10px;
+}
+
+.kata-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--kata-border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.kata-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--kata-accent), var(--kata-accent));
+    border-radius: 4px;
+    transition: width 1s ease-out;
+}
+
+.kata-progress-text {
+    font-size: 13px;
+    color: var(--kata-text-muted);
+    margin-top: 5px;
+}
+
+/* Performance Insights */
+.kata-insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.kata-insight-item {
+    text-align: center;
+    padding: 20px;
+    background: var(--kata-gray-50);
+    border-radius: var(--kata-radius-md);
+    border: 1px solid var(--kata-border-color);
+}
+
+.kata-insight-metric {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--kata-accent);
+    margin-bottom: 8px;
+}
+
+.kata-insight-label {
+    color: var(--kata-text-muted);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Activity List */
+.kata-activity-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.kata-activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--kata-border-color);
+}
+
+.kata-activity-item:last-child {
+    border-bottom: none;
+}
+
+.kata-activity-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--kata-gray-50);
+    border: 1px solid var(--kata-border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--kata-accent);
+    flex-shrink: 0;
+}
+
+.kata-activity-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.kata-activity-title {
+    font-weight: 600;
+    color: var(--kata-text-primary);
+    margin-bottom: 5px;
+}
+
+.kata-activity-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.kata-activity-title a:hover {
+    color: var(--kata-accent);
+}
+
+.kata-activity-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.kata-schema-type-badge {
+    background: rgba(102, 126, 234, 0.1);
+    color: var(--kata-accent);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.kata-activity-time {
+    color: var(--kata-text-muted);
+    font-size: 12px;
+}
+
+.kata-activity-status {
+    flex-shrink: 0;
+}
+
+.kata-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.kata-status-dot.success {
+    background: var(--kata-success);
+}
+
+/* Quick Actions */
+.kata-action-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.kata-action-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: var(--kata-gray-50);
+    border: 1px solid var(--kata-border-color);
+    border-radius: var(--kata-radius-md);
+    text-decoration: none;
+    color: var(--kata-text-primary);
+    transition: var(--kata-transition-base);
+}
+
+.kata-action-link:hover {
+    background: var(--kata-white);
+    border-color: var(--kata-accent);
+    transform: translateY(-1px);
+}
+
+.kata-action-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--kata-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.kata-action-icon.primary {
+    background: linear-gradient(135deg, var(--kata-accent), var(--kata-accent));
+}
+
+.kata-action-icon.success {
+    background: linear-gradient(135deg, var(--kata-success), #059669);
+}
+
+.kata-action-icon.warning {
+    background: linear-gradient(135deg, var(--kata-warning), #d97706);
+}
+
+.kata-action-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.kata-action-title {
+    font-weight: 600;
+    color: var(--kata-text-primary);
+    margin-bottom: 2px;
+}
+
+.kata-action-desc {
+    color: var(--kata-text-muted);
+    font-size: 13px;
+}
+
+/* Health Card */
+.kata-health-card .kata-card-header {
+    align-items: flex-start;
+}
+
+.kata-health-status {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--kata-success);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.kata-health-score {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.kata-health-circle {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+}
+
+.kata-circular-chart {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.kata-circle-bg {
+    fill: none;
+    stroke: var(--kata-border-color);
+    stroke-width: 2;
+}
+
+.kata-circle {
+    fill: none;
+    stroke: var(--kata-success);
+    stroke-width: 2;
+    stroke-linecap: round;
+    animation: progress 1s ease-out forwards;
+}
+
+.kata-percentage {
+    fill: var(--kata-text-primary);
+    font-size: 0.5em;
+    text-anchor: middle;
+    font-weight: 600;
+}
+
+.kata-health-details {
+    flex: 1;
+}
+
+.kata-health-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.kata-health-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.kata-health-dot.valid {
+    background: var(--kata-success);
+}
+
+.kata-health-dot.warning {
+    background: var(--kata-warning);
+}
+
+.kata-health-dot.error {
+    background: var(--kata-error);
+}
+
+/* Empty State */
+.kata-empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--kata-text-muted);
+}
+
+.kata-empty-state svg {
+    margin-bottom: 15px;
+    opacity: 0.5;
+}
+
+.kata-empty-state p {
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+
+/* Animations */
+@keyframes progress {
+    0% {
+        stroke-dasharray: 0 100;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .kata-statistics-wrapper {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-statistics-sidebar {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .kata-statistics-wrapper {
+        margin: 10px;
+    }
+    
+    .kata-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-distribution-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-insights-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .kata-page-actions {
+        width: 100%;
+    }
+    
+    .kata-btn {
+        flex: 1;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .kata-insights-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-health-score {
+        flex-direction: column;
+        text-align: center;
+    }
+}

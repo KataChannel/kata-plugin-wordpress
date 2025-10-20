@@ -1,0 +1,1617 @@
+/**
+ * KATA Wheel Frontend Styles
+ * Complete wheel of fortune styling with animations
+ * Uses CSS variables from kata-seo-variables.css
+ * 
+ * @package KATA_SEO_Manager
+ * @since 2.1.4
+ */
+
+/* ================================
+   1. CONTAINER & LAYOUT
+   ================================ */
+
+.kata-wheel-container {
+    max-width: 700px;
+    margin: var(--kata-space-5xl) auto;
+    padding: var(--kata-space-5xl) var(--kata-space-3xl);
+    background: var(--kata-wheel-bg);
+    border-radius: var(--kata-radius-2xl);
+    box-shadow: 
+        var(--kata-shadow-xl),
+        0 10px 40px rgba(126, 34, 206, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    font-family: var(--kata-font-family);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+/* Animated gradient background */
+.kata-wheel-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(126, 34, 206, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(37, 99, 235, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 20%, rgba(255, 215, 0, 0.2) 0%, transparent 50%);
+    animation: gradientShift 15s ease-in-out infinite;
+    pointer-events: none;
+}
+
+/* Decorative corners */
+.kata-wheel-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--kata-radius-2xl);
+    padding: 2px;
+    background: linear-gradient(145deg, rgba(255,215,0,0.3), rgba(126,34,206,0.3), rgba(37,99,235,0.3));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+@keyframes gradientShift {
+    0%, 100% { 
+        transform: translate(0, 0) rotate(0deg) scale(1); 
+        opacity: 0.8;
+    }
+    33% { 
+        transform: translate(5%, 5%) rotate(120deg) scale(1.1); 
+        opacity: 1;
+    }
+    66% { 
+        transform: translate(-5%, 5%) rotate(240deg) scale(1.05); 
+        opacity: 0.9;
+    }
+}
+
+/* ================================
+   2. HEADER SECTION
+   ================================ */
+
+.kata-wheel-header {
+    text-align: center;
+    margin-bottom: var(--kata-space-3xl);
+    position: relative;
+    z-index: var(--kata-z-base);
+}
+
+.kata-wheel-header h2 {
+    font-size: var(--kata-font-5xl);
+    font-weight: var(--kata-font-black);
+    background: var(--kata-gradient-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 var(--kata-space-base) 0;
+    text-shadow: none;
+    letter-spacing: -1px;
+    position: relative;
+    display: inline-block;
+    animation: titleShine 3s ease-in-out infinite;
+}
+
+.kata-wheel-header h2::before {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF6B6B 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: blur(10px);
+    opacity: 0.5;
+}
+
+@keyframes titleShine {
+    0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(255, 215, 0, 0.3)); }
+    50% { filter: brightness(1.2) drop-shadow(0 0 30px rgba(255, 215, 0, 0.6)); }
+}
+
+.kata-wheel-header p {
+    font-size: var(--kata-font-xl);
+    color: var(--kata-white);
+    margin: 0;
+    font-weight: var(--kata-font-semibold);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3);
+    letter-spacing: 0.5px;
+}
+
+/* ================================
+   3. WHEEL CANVAS
+   ================================ */
+
+.kata-wheel-canvas {
+    position: relative;
+    width: 450px;
+    height: 450px;
+    margin: 0 auto var(--kata-space-3xl);
+    z-index: var(--kata-z-dropdown);
+    filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.5));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Pointer triangle - Override theme styles */
+.kata-wheel-container .kata-wheel-pointer {
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: var(--kata-font-6xl);
+    color: var(--kata-wheel-gold);
+    z-index: 25;
+    line-height: 1;
+    display: block;
+    width: 60px;
+    height: 60px;
+    text-align: center;
+    pointer-events: none;
+    /* Reset theme's border-based triangle */
+    border: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+}
+
+.kata-wheel-container .kata-wheel-pointer::before {
+    content: '▼';
+    display: block;
+    color: var(--kata-wheel-gold);
+    filter: drop-shadow(0 6px 15px rgba(255, 215, 0, 0.8)) 
+            drop-shadow(0 0 20px rgba(255, 165, 0, 0.6))
+            drop-shadow(0 0 30px rgba(255, 215, 0, 0.5));
+    animation: pointerBounce 2s ease-in-out infinite;
+}
+
+@keyframes pointerBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+.kata-wheel-circle {
+    width: 100%;
+    height: 100%;
+    border-radius: var(--kata-radius-full);
+    position: relative;
+    box-shadow: 
+        0 0 0 8px var(--kata-white),
+        0 0 0 12px var(--kata-wheel-segment-3),
+        0 0 0 16px var(--kata-wheel-segment-2),
+        0 0 60px rgba(255, 215, 0, 0.4),
+        inset 0 0 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+    background: var(--kata-white);
+    z-index: var(--kata-z-dropdown);
+}
+
+.kata-wheel-circle.spinning {
+    transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+}
+
+/* ================================
+   4. PRIZE SEGMENTS
+   ================================ */
+
+.kata-wheel-segment {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    top: 50%;
+    left: 50%;
+    transform-origin: 0% 0%;
+    transform: rotate(var(--rotation)) skewY(-30deg);
+    background: var(--segment-color, #FF6B6B);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+.kata-wheel-segment::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.2) 50%, transparent 100%);
+}
+
+.kata-wheel-segment span {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%) skewY(30deg) rotate(15deg);
+    color: var(--kata-white);
+    font-weight: var(--kata-font-bold);
+    font-size: var(--kata-font-md);
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    width: 80%;
+    word-wrap: break-word;
+    line-height: 1.2;
+}
+
+/* ================================
+   5. CENTER BUTTON
+   ================================ */
+
+.kata-wheel-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 130px;
+    height: 130px;
+    border-radius: var(--kata-radius-full);
+    background: var(--kata-gradient-gold);
+    box-shadow: 
+        0 0 0 8px var(--kata-white),
+        0 0 0 14px rgba(255, 215, 0, 0.5),
+        var(--kata-shadow-xl),
+        0 0 80px rgba(255, 215, 0, 0.5),
+        inset 0 -6px 20px rgba(255, 140, 0, 0.6),
+        inset 0 6px 20px rgba(255, 255, 255, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--kata-font-black);
+    font-size: var(--kata-font-2xl);
+    color: var(--kata-white);
+    text-shadow: 
+        0 3px 6px rgba(0, 0, 0, 0.7),
+        0 0 15px rgba(255, 140, 0, 0.8),
+        0 0 25px rgba(255, 215, 0, 0.6);
+    cursor: pointer;
+    z-index: 30;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+    letter-spacing: 1px;
+}
+
+.kata-wheel-center::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.3) 50%, transparent 70%);
+    animation: buttonShine 3s linear infinite;
+}
+
+@keyframes buttonShine {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.kata-wheel-center:hover {
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: 
+        0 0 0 8px var(--kata-white),
+        0 0 0 14px rgba(255, 215, 0, 0.7),
+        0 15px 50px rgba(0, 0, 0, 0.7),
+        0 0 100px rgba(255, 215, 0, 0.8),
+        inset 0 -6px 20px rgba(255, 140, 0, 0.7),
+        inset 0 6px 20px rgba(255, 255, 255, 0.7);
+}
+
+.kata-wheel-center:active {
+    transform: translate(-50%, -50%) scale(1.05);
+    box-shadow: 
+        0 0 0 6px var(--kata-white),
+        0 0 0 10px rgba(255, 215, 0, 0.5),
+        var(--kata-shadow-base),
+        inset 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.kata-wheel-center.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+    filter: grayscale(1);
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* ================================
+   6. USER FORM
+   ================================ */
+
+.kata-wheel-form {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    border-radius: var(--kata-radius-xl);
+    padding: var(--kata-space-2xl) var(--kata-space-xl);
+    margin: var(--kata-space-xl) 0;
+    box-shadow: 
+        var(--kata-shadow-xl),
+        0 0 0 1px rgba(255, 255, 255, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    position: relative;
+    z-index: 1;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: none;
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all var(--kata-transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kata-wheel-form.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.kata-wheel-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #FFD700, #FFA500, #FF6B6B, #FFA500, #FFD700);
+    background-size: 200% 100%;
+    border-radius: var(--kata-radius-xl) var(--kata-radius-xl) 0 0;
+    animation: formBorderShine 3s linear infinite;
+}
+
+@keyframes formBorderShine {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+.kata-wheel-form h3 {
+    margin: 0 0 var(--kata-space-xl) 0;
+    font-size: var(--kata-font-2xl);
+    font-weight: var(--kata-font-bold);
+    background: var(--kata-gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+}
+
+.kata-wheel-form-inner {
+    position: relative;
+    z-index: 1;
+}
+
+.kata-wheel-form-field {
+    margin-bottom: var(--kata-space-lg);
+}
+
+.kata-wheel-form-field label {
+    display: block;
+    font-size: var(--kata-font-md);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-gray-700);
+    margin-bottom: var(--kata-space-sm);
+}
+
+.kata-wheel-form-field .required {
+    color: var(--kata-error);
+    font-weight: var(--kata-font-bold);
+}
+
+.kata-wheel-form input,
+.kata-wheel-input {
+    width: 100%;
+    padding: var(--kata-space-base) var(--kata-space-lg);
+    margin-bottom: var(--kata-space-lg);
+    border: 2px solid var(--kata-border-light);
+    border-radius: var(--kata-radius-lg);
+    font-size: var(--kata-font-md);
+    transition: all var(--kata-transition-base) cubic-bezier(0.4, 0, 0.2, 1);
+    box-sizing: border-box;
+    background: var(--kata-bg-container);
+}
+
+.kata-wheel-form input:focus {
+    outline: none;
+    border-color: var(--kata-wheel-purple);
+    background: var(--kata-primary-lightest);
+    box-shadow: 
+        0 0 0 4px rgba(126, 34, 206, 0.1),
+        0 4px 12px rgba(126, 34, 206, 0.15);
+    transform: translateY(-2px);
+}
+
+.kata-wheel-form input.error {
+    border-color: var(--kata-error);
+    background: var(--kata-error-lightest);
+    animation: inputShake 0.5s ease;
+}
+
+@keyframes inputShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.kata-wheel-form button {
+    width: 100%;
+    padding: var(--kata-space-lg);
+    background: var(--kata-gradient-cool);
+    background-size: 200% 100%;
+    color: var(--kata-white);
+    border: none;
+    border-radius: var(--kata-radius-lg);
+    font-size: var(--kata-font-lg);
+    font-weight: var(--kata-font-extrabold);
+    cursor: pointer;
+    transition: all var(--kata-transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    box-shadow: var(--kata-shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.kata-wheel-form button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.kata-wheel-form button:hover {
+    background-position: 100% 0;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(126, 34, 206, 0.5);
+}
+
+.kata-wheel-form button:hover::before {
+    left: 100%;
+}
+
+.kata-wheel-form button:active {
+    transform: translateY(-1px);
+    box-shadow: var(--kata-shadow-base);
+}
+
+.kata-wheel-form button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.kata-wheel-submit-btn {
+    width: 100%;
+    padding: var(--kata-space-lg);
+    background: var(--kata-gradient-cool);
+    background-size: 200% 100%;
+    color: var(--kata-white);
+    border: none;
+    border-radius: var(--kata-radius-lg);
+    font-size: var(--kata-font-lg);
+    font-weight: var(--kata-font-extrabold);
+    cursor: pointer;
+    transition: all var(--kata-transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    box-shadow: var(--kata-shadow-lg);
+    position: relative;
+    overflow: hidden;
+    margin-top: var(--kata-space-sm);
+}
+
+.kata-wheel-submit-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.kata-wheel-submit-btn:hover {
+    background-position: 100% 0;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(126, 34, 206, 0.5);
+}
+
+.kata-wheel-submit-btn:hover::before {
+    left: 100%;
+}
+
+.kata-wheel-submit-btn:active {
+    transform: translateY(-1px);
+    box-shadow: var(--kata-shadow-base);
+}
+
+.kata-wheel-submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+/* ================================
+   7. RESULT MODAL
+   ================================ */
+
+.kata-wheel-result-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: var(--kata-z-modal);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--kata-transition-slow) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kata-wheel-result-modal.show {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+}
+
+.kata-wheel-result-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--kata-overlay-dark);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+}
+
+.kata-wheel-result-content {
+    background: var(--kata-gradient-cool);
+    padding: var(--kata-space-4xl) var(--kata-space-3xl);
+    border-radius: var(--kata-radius-2xl);
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 550px;
+    width: 90%;
+    box-shadow: 
+        var(--kata-shadow-2xl),
+        0 0 100px rgba(126, 34, 206, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    position: relative;
+    transform: scale(0.7) translateY(-50px);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    overflow: hidden;
+}
+
+.kata-wheel-result-content::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(circle at 30% 50%, rgba(255, 215, 0, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 70% 50%, rgba(255, 165, 0, 0.2) 0%, transparent 50%);
+    animation: modalGlow 4s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes modalGlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.kata-wheel-result-modal.show .kata-wheel-result-content {
+    transform: scale(1) translateY(0);
+}
+
+.kata-wheel-result-close {
+    position: absolute;
+    top: var(--kata-space-base);
+    right: var(--kata-space-base);
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--kata-radius-full);
+    color: var(--kata-white);
+    font-size: var(--kata-font-2xl);
+    font-weight: var(--kata-font-bold);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--kata-transition-base) ease;
+    z-index: 2;
+    line-height: 1;
+}
+
+.kata-wheel-result-close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: rotate(90deg) scale(1.1);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.kata-wheel-result-icon {
+    font-size: var(--kata-font-8xl);
+    margin-bottom: var(--kata-space-xl);
+    animation: prizeFloat 2s ease-in-out infinite;
+    filter: drop-shadow(0 10px 30px rgba(255, 215, 0, 0.5));
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes prizeFloat {
+    0%, 100% { 
+        transform: translateY(0) scale(1); 
+    }
+    50% { 
+        transform: translateY(-15px) scale(1.05); 
+    }
+}
+
+.kata-wheel-result-title {
+    font-size: var(--kata-font-4xl);
+    font-weight: var(--kata-font-black);
+    background: var(--kata-gradient-gold);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0 0 var(--kata-space-lg) 0;
+    animation: titleGradient 3s linear infinite;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+}
+
+@keyframes titleGradient {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 200% 0%; }
+}
+
+.kata-wheel-result-prize {
+    margin: var(--kata-space-lg) 0;
+}
+
+.kata-wheel-result-value {
+    font-size: var(--kata-font-3xl);
+    background: var(--kata-gradient-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: block;
+    margin: var(--kata-space-lg) 0;
+    text-shadow: none;
+    font-weight: var(--kata-font-black);
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 2px 10px rgba(255, 215, 0, 0.5));
+}
+
+.kata-wheel-result-note {
+    font-size: var(--kata-font-lg);
+    color: var(--kata-white);
+    margin: var(--kata-space-md) 0;
+    line-height: 1.7;
+    font-weight: var(--kata-font-semibold);
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.kata-wheel-result-btn {
+    background: linear-gradient(135deg, var(--kata-white) 0%, var(--kata-gray-100) 100%);
+    color: var(--kata-primary-dark);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    padding: var(--kata-space-md) var(--kata-space-3xl);
+    border-radius: var(--kata-radius-lg);
+    font-size: var(--kata-font-lg);
+    font-weight: var(--kata-font-extrabold);
+    cursor: pointer;
+    margin-top: var(--kata-space-2xl);
+    transition: all var(--kata-transition-slow) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: var(--kata-shadow-lg);
+    position: relative;
+    z-index: 1;
+    border: none;
+    outline: none;
+}
+
+.kata-wheel-result-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 35px rgba(255, 215, 0, 0.4);
+    background: var(--kata-gradient-gold);
+    color: var(--kata-white);
+}
+
+.kata-wheel-result-btn:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+.kata-wheel-result-content strong {
+    font-size: var(--kata-font-3xl);
+    background: var(--kata-gradient-gold);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: block;
+    margin: var(--kata-space-lg) 0;
+    text-shadow: none;
+    font-weight: var(--kata-font-black);
+    position: relative;
+    z-index: 1;
+    filter: drop-shadow(0 2px 10px rgba(255, 215, 0, 0.5));
+}
+
+.kata-wheel-close-result {
+    background: linear-gradient(135deg, var(--kata-white) 0%, var(--kata-gray-100) 100%);
+    color: var(--kata-primary-dark);
+    border: 2px solid rgba(255, 215, 0, 0.5);
+    padding: var(--kata-space-md) var(--kata-space-3xl);
+    border-radius: var(--kata-radius-lg);
+    font-size: var(--kata-font-lg);
+    font-weight: var(--kata-font-extrabold);
+    cursor: pointer;
+    margin-top: var(--kata-space-2xl);
+    transition: all var(--kata-transition-slow) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: var(--kata-shadow-lg);
+    position: relative;
+    z-index: 1;
+}
+
+.kata-wheel-close-result:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 12px 35px rgba(255, 215, 0, 0.4);
+    border-color: var(--kata-wheel-gold);
+    background: var(--kata-gradient-gold);
+    color: var(--kata-white);
+}
+
+.kata-wheel-close-result:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+/* ================================
+   8. SPINS INFO
+   ================================ */
+
+.kata-wheel-info {
+    text-align: center;
+    margin-top: var(--kata-space-2xl);
+    position: relative;
+    z-index: 1;
+}
+
+.kata-wheel-spins-remaining {
+    color: var(--kata-white);
+    font-size: var(--kata-font-xl);
+    font-weight: var(--kata-font-semibold);
+    margin: 0;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    padding: var(--kata-space-md) var(--kata-space-2xl);
+    border-radius: var(--kata-radius-lg);
+    display: inline-block;
+    box-shadow: 
+        var(--kata-shadow-lg),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.kata-wheel-info p {
+    color: var(--kata-white);
+    font-size: var(--kata-font-xl);
+    font-weight: var(--kata-font-semibold);
+    margin: 0;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    padding: var(--kata-space-md) var(--kata-space-2xl);
+    border-radius: var(--kata-radius-lg);
+    display: inline-block;
+    box-shadow: 
+        var(--kata-shadow-lg),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.kata-wheel-info strong {
+    color: var(--kata-wheel-gold);
+    font-size: 24px;
+    font-weight: 900;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
+    display: inline-block;
+    animation: spinCountPulse 2s ease-in-out infinite;
+}
+
+@keyframes spinCountPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* ================================
+   9. ERROR MESSAGES
+   ================================ */
+
+.kata-wheel-error,
+.kata-wheel-inactive {
+    background: linear-gradient(135deg, var(--kata-error-bg) 0%, var(--kata-error-light) 100%);
+    color: var(--kata-error-text);
+    padding: var(--kata-space-lg) var(--kata-space-xl);
+    border-radius: var(--kata-radius-lg);
+    margin: var(--kata-space-lg) auto;
+    text-align: center;
+    font-weight: var(--kata-font-bold);
+    border-left: 5px solid var(--kata-error);
+    box-shadow: 
+        var(--kata-shadow-lg),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    animation: errorSlideIn var(--kata-transition-slow) ease;
+    font-size: var(--kata-font-md);
+    max-width: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--kata-space-sm);
+}
+
+.kata-wheel-inactive {
+    background: linear-gradient(135deg, var(--kata-warning-bg) 0%, var(--kata-warning-light) 100%);
+    color: var(--kata-warning-text);
+    border-left-color: var(--kata-warning);
+}
+
+.kata-wheel-error-icon,
+.kata-wheel-inactive-icon {
+    font-size: var(--kata-font-3xl);
+    flex-shrink: 0;
+}
+
+.kata-wheel-error {
+    background: linear-gradient(135deg, var(--kata-error-bg) 0%, var(--kata-error-light) 100%);
+    color: var(--kata-error-text);
+    padding: var(--kata-space-md) var(--kata-space-xl);
+    border-radius: var(--kata-radius-lg);
+    margin: var(--kata-space-lg) 0;
+    text-align: center;
+    font-weight: var(--kata-font-bold);
+    border-left: 5px solid var(--kata-error);
+    box-shadow: 
+        var(--kata-shadow-lg),
+        inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    animation: errorSlideIn var(--kata-transition-slow) ease;
+    font-size: var(--kata-font-md);
+}
+
+@keyframes errorSlideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ================================
+   10. LOADING STATE
+   ================================ */
+
+.kata-wheel-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(20px);
+    padding: var(--kata-space-2xl) var(--kata-space-4xl);
+    border-radius: var(--kata-radius-xl);
+    box-shadow: 
+        var(--kata-shadow-2xl),
+        0 0 0 1px rgba(255, 255, 255, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    z-index: var(--kata-z-modal);
+    display: none;
+    border: 2px solid rgba(126, 34, 206, 0.2);
+}
+
+.kata-wheel-loading.show {
+    display: block;
+    animation: loadingFadeIn var(--kata-transition-base) ease;
+}
+
+@keyframes loadingFadeIn {
+    from { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+    to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.kata-wheel-loading::after {
+    content: '';
+    display: block;
+    width: 50px;
+    height: 50px;
+    margin: var(--kata-space-md) auto 0;
+    border: 5px solid var(--kata-gray-100);
+    border-top: 5px solid var(--kata-wheel-primary);
+    border-right: 5px solid var(--kata-primary);
+    border-radius: 50%;
+    animation: loadingSpin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+}
+
+@keyframes loadingSpin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ================================
+   11. RESPONSIVE DESIGN
+   ================================ */
+
+@media (max-width: 768px) {
+    .kata-wheel-container {
+        padding: var(--kata-space-2xl) var(--kata-space-lg);
+        margin: var(--kata-space-lg) var(--kata-space-sm);
+        border-radius: var(--kata-radius-xl);
+    }
+    
+    .kata-wheel-header h2 {
+        font-size: var(--kata-font-4xl);
+    }
+    
+    .kata-wheel-header p {
+        font-size: var(--kata-font-lg);
+    }
+    
+    .kata-wheel-canvas {
+        width: 320px;
+        height: 320px;
+        margin-bottom: var(--kata-space-2xl);
+    }
+    
+    .kata-wheel-container .kata-wheel-pointer {
+        font-size: 38px !important;
+        top: -20px !important;
+        border: none !important;
+    }
+    
+    .kata-wheel-center {
+        width: 90px;
+        height: 90px;
+        font-size: var(--kata-font-lg);
+    }
+    
+    .kata-wheel-segment span {
+        font-size: var(--kata-font-sm);
+    }
+    
+    .kata-wheel-form {
+        padding: var(--kata-space-xl) var(--kata-space-lg);
+    }
+    
+    .kata-wheel-result-content {
+        padding: var(--kata-space-3xl) var(--kata-space-xl);
+        max-width: 90%;
+    }
+    
+    .kata-wheel-result-content > div:first-child {
+        font-size: var(--kata-font-7xl);
+    }
+    
+    .kata-wheel-result-content h3 {
+        font-size: var(--kata-font-3xl);
+    }
+    
+    .kata-wheel-result-content p {
+        font-size: var(--kata-font-lg);
+    }
+    
+    .kata-wheel-result-content strong {
+        font-size: var(--kata-font-2xl);
+    }
+    
+    .kata-wheel-info p {
+        font-size: var(--kata-font-lg);
+        padding: var(--kata-space-md) var(--kata-space-lg);
+    }
+    
+    .kata-wheel-info strong {
+        font-size: var(--kata-font-xl);
+    }
+}
+
+@media (max-width: 480px) {
+    .kata-wheel-container {
+        padding: var(--kata-space-lg) var(--kata-space-md);
+        margin: var(--kata-space-md) var(--kata-space-xs);
+    }
+    
+    .kata-wheel-header h2 {
+        font-size: var(--kata-font-3xl);
+    }
+    
+    .kata-wheel-header p {
+        font-size: var(--kata-font-md);
+    }
+    
+    .kata-wheel-canvas {
+        width: 280px;
+        height: 280px;
+    }
+    
+    .kata-wheel-container .kata-wheel-pointer {
+        font-size: 32px !important;
+        border: none !important;
+    }
+    
+    .kata-wheel-center {
+        width: 75px;
+        height: 75px;
+        font-size: var(--kata-font-md);
+    }
+    
+    .kata-wheel-segment span {
+        font-size: var(--kata-font-xs);
+    }
+    
+    .kata-wheel-form {
+        padding: var(--kata-space-lg) var(--kata-space-md);
+    }
+    
+    .kata-wheel-form input {
+        padding: var(--kata-space-md) var(--kata-space-md);
+        font-size: var(--kata-font-md);
+    }
+    
+    .kata-wheel-form button {
+        padding: var(--kata-space-md);
+        font-size: var(--kata-font-md);
+    }
+    
+    .kata-wheel-result-content {
+        padding: var(--kata-space-2xl) var(--kata-space-lg);
+    }
+    
+    .kata-wheel-result-content > div:first-child {
+        font-size: var(--kata-font-6xl);
+    }
+    
+    .kata-wheel-result-content h3 {
+        font-size: var(--kata-font-2xl);
+    }
+    
+    .kata-wheel-result-content p {
+        font-size: var(--kata-font-md);
+    }
+    
+    .kata-wheel-result-content strong {
+        font-size: var(--kata-font-xl);
+    }
+    
+    .kata-wheel-close-result {
+        padding: var(--kata-space-md) var(--kata-space-xl);
+        font-size: var(--kata-font-md);
+    }
+    
+    .kata-wheel-info p {
+        font-size: var(--kata-font-md);
+        padding: var(--kata-space-sm) var(--kata-space-md);
+    }
+    
+    .kata-wheel-info strong {
+        font-size: var(--kata-font-lg);
+    }
+}
+
+@media (max-width: 480px) {
+    .kata-wheel-canvas {
+        width: 280px;
+        height: 280px;
+    }
+    
+    .kata-wheel-center {
+        width: 70px;
+        height: 70px;
+        font-size: var(--kata-font-sm);
+    }
+    
+    .kata-wheel-segment span {
+        font-size: var(--kata-font-xs);
+    }
+}
+
+/* ================================
+   12. ACCESSIBILITY
+   ================================ */
+
+.kata-wheel-container:focus-within {
+    outline: 3px solid rgba(255, 255, 255, 0.5);
+    outline-offset: 5px;
+}
+
+.kata-wheel-center:focus {
+    outline: 3px solid #fff;
+    outline-offset: 3px;
+}
+
+/* ================================
+   13. ANIMATIONS
+   ================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kata-wheel-container {
+    animation: fadeIn 0.5s ease;
+}
+
+/* Confetti effect (optional enhancement) */
+@keyframes confetti {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: #FFD700;
+    top: -10px;
+    animation: confetti 3s linear;
+    z-index: 10000;
+}
+/**
+ * KATA Wheel Frontend - ADDITIONAL STYLES FOR UPGRADE
+ * Add these styles to existing wheel-frontend.css
+ * 
+ * New Features:
+ * 1. Center button positioned in middle of wheel
+ * 2. Form modal for user info input
+ * 3. Result display section below wheel
+ */
+
+/* ================================
+   CENTER BUTTON - UPDATED POSITIONING
+   ================================ */
+
+/* Make sure center button is truly centered and above segments */
+.kata-wheel-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140px !important;
+    height: 140px !important;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 50%, #FF8C00 100%);
+    box-shadow: 
+        0 0 0 10px #ffffff,
+        0 0 0 16px rgba(255, 215, 0, 0.6),
+        0 12px 45px rgba(0, 0, 0, 0.7),
+        0 0 90px rgba(255, 215, 0, 0.6),
+        inset 0 -8px 25px rgba(255, 140, 0, 0.7),
+        inset 0 8px 25px rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 26px;
+    color: #FFFFFF;
+    text-shadow: 
+        0 4px 8px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(255, 140, 0, 0.9),
+        0 0 30px rgba(255, 215, 0, 0.7);
+    cursor: pointer;
+    z-index: 100 !important; /* Higher than segments */
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+    overflow: hidden;
+    letter-spacing: 1.5px;
+    border: none;
+    outline: none;
+}
+
+.kata-wheel-center:hover {
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: 
+        0 0 0 10px #ffffff,
+        0 0 0 16px rgba(255, 215, 0, 0.8),
+        0 16px 55px rgba(0, 0, 0, 0.8),
+        0 0 110px rgba(255, 215, 0, 0.9),
+        inset 0 -8px 25px rgba(255, 140, 0, 0.8),
+        inset 0 8px 25px rgba(255, 255, 255, 0.8);
+}
+
+.kata-wheel-center:active {
+    transform: translate(-50%, -50%) scale(1.08);
+}
+
+.kata-wheel-center.spinning {
+    animation: buttonSpin 1s linear infinite;
+}
+
+@keyframes buttonSpin {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.kata-wheel-center.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    filter: grayscale(0.8);
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+/* ================================
+   FORM MODAL - NEW
+   ================================ */
+
+.kata-wheel-form-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--kata-z-modal);
+    opacity: 0;
+    transition: opacity var(--kata-transition-base) ease;
+}
+
+.kata-wheel-form-modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+}
+
+.kata-wheel-form-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--kata-overlay);
+    backdrop-filter: blur(8px);
+}
+
+.kata-wheel-form-content {
+    position: relative;
+    background: linear-gradient(145deg, var(--kata-white) 0%, var(--kata-bg-surface) 100%);
+    border-radius: var(--kata-radius-2xl);
+    padding: var(--kata-space-3xl);
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 
+        var(--kata-shadow-2xl),
+        0 0 0 1px rgba(255, 215, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    transform: scale(0.9) translateY(20px);
+    transition: all var(--kata-transition-slow) cubic-bezier(0.34, 1.56, 0.64, 1);
+    overflow: hidden;
+}
+
+.kata-wheel-form-modal.show .kata-wheel-form-content {
+    transform: scale(1) translateY(0);
+}
+
+.kata-wheel-form-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--kata-wheel-gold), #FFA500, #FF6B6B, #FFA500, var(--kata-wheel-gold));
+    background-size: 200% 100%;
+    animation: formBorderShine 3s linear infinite;
+}
+
+.kata-wheel-form-close {
+    position: absolute;
+    top: var(--kata-space-base);
+    right: var(--kata-space-base);
+    width: 40px;
+    height: 40px;
+    background: var(--kata-error-lightest);
+    border: 2px solid var(--kata-error-light);
+    border-radius: var(--kata-radius-full);
+    color: var(--kata-error);
+    font-size: var(--kata-font-2xl);
+    font-weight: var(--kata-font-bold);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--kata-transition-base) ease;
+    z-index: 2;
+    line-height: 1;
+}
+
+.kata-wheel-form-close:hover {
+    background: var(--kata-error-light);
+    transform: rotate(90deg) scale(1.1);
+    border-color: var(--kata-error);
+}
+
+.kata-wheel-form-modal h3 {
+    margin: 0 0 var(--kata-space-xl) 0;
+    font-size: var(--kata-font-3xl);
+    font-weight: var(--kata-font-extrabold);
+    background: var(--kata-gradient-primary);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center;
+}
+
+.kata-wheel-form-modal .kata-wheel-form-field {
+    margin-bottom: var(--kata-space-lg);
+}
+
+.kata-wheel-form-modal .kata-wheel-form-field label {
+    display: block;
+    font-size: var(--kata-font-base);
+    font-weight: var(--kata-font-bold);
+    color: var(--kata-gray-700);
+    margin-bottom: var(--kata-space-sm);
+}
+
+.kata-wheel-form-modal .kata-wheel-form-field label .required {
+    color: var(--kata-error);
+    margin-left: var(--kata-space-xs);
+}
+
+.kata-wheel-form-modal .kata-wheel-input {
+    width: 100%;
+    padding: var(--kata-space-md) var(--kata-space-lg);
+    border: 2px solid var(--kata-border-light);
+    border-radius: var(--kata-radius-lg);
+    font-size: var(--kata-font-base);
+    font-family: inherit;
+    transition: all var(--kata-transition-base) ease;
+    background: var(--kata-white);
+}
+
+.kata-wheel-form-modal .kata-wheel-input:focus {
+    outline: none;
+    border-color: var(--kata-wheel-gold);
+    box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.1);
+}
+
+.kata-wheel-form-modal .kata-wheel-input.error {
+    border-color: var(--kata-error);
+    animation: inputShake 0.5s ease;
+}
+
+@keyframes inputShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.kata-wheel-form-modal .kata-wheel-submit-btn {
+    width: 100%;
+    padding: var(--kata-space-md) var(--kata-space-2xl);
+    background: var(--kata-gradient-gold);
+    color: var(--kata-white);
+    font-size: var(--kata-font-lg);
+    font-weight: var(--kata-font-extrabold);
+    border: none;
+    border-radius: var(--kata-radius-lg);
+    cursor: pointer;
+    margin-top: var(--kata-space-sm);
+    transition: all var(--kata-transition-slow) cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: var(--kata-shadow-lg);
+}
+
+.kata-wheel-form-modal .kata-wheel-submit-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(255, 165, 0, 0.6);
+}
+
+.kata-wheel-form-modal .kata-wheel-submit-btn:active {
+    transform: translateY(-1px);
+}
+
+/* ================================
+   RESULT DISPLAY BELOW WHEEL - NEW
+   ================================ */
+
+.kata-wheel-result-display {
+    display: none;
+    margin-top: var(--kata-space-2xl);
+    padding: var(--kata-space-2xl);
+    background: linear-gradient(145deg, var(--kata-white) 0%, var(--kata-bg-surface) 100%);
+    border-radius: var(--kata-radius-xl);
+    box-shadow: 
+        var(--kata-shadow-xl),
+        0 0 0 1px rgba(255, 215, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: resultSlideIn 0.5s ease;
+}
+
+.kata-wheel-result-display.show {
+    display: block;
+}
+
+@keyframes resultSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.kata-wheel-result-display::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #FFD700, #FFA500, #FF6B6B, #FFA500, #FFD700);
+    background-size: 200% 100%;
+    border-radius: 20px 20px 0 0;
+    animation: formBorderShine 3s linear infinite;
+}
+
+.kata-wheel-result-display-icon {
+    font-size: 64px;
+    margin-bottom: 15px;
+    animation: iconBounce 1s ease-in-out infinite;
+}
+
+@keyframes iconBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.kata-wheel-result-display-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #1e3c72;
+    margin: 0 0 15px 0;
+}
+
+.kata-wheel-result-display-name {
+    font-size: 28px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 15px 0;
+    text-shadow: none;
+    filter: drop-shadow(0 2px 10px rgba(255, 215, 0, 0.4));
+}
+
+.kata-wheel-result-display-value {
+    font-size: 20px;
+    color: #FF6B6B;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.kata-wheel-result-display-message {
+    font-size: 15px;
+    color: #6B7280;
+    margin: 15px 0 0 0;
+    line-height: 1.6;
+}
+
+/* ================================
+   RESPONSIVE UPDATES
+   ================================ */
+
+@media (max-width: 768px) {
+    .kata-wheel-center {
+        width: 110px !important;
+        height: 110px !important;
+        font-size: 20px;
+    }
+    
+    .kata-wheel-form-modal .kata-wheel-form-content {
+        width: 95%;
+        padding: 30px 25px;
+    }
+    
+    .kata-wheel-result-display {
+        padding: 25px 20px;
+    }
+    
+    .kata-wheel-result-display-icon {
+        font-size: 48px;
+    }
+    
+    .kata-wheel-result-display-title {
+        font-size: 20px;
+    }
+    
+    .kata-wheel-result-display-name {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 480px) {
+    .kata-wheel-center {
+        width: 90px !important;
+        height: 90px !important;
+        font-size: 16px;
+    }
+}
+
+/* ================================
+   ANIMATIONS ENHANCEMENTS
+   ================================ */
+
+/* Smooth transitions for all interactive elements */
+.kata-wheel-container * {
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Loading state for center button */
+.kata-wheel-center.spinning::after {
+    content: '⏳';
+    position: absolute;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

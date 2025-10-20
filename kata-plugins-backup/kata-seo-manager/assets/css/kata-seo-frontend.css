@@ -1,0 +1,864 @@
+/**
+ * KATA SEO Manager - Frontend Styles
+ * 
+ * Styling for schema markup display on frontend
+ * Uses CSS variables from kata-seo-variables.css
+ * 
+ * @package KATA_SEO_Manager
+ * @since 2.1.4
+ */
+
+/* ==========================================================================
+   Schema Container Styles
+   ========================================================================== */
+
+.kata-schema-wrapper {
+    margin: var(--kata-space-lg) 0;
+    padding: 0;
+}
+
+.kata-schema-item {
+    background: var(--kata-schema-bg);
+    border: 1px solid var(--kata-schema-border);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin-bottom: var(--kata-space-lg);
+    box-shadow: var(--kata-shadow-sm);
+    transition: all var(--kata-transition-base);
+}
+
+.kata-schema-item:hover {
+    box-shadow: var(--kata-shadow-md);
+    border-color: var(--kata-schema-hover-border);
+}
+
+/* ==========================================================================
+   Article Schema Styles
+   ========================================================================== */
+
+.kata-schema-article {
+    position: relative;
+}
+
+.kata-schema-article .schema-header {
+    display: flex;
+    align-items: center;
+    gap: var(--kata-space-base);
+    margin-bottom: var(--kata-space-base);
+}
+
+.kata-schema-article .schema-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--kata-radius-full);
+    background: var(--kata-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--kata-white);
+    font-size: var(--kata-font-3xl);
+}
+
+.kata-schema-article .schema-title {
+    flex: 1;
+    margin: 0;
+    font-size: var(--kata-font-2xl);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-text-primary);
+    line-height: var(--kata-line-normal);
+}
+
+.kata-schema-article .schema-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--kata-space-base);
+    font-size: var(--kata-font-md);
+    color: var(--kata-text-tertiary);
+    margin-bottom: var(--kata-space-base);
+}
+
+.kata-schema-article .schema-author {
+    display: flex;
+    align-items: center;
+    gap: var(--kata-space-xs);
+}
+
+.kata-schema-article .schema-date {
+    display: flex;
+    align-items: center;
+    gap: var(--kata-space-xs);
+}
+
+.kata-schema-article .schema-description {
+    color: var(--kata-text-secondary);
+    line-height: var(--kata-line-relaxed);
+    margin-bottom: var(--kata-space-base);
+}
+
+/* ==========================================================================
+   Breadcrumb Schema Styles
+   ========================================================================== */
+
+.kata-schema-breadcrumb {
+    background: transparent;
+    border: none;
+    padding: var(--kata-space-sm) 0;
+    box-shadow: none;
+}
+
+.kata-schema-breadcrumb ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--kata-space-sm);
+    align-items: center;
+}
+
+.kata-schema-breadcrumb li {
+    display: flex;
+    align-items: center;
+    gap: var(--kata-space-sm);
+}
+
+.kata-schema-breadcrumb li:not(:last-child)::after {
+    content: "›";
+    color: var(--kata-text-tertiary);
+    font-size: var(--kata-font-lg);
+}
+
+.kata-schema-breadcrumb a {
+    color: var(--kata-primary);
+    text-decoration: none;
+    transition: color var(--kata-transition-fast);
+}
+
+.kata-schema-breadcrumb a:hover {
+    color: var(--kata-primary-hover);
+    text-decoration: underline;
+}
+
+.kata-schema-breadcrumb .current {
+    color: var(--kata-text-secondary);
+    font-weight: var(--kata-font-medium);
+}
+
+/* ==========================================================================
+   FAQ Schema Styles
+   ========================================================================== */
+
+.kata-schema-faq {
+    background: var(--kata-bg-hover);
+}
+
+.kata-schema-faq .faq-title {
+    font-size: var(--kata-font-2xl);
+    font-weight: var(--kata-font-semibold);
+    margin: 0 0 var(--kata-space-lg) 0;
+    color: var(--kata-text-primary);
+}
+
+.kata-schema-faq .faq-item {
+    background: var(--kata-bg-container);
+    border-radius: var(--kata-radius-base);
+    padding: var(--kata-space-base);
+    margin-bottom: var(--kata-space-sm);
+    cursor: pointer;
+    transition: all var(--kata-transition-fast);
+}
+
+.kata-schema-faq .faq-item:hover {
+    box-shadow: var(--kata-shadow-sm);
+}
+
+.kata-schema-faq .faq-question {
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-text-primary);
+    margin: 0 0 var(--kata-space-sm) 0;
+    font-size: var(--kata-font-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--kata-space-sm);
+}
+
+.kata-schema-faq .faq-question::before {
+    content: "Q:";
+    display: inline-block;
+    background: var(--kata-primary);
+    color: var(--kata-white);
+    width: 24px;
+    height: 24px;
+    border-radius: var(--kata-radius-full);
+    text-align: center;
+    line-height: 24px;
+    font-size: var(--kata-font-sm);
+    flex-shrink: 0;
+}
+
+.kata-schema-faq .faq-answer {
+    color: var(--kata-text-secondary);
+    line-height: var(--kata-line-relaxed);
+    padding-left: 34px;
+}
+
+/* ==========================================================================
+   Product Schema Styles
+   ========================================================================== */
+
+.kata-schema-product {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: var(--kata-space-lg);
+}
+
+.kata-schema-product .product-image {
+    width: 100%;
+    border-radius: var(--kata-radius-md);
+    overflow: hidden;
+}
+
+.kata-schema-product .product-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.kata-schema-product .product-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--kata-space-base);
+}
+
+.kata-schema-product .product-name {
+    font-size: var(--kata-font-3xl);
+    font-weight: var(--kata-font-semibold);
+    margin: 0;
+    color: var(--kata-text-primary);
+}
+
+.kata-schema-product .product-rating {
+    display: flex;
+    align-items: center;
+    gap: var(--kata-space-sm);
+}
+
+.kata-schema-product .stars {
+    color: var(--kata-warning);
+    font-size: var(--kata-font-xl);
+}
+
+.kata-schema-product .rating-count {
+    color: #646970;
+    font-size: 14px;
+}
+
+.kata-schema-product .product-price {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2271b1;
+}
+
+.kata-schema-product .product-description {
+    color: #50575e;
+    line-height: 1.6;
+}
+
+.kata-schema-product .product-availability {
+    display: inline-block;
+    padding: 5px 12px;
+    background: #00a32a;
+    color: #ffffff;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.kata-schema-product .product-availability.out-of-stock {
+    background: #d63638;
+}
+
+/* ==========================================================================
+   Recipe Schema Styles
+   ========================================================================== */
+
+.kata-schema-recipe {
+    background: #fff9f0;
+}
+
+.kata-schema-recipe .recipe-header {
+    margin-bottom: 20px;
+}
+
+.kata-schema-recipe .recipe-title {
+    font-size: 26px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    color: #1d2327;
+}
+
+.kata-schema-recipe .recipe-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.kata-schema-recipe .meta-item {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 6px;
+}
+
+.kata-schema-recipe .meta-label {
+    font-size: 12px;
+    color: #646970;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.kata-schema-recipe .meta-value {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.kata-schema-recipe .recipe-ingredients,
+.kata-schema-recipe .recipe-instructions {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.kata-schema-recipe .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    color: #1d2327;
+}
+
+.kata-schema-recipe .ingredients-list,
+.kata-schema-recipe .instructions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.kata-schema-recipe .ingredients-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid #f0f0f1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.kata-schema-recipe .ingredients-list li::before {
+    content: "✓";
+    color: #2271b1;
+    font-weight: 700;
+}
+
+.kata-schema-recipe .instructions-list li {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f1;
+    counter-increment: step;
+    position: relative;
+    padding-left: 40px;
+}
+
+.kata-schema-recipe .instructions-list {
+    counter-reset: step;
+}
+
+.kata-schema-recipe .instructions-list li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 12px;
+    background: #2271b1;
+    color: #ffffff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Event Schema Styles
+   ========================================================================== */
+
+.kata-schema-event {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+}
+
+.kata-schema-event .event-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    color: #ffffff;
+}
+
+.kata-schema-event .event-datetime {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+.kata-schema-event .event-location {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.kata-schema-event .event-description {
+    line-height: 1.6;
+    opacity: 0.95;
+}
+
+/* ==========================================================================
+   Video Schema Styles
+   ========================================================================== */
+
+.kata-schema-video {
+    background: #000000;
+    color: #ffffff;
+    position: relative;
+}
+
+.kata-schema-video .video-thumbnail {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 Aspect Ratio */
+    overflow: hidden;
+    border-radius: 6px;
+    margin-bottom: 15px;
+}
+
+.kata-schema-video .video-thumbnail img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.kata-schema-video .play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 0, 0, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.kata-schema-video .play-button:hover {
+    background: rgba(255, 0, 0, 1);
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+.kata-schema-video .play-button::after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 15px 0 15px 25px;
+    border-color: transparent transparent transparent #ffffff;
+    margin-left: 5px;
+}
+
+.kata-schema-video .video-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    color: #ffffff;
+}
+
+.kata-schema-video .video-meta {
+    color: #b4b4b4;
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   HowTo Schema Styles
+   ========================================================================== */
+
+.kata-schema-howto {
+    background: #e7f5ff;
+}
+
+.kata-schema-howto .howto-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 15px 0;
+    color: #1d2327;
+}
+
+.kata-schema-howto .howto-description {
+    color: #50575e;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.kata-schema-howto .howto-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    counter-reset: step;
+}
+
+.kata-schema-howto .howto-step {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    position: relative;
+    padding-left: 70px;
+    counter-increment: step;
+}
+
+.kata-schema-howto .howto-step::before {
+    content: counter(step);
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    background: #2271b1;
+    color: #ffffff;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+.kata-schema-howto .step-name {
+    font-weight: 600;
+    color: #1d2327;
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+.kata-schema-howto .step-text {
+    color: #50575e;
+    line-height: 1.6;
+}
+
+/* ==========================================================================
+   Rating Styles (Shared)
+   ========================================================================== */
+
+.kata-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.kata-rating-stars {
+    display: flex;
+    gap: 2px;
+}
+
+.kata-rating-star {
+    color: #ffa500;
+    font-size: 16px;
+}
+
+.kata-rating-value {
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.kata-rating-count {
+    color: #646970;
+    font-size: 14px;
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .kata-schema-product {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-schema-recipe .recipe-meta {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-schema-event .event-datetime {
+        flex-direction: column;
+    }
+    
+    .kata-schema-howto .howto-step {
+        padding-left: 20px;
+        padding-top: 70px;
+    }
+    
+    .kata-schema-howto .howto-step::before {
+        left: 20px;
+        top: 20px;
+    }
+}
+
+/* ==========================================================================
+   Print Styles
+   ========================================================================== */
+
+@media print {
+    .kata-schema-wrapper {
+        page-break-inside: avoid;
+    }
+    
+    .kata-schema-item {
+        box-shadow: none;
+        border: 1px solid #000000;
+    }
+    
+    .kata-schema-video .play-button,
+    .kata-schema-event {
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+}
+
+/* ==========================================================================
+   Accessibility
+   ========================================================================== */
+
+.kata-schema-wrapper *:focus {
+    outline: 2px solid #2271b1;
+    outline-offset: 2px;
+}
+
+.kata-schema-wrapper [role="button"] {
+    cursor: pointer;
+}
+
+/* Screen reader only */
+.kata-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ==========================================================================
+   Poll Styles
+   ========================================================================== */
+
+.kata-poll-container {
+    background: #ffffff;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.kata-poll-container:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-color: #2271b1;
+}
+
+.kata-poll-title {
+    margin: 0 0 15px 0;
+    color: #1d2327;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.kata-poll-description {
+    margin: 0 0 20px 0;
+    color: #646970;
+    line-height: 1.6;
+}
+
+.kata-poll-form {
+    margin-bottom: 20px;
+}
+
+.kata-poll-option {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    margin: 8px 0;
+    background: #f6f7f7;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.kata-poll-option:hover {
+    background: #f0f0f1;
+    border-color: #2271b1;
+}
+
+.kata-poll-option input[type="radio"] {
+    margin: 0 12px 0 0;
+    transform: scale(1.2);
+}
+
+.kata-poll-option span {
+    flex: 1;
+    font-weight: 500;
+    color: #1d2327;
+}
+
+.kata-poll-submit {
+    background: #2271b1;
+    color: #ffffff;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+}
+
+.kata-poll-submit:hover {
+    background: #135e96;
+    transform: translateY(-1px);
+}
+
+.kata-poll-submit:disabled {
+    background: #dcdcde;
+    color: #646970;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.kata-poll-results {
+    margin-top: 20px;
+}
+
+.kata-poll-results h4 {
+    margin: 0 0 20px 0;
+    color: #1d2327;
+    font-size: 1.3em;
+    font-weight: 600;
+}
+
+.kata-poll-result-item {
+    display: flex;
+    align-items: center;
+    margin: 12px 0;
+    gap: 15px;
+}
+
+.kata-poll-option-text {
+    flex: 1;
+    font-weight: 500;
+    color: #1d2327;
+}
+
+.kata-poll-votes {
+    color: #646970;
+    font-size: 0.9em;
+    min-width: 80px;
+    text-align: right;
+}
+
+.kata-poll-progress-bar {
+    flex: 2;
+    height: 8px;
+    background: #f0f0f1;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.kata-poll-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #2271b1 0%, #72aee6 100%);
+    border-radius: 4px;
+    transition: width 0.8s ease;
+    min-width: 2px;
+}
+
+.kata-poll-percentage {
+    min-width: 50px;
+    text-align: right;
+    font-weight: 600;
+    color: #2271b1;
+}
+
+.kata-poll-total {
+    margin: 20px 0 0 0;
+    padding: 15px;
+    background: #f6f7f7;
+    border-radius: 6px;
+    text-align: center;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.kata-poll-success {
+    margin: 15px 0;
+    padding: 12px 15px;
+    background: #d1e7dd;
+    border: 1px solid #badbcc;
+    border-radius: 6px;
+}
+
+.kata-poll-empty {
+    text-align: center;
+    padding: 30px;
+    color: #646970;
+    font-style: italic;
+}
+
+/* Poll style variations */
+.kata-poll-modern .kata-poll-option {
+    border-radius: 12px;
+    padding: 15px 20px;
+}
+
+.kata-poll-modern .kata-poll-submit {
+    border-radius: 12px;
+    padding: 15px 30px;
+}
+
+.kata-poll-compact {
+    padding: 15px;
+}
+
+.kata-poll-compact .kata-poll-option {
+    padding: 8px 12px;
+    margin: 4px 0;
+}
+
+.kata-poll-compact .kata-poll-submit {
+    padding: 8px 16px;
+    font-size: 14px;
+}

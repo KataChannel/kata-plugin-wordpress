@@ -1,0 +1,520 @@
+/**
+ * KATA SEO Manager - Schema Frontend Styles
+ * Uses CSS variables from kata-seo-variables.css
+ * 
+ * CSS for schema markup frontend display
+ * 
+ * @package KATA_SEO_Manager
+ * @since 2.1.4
+ */
+
+/* Base Schema Container */
+.kata-schema-container {
+    margin: var(--kata-space-lg) 0;
+    padding: 0;
+    font-family: var(--kata-font-family);
+    line-height: 1.6;
+}
+
+/* Schema Markup Display (invisible by default) */
+.kata-schema-markup {
+    display: none;
+}
+
+/* Article Schema Styles */
+.kata-article-container {
+    background: var(--kata-white);
+    border: 1px solid var(--kata-border-base);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-2xl);
+    margin: var(--kata-space-lg) 0;
+    box-shadow: var(--kata-shadow-base);
+}
+
+.kata-article-header {
+    margin-bottom: var(--kata-space-lg);
+    border-bottom: 2px solid var(--kata-gray-100);
+    padding-bottom: var(--kata-space-md);
+}
+
+.kata-article-title {
+    font-size: var(--kata-font-3xl);
+    font-weight: var(--kata-font-bold);
+    color: var(--kata-gray-800);
+    margin: 0 0 var(--kata-space-sm) 0;
+    line-height: 1.3;
+}
+
+.kata-article-meta {
+    display: flex;
+    gap: var(--kata-space-lg);
+    font-size: var(--kata-font-sm);
+    color: var(--kata-text-secondary);
+    margin: var(--kata-space-sm) 0;
+}
+
+.kata-article-author,
+.kata-article-date,
+.kata-article-category {
+    display: flex;
+    align-items: center;
+    gap: var(--kata-space-xs);
+}
+
+.kata-article-content {
+    font-size: var(--kata-font-base);
+    color: var(--kata-text-primary);
+    line-height: 1.7;
+}
+
+/* FAQ Schema Styles */
+.kata-faq-container {
+    background: var(--kata-gray-50);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
+}
+
+.kata-faq-title {
+    font-size: var(--kata-font-2xl);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-gray-800);
+    margin-bottom: var(--kata-space-lg);
+    text-align: center;
+}
+
+.kata-faq-item {
+    background: var(--kata-white);
+    border: 1px solid var(--kata-border-base);
+    border-radius: var(--kata-radius-sm);
+    margin-bottom: var(--kata-space-md);
+    overflow: hidden;
+    transition: box-shadow var(--kata-transition-base);
+}
+
+.kata-faq-item:hover {
+    box-shadow: var(--kata-shadow-base);
+}
+
+.kata-faq-question {
+    background: var(--kata-gray-100);
+    padding: var(--kata-space-md) var(--kata-space-lg);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-gray-800);
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+}
+
+.kata-faq-question:after {
+    content: '+';
+    position: absolute;
+    right: var(--kata-space-lg);
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: var(--kata-font-xl);
+    font-weight: bold;
+    color: var(--kata-text-secondary);
+    transition: transform var(--kata-transition-base);
+}
+
+.kata-faq-question.active:after {
+    transform: translateY(-50%) rotate(45deg);
+}
+
+.kata-faq-answer {
+    padding: var(--kata-space-lg);
+    color: var(--kata-text-primary);
+    line-height: 1.6;
+    display: none;
+}
+
+.kata-faq-answer.active {
+    display: block;
+    animation: fadeIn var(--kata-transition-base);
+}
+
+.kata-faq-empty {
+    text-align: center;
+    color: var(--kata-text-secondary);
+    font-style: italic;
+    padding: var(--kata-space-4xl) var(--kata-space-lg);
+}
+
+/* Breadcrumb Schema Styles */
+.kata-breadcrumb {
+    background: var(--kata-bg-surface);
+    padding: var(--kata-space-base) var(--kata-space-lg);
+    border-radius: var(--kata-radius-sm);
+    margin: var(--kata-space-md) 0;
+}
+
+.kata-breadcrumb-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--kata-font-sm);
+}
+
+.kata-breadcrumb-item {
+    display: flex;
+    align-items: center;
+}
+
+.kata-breadcrumb-item:not(:last-child):after {
+    content: '›';
+    margin: 0 var(--kata-space-xs);
+    color: var(--kata-text-secondary);
+    font-weight: bold;
+}
+
+.kata-breadcrumb-link {
+    color: var(--kata-primary);
+    text-decoration: none;
+    transition: color var(--kata-transition-base);
+}
+
+.kata-breadcrumb-link:hover {
+    color: var(--kata-primary-dark);
+    text-decoration: underline;
+}
+
+.kata-breadcrumb-current {
+    color: var(--kata-gray-800);
+    font-weight: var(--kata-font-medium);
+}
+
+/* Product Schema Styles */
+.kata-product-container {
+    border: 1px solid var(--kata-border-base);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
+    background: var(--kata-white);
+}
+
+.kata-product-image {
+    text-align: center;
+    margin-bottom: var(--kata-space-lg);
+}
+
+.kata-product-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--kata-radius-sm);
+}
+
+.kata-product-title {
+    font-size: var(--kata-font-2xl);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-gray-800);
+    margin-bottom: var(--kata-space-md);
+}
+
+.kata-product-price {
+    font-size: var(--kata-font-xl);
+    font-weight: var(--kata-font-bold);
+    color: var(--kata-error-text);
+    margin-bottom: var(--kata-space-md);
+}
+
+.kata-product-description {
+    color: var(--kata-text-primary);
+    line-height: 1.6;
+    margin-bottom: var(--kata-space-md);
+}
+
+.kata-product-rating {
+    display: flex;
+    align-items: center;
+    gap: var(--kata-space-sm);
+    margin-bottom: var(--kata-space-md);
+}
+
+.kata-rating-stars {
+    color: #ffa500;
+    font-size: var(--kata-font-xl);
+}
+
+.kata-rating-text {
+    color: var(--kata-text-secondary);
+    font-size: var(--kata-font-sm);
+}
+
+/* Event Schema Styles */
+.kata-event-container {
+    border: 1px solid var(--kata-border-base);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-2xl);
+    margin: var(--kata-space-lg) 0;
+    background: linear-gradient(135deg, var(--kata-gray-50) 0%, var(--kata-white) 100%);
+}
+
+.kata-event-title {
+    font-size: var(--kata-font-3xl);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-gray-800);
+    margin-bottom: var(--kata-space-md);
+}
+
+.kata-event-date,
+.kata-event-location,
+.kata-event-organizer {
+    margin-bottom: var(--kata-space-base);
+    color: var(--kata-text-primary);
+}
+
+.kata-event-description {
+    color: var(--kata-text-secondary);
+    line-height: 1.6;
+    margin-top: var(--kata-space-md);
+}
+
+/* Recipe Schema Styles */
+.kata-recipe-container {
+    border: 2px solid #8bc34a;
+    border-radius: var(--kata-radius-lg);
+    padding: var(--kata-space-2xl);
+    margin: var(--kata-space-lg) 0;
+    background: #f8fff8;
+}
+
+.kata-recipe-title {
+    font-size: var(--kata-font-3xl);
+    font-weight: var(--kata-font-semibold);
+    color: #2e7d32;
+    margin-bottom: var(--kata-space-lg);
+    text-align: center;
+}
+
+.kata-recipe-meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--kata-space-md);
+    margin-bottom: var(--kata-space-lg);
+    padding: var(--kata-space-md);
+    background: rgba(139, 195, 74, 0.1);
+    border-radius: var(--kata-radius-md);
+}
+
+.kata-recipe-meta-item {
+    text-align: center;
+}
+
+.kata-recipe-meta-label {
+    font-weight: var(--kata-font-semibold);
+    color: #2e7d32;
+    display: block;
+    margin-bottom: var(--kata-space-xs);
+}
+
+.kata-recipe-meta-value {
+    color: var(--kata-text-primary);
+    font-size: var(--kata-font-lg);
+}
+
+.kata-recipe-ingredients,
+.kata-recipe-instructions {
+    margin-bottom: var(--kata-space-lg);
+}
+
+.kata-recipe-ingredients ul,
+.kata-recipe-instructions ol {
+    padding-left: var(--kata-space-lg);
+}
+
+.kata-recipe-ingredients li,
+.kata-recipe-instructions li {
+    margin-bottom: var(--kata-space-xs);
+    line-height: 1.5;
+}
+
+/* Video Schema Styles */
+.kata-video-container {
+    border: 1px solid var(--kata-border-base);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
+    background: var(--kata-white);
+}
+
+.kata-video-player {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    margin-bottom: var(--kata-space-md);
+}
+
+.kata-video-player iframe,
+.kata-video-player video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--kata-radius-sm);
+}
+
+.kata-video-title {
+    font-size: var(--kata-font-2xl);
+    font-weight: var(--kata-font-semibold);
+    color: var(--kata-gray-800);
+    margin-bottom: var(--kata-space-sm);
+}
+
+.kata-video-description {
+    color: var(--kata-text-primary);
+    line-height: 1.6;
+    margin-bottom: var(--kata-space-md);
+}
+
+.kata-video-meta {
+    display: flex;
+    gap: var(--kata-space-lg);
+    font-size: var(--kata-font-sm);
+    color: var(--kata-text-secondary);
+}
+
+/* Quiz Integration Styles */
+.kata-quiz-schema {
+    border: 2px solid var(--kata-quiz-primary);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
+    background: #f8f9ff;
+}
+
+/* Poll Integration Styles */
+.kata-poll-schema {
+    border: 2px solid var(--kata-poll-primary);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
+    background: #faf8ff;
+}
+
+/* Rating System Styles */
+.kata-rating-container {
+    padding: var(--kata-space-md);
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: var(--kata-radius-sm);
+    margin: var(--kata-space-md) 0;
+}
+
+.kata-rating-title {
+    font-weight: var(--kata-font-semibold);
+    color: #856404;
+    margin-bottom: var(--kata-space-sm);
+}
+
+.kata-rating-display {
+    display: flex;
+    align-items: center;
+    gap: var(--kata-space-sm);
+}
+
+.kata-rating-stars {
+    font-size: var(--kata-font-xl);
+    color: #ffa500;
+}
+
+.kata-rating-value {
+    font-weight: var(--kata-font-bold);
+    color: var(--kata-gray-800);
+}
+
+.kata-rating-count {
+    color: var(--kata-text-secondary);
+    font-size: var(--kata-font-sm);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .kata-schema-container {
+        margin: var(--kata-space-md) 0;
+    }
+    
+    .kata-article-container,
+    .kata-product-container,
+    .kata-event-container,
+    .kata-recipe-container,
+    .kata-video-container {
+        padding: var(--kata-space-lg);
+        margin: var(--kata-space-md) 0;
+    }
+    
+    .kata-article-title {
+        font-size: var(--kata-font-2xl);
+    }
+    
+    .kata-product-title {
+        font-size: var(--kata-font-xl);
+    }
+    
+    .kata-event-title {
+        font-size: var(--kata-font-2xl);
+    }
+    
+    .kata-recipe-title {
+        font-size: var(--kata-font-2xl);
+    }
+    
+    .kata-article-meta,
+    .kata-video-meta {
+        flex-direction: column;
+        gap: var(--kata-space-sm);
+    }
+    
+    .kata-recipe-meta {
+        grid-template-columns: 1fr;
+    }
+    
+    .kata-breadcrumb-list {
+        font-size: var(--kata-font-xs);
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        max-height: 0;
+        opacity: 0;
+    }
+    to {
+        max-height: 200px;
+        opacity: 1;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .kata-schema-container {
+        border: 1px solid var(--kata-border-base) !important;
+        box-shadow: none !important;
+        background: var(--kata-white) !important;
+    }
+    
+    .kata-faq-question:after {
+        display: none;
+    }
+    
+    .kata-faq-answer {
+        display: block !important;
+    }
+}

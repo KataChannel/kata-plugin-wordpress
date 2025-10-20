@@ -1,0 +1,264 @@
+/**
+ * KATA SEO Manager - TinyMCE Editor Styles
+ * Uses CSS variables from kata-seo-variables.css
+ * 
+ * @package KATA_SEO_Manager
+ * @since 2.1.4
+ */
+
+/* Main dropdown button */
+.mce-btn .mce-ico-dashicon.dashicons-chart-line {
+    font-family: 'dashicons';
+    font-size: var(--kata-font-lg);
+    color: var(--kata-primary);
+}
+
+/* Menu items styling */
+.mce-menu .mce-menu-item .mce-text {
+    font-size: var(--kata-font-sm);
+    padding: var(--kata-space-xs) var(--kata-space-base);
+}
+
+/* Notification styles */
+.kata-notification {
+    position: fixed;
+    top: 32px;
+    right: var(--kata-space-lg);
+    padding: var(--kata-space-base) var(--kata-space-2xl);
+    border-radius: var(--kata-radius-sm);
+    color: var(--kata-white);
+    font-weight: var(--kata-font-medium);
+    z-index: var(--kata-z-notification);
+    box-shadow: var(--kata-shadow-lg);
+    animation: slideInRight var(--kata-transition-base) ease-out;
+}
+
+.kata-notification-success {
+    background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.kata-notification-error {
+    background: linear-gradient(135deg, var(--kata-error-text), #e74c3c);
+}
+
+.kata-notification-warning {
+    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    color: var(--kata-gray-900);
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Preview box styles for TinyMCE */
+.kata-seo-preview {
+    border: 2px dashed var(--kata-border-focus);
+    border-radius: var(--kata-radius-md);
+    padding: var(--kata-space-lg);
+    margin: var(--kata-space-lg) 0;
+    background: linear-gradient(135deg, var(--kata-gray-50) 0%, var(--kata-gray-100) 100%);
+    position: relative;
+}
+
+.kata-seo-preview::before {
+    content: '📊 KATA SEO Manager';
+    position: absolute;
+    top: -12px;
+    left: var(--kata-space-lg);
+    background: var(--kata-primary);
+    color: var(--kata-white);
+    padding: var(--kata-space-xs) var(--kata-space-base);
+    border-radius: var(--kata-radius-sm);
+    font-size: var(--kata-font-xs);
+    font-weight: var(--kata-font-semibold);
+}
+
+.kata-seo-preview h4 {
+    color: var(--kata-primary);
+    margin: 0 0 var(--kata-space-xs) 0;
+    font-size: var(--kata-font-lg);
+    font-weight: var(--kata-font-semibold);
+}
+
+.kata-seo-preview p {
+    margin: var(--kata-space-xs) 0;
+    color: var(--kata-text-primary);
+    font-size: var(--kata-font-md);
+    line-height: 1.4;
+}
+
+.kata-seo-preview small {
+    display: block;
+    margin-top: var(--kata-space-xs);
+    color: var(--kata-success-text);
+    font-weight: var(--kata-font-medium);
+    font-size: var(--kata-font-xs);
+}
+
+/* FAQ specific preview */
+.faq-preview {
+    background: var(--kata-white);
+    border-radius: var(--kata-radius-sm);
+    padding: var(--kata-space-base);
+    margin: var(--kata-space-xs) 0;
+    box-shadow: var(--kata-shadow-base);
+}
+
+.faq-preview p {
+    margin: var(--kata-space-xs) 0;
+    font-size: var(--kata-font-sm);
+}
+
+.faq-preview strong {
+    color: var(--kata-primary);
+}
+
+.faq-preview hr {
+    border: none;
+    border-top: 1px solid var(--kata-border-base);
+    margin: var(--kata-space-xs) 0;
+}
+
+/* Dialog styles */
+.mce-window .mce-container-body {
+    background: var(--kata-bg-surface);
+}
+
+.mce-window .mce-title {
+    color: var(--kata-primary);
+    font-weight: var(--kata-font-semibold);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .kata-notification {
+        right: var(--kata-space-sm);
+        left: var(--kata-space-sm);
+        top: 46px;
+    }
+    
+    .kata-seo-preview {
+        padding: var(--kata-space-base);
+        margin: var(--kata-space-base) 0;
+    }
+}
+
+/* Admin editor enhancements */
+.wp-editor-container .kata-seo-preview {
+    border-style: solid;
+    border-width: 1px;
+    border-color: var(--kata-border-base);
+}
+
+.wp-editor-container .kata-seo-preview:hover {
+    border-color: var(--kata-primary);
+    box-shadow: 0 0 var(--kata-space-xs) rgba(0,115,170,0.1);
+}
+
+/* Shortcode highlighting in editor */
+.mce-content-body [data-kata-shortcode] {
+    background: var(--kata-primary-lightest);
+    border: 1px dashed var(--kata-border-focus);
+    border-radius: var(--kata-radius-sm);
+    padding: 2px 4px;
+    margin: 0 2px;
+}
+
+.mce-content-body [data-kata-shortcode]:hover {
+    background: rgba(0,115,170,0.2);
+}
+
+/* Button states */
+.mce-btn.mce-active .mce-ico-dashicon {
+    color: var(--kata-primary-dark);
+}
+
+.mce-btn:hover .mce-ico-dashicon {
+    color: var(--kata-primary-dark);
+}
+
+/* Menu dropdown styling */
+.mce-menu-item:hover {
+    background: #f0f8ff;
+}
+
+.mce-menu-item-normal.mce-active {
+    background: var(--kata-primary-lightest);
+}
+
+/* Loading states */
+.kata-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.kata-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: var(--kata-space-lg);
+    height: var(--kata-space-lg);
+    border: 2px solid var(--kata-primary);
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+/* Success indicators */
+.kata-success-indicator {
+    display: inline-block;
+    width: var(--kata-space-lg);
+    height: var(--kata-space-lg);
+    background: var(--kata-success-text);
+    border-radius: 50%;
+    position: relative;
+    margin-right: var(--kata-space-xs);
+}
+
+.kata-success-indicator::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--kata-white);
+    font-size: var(--kata-font-xs);
+    font-weight: bold;
+}
+
+/* Schema type badges */
+.kata-schema-badge {
+    display: inline-block;
+    background: var(--kata-primary);
+    color: var(--kata-white);
+    padding: 2px var(--kata-space-xs);
+    border-radius: var(--kata-radius-lg);
+    font-size: var(--kata-font-xs);
+    font-weight: var(--kata-font-medium);
+    margin: 2px var(--kata-space-xs) 2px 0;
+}
+
+.kata-schema-badge.faq { background: var(--kata-success-text); }
+.kata-schema-badge.quiz { background: var(--kata-quiz-primary); color: var(--kata-gray-900); }
+.kata-schema-badge.poll { background: var(--kata-poll-primary); }
+.kata-schema-badge.form { background: #fd7e14; }
+.kata-schema-badge.wheel { background: var(--kata-wheel-primary); }
+.kata-schema-badge.rating { background: #20c997; }
+.kata-schema-badge.product { background: var(--kata-error-text); }
+.kata-schema-badge.recipe { background: #6610f2; }

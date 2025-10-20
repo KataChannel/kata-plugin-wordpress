@@ -3,7 +3,7 @@
  * Plugin Name: KATA SEO Manager
  * Plugin URI: https://katachannel.com/kata-seo-manager
  * Description: Complete SEO Schema Manager with 26 Schema Types - Manage, configure, and track all KATA SEO features with Google-compliant Schema Markup
- * Version: 2.1.4
+ * Version: 2.1.5
  * Author: KATA Channel
  * Author URI: https://katachannel.com
  * License: GPL v2 or later
@@ -22,7 +22,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Plugin constants
-define('KATA_SEO_MANAGER_VERSION', '2.1.4');
+define('KATA_SEO_MANAGER_VERSION', '2.1.5');
 define('KATA_SEO_MANAGER_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('KATA_SEO_MANAGER_PLUGIN_URL', plugin_dir_url(__FILE__));
 define('KATA_SEO_MANAGER_PLUGIN_FILE', __FILE__);
@@ -341,7 +341,7 @@ class KATA_SEO_Manager {
      * This method has been replaced by KATA_SEO_Asset_Manager
      * Kept for reference during transition period
      * 
-     * @deprecated 2.1.4 Use KATA_SEO_Asset_Manager instead
+     * @deprecated 2.1.5 Use KATA_SEO_Asset_Manager instead
      */
     /* DEPRECATED - REPLACED BY ASSET MANAGER
     public function enqueue_admin_scripts($hook) {
@@ -356,7 +356,7 @@ class KATA_SEO_Manager {
      * This method has been replaced by KATA_SEO_Asset_Manager
      * Kept for reference during transition period
      * 
-     * @deprecated 2.1.4 Use KATA_SEO_Asset_Manager instead
+     * @deprecated 2.1.5 Use KATA_SEO_Asset_Manager instead
      */
     /* DEPRECATED - REPLACED BY ASSET MANAGER
     public function enqueue_frontend_scripts() {
